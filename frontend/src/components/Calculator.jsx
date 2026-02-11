@@ -251,16 +251,16 @@ export const Calculator = () => {
                   <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">
                     {t('calculator.step_model')}
                   </h3>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                     {getFilteredModels().map((model) => (
                         <div
                           key={model.id}
                           data-testid={`model-card-${model.id}`}
                           onClick={() => handleModelSelect(model)}
-                          className={`calc-option relative p-1.5 cursor-pointer ${selectedModel?.id === model.id ? 'selected' : ''}`}
+                          className={`calc-option relative p-2 cursor-pointer ${selectedModel?.id === model.id ? 'selected' : ''}`}
                         >
                           {model.imageUrl && (
-                            <div className="aspect-[4/3] mb-1.5 overflow-hidden bg-[#F2F2F0]">
+                            <div className="aspect-[4/3] mb-2 overflow-hidden bg-[#F2F2F0]">
                               <img
                                 src={getImageUrl(model.imageUrl)}
                                 alt={model.name}
@@ -269,22 +269,22 @@ export const Calculator = () => {
                               />
                             </div>
                           )}
-                          <h4 className="font-medium text-[#1A1A1A] text-[11px] leading-tight line-clamp-2 mb-0.5">
+                          <h4 className="font-medium text-[#1A1A1A] text-xs leading-tight line-clamp-2 mb-1">
                             {model.name}
                           </h4>
                           <div className="flex items-center justify-between gap-1">
-                            <p className="text-xs font-bold text-[#C6A87C]">
-                              {(model.basePrice / 1000).toFixed(0)}k PLN
+                            <p className="text-sm font-bold text-[#C6A87C]">
+                              {model.basePrice.toLocaleString()} PLN
                             </p>
                             {model.capacity && (
-                              <span className="text-[9px] text-[#595959] flex items-center gap-0.5">
-                                <Users size={8} />
+                              <span className="text-[10px] text-[#595959] flex items-center gap-0.5 whitespace-nowrap">
+                                <Users size={10} />
                                 {model.capacity}
                               </span>
                             )}
                           </div>
                           {model.discount > 0 && (
-                            <span className="absolute top-0.5 right-0.5 bg-red-600 text-white text-[8px] px-1 py-0.5 font-bold">
+                            <span className="absolute top-1 right-1 bg-red-600 text-white text-[9px] px-1 py-0.5 font-bold">
                               -{model.discount}%
                             </span>
                           )}
