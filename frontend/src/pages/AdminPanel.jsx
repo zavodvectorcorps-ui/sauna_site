@@ -221,6 +221,36 @@ const AdminPanel = () => {
     setLoading(false);
   };
 
+  const saveGalleryConfig = async () => {
+    setLoading(true);
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/settings/gallery`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(galleryConfig),
+      });
+      showMessage('success', 'Настройки галереи сохранены');
+    } catch (error) {
+      showMessage('error', 'Ошибка сохранения');
+    }
+    setLoading(false);
+  };
+
+  const toggleApiImage = (imageUrl) => {
+    const hidden = galleryConfig.hidden_api_images || [];
+    if (hidden.includes(imageUrl)) {
+      setGalleryConfig({
+        ...galleryConfig,
+        hidden_api_images: hidden.filter(url => url !== imageUrl),
+      });
+    } else {
+      setGalleryConfig({
+        ...galleryConfig,
+        hidden_api_images: [...hidden, imageUrl],
+      });
+    }
+  };
+
   const saveReview = async (review) => {
     setLoading(true);
     try {
