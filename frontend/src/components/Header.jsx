@@ -25,7 +25,7 @@ export const Header = () => {
     { href: '#contact', label: t('nav.contact') },
   ];
 
-  const languages = ['PL', 'EN', 'RU'];
+  const languages = ['PL', 'EN'];
 
   const scrollToSection = (href) => {
     const element = document.querySelector(href);

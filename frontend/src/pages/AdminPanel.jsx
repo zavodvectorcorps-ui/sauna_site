@@ -60,12 +60,12 @@ const AdminPanel = () => {
       if (response.ok) {
         setAuthHeader(auth);
         setIsLoggedIn(true);
-        showMessage('success', 'Zalogowano pomyślnie');
+        showMessage('success', 'Вход выполнен успешно');
       } else {
-        showMessage('error', 'Nieprawidłowe dane logowania');
+        showMessage('error', 'Неверные данные для входа');
       }
     } catch (error) {
-      showMessage('error', 'Błąd połączenia');
+      showMessage('error', 'Ошибка подключения');
     }
     setLoading(false);
   };
@@ -122,9 +122,9 @@ const AdminPanel = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(siteSettings),
       });
-      showMessage('success', 'Ustawienia zapisane');
+      showMessage('success', 'Настройки сохранены');
     } catch (error) {
-      showMessage('error', 'Błąd zapisu');
+      showMessage('error', 'Ошибка сохранения');
     }
     setLoading(false);
   };
@@ -137,9 +137,9 @@ const AdminPanel = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(heroSettings),
       });
-      showMessage('success', 'Ustawienia Hero zapisane');
+      showMessage('success', 'Настройки Hero сохранены');
     } catch (error) {
-      showMessage('error', 'Błąd zapisu');
+      showMessage('error', 'Ошибка сохранения');
     }
     setLoading(false);
   };
@@ -152,9 +152,9 @@ const AdminPanel = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(aboutSettings),
       });
-      showMessage('success', 'Ustawienia "O firmie" zapisane');
+      showMessage('success', 'Настройки "О компании" сохранены');
     } catch (error) {
-      showMessage('error', 'Błąd zapisu');
+      showMessage('error', 'Ошибка сохранения');
     }
     setLoading(false);
   };
@@ -167,9 +167,9 @@ const AdminPanel = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(calculatorConfig),
       });
-      showMessage('success', 'Konfiguracja kalkulatora zapisana');
+      showMessage('success', 'Конфигурация калькулятора сохранена');
     } catch (error) {
-      showMessage('error', 'Błąd zapisu');
+      showMessage('error', 'Ошибка сохранения');
     }
     setLoading(false);
   };
@@ -182,9 +182,9 @@ const AdminPanel = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(sectionOrder),
       });
-      showMessage('success', 'Kolejność sekcji zapisana');
+      showMessage('success', 'Порядок секций сохранён');
     } catch (error) {
-      showMessage('error', 'Błąd zapisu');
+      showMessage('error', 'Ошибка сохранения');
     }
     setLoading(false);
   };
@@ -197,30 +197,30 @@ const AdminPanel = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(review),
       });
-      showMessage('success', 'Opinia zapisana');
+      showMessage('success', 'Отзыв сохранён');
       fetchAllData();
     } catch (error) {
-      showMessage('error', 'Błąd zapisu');
+      showMessage('error', 'Ошибка сохранения');
     }
     setLoading(false);
   };
 
   const deleteReview = async (id) => {
-    if (!window.confirm('Czy na pewno chcesz usunąć tę opinię?')) return;
+    if (!window.confirm('Вы уверены, что хотите удалить этот отзыв?')) return;
     try {
       await fetchWithAuth(`${API_URL}/api/admin/reviews/${id}`, { method: 'DELETE' });
-      showMessage('success', 'Opinia usunięta');
+      showMessage('success', 'Отзыв удалён');
       fetchAllData();
     } catch (error) {
-      showMessage('error', 'Błąd usuwania');
+      showMessage('error', 'Ошибка удаления');
     }
   };
 
   const addNewReview = async () => {
     const newReview = {
       id: `review_${Date.now()}`,
-      name: 'Nowy klient',
-      location: 'Warszawa',
+      name: 'Новый клиент',
+      location: 'Варшава',
       rating: 5,
       text_pl: 'Treść opinii...',
       text_en: 'Review text...',
@@ -235,31 +235,31 @@ const AdminPanel = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newReview),
       });
-      showMessage('success', 'Opinia dodana');
+      showMessage('success', 'Отзыв добавлен');
       fetchAllData();
     } catch (error) {
-      showMessage('error', 'Błąd dodawania');
+      showMessage('error', 'Ошибка добавления');
     }
   };
 
   const deleteContact = async (id) => {
-    if (!window.confirm('Czy na pewno chcesz usunąć tę wiadomość?')) return;
+    if (!window.confirm('Вы уверены, что хотите удалить это сообщение?')) return;
     try {
       await fetchWithAuth(`${API_URL}/api/admin/contacts/${id}`, { method: 'DELETE' });
-      showMessage('success', 'Wiadomość usunięta');
+      showMessage('success', 'Сообщение удалено');
       fetchAllData();
     } catch (error) {
-      showMessage('error', 'Błąd usuwania');
+      showMessage('error', 'Ошибка удаления');
     }
   };
 
   const updateContactStatus = async (id, status) => {
     try {
       await fetchWithAuth(`${API_URL}/api/admin/contacts/${id}/status?status=${status}`, { method: 'PUT' });
-      showMessage('success', 'Status zaktualizowany');
+      showMessage('success', 'Статус обновлён');
       fetchAllData();
     } catch (error) {
-      showMessage('error', 'Błąd aktualizacji');
+      showMessage('error', 'Ошибка обновления');
     }
   };
 
@@ -267,7 +267,7 @@ const AdminPanel = () => {
     const newImage = {
       id: `img_${Date.now()}`,
       url: '',
-      alt: 'Nowe zdjęcie',
+      alt: 'Новое фото',
       category: 'all',
       source: 'custom',
       active: true,
@@ -279,10 +279,10 @@ const AdminPanel = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newImage),
       });
-      showMessage('success', 'Zdjęcie dodane');
+      showMessage('success', 'Фото добавлено');
       fetchAllData();
     } catch (error) {
-      showMessage('error', 'Błąd dodawania');
+      showMessage('error', 'Ошибка добавления');
     }
   };
 
@@ -293,20 +293,20 @@ const AdminPanel = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(image),
       });
-      showMessage('success', 'Zdjęcie zapisane');
+      showMessage('success', 'Фото сохранено');
     } catch (error) {
-      showMessage('error', 'Błąd zapisu');
+      showMessage('error', 'Ошибка сохранения');
     }
   };
 
   const deleteGalleryImage = async (id) => {
-    if (!window.confirm('Czy na pewno chcesz usunąć to zdjęcie?')) return;
+    if (!window.confirm('Вы уверены, что хотите удалить это фото?')) return;
     try {
       await fetchWithAuth(`${API_URL}/api/admin/gallery/${id}`, { method: 'DELETE' });
-      showMessage('success', 'Zdjęcie usunięte');
+      showMessage('success', 'Фото удалено');
       fetchAllData();
     } catch (error) {
-      showMessage('error', 'Błąd usuwania');
+      showMessage('error', 'Ошибка удаления');
     }
   };
 
@@ -321,9 +321,9 @@ const AdminPanel = () => {
       });
       const data = await response.json();
       callback(`${API_URL}${data.url}`);
-      showMessage('success', 'Zdjęcie przesłane');
+      showMessage('success', 'Фото загружено');
     } catch (error) {
-      showMessage('error', 'Błąd przesyłania');
+      showMessage('error', 'Ошибка загрузки');
     }
   };
 
@@ -370,7 +370,7 @@ const AdminPanel = () => {
     return (
       <div className="min-h-screen bg-[#F9F9F7] flex items-center justify-center p-4">
         <div className="bg-white p-8 w-full max-w-md border border-black/5">
-          <h1 className="text-2xl font-bold text-[#1A1A1A] mb-2">Panel Administratora</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A] mb-2">Панель администратора</h1>
           <p className="text-[#595959] mb-6">WM-Sauna</p>
           
           {message.text && (
@@ -381,7 +381,7 @@ const AdminPanel = () => {
           
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Login</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Логин</label>
               <input
                 type="text"
                 value={credentials.username}
@@ -391,7 +391,7 @@ const AdminPanel = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Hasło</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Пароль</label>
               <input
                 type="password"
                 value={credentials.password}
@@ -405,7 +405,7 @@ const AdminPanel = () => {
               disabled={loading}
               className="w-full bg-[#C6A87C] text-white p-3 font-medium hover:bg-[#B09060] transition-colors disabled:opacity-50"
             >
-              {loading ? 'Logowanie...' : 'Zaloguj się'}
+              {loading ? 'Вход...' : 'Войти'}
             </button>
           </form>
         </div>
@@ -414,24 +414,24 @@ const AdminPanel = () => {
   }
 
   const tabs = [
-    { id: 'contacts', label: 'Wiadomości', icon: MessageSquare },
-    { id: 'site', label: 'Ustawienia', icon: Settings },
+    { id: 'contacts', label: 'Сообщения', icon: MessageSquare },
+    { id: 'site', label: 'Настройки', icon: Settings },
     { id: 'hero', label: 'Hero', icon: Image },
-    { id: 'about', label: 'O firmie', icon: FileText },
-    { id: 'calculator', label: 'Kalkulator', icon: LayoutGrid },
-    { id: 'reviews', label: 'Opinie', icon: Star },
-    { id: 'gallery', label: 'Galeria', icon: Image },
-    { id: 'sections', label: 'Sekcje', icon: GripVertical },
+    { id: 'about', label: 'О компании', icon: FileText },
+    { id: 'calculator', label: 'Калькулятор', icon: LayoutGrid },
+    { id: 'reviews', label: 'Отзывы', icon: Star },
+    { id: 'gallery', label: 'Галерея', icon: Image },
+    { id: 'sections', label: 'Секции', icon: GripVertical },
   ];
 
   const sectionNames = {
-    hero: 'Hero',
-    calculator: 'Kalkulator',
-    gallery: 'Galeria',
-    stock: 'Sauny na stanie',
-    reviews: 'Opinie',
-    about: 'O firmie',
-    contact: 'Kontakt',
+    hero: 'Hero (Главный экран)',
+    calculator: 'Калькулятор',
+    gallery: 'Галерея',
+    stock: 'Сауны в наличии',
+    reviews: 'Отзывы',
+    about: 'О компании',
+    contact: 'Контакты',
   };
 
   return (
@@ -440,13 +440,13 @@ const AdminPanel = () => {
       <header className="bg-[#1A1A1A] text-white p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold">WM-Sauna Admin</h1>
+            <h1 className="text-xl font-bold">WM-Sauna Админ</h1>
             <a href="/" target="_blank" className="text-sm text-[#C6A87C] hover:underline">
-              Zobacz stronę →
+              Открыть сайт →
             </a>
           </div>
           <button onClick={handleLogout} className="flex items-center gap-2 text-sm hover:text-[#C6A87C]">
-            <LogOut size={16} /> Wyloguj
+            <LogOut size={16} /> Выйти
           </button>
         </div>
       </header>
@@ -490,7 +490,7 @@ const AdminPanel = () => {
           {/* Contacts Tab */}
           {activeTab === 'contacts' && !loading && (
             <div>
-              <h2 className="text-xl font-bold text-[#1A1A1A] mb-6">Wiadomości ({contacts.length})</h2>
+              <h2 className="text-xl font-bold text-[#1A1A1A] mb-6">Сообщения ({contacts.length})</h2>
               <div className="space-y-4">
                 {contacts.map((contact) => (
                   <div key={contact.id} className="border border-black/5 p-4">
@@ -506,7 +506,7 @@ const AdminPanel = () => {
                         )}
                         {contact.message && <p className="text-sm mt-2">{contact.message}</p>}
                         <p className="text-xs text-[#8C8C8C] mt-2">
-                          {new Date(contact.created_at).toLocaleString('pl-PL')}
+                          {new Date(contact.created_at).toLocaleString('ru-RU')}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -515,9 +515,9 @@ const AdminPanel = () => {
                           onChange={(e) => updateContactStatus(contact.id, e.target.value)}
                           className="text-sm border border-black/10 p-1"
                         >
-                          <option value="new">Nowy</option>
-                          <option value="in_progress">W trakcie</option>
-                          <option value="completed">Zakończony</option>
+                          <option value="new">Новый</option>
+                          <option value="in_progress">В работе</option>
+                          <option value="completed">Завершён</option>
                         </select>
                         <button onClick={() => deleteContact(contact.id)} className="p-1 text-red-500 hover:bg-red-50">
                           <Trash2 size={16} />
@@ -527,7 +527,7 @@ const AdminPanel = () => {
                   </div>
                 ))}
                 {contacts.length === 0 && (
-                  <p className="text-center text-[#8C8C8C] py-12">Brak wiadomości</p>
+                  <p className="text-center text-[#8C8C8C] py-12">Нет сообщений</p>
                 )}
               </div>
             </div>
@@ -537,14 +537,14 @@ const AdminPanel = () => {
           {activeTab === 'site' && !loading && siteSettings && (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-[#1A1A1A]">Ustawienia strony</h2>
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Настройки сайта</h2>
                 <button onClick={saveSiteSettings} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
-                  <Save size={16} /> Zapisz
+                  <Save size={16} /> Сохранить
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Nazwa firmy</label>
+                  <label className="block text-sm font-medium mb-1">Название компании</label>
                   <input
                     type="text"
                     value={siteSettings.company_name}
@@ -553,7 +553,7 @@ const AdminPanel = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Telefon</label>
+                  <label className="block text-sm font-medium mb-1">Телефон</label>
                   <input
                     type="text"
                     value={siteSettings.phone}
@@ -571,7 +571,7 @@ const AdminPanel = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Adres</label>
+                  <label className="block text-sm font-medium mb-1">Адрес</label>
                   <input
                     type="text"
                     value={siteSettings.address}
@@ -598,7 +598,7 @@ const AdminPanel = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Godziny pracy</label>
+                  <label className="block text-sm font-medium mb-1">Часы работы</label>
                   <input
                     type="text"
                     value={siteSettings.working_hours}
@@ -641,14 +641,14 @@ const AdminPanel = () => {
           {activeTab === 'hero' && !loading && heroSettings && (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-[#1A1A1A]">Ustawienia Hero</h2>
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Настройки Hero</h2>
                 <button onClick={saveHeroSettings} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
-                  <Save size={16} /> Zapisz
+                  <Save size={16} /> Сохранить
                 </button>
               </div>
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Zdjęcie tła</label>
+                  <label className="block text-sm font-medium mb-1">Фоновое изображение</label>
                   <div className="flex gap-2">
                     <input
                       type="url"
@@ -673,7 +673,7 @@ const AdminPanel = () => {
                 
                 <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Tytuł (PL)</label>
+                    <label className="block text-sm font-medium mb-1">Заголовок (PL)</label>
                     <input
                       type="text"
                       value={heroSettings.title_pl}
@@ -682,7 +682,7 @@ const AdminPanel = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Tytuł (EN)</label>
+                    <label className="block text-sm font-medium mb-1">Заголовок (EN)</label>
                     <input
                       type="text"
                       value={heroSettings.title_en}
@@ -690,20 +690,11 @@ const AdminPanel = () => {
                       className="w-full p-2 border border-black/10"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Tytuł (RU)</label>
-                    <input
-                      type="text"
-                      value={heroSettings.title_ru}
-                      onChange={(e) => setHeroSettings({ ...heroSettings, title_ru: e.target.value })}
-                      className="w-full p-2 border border-black/10"
-                    />
-                  </div>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Podtytuł (PL)</label>
+                    <label className="block text-sm font-medium mb-1">Подзаголовок (PL)</label>
                     <textarea
                       value={heroSettings.subtitle_pl}
                       onChange={(e) => setHeroSettings({ ...heroSettings, subtitle_pl: e.target.value })}
@@ -711,18 +702,10 @@ const AdminPanel = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Podtytuł (EN)</label>
+                    <label className="block text-sm font-medium mb-1">Подзаголовок (EN)</label>
                     <textarea
                       value={heroSettings.subtitle_en}
                       onChange={(e) => setHeroSettings({ ...heroSettings, subtitle_en: e.target.value })}
-                      className="w-full p-2 border border-black/10 h-20"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Podtytuł (RU)</label>
-                    <textarea
-                      value={heroSettings.subtitle_ru}
-                      onChange={(e) => setHeroSettings({ ...heroSettings, subtitle_ru: e.target.value })}
                       className="w-full p-2 border border-black/10 h-20"
                     />
                   </div>
@@ -735,14 +718,14 @@ const AdminPanel = () => {
           {activeTab === 'about' && !loading && aboutSettings && (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-[#1A1A1A]">Ustawienia "O firmie"</h2>
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Настройки "О компании"</h2>
                 <button onClick={saveAboutSettings} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
-                  <Save size={16} /> Zapisz
+                  <Save size={16} /> Сохранить
                 </button>
               </div>
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Zdjęcie</label>
+                  <label className="block text-sm font-medium mb-1">Изображение</label>
                   <div className="flex gap-2">
                     <input
                       type="url"
@@ -765,7 +748,7 @@ const AdminPanel = () => {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Lat doświadczenia</label>
+                  <label className="block text-sm font-medium mb-1">Лет опыта</label>
                   <input
                     type="number"
                     value={aboutSettings.years_experience}
@@ -776,7 +759,7 @@ const AdminPanel = () => {
                 
                 {['text1', 'text2', 'text3'].map((textKey) => (
                   <div key={textKey} className="border border-black/5 p-4">
-                    <h4 className="font-medium mb-3">Paragraf {textKey.slice(-1)}</h4>
+                    <h4 className="font-medium mb-3">Параграф {textKey.slice(-1)}</h4>
                     <div className="space-y-2">
                       <div>
                         <label className="text-xs text-[#8C8C8C]">PL</label>
@@ -794,14 +777,6 @@ const AdminPanel = () => {
                           className="w-full p-2 border border-black/10 h-16 text-sm"
                         />
                       </div>
-                      <div>
-                        <label className="text-xs text-[#8C8C8C]">RU</label>
-                        <textarea
-                          value={aboutSettings[`${textKey}_ru`]}
-                          onChange={(e) => setAboutSettings({ ...aboutSettings, [`${textKey}_ru`]: e.target.value })}
-                          className="w-full p-2 border border-black/10 h-16 text-sm"
-                        />
-                      </div>
                     </div>
                   </div>
                 ))}
@@ -813,15 +788,15 @@ const AdminPanel = () => {
           {activeTab === 'calculator' && !loading && calculatorConfig && apiData && (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-[#1A1A1A]">Konfiguracja kalkulatora</h2>
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Конфигурация калькулятора</h2>
                 <button onClick={saveCalculatorConfig} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
-                  <Save size={16} /> Zapisz
+                  <Save size={16} /> Сохранить
                 </button>
               </div>
               
               <div className="mb-8">
-                <h3 className="font-semibold mb-4">Modele saun</h3>
-                <p className="text-sm text-[#8C8C8C] mb-4">Wybierz modele do wyświetlenia. Puste = wszystkie włączone.</p>
+                <h3 className="font-semibold mb-4">Модели саун</h3>
+                <p className="text-sm text-[#8C8C8C] mb-4">Выберите модели для отображения. Пустой список = все включены.</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {apiData.models.map((model) => (
                     <label key={model.id} className="flex items-center gap-2 p-2 border border-black/5 cursor-pointer hover:border-[#C6A87C]">
@@ -838,8 +813,8 @@ const AdminPanel = () => {
               </div>
               
               <div>
-                <h3 className="font-semibold mb-4">Kategorie opcji</h3>
-                <p className="text-sm text-[#8C8C8C] mb-4">Wybierz kategorie do wyświetlenia. Puste = wszystkie włączone.</p>
+                <h3 className="font-semibold mb-4">Категории опций</h3>
+                <p className="text-sm text-[#8C8C8C] mb-4">Выберите категории для отображения. Пустой список = все включены.</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {apiData.categories.map((cat) => (
                     <label key={cat.id} className="flex items-center gap-2 p-2 border border-black/5 cursor-pointer hover:border-[#C6A87C]">
@@ -857,13 +832,26 @@ const AdminPanel = () => {
             </div>
           )}
 
+          {/* Calculator Tab - No API data */}
+          {activeTab === 'calculator' && !loading && calculatorConfig && !apiData && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Конфигурация калькулятора</h2>
+              </div>
+              <div className="text-center py-12 text-[#8C8C8C]">
+                <p>Не удалось загрузить данные из API калькулятора.</p>
+                <p className="text-sm mt-2">Внешний сервис временно недоступен.</p>
+              </div>
+            </div>
+          )}
+
           {/* Reviews Tab */}
           {activeTab === 'reviews' && !loading && (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-[#1A1A1A]">Opinie klientów</h2>
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Отзывы клиентов</h2>
                 <button onClick={addNewReview} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
-                  <Plus size={16} /> Dodaj opinię
+                  <Plus size={16} /> Добавить отзыв
                 </button>
               </div>
               <div className="space-y-4">
@@ -878,9 +866,9 @@ const AdminPanel = () => {
           {activeTab === 'gallery' && !loading && (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-[#1A1A1A]">Galeria</h2>
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Галерея</h2>
                 <button onClick={addGalleryImage} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
-                  <Plus size={16} /> Dodaj zdjęcie
+                  <Plus size={16} /> Добавить фото
                 </button>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -895,9 +883,9 @@ const AdminPanel = () => {
           {activeTab === 'sections' && !loading && sectionOrder && (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-[#1A1A1A]">Kolejność sekcji</h2>
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Порядок секций</h2>
                 <button onClick={saveSectionOrder} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
-                  <Save size={16} /> Zapisz
+                  <Save size={16} /> Сохранить
                 </button>
               </div>
               <div className="space-y-2">
@@ -964,7 +952,7 @@ const ReviewEditor = ({ review, onSave, onDelete, onImageUpload }) => {
         <div className="space-y-4 mt-4 pt-4 border-t border-black/5">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-[#8C8C8C]">Imię</label>
+              <label className="text-xs text-[#8C8C8C]">Имя</label>
               <input
                 value={data.name}
                 onChange={(e) => setData({ ...data, name: e.target.value })}
@@ -972,7 +960,7 @@ const ReviewEditor = ({ review, onSave, onDelete, onImageUpload }) => {
               />
             </div>
             <div>
-              <label className="text-xs text-[#8C8C8C]">Lokalizacja</label>
+              <label className="text-xs text-[#8C8C8C]">Город</label>
               <input
                 value={data.location}
                 onChange={(e) => setData({ ...data, location: e.target.value })}
@@ -980,7 +968,7 @@ const ReviewEditor = ({ review, onSave, onDelete, onImageUpload }) => {
               />
             </div>
             <div>
-              <label className="text-xs text-[#8C8C8C]">Sauna</label>
+              <label className="text-xs text-[#8C8C8C]">Сауна</label>
               <input
                 value={data.sauna}
                 onChange={(e) => setData({ ...data, sauna: e.target.value })}
@@ -988,7 +976,7 @@ const ReviewEditor = ({ review, onSave, onDelete, onImageUpload }) => {
               />
             </div>
             <div>
-              <label className="text-xs text-[#8C8C8C]">Ocena</label>
+              <label className="text-xs text-[#8C8C8C]">Оценка</label>
               <select
                 value={data.rating}
                 onChange={(e) => setData({ ...data, rating: parseInt(e.target.value) })}
@@ -1000,7 +988,7 @@ const ReviewEditor = ({ review, onSave, onDelete, onImageUpload }) => {
           </div>
           
           <div>
-            <label className="text-xs text-[#8C8C8C]">Zdjęcie URL</label>
+            <label className="text-xs text-[#8C8C8C]">URL фото</label>
             <div className="flex gap-2">
               <input
                 value={data.image}
@@ -1020,7 +1008,7 @@ const ReviewEditor = ({ review, onSave, onDelete, onImageUpload }) => {
           </div>
           
           <div>
-            <label className="text-xs text-[#8C8C8C]">Opinia (PL)</label>
+            <label className="text-xs text-[#8C8C8C]">Отзыв (PL)</label>
             <textarea
               value={data.text_pl}
               onChange={(e) => setData({ ...data, text_pl: e.target.value })}
@@ -1028,18 +1016,10 @@ const ReviewEditor = ({ review, onSave, onDelete, onImageUpload }) => {
             />
           </div>
           <div>
-            <label className="text-xs text-[#8C8C8C]">Opinia (EN)</label>
+            <label className="text-xs text-[#8C8C8C]">Отзыв (EN)</label>
             <textarea
               value={data.text_en}
               onChange={(e) => setData({ ...data, text_en: e.target.value })}
-              className="w-full p-2 border border-black/10 text-sm h-16"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-[#8C8C8C]">Opinia (RU)</label>
-            <textarea
-              value={data.text_ru}
-              onChange={(e) => setData({ ...data, text_ru: e.target.value })}
               className="w-full p-2 border border-black/10 text-sm h-16"
             />
           </div>
@@ -1051,7 +1031,7 @@ const ReviewEditor = ({ review, onSave, onDelete, onImageUpload }) => {
               onChange={(e) => setData({ ...data, active: e.target.checked })}
               className="accent-[#C6A87C]"
             />
-            <span className="text-sm">Aktywna</span>
+            <span className="text-sm">Активен</span>
           </label>
         </div>
       )}
@@ -1092,13 +1072,13 @@ const GalleryEditor = ({ image, onSave, onDelete, onImageUpload }) => {
       <input
         value={data.url}
         onChange={(e) => setData({ ...data, url: e.target.value })}
-        placeholder="URL zdjęcia"
+        placeholder="URL фото"
         className="w-full p-1 border border-black/10 text-xs mb-1"
       />
       <input
         value={data.alt}
         onChange={(e) => setData({ ...data, alt: e.target.value })}
-        placeholder="Alt text"
+        placeholder="Описание"
         className="w-full p-1 border border-black/10 text-xs mb-1"
       />
       <select
@@ -1106,9 +1086,9 @@ const GalleryEditor = ({ image, onSave, onDelete, onImageUpload }) => {
         onChange={(e) => setData({ ...data, category: e.target.value })}
         className="w-full p-1 border border-black/10 text-xs mb-2"
       >
-        <option value="all">Wszystkie</option>
-        <option value="kwadro">Kwadro</option>
-        <option value="beczka">Beczka</option>
+        <option value="all">Все</option>
+        <option value="kwadro">Квадро</option>
+        <option value="beczka">Бочка</option>
       </select>
       <div className="flex gap-1">
         <button onClick={() => onSave(data)} className="flex-1 p-1 bg-[#C6A87C] text-white text-xs">
