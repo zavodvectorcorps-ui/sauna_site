@@ -25,6 +25,8 @@ const AdminPanel = () => {
   const [reviews, setReviews] = useState([]);
   const [gallery, setGallery] = useState([]);
   const [apiData, setApiData] = useState(null);
+  const [galleryConfig, setGalleryConfig] = useState(null);
+  const [apiImages, setApiImages] = useState([]);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
