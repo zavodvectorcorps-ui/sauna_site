@@ -482,7 +482,8 @@ const AdminPanel = () => {
     { id: 'about', label: 'О компании', icon: FileText },
     { id: 'calculator', label: 'Калькулятор', icon: LayoutGrid },
     { id: 'reviews', label: 'Отзывы', icon: Star },
-    { id: 'gallery', label: 'Галерея', icon: Image },
+    { id: 'gallery', label: 'Свои фото', icon: Image },
+    { id: 'api_images', label: 'Фото из API', icon: Eye },
     { id: 'sections', label: 'Секции', icon: GripVertical },
   ];
 
