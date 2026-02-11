@@ -13,6 +13,7 @@ export const Gallery = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [galleryConfig, setGalleryConfig] = useState({ hidden_api_images: [], show_api_images: true });
   const sliderRef = useRef(null);
 
   const filters = [
@@ -22,75 +23,120 @@ export const Gallery = () => {
   ];
 
   useEffect(() => {
-    fetchGalleryImages();
+    fetchGalleryData();
   }, []);
 
-  const fetchGalleryImages = async () => {
+  const fetchGalleryData = async () => {
     try {
-      // Use backend proxy to avoid CORS issues
-      const response = await fetch(`${BACKEND_URL}/api/sauna/prices`);
-      const data = await response.json();
+      // Fetch gallery config and custom images first
+      const [configRes, customRes] = await Promise.all([
+        fetch(`${BACKEND_URL}/api/settings/gallery`),
+        fetch(`${BACKEND_URL}/api/gallery`)
+      ]);
+      
+      const config = await configRes.json();
+      const customImages = await customRes.json();
+      setGalleryConfig(config);
 
-      const galleryImages = [];
-      data.models.forEach((model) => {
-        if (model.imageUrl) {
-          const imageUrl = model.imageUrl.startsWith('http')
-            ? model.imageUrl
-            : `${CALCULATOR_API_URL}${model.imageUrl}`;
-          galleryImages.push({
-            url: imageUrl,
-            alt: model.name,
-            category: model.id.includes('kwadro') ? 'kwadro' : 'beczka',
-          });
-        }
-        if (model.galleryImages) {
-          model.galleryImages.forEach((img) => {
-            const imgUrl = img.startsWith('http') ? img : `${CALCULATOR_API_URL}${img}`;
-            galleryImages.push({
-              url: imgUrl,
-              alt: model.name,
-              category: model.id.includes('kwadro') ? 'kwadro' : 'beczka',
+      // Start with custom images
+      const allImages = customImages.map(img => ({
+        url: img.url,
+        alt: img.alt,
+        category: img.category || 'all',
+        source: 'custom'
+      }));
+
+      // Only fetch API images if enabled
+      if (config.show_api_images) {
+        try {
+          const response = await fetch(`${BACKEND_URL}/api/sauna/prices`);
+          const data = await response.json();
+
+          const apiImages = [];
+          
+          // Get images from models
+          data.models?.forEach((model) => {
+            if (model.imageUrl) {
+              const imageUrl = model.imageUrl.startsWith('http')
+                ? model.imageUrl
+                : `${CALCULATOR_API_URL}${model.imageUrl}`;
+              
+              // Check if image is hidden
+              if (!config.hidden_api_images?.includes(imageUrl)) {
+                apiImages.push({
+                  url: imageUrl,
+                  alt: model.name,
+                  category: model.id.includes('kwadro') ? 'kwadro' : 'beczka',
+                  source: 'api'
+                });
+              }
+            }
+            
+            // Gallery images from model
+            model.galleryImages?.forEach((img) => {
+              const imgUrl = img.startsWith('http') ? img : `${CALCULATOR_API_URL}${img}`;
+              if (!config.hidden_api_images?.includes(imgUrl)) {
+                apiImages.push({
+                  url: imgUrl,
+                  alt: model.name,
+                  category: model.id.includes('kwadro') ? 'kwadro' : 'beczka',
+                  source: 'api'
+                });
+              }
             });
           });
-        }
-      });
 
-      // Add some options images
-      data.categories.forEach((category) => {
-        category.options.forEach((option) => {
-          if (option.imageUrl) {
-            const imgUrl = option.imageUrl.startsWith('http')
-              ? option.imageUrl
-              : `${CALCULATOR_API_URL}${option.imageUrl}`;
-            galleryImages.push({
-              url: imgUrl,
-              alt: option.name || option.namePl,
-              category: 'all',
+          // Get images from options
+          data.categories?.forEach((category) => {
+            category.options?.forEach((option) => {
+              if (option.imageUrl) {
+                const imgUrl = option.imageUrl.startsWith('http')
+                  ? option.imageUrl
+                  : `${CALCULATOR_API_URL}${option.imageUrl}`;
+                if (!config.hidden_api_images?.includes(imgUrl)) {
+                  apiImages.push({
+                    url: imgUrl,
+                    alt: option.name || option.namePl,
+                    category: 'all',
+                    source: 'api'
+                  });
+                }
+              }
             });
-          }
-        });
-      });
+          });
 
-      // Add design guideline images
-      const designImages = [
-        {
-          url: 'https://images.unsplash.com/photo-1757937176646-d943553b5f09?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwzfHxvdXRkb29yJTIwYmFycmVsJTIwc2F1bmElMjBnYXJkZW4lMjBtb2Rlcm4lMjBhcmNoaXRlY3R1cmV8ZW58MHx8fHwxNzcwODQzMjk1fDA&ixlib=rb-4.1.0&q=85',
-          alt: 'Modern glass-front outdoor sauna',
-          category: 'kwadro',
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1734594709667-adf24e06091a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwyfHxvdXRkb29yJTIwYmFycmVsJTIwc2F1bmElMjBnYXJkZW4lMjBtb2Rlcm4lMjBhcmNoaXRlY3R1cmV8ZW58MHx8fHwxNzcwODQzMjk1fDA&ixlib=rb-4.1.0&q=85',
-          alt: 'Traditional barrel sauna in garden',
-          category: 'beczka',
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1759300208443-e2450c3cac36?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGludGVyaW9yJTIwcGFub3JhbWljJTIwd2luZG93JTIwbmF0dXJlJTIwdmlld3xlbnwwfHx8fDE3NzA4NDMyODh8MA&ixlib=rb-4.1.0&q=85',
-          alt: 'Sauna interior with round window',
-          category: 'kwadro',
-        },
-      ];
+          allImages.push(...apiImages.slice(0, 15)); // Limit API images
+        } catch (error) {
+          console.error('Error fetching API images:', error);
+        }
+      }
 
-      setImages([...designImages, ...galleryImages.slice(0, 12)]);
+      // Add design guideline images if no custom images
+      if (allImages.length < 3) {
+        const designImages = [
+          {
+            url: 'https://images.unsplash.com/photo-1757937176646-d943553b5f09?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwzfHxvdXRkb29yJTIwYmFycmVsJTIwc2F1bmElMjBnYXJkZW4lMjBtb2Rlcm4lMjBhcmNoaXRlY3R1cmV8ZW58MHx8fHwxNzcwODQzMjk1fDA&ixlib=rb-4.1.0&q=85',
+            alt: 'Modern glass-front outdoor sauna',
+            category: 'kwadro',
+            source: 'stock'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1734594709667-adf24e06091a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwyfHxvdXRkb29yJTIwYmFycmVsJTIwc2F1bmElMjBnYXJkZW4lMjBtb2Rlcm4lMjBhcmNoaXRlY3R1cmV8ZW58MHx8fHwxNzcwODQzMjk1fDA&ixlib=rb-4.1.0&q=85',
+            alt: 'Traditional barrel sauna in garden',
+            category: 'beczka',
+            source: 'stock'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1759300208443-e2450c3cac36?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGludGVyaW9yJTIwcGFub3JhbWljJTIwd2luZG93JTIwbmF0dXJlJTIwdmlld3xlbnwwfHx8fDE3NzA4NDMyODh8MA&ixlib=rb-4.1.0&q=85',
+            alt: 'Sauna interior with round window',
+            category: 'kwadro',
+            source: 'stock'
+          },
+        ];
+        allImages.unshift(...designImages);
+      }
+
+      setImages(allImages);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching gallery:', error);
