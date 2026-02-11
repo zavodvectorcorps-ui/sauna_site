@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-const API_URL = 'https://wm-kalkulator.pl';
+const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 
 export const Gallery = () => {
   const { t } = useLanguage();
@@ -25,7 +25,7 @@ export const Gallery = () => {
 
   const fetchGalleryImages = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/sauna/prices`);
+      const response = await fetch(`${CALCULATOR_API_URL}/api/sauna/prices`);
       const data = await response.json();
 
       const galleryImages = [];
@@ -33,7 +33,7 @@ export const Gallery = () => {
         if (model.imageUrl) {
           const imageUrl = model.imageUrl.startsWith('http')
             ? model.imageUrl
-            : `${API_URL}${model.imageUrl}`;
+            : `${CALCULATOR_API_URL}${model.imageUrl}`;
           galleryImages.push({
             url: imageUrl,
             alt: model.name,
@@ -42,7 +42,7 @@ export const Gallery = () => {
         }
         if (model.galleryImages) {
           model.galleryImages.forEach((img) => {
-            const imgUrl = img.startsWith('http') ? img : `${API_URL}${img}`;
+            const imgUrl = img.startsWith('http') ? img : `${CALCULATOR_API_URL}${img}`;
             galleryImages.push({
               url: imgUrl,
               alt: model.name,
@@ -58,7 +58,7 @@ export const Gallery = () => {
           if (option.imageUrl) {
             const imgUrl = option.imageUrl.startsWith('http')
               ? option.imageUrl
-              : `${API_URL}${option.imageUrl}`;
+              : `${CALCULATOR_API_URL}${option.imageUrl}`;
             galleryImages.push({
               url: imgUrl,
               alt: option.name || option.namePl,
