@@ -306,16 +306,16 @@ export const Calculator = () => {
                   <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">
                     {t('calculator.step_variant')}
                   </h3>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     {selectedModel.variants.map((variant) => (
                       <div
                         key={variant.id}
                         data-testid={`variant-card-${variant.id}`}
                         onClick={() => setSelectedVariant(variant)}
-                        className={`calc-option p-1.5 cursor-pointer ${selectedVariant?.id === variant.id ? 'selected' : ''}`}
+                        className={`calc-option p-2 cursor-pointer ${selectedVariant?.id === variant.id ? 'selected' : ''}`}
                       >
                         {variant.imageUrl && (
-                          <div className="aspect-[4/3] mb-1.5 overflow-hidden bg-[#F2F2F0]">
+                          <div className="aspect-[4/3] mb-2 overflow-hidden bg-[#F2F2F0]">
                             <img
                               src={getImageUrl(variant.imageUrl)}
                               alt={variant.namePl || variant.name}
@@ -324,12 +324,12 @@ export const Calculator = () => {
                             />
                           </div>
                         )}
-                        <h4 className="font-medium text-[#1A1A1A] text-[11px] leading-tight line-clamp-2 mb-0.5">
+                        <h4 className="font-medium text-[#1A1A1A] text-xs leading-tight line-clamp-2 mb-1">
                           {variant.namePl || variant.name || 'Wariant'}
                         </h4>
                         {variant.price !== 0 && (
-                          <p className="text-xs font-medium text-[#C6A87C]">
-                            {variant.price > 0 ? '+' : ''}{(variant.price / 1000).toFixed(1)}k
+                          <p className="text-sm font-medium text-[#C6A87C]">
+                            {variant.price > 0 ? '+' : ''}{variant.price.toLocaleString()} PLN
                           </p>
                         )}
                       </div>
