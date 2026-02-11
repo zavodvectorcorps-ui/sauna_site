@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Users, Check, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-const API_URL = 'https://wm-kalkulator.pl';
+const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 
 export const StockSaunas = () => {
   const { t } = useLanguage();
@@ -16,7 +16,7 @@ export const StockSaunas = () => {
 
   const fetchSaunas = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/sauna/prices`);
+      const response = await fetch(`${CALCULATOR_API_URL}/api/sauna/prices`);
       const data = await response.json();
 
       // Take first 4 active models as "in stock"
@@ -28,7 +28,7 @@ export const StockSaunas = () => {
           name: model.name,
           image: model.imageUrl?.startsWith('http')
             ? model.imageUrl
-            : `${API_URL}${model.imageUrl}`,
+            : `${CALCULATOR_API_URL}${model.imageUrl}`,
           price: model.basePrice,
           discount: model.discount,
           capacity: model.capacity,
