@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Users, Check, FileText, Send, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-const API_URL = 'https://wm-kalkulator.pl';
+const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const Calculator = () => {
   const { t } = useLanguage();
@@ -28,12 +29,24 @@ export const Calculator = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/sauna/prices`);
+      // First try direct API, then fallback to proxy
+      let response = await fetch(`${CALCULATOR_API_URL}/api/sauna/prices`);
+      if (!response.ok) {
+        response = await fetch(`${BACKEND_URL}/api/sauna/prices`);
+      }
       const json = await response.json();
       setData(json);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching calculator data:', error);
+      // Try proxy as fallback
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/sauna/prices`);
+        const json = await response.json();
+        setData(json);
+      } catch (err) {
+        console.error('Fallback also failed:', err);
+      }
       setLoading(false);
     }
   };
@@ -41,7 +54,7 @@ export const Calculator = () => {
   const getImageUrl = (url) => {
     if (!url) return null;
     if (url.startsWith('http')) return url;
-    return `${API_URL}${url}`;
+    return `${CALCULATOR_API_URL}${url}`;
   };
 
   const calculateTotal = () => {
