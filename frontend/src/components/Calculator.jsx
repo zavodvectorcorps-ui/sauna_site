@@ -564,7 +564,7 @@ export const Calculator = () => {
                         data-testid="download-pdf-btn"
                         className="btn-secondary w-full flex items-center justify-center gap-2"
                         onClick={() => {
-                          window.open(`${API_URL}/api/sauna/generate-pdf`, '_blank');
+                          window.open(`${CALCULATOR_API_URL}/api/sauna/generate-pdf`, '_blank');
                         }}
                       >
                         <FileText size={18} />
