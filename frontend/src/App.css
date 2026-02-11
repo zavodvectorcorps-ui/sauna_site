@@ -1,34 +1,314 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* WM-Sauna Global Styles */
+
+/* Container */
+.container-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+@media (min-width: 640px) {
+  .container-main {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+@media (min-width: 1024px) {
+  .container-main {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
-.App-link {
-    color: #61dafb;
+/* Section spacing */
+.section-spacing {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+@media (min-width: 768px) {
+  .section-spacing {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+}
+
+/* Primary Button */
+.btn-primary {
+  background-color: #C6A87C;
+  color: white;
+  padding: 1rem 2rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #B09060;
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background-color: transparent;
+  color: #1A1A1A;
+  padding: 1rem 2rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 1px solid #1A1A1A;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #1A1A1A;
+  color: white;
+}
+
+/* Section Title */
+.section-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 768px) {
+  .section-title {
+    font-size: 3rem;
+  }
+}
+
+.section-subtitle {
+  font-family: 'Lato', sans-serif;
+  font-size: 1.125rem;
+  color: #595959;
+  max-width: 600px;
+}
+
+/* Card styles */
+.card-product {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-product:hover {
+  border-color: rgba(198, 168, 124, 0.3);
+  box-shadow: 0 10px 30px -5px rgba(198, 168, 124, 0.15);
+}
+
+/* Gold accent line */
+.gold-line {
+  width: 60px;
+  height: 2px;
+  background-color: #C6A87C;
+}
+
+/* Input styles */
+.input-custom {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: white;
+  transition: border-color 0.3s ease;
+}
+
+.input-custom:focus {
+  outline: none;
+  border-color: #C6A87C;
+}
+
+.input-custom::placeholder {
+  color: #8C8C8C;
+}
+
+/* Lightbox overlay */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Badge */
+.badge-premium {
+  background-color: #C6A87C;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-available {
+  background-color: #4A6741;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Calculator step indicator */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.step-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #E5E5E5;
+  transition: background-color 0.3s ease;
+}
+
+.step-dot.active {
+  background-color: #C6A87C;
+}
+
+.step-dot.completed {
+  background-color: #4A6741;
+}
+
+/* Image hover effect */
+.img-hover-zoom {
+  overflow: hidden;
+}
+
+.img-hover-zoom img {
+  transition: transform 0.5s ease;
+}
+
+.img-hover-zoom:hover img {
+  transform: scale(1.05);
+}
+
+/* Language switcher */
+.lang-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #595959;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.lang-btn:hover,
+.lang-btn.active {
+  color: #C6A87C;
+}
+
+/* Mobile menu */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  z-index: 60;
+  padding: 2rem;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.mobile-menu.open {
+  transform: translateX(0);
+}
+
+/* Price display */
+.price-display {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #C6A87C;
+}
+
+.price-original {
+  font-size: 1rem;
+  color: #8C8C8C;
+  text-decoration: line-through;
+}
+
+/* Discount badge */
+.discount-badge {
+  background: #B91C1C;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Review card */
+.review-card {
+  background: #F9F9F7;
+  padding: 2rem;
+  border-left: 4px solid #C6A87C;
+}
+
+/* Map placeholder */
+.map-placeholder {
+  background: #F2F2F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+/* Calculator card selection */
+.calc-option {
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.calc-option:hover {
+  border-color: rgba(198, 168, 124, 0.5);
+}
+
+.calc-option.selected {
+  border-color: #C6A87C;
+  background-color: rgba(198, 168, 124, 0.05);
+}
+
+/* Loading spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #F2F2F0;
+  border-top-color: #C6A87C;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
