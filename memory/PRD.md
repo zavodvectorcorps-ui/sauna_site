@@ -101,6 +101,6 @@ Modern responsive website for WM-Sauna - Polish wooden sauna manufacturer and se
 5. Create sitemap.xml and robots.txt
 
 ## URLs
-- **Frontend:** https://wmsauna-shop.preview.emergentagent.com
-- **Backend API:** https://wmsauna-shop.preview.emergentagent.com/api
+- **Frontend:** https://sauna-calculator-2.preview.emergentagent.com
+- **Backend API:** https://sauna-calculator-2.preview.emergentagent.com/api
 - **External Calculator API:** https://wm-kalkulator.pl/api/sauna/prices
