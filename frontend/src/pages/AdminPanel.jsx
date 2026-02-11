@@ -88,7 +88,7 @@ const AdminPanel = () => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [contactsRes, siteRes, heroRes, aboutRes, calcRes, sectionsRes, reviewsRes, galleryRes, apiRes] = await Promise.all([
+      const [contactsRes, siteRes, heroRes, aboutRes, calcRes, sectionsRes, reviewsRes, galleryRes, apiRes, galleryConfigRes] = await Promise.all([
         fetchWithAuth(`${API_URL}/api/admin/contacts`),
         fetch(`${API_URL}/api/settings/site`),
         fetch(`${API_URL}/api/settings/hero`),
@@ -98,6 +98,7 @@ const AdminPanel = () => {
         fetchWithAuth(`${API_URL}/api/admin/reviews`),
         fetchWithAuth(`${API_URL}/api/admin/gallery`),
         fetch(`${API_URL}/api/sauna/prices`),
+        fetch(`${API_URL}/api/settings/gallery`),
       ]);
 
       setContacts(await contactsRes.json());
@@ -108,7 +109,36 @@ const AdminPanel = () => {
       setSectionOrder(await sectionsRes.json());
       setReviews(await reviewsRes.json());
       setGallery(await galleryRes.json());
-      setApiData(await apiRes.json());
+      
+      const apiDataJson = await apiRes.json();
+      setApiData(apiDataJson);
+      
+      // Extract all images from API
+      const extractedImages = [];
+      const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
+      
+      apiDataJson.models?.forEach((model) => {
+        if (model.imageUrl) {
+          const imageUrl = model.imageUrl.startsWith('http') ? model.imageUrl : `${CALCULATOR_API_URL}${model.imageUrl}`;
+          extractedImages.push({ url: imageUrl, name: model.name, type: 'model' });
+        }
+        model.galleryImages?.forEach((img) => {
+          const imgUrl = img.startsWith('http') ? img : `${CALCULATOR_API_URL}${img}`;
+          extractedImages.push({ url: imgUrl, name: `${model.name} (галерея)`, type: 'gallery' });
+        });
+      });
+      
+      apiDataJson.categories?.forEach((category) => {
+        category.options?.forEach((option) => {
+          if (option.imageUrl) {
+            const imgUrl = option.imageUrl.startsWith('http') ? option.imageUrl : `${CALCULATOR_API_URL}${option.imageUrl}`;
+            extractedImages.push({ url: imgUrl, name: option.namePl || option.name, type: 'option' });
+          }
+        });
+      });
+      
+      setApiImages(extractedImages);
+      setGalleryConfig(await galleryConfigRes.json());
     } catch (error) {
       console.error('Error fetching data:', error);
     }
