@@ -252,10 +252,7 @@ export const Calculator = () => {
                     {t('calculator.step_model')}
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                    {data.models
-                      .filter((m) => m.active)
-                      .sort((a, b) => a.sortOrder - b.sortOrder)
-                      .map((model) => (
+                    {getFilteredModels().map((model) => (
                         <div
                           key={model.id}
                           data-testid={`model-card-${model.id}`}
@@ -355,7 +352,7 @@ export const Calculator = () => {
                     {t('calculator.step_options')}
                   </h3>
                   <div className="space-y-6">
-                    {data.categories.map((category) => (
+                    {getFilteredCategories().map((category) => (
                       <div key={category.id}>
                         <h4 className="font-semibold text-[#1A1A1A] text-sm mb-2 pb-1 border-b border-black/5">
                           {category.name}
