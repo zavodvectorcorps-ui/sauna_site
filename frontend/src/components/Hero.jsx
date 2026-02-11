@@ -2,9 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Check } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 
 export const Hero = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const { heroSettings } = useSettings();
 
   const scrollToSection = (href) => {
     const element = document.querySelector(href);
@@ -19,6 +21,22 @@ export const Hero = () => {
     'Gwarancja 12 miesięcy',
   ];
 
+  // Get translated title and subtitle from settings
+  const getTitle = () => {
+    if (!heroSettings) return t('hero.title');
+    const key = `title_${language}`;
+    return heroSettings[key] || heroSettings.title_pl || t('hero.title');
+  };
+
+  const getSubtitle = () => {
+    if (!heroSettings) return t('hero.subtitle');
+    const key = `subtitle_${language}`;
+    return heroSettings[key] || heroSettings.subtitle_pl || t('hero.subtitle');
+  };
+
+  const backgroundImage = heroSettings?.background_image || 
+    'https://images.unsplash.com/photo-1759302353458-3c617bfd428b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGludGVyaW9yJTIwcGFub3JhbWljJTIwd2luZG93JTIwbmF0dXJlJTIwdmlld3xlbnwwfHx8fDE3NzA4NDMyODh8MA&ixlib=rb-4.1.0&q=85';
+
   return (
     <section
       data-testid="hero-section"
@@ -27,7 +45,7 @@ export const Hero = () => {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://images.unsplash.com/photo-1759302353458-3c617bfd428b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGludGVyaW9yJTIwcGFub3JhbWljJTIwd2luZG93JTIwbmF0dXJlJTIwdmlld3xlbnwwfHx8fDE3NzA4NDMyODh8MA&ixlib=rb-4.1.0&q=85"
+          src={backgroundImage}
           alt="Luxury wooden sauna"
           className="w-full h-full object-cover"
         />
@@ -58,7 +76,7 @@ export const Hero = () => {
             className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1A1A1A] leading-tight mb-6"
             data-testid="hero-title"
           >
-            {t('hero.title')}
+            {getTitle()}
           </motion.h1>
 
           {/* Subtitle */}
@@ -69,7 +87,7 @@ export const Hero = () => {
             className="text-lg text-[#595959] mb-8 leading-relaxed"
             data-testid="hero-subtitle"
           >
-            {t('hero.subtitle')}
+            {getSubtitle()}
           </motion.p>
 
           {/* Features */}
