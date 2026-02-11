@@ -2,9 +2,17 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Factory, TreePine, Shield, Truck } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 
 export const About = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const { aboutSettings } = useSettings();
+
+  const getText = (key) => {
+    if (!aboutSettings) return t(`about.${key}`);
+    const langKey = `${key}_${language}`;
+    return aboutSettings[langKey] || aboutSettings[`${key}_pl`] || t(`about.${key}`);
+  };
 
   const features = [
     {
@@ -28,6 +36,11 @@ export const About = () => {
       description: 'Transport w całej Polsce',
     },
   ];
+
+  const aboutImage = aboutSettings?.image || 
+    'https://images.unsplash.com/photo-1627750673372-ceabdbeb768c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGNhYmluJTIwZXh0ZXJpb3IlMjBnYXJkZW58ZW58MHx8fHwxNzcwODQzMzIzfDA&ixlib=rb-4.1.0&q=85';
+  
+  const yearsExperience = aboutSettings?.years_experience || 10;
 
   return (
     <section
@@ -68,9 +81,9 @@ export const About = () => {
             </p>
 
             <div className="space-y-6 text-white/80">
-              <p className="leading-relaxed">{t('about.text1')}</p>
-              <p className="leading-relaxed">{t('about.text2')}</p>
-              <p className="leading-relaxed">{t('about.text3')}</p>
+              <p className="leading-relaxed">{getText('text1')}</p>
+              <p className="leading-relaxed">{getText('text2')}</p>
+              <p className="leading-relaxed">{getText('text3')}</p>
             </div>
 
             {/* Features */}
@@ -110,7 +123,7 @@ export const About = () => {
           >
             <div className="aspect-[4/5] overflow-hidden">
               <img
-                src="https://images.unsplash.com/photo-1627750673372-ceabdbeb768c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGNhYmluJTIwZXh0ZXJpb3IlMjBnYXJkZW58ZW58MHx8fHwxNzcwODQzMzIzfDA&ixlib=rb-4.1.0&q=85"
+                src={aboutImage}
                 alt="WM-Sauna production"
                 className="w-full h-full object-cover"
               />
@@ -118,7 +131,7 @@ export const About = () => {
 
             {/* Floating badge */}
             <div className="absolute -bottom-6 -left-6 bg-[#C6A87C] p-6 text-center">
-              <span className="block text-4xl font-bold text-white">10+</span>
+              <span className="block text-4xl font-bold text-white">{yearsExperience}+</span>
               <span className="text-sm text-white/80">lat doświadczenia</span>
             </div>
 
