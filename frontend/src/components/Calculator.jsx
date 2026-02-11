@@ -350,22 +350,22 @@ export const Calculator = () => {
                   <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">
                     {t('calculator.step_options')}
                   </h3>
-                  <div className="space-y-6">
+                  <div className="space-y-5">
                     {getFilteredCategories().map((category) => (
                       <div key={category.id}>
                         <h4 className="font-semibold text-[#1A1A1A] text-sm mb-2 pb-1 border-b border-black/5">
                           {category.name}
                         </h4>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 gap-2">
                           {category.options.map((option) => (
                             <div
                               key={option.id}
                               data-testid={`option-${option.id}`}
                               onClick={() => handleOptionSelect(category.id, option, category.inputType)}
-                              className={`calc-option p-2 ${selectedOptions[category.id]?.id === option.id ? 'selected' : ''}`}
+                              className={`calc-option p-1.5 cursor-pointer ${selectedOptions[category.id]?.id === option.id ? 'selected' : ''}`}
                             >
                               {option.imageUrl && (
-                                <div className="aspect-[4/3] mb-1 overflow-hidden bg-[#F2F2F0]">
+                                <div className="aspect-square mb-1 overflow-hidden bg-[#F2F2F0]">
                                   <img
                                     src={getImageUrl(option.imageUrl)}
                                     alt={option.name || option.namePl}
@@ -374,10 +374,10 @@ export const Calculator = () => {
                                   />
                                 </div>
                               )}
-                              <h5 className="text-[11px] font-medium text-[#1A1A1A] mb-0.5 line-clamp-2">
+                              <h5 className="text-[10px] font-medium text-[#1A1A1A] leading-tight line-clamp-2">
                                 {option.namePl || option.name}
                               </h5>
-                              <p className="text-xs text-[#C6A87C] font-medium">
+                              <p className="text-[10px] text-[#C6A87C] font-medium mt-0.5">
                                 {option.price > 0 ? `+${option.price.toLocaleString()} PLN` : t('calculator.included')}
                               </p>
                             </div>
