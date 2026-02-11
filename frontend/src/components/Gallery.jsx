@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -13,6 +13,7 @@ export const Gallery = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const sliderRef = useRef(null);
 
   const filters = [
     { id: 'all', label: t('gallery.filter_all') },
@@ -125,6 +126,16 @@ export const Gallery = () => {
     );
   };
 
+  const scrollSlider = (direction) => {
+    if (sliderRef.current) {
+      const scrollAmount = 300;
+      sliderRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   return (
     <section
       id="gallery"
@@ -148,7 +159,7 @@ export const Gallery = () => {
               key={filter.id}
               data-testid={`gallery-filter-${filter.id}`}
               onClick={() => setActiveFilter(filter.id)}
-              className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 ${
                 activeFilter === filter.id
                   ? 'bg-[#1A1A1A] text-white'
                   : 'bg-transparent border border-black/10 text-[#595959] hover:border-[#C6A87C] hover:text-[#C6A87C]'
@@ -159,50 +170,117 @@ export const Gallery = () => {
           ))}
         </div>
 
-        {/* Gallery Grid */}
+        {/* Loading */}
         {loading ? (
           <div className="flex justify-center py-20">
             <div className="spinner" />
           </div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <AnimatePresence>
-              {filteredImages.map((image, index) => (
-                <motion.div
-                  key={`${image.url}-${index}`}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
-                  className={`group cursor-pointer overflow-hidden ${
-                    index === 0 ? 'md:col-span-2 md:row-span-2' : ''
-                  }`}
-                  onClick={() => openLightbox(index)}
-                  data-testid={`gallery-image-${index}`}
-                >
+          <>
+            {/* Mobile Horizontal Slider */}
+            <div className="md:hidden relative">
+              {/* Navigation buttons */}
+              <button
+                onClick={() => scrollSlider('left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 shadow-md flex items-center justify-center text-[#1A1A1A] hover:bg-[#C6A87C] hover:text-white transition-colors"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                onClick={() => scrollSlider('right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 shadow-md flex items-center justify-center text-[#1A1A1A] hover:bg-[#C6A87C] hover:text-white transition-colors"
+              >
+                <ChevronRight size={20} />
+              </button>
+
+              {/* Slider container */}
+              <div
+                ref={sliderRef}
+                className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-2 pb-4"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {filteredImages.map((image, index) => (
                   <div
-                    className={`relative overflow-hidden bg-[#F2F2F0] ${
-                      index === 0 ? 'aspect-[4/3]' : 'aspect-square'
-                    }`}
+                    key={`${image.url}-${index}`}
+                    className="flex-shrink-0 w-[280px] snap-center cursor-pointer group"
+                    onClick={() => openLightbox(index)}
+                    data-testid={`gallery-image-mobile-${index}`}
                   >
-                    <img
-                      src={image.url}
-                      alt={image.alt}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-                    <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <p className="text-white text-sm font-medium truncate">
-                        {image.alt}
-                      </p>
+                    <div className="relative aspect-[4/3] overflow-hidden bg-[#F2F2F0]">
+                      <img
+                        src={image.url}
+                        alt={image.alt}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                     </div>
+                    <p className="text-sm text-[#595959] mt-2 truncate px-1">
+                      {image.alt}
+                    </p>
                   </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+                ))}
+              </div>
+
+              {/* Scroll indicator */}
+              <div className="flex justify-center gap-1 mt-4">
+                {filteredImages.slice(0, 5).map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-2 h-2 rounded-full bg-[#E5E5E5]"
+                  />
+                ))}
+                {filteredImages.length > 5 && (
+                  <span className="text-xs text-[#8C8C8C] ml-2">
+                    +{filteredImages.length - 5}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Desktop Grid */}
+            <motion.div 
+              layout 
+              className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-4"
+            >
+              <AnimatePresence>
+                {filteredImages.map((image, index) => (
+                  <motion.div
+                    key={`${image.url}-${index}`}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                    className={`group cursor-pointer overflow-hidden ${
+                      index === 0 ? 'md:col-span-2 md:row-span-2' : ''
+                    }`}
+                    onClick={() => openLightbox(index)}
+                    data-testid={`gallery-image-${index}`}
+                  >
+                    <div
+                      className={`relative overflow-hidden bg-[#F2F2F0] ${
+                        index === 0 ? 'aspect-[4/3]' : 'aspect-square'
+                      }`}
+                    >
+                      <img
+                        src={image.url}
+                        alt={image.alt}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <p className="text-white text-sm font-medium truncate">
+                          {image.alt}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          </>
         )}
       </div>
 
@@ -231,9 +309,9 @@ export const Gallery = () => {
                 e.stopPropagation();
                 prevImage();
               }}
-              className="absolute left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors duration-200 p-2"
+              className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors duration-200 p-2 bg-black/30 hover:bg-black/50"
             >
-              <ChevronLeft size={40} />
+              <ChevronLeft size={32} />
             </button>
 
             <button
@@ -241,9 +319,9 @@ export const Gallery = () => {
                 e.stopPropagation();
                 nextImage();
               }}
-              className="absolute right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors duration-200 p-2"
+              className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors duration-200 p-2 bg-black/30 hover:bg-black/50"
             >
-              <ChevronRight size={40} />
+              <ChevronRight size={32} />
             </button>
 
             {/* Image */}
@@ -260,7 +338,7 @@ export const Gallery = () => {
             />
 
             {/* Counter */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-sm">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-sm bg-black/50 px-4 py-2">
               {currentImageIndex + 1} / {filteredImages.length}
             </div>
           </motion.div>
