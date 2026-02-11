@@ -283,7 +283,7 @@
 /* Calculator card selection */
 .calc-option {
   border: 2px solid rgba(0, 0, 0, 0.08);
-  padding: 1rem;
+  padding: 0.5rem;
   cursor: pointer;
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
