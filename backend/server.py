@@ -182,17 +182,45 @@ async def submit_contact_form(form_data: ContactFormCreate):
         logger.error(f"Error submitting contact form: {e}")
         raise HTTPException(status_code=500, detail="Error submitting form")
 
-# Proxy endpoints for calculator API
+# Proxy endpoints for calculator API with caching
 @api_router.get("/sauna/prices")
 async def get_sauna_prices():
+    cache_key = "sauna_prices_cache"
+    
     try:
-        async with httpx.AsyncClient(timeout=30.0) as http_client:
+        # Try to fetch from external API
+        async with httpx.AsyncClient(timeout=15.0) as http_client:
             response = await http_client.get(f"{CALCULATOR_API_URL}/api/sauna/prices")
             response.raise_for_status()
-            return response.json()
-    except httpx.HTTPError as e:
-        logger.error(f"Error fetching sauna prices: {e}")
-        raise HTTPException(status_code=502, detail="Error fetching prices from calculator")
+            data = response.json()
+            
+            # Save to cache on success
+            await db.cache.update_one(
+                {"id": cache_key},
+                {
+                    "$set": {
+                        "id": cache_key,
+                        "data": data,
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }
+                },
+                upsert=True
+            )
+            logger.info("Sauna prices fetched from API and cached")
+            return data
+            
+    except (httpx.HTTPError, Exception) as e:
+        logger.warning(f"External API unavailable: {e}. Trying cache...")
+        
+        # Try to get from cache
+        cached = await db.cache.find_one({"id": cache_key}, {"_id": 0})
+        if cached and cached.get("data"):
+            logger.info(f"Returning cached data from {cached.get('updated_at', 'unknown')}")
+            return cached["data"]
+        
+        # No cache available
+        logger.error("No cached data available")
+        raise HTTPException(status_code=502, detail="Calculator API unavailable and no cached data")
 
 # Public settings endpoints
 @api_router.get("/settings/site")
