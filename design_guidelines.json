@@ -1,0 +1,180 @@
+{
+  "brand_identity": {
+    "name": "WM-Sauna",
+    "archetype": "Organic & Earthy (Premium Variant)",
+    "vibe": "Minimalist Finnish Luxury, Warm, Serene, High-End Craftsmanship",
+    "target_audience": "Polish homeowners, premium seekers, eco-conscious buyers",
+    "key_actions": ["Calculate Price (Oblicz cenę)", "View Offer (Zobacz ofertę)"]
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Montserrat, sans-serif",
+      "weights": ["600", "700"],
+      "tracking": "-0.02em",
+      "usage": "Hero titles, Section headers, Product names"
+    },
+    "body": {
+      "font_family": "Lato, sans-serif",
+      "weights": ["400", "500"],
+      "tracking": "0.01em",
+      "usage": "Paragraphs, UI elements, Form labels"
+    },
+    "accent": {
+      "font_family": "Playfair Display, serif",
+      "weights": ["400", "italic"],
+      "usage": "Testimonials, 'Premium' badges, decorative quotes"
+    }
+  },
+  "colors": {
+    "primary": {
+      "DEFAULT": "#C6A87C",
+      "hover": "#B09060",
+      "foreground": "#FFFFFF",
+      "description": "Warm Gold Wood - Used for Primary Buttons, Highlights, Icons"
+    },
+    "secondary": {
+      "DEFAULT": "#1A1A1A",
+      "hover": "#000000",
+      "foreground": "#FFFFFF",
+      "description": "Soft Black - Used for Headings, Footer, Strong Contrast Elements"
+    },
+    "background": {
+      "DEFAULT": "#F9F9F7",
+      "paper": "#FFFFFF",
+      "subtle": "#F2F2F0",
+      "description": "Bone White / Off-White - Main background to reduce eye strain compared to pure white"
+    },
+    "accent": {
+      "DEFAULT": "#D4AF37",
+      "light": "#E5C560",
+      "description": "Metallic Gold - Used sparingly for thin lines, active states, and 'Premium' tags"
+    },
+    "text": {
+      "primary": "#1A1A1A",
+      "secondary": "#595959",
+      "muted": "#8C8C8C"
+    },
+    "status": {
+      "success": "#4A6741",
+      "error": "#B91C1C"
+    }
+  },
+  "visual_enhancers": {
+    "radius": "0px",
+    "shadows": {
+      "card": "0 4px 20px -2px rgba(0, 0, 0, 0.05)",
+      "hover": "0 10px 30px -5px rgba(198, 168, 124, 0.15)",
+      "dropdown": "0 10px 40px -10px rgba(0, 0, 0, 0.1)"
+    },
+    "borders": {
+      "subtle": "1px solid rgba(26, 26, 26, 0.08)",
+      "active": "1px solid #C6A87C"
+    },
+    "glassmorphism": {
+      "nav": "backdrop-blur-md bg-white/80 border-b border-black/5",
+      "overlay": "backdrop-blur-sm bg-black/20"
+    }
+  },
+  "layout_strategies": {
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing": {
+      "section": "py-20 md:py-32",
+      "element": "gap-6 md:gap-12"
+    },
+    "grids": {
+      "gallery": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8",
+      "features": "grid grid-cols-1 md:grid-cols-3 gap-12"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#C6A87C] text-white hover:bg-[#B09060] rounded-none px-8 py-4 uppercase tracking-widest text-sm font-bold transition-all duration-300",
+      "secondary": "bg-transparent border border-[#1A1A1A] text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white rounded-none px-8 py-4 uppercase tracking-widest text-sm font-bold transition-all duration-300",
+      "ghost": "text-[#1A1A1A] hover:text-[#C6A87C] font-medium transition-colors"
+    },
+    "cards": {
+      "product": "bg-white border border-black/5 hover:border-[#C6A87C]/30 transition-all duration-300 group cursor-pointer",
+      "review": "bg-[#F9F9F7] p-8 border-l-4 border-[#C6A87C]"
+    },
+    "inputs": {
+      "default": "bg-white border-black/10 focus:border-[#C6A87C] rounded-none h-12 px-4 transition-colors"
+    }
+  },
+  "image_urls": {
+    "hero": {
+      "main": "https://images.unsplash.com/photo-1759302353458-3c617bfd428b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGludGVyaW9yJTIwcGFub3JhbWljJTIwd2luZG93JTIwbmF0dXJlJTIwdmlld3xlbnwwfHx8fDE3NzA4NDMyODh8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Luxury wooden sauna interior with panoramic nature view"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1757937176646-d943553b5f09?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwzfHxvdXRkb29yJTIwYmFycmVsJTIwc2F1bmElMjBnYXJkZW4lMjBtb2Rlcm4lMjBhcmNoaXRlY3R1cmV8ZW58MHx8fHwxNzcwODQzMjk1fDA&ixlib=rb-4.1.0&q=85",
+        "category": "Modern Outdoor",
+        "alt": "Modern glass-front outdoor sauna"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1734594709667-adf24e06091a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwyfHxvdXRkb29yJTIwYmFycmVsJTIwc2F1bmElMjBnYXJkZW4lMjBtb2Rlcm4lMjBhcmNoaXRlY3R1cmV8ZW58MHx8fHwxNzcwODQzMjk1fDA&ixlib=rb-4.1.0&q=85",
+        "category": "Barrel Sauna",
+        "alt": "Traditional barrel sauna in garden"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1759300208443-e2450c3cac36?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGludGVyaW9yJTIwcGFub3JhbWljJTIwd2luZG93JTIwbmF0dXJlJTIwdmlld3xlbnwwfHx8fDE3NzA4NDMyODh8MA&ixlib=rb-4.1.0&q=85",
+        "category": "Interior Detail",
+        "alt": "Sauna interior with round window"
+      }
+    ],
+    "stock": [
+      {
+        "url": "https://images.unsplash.com/photo-1627750673372-ceabdbeb768c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGNhYmluJTIwZXh0ZXJpb3IlMjBnYXJkZW58ZW58MHx8fHwxNzcwODQzMzIzfDA&ixlib=rb-4.1.0&q=85",
+        "name": "Model Nordic A",
+        "price": "12 000 PLN"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1762782778316-80b05d151915?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHw0fHxtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGNhYmluJTIwZXh0ZXJpb3IlMjBnYXJkZW58ZW58MHx8fHwxNzcwODQzMzIzfDA&ixlib=rb-4.1.0&q=85",
+        "name": "Model Forest B",
+        "price": "15 500 PLN"
+      }
+    ],
+    "reviews": [
+      {
+        "url": "https://images.unsplash.com/photo-1749561532365-1d60917caf1b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNTl8MHwxfHNlYXJjaHwxfHxwZW9wbGUlMjByZWxheGluZyUyMGluc2lkZSUyMHdvb2RlbiUyMHNhdW5hJTIwc3BhJTIwd2VsbG5lc3N8ZW58MHx8fHwxNzcwODQzMzE5fDA&ixlib=rb-4.1.0&q=85",
+        "alt": "Happy couple relaxing"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1740025940333-daf61dc22ab7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNTl8MHwxfHNlYXJjaHwyfHxwZW9wbGUlMjByZWxheGluZyUyMGluc2lkZSUyMHdvb2RlbiUyMHNhdW5hJTIwc3BhJTIwd2VsbG5lc3N8ZW58MHx8fHwxNzcwODQzMzE5fDA&ixlib=rb-4.1.0&q=85",
+        "alt": "Woman enjoying sauna"
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Use 'Montserrat' for all headings and 'Lato' for body text. Import them from Google Fonts.",
+    "Implement a 'Sticky' header that becomes glassmorphic on scroll.",
+    "The 'Calculator' is the core feature. Make it a multi-step wizard with smooth transitions (Framer Motion). Steps: Size -> Wood Type -> Heater -> Extras -> Summary.",
+    "Use the 'Bento Grid' layout for the 'Nasze realizacje' (Gallery) section.",
+    "Ensure the 'Contact' section has a working form layout and a placeholder for Google Maps.",
+    "Use 'lucide-react' for icons, but style them with the Primary Gold color (#C6A87C).",
+    "For the 'In Stock' section, use a clean card layout with a 'Dostępne od ręki' (Available Now) badge.",
+    "Implement a language toggle (PL/EN/RU) in the navbar.",
+    "Ensure all interactive elements have hover states that shift color or lift slightly.",
+    "Do NOT use rounded corners (rounded-none) for buttons and inputs to maintain the 'Premium/Architectural' feel. Use 'rounded-lg' only for inner cards if absolutely necessary for softness, but prefer sharp edges."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use 'sonner' for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
+  ]
+}
