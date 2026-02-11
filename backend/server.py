@@ -153,6 +153,11 @@ class SectionOrder(BaseModel):
     id: str = "section_order"
     sections: List[str] = ["hero", "calculator", "gallery", "stock", "reviews", "about", "contact"]
 
+class GalleryConfig(BaseModel):
+    id: str = "gallery_config"
+    hidden_api_images: List[str] = []  # List of image URLs to hide from API
+    show_api_images: bool = True  # Master toggle for API images
+
 # ============= Public Routes =============
 
 @api_router.get("/")
@@ -238,6 +243,13 @@ async def get_gallery_public():
     images = await db.gallery.find({"active": True}, {"_id": 0}).sort("sort_order", 1).to_list(100)
     return images
 
+@api_router.get("/settings/gallery")
+async def get_gallery_config_public():
+    config = await db.settings.find_one({"id": "gallery_config"}, {"_id": 0})
+    if not config:
+        return GalleryConfig().model_dump()
+    return config
+
 # ============= Admin Routes =============
 
 @api_router.post("/admin/login")
@@ -317,6 +329,23 @@ async def update_section_order(order: SectionOrder, username: str = Depends(veri
     await db.settings.update_one(
         {"id": "section_order"},
         {"$set": order.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+# Gallery config
+@api_router.get("/admin/settings/gallery")
+async def get_gallery_config(username: str = Depends(verify_admin)):
+    config = await db.settings.find_one({"id": "gallery_config"}, {"_id": 0})
+    if not config:
+        return GalleryConfig().model_dump()
+    return config
+
+@api_router.put("/admin/settings/gallery")
+async def update_gallery_config(config: GalleryConfig, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "gallery_config"},
+        {"$set": config.model_dump()},
         upsert=True
     )
     return {"status": "success"}
