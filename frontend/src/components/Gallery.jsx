@@ -111,31 +111,6 @@ export const Gallery = () => {
         }
       }
 
-      // Add design guideline images if no custom images
-      if (allImages.length < 3) {
-        const designImages = [
-          {
-            url: 'https://images.unsplash.com/photo-1757937176646-d943553b5f09?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwzfHxvdXRkb29yJTIwYmFycmVsJTIwc2F1bmElMjBnYXJkZW4lMjBtb2Rlcm4lMjBhcmNoaXRlY3R1cmV8ZW58MHx8fHwxNzcwODQzMjk1fDA&ixlib=rb-4.1.0&q=85',
-            alt: 'Modern glass-front outdoor sauna',
-            category: 'kwadro',
-            source: 'stock'
-          },
-          {
-            url: 'https://images.unsplash.com/photo-1734594709667-adf24e06091a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwyfHxvdXRkb29yJTIwYmFycmVsJTIwc2F1bmElMjBnYXJkZW4lMjBtb2Rlcm4lMjBhcmNoaXRlY3R1cmV8ZW58MHx8fHwxNzcwODQzMjk1fDA&ixlib=rb-4.1.0&q=85',
-            alt: 'Traditional barrel sauna in garden',
-            category: 'beczka',
-            source: 'stock'
-          },
-          {
-            url: 'https://images.unsplash.com/photo-1759300208443-e2450c3cac36?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGludGVyaW9yJTIwcGFub3JhbWljJTIwd2luZG93JTIwbmF0dXJlJTIwdmlld3xlbnwwfHx8fDE3NzA4NDMyODh8MA&ixlib=rb-4.1.0&q=85',
-            alt: 'Sauna interior with round window',
-            category: 'kwadro',
-            source: 'stock'
-          },
-        ];
-        allImages.unshift(...designImages);
-      }
-
       setImages(allImages);
       setLoading(false);
     } catch (error) {
