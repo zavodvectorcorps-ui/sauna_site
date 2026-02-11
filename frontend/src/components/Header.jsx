@@ -41,8 +41,8 @@ export const Header = () => {
         data-testid="main-header"
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? 'glass border-b border-black/5 shadow-sm'
-            : 'bg-transparent'
+            ? 'bg-white/95 backdrop-blur-md border-b border-black/5 shadow-sm'
+            : 'bg-black/20 backdrop-blur-sm'
         }`}
       >
         <div className="container-main">
@@ -57,7 +57,9 @@ export const Header = () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             >
-              <span className="font-['Montserrat'] text-2xl font-bold text-[#1A1A1A] tracking-tight">
+              <span className={`font-['Montserrat'] text-2xl font-bold tracking-tight transition-colors duration-300 ${
+                isScrolled ? 'text-[#1A1A1A]' : 'text-white'
+              }`}>
                 WM<span className="text-[#C6A87C]">-</span>SAUNA
               </span>
             </a>
@@ -73,7 +75,11 @@ export const Header = () => {
                     e.preventDefault();
                     scrollToSection(link.href);
                   }}
-                  className="text-sm font-medium text-[#595959] hover:text-[#C6A87C] transition-colors duration-200"
+                  className={`text-sm font-medium transition-colors duration-200 ${
+                    isScrolled 
+                      ? 'text-[#595959] hover:text-[#C6A87C]' 
+                      : 'text-white/90 hover:text-[#C6A87C]'
+                  }`}
                 >
                   {link.label}
                 </a>
