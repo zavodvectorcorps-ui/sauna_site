@@ -49,7 +49,9 @@ export const Hero = () => {
           alt="Luxury wooden sauna"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/40" />
+        {/* Top gradient for header readability */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/40 to-transparent" />
       </div>
 
       {/* Content */}
@@ -60,7 +62,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 bg-[#C6A87C]/10 border border-[#C6A87C]/20 px-4 py-2 mb-8"
+            className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm border border-[#C6A87C]/30 px-4 py-2 mb-8 shadow-sm"
           >
             <span className="w-2 h-2 bg-[#C6A87C] rounded-full animate-pulse" />
             <span className="text-sm font-medium text-[#C6A87C]">
