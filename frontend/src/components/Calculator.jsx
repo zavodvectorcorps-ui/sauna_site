@@ -29,23 +29,20 @@ export const Calculator = () => {
 
   const fetchData = async () => {
     try {
-      // First try direct API, then fallback to proxy
-      let response = await fetch(`${CALCULATOR_API_URL}/api/sauna/prices`);
-      if (!response.ok) {
-        response = await fetch(`${BACKEND_URL}/api/sauna/prices`);
-      }
+      // Use backend proxy to avoid CORS issues
+      const response = await fetch(`${BACKEND_URL}/api/sauna/prices`);
       const json = await response.json();
       setData(json);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching calculator data:', error);
-      // Try proxy as fallback
+      console.error('Error fetching calculator data from proxy:', error);
+      // Fallback to direct API if proxy fails
       try {
-        const response = await fetch(`${BACKEND_URL}/api/sauna/prices`);
+        const response = await fetch(`${CALCULATOR_API_URL}/api/sauna/prices`);
         const json = await response.json();
         setData(json);
       } catch (err) {
-        console.error('Fallback also failed:', err);
+        console.error('Direct API also failed:', err);
       }
       setLoading(false);
     }

@@ -4,6 +4,7 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const Gallery = () => {
   const { t } = useLanguage();
@@ -25,7 +26,8 @@ export const Gallery = () => {
 
   const fetchGalleryImages = async () => {
     try {
-      const response = await fetch(`${CALCULATOR_API_URL}/api/sauna/prices`);
+      // Use backend proxy to avoid CORS issues
+      const response = await fetch(`${BACKEND_URL}/api/sauna/prices`);
       const data = await response.json();
 
       const galleryImages = [];
