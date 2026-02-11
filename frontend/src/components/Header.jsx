@@ -89,7 +89,11 @@ export const Header = () => {
             {/* Right side */}
             <div className="hidden lg:flex items-center gap-6">
               {/* Language Switcher */}
-              <div className="flex items-center gap-1 border border-black/10 px-2 py-1">
+              <div className={`flex items-center gap-1 px-2 py-1 rounded transition-colors duration-300 ${
+                isScrolled 
+                  ? 'border border-black/10 bg-transparent' 
+                  : 'bg-white/20 backdrop-blur-sm'
+              }`}>
                 {languages.map((lang, index) => (
                   <React.Fragment key={lang}>
                     <button
@@ -98,13 +102,15 @@ export const Header = () => {
                       className={`px-2 py-1 text-xs font-medium transition-colors duration-200 ${
                         language === lang.toLowerCase()
                           ? 'text-[#C6A87C]'
-                          : 'text-[#595959] hover:text-[#1A1A1A]'
+                          : isScrolled 
+                            ? 'text-[#595959] hover:text-[#1A1A1A]'
+                            : 'text-white/80 hover:text-white'
                       }`}
                     >
                       {lang}
                     </button>
                     {index < languages.length - 1 && (
-                      <span className="text-[#E5E5E5]">|</span>
+                      <span className={isScrolled ? 'text-[#E5E5E5]' : 'text-white/40'}>|</span>
                     )}
                   </React.Fragment>
                 ))}
@@ -114,7 +120,11 @@ export const Header = () => {
               <a
                 href="tel:+48732099201"
                 data-testid="phone-link"
-                className="flex items-center gap-2 text-sm font-medium text-[#1A1A1A] hover:text-[#C6A87C] transition-colors duration-200"
+                className={`flex items-center gap-2 text-sm font-medium transition-colors duration-200 ${
+                  isScrolled
+                    ? 'text-[#1A1A1A] hover:text-[#C6A87C]'
+                    : 'text-white hover:text-[#C6A87C]'
+                }`}
               >
                 <Phone size={16} className="text-[#C6A87C]" />
                 +48 732 099 201
@@ -125,7 +135,9 @@ export const Header = () => {
             <button
               data-testid="mobile-menu-btn"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-[#1A1A1A]"
+              className={`lg:hidden p-2 transition-colors duration-300 ${
+                isScrolled ? 'text-[#1A1A1A]' : 'text-white'
+              }`}
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
