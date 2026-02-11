@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, Send, Loader2, CheckCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 
 export const Contact = () => {
   const { t } = useLanguage();
+  const { siteSettings } = useSettings();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -44,25 +46,25 @@ export const Contact = () => {
     {
       icon: MapPin,
       label: t('contact.address'),
-      value: 'ul. Boryny 3, 02-257 Warszawa',
-      href: 'https://maps.google.com/?q=ul.+Boryny+3,+02-257+Warszawa',
+      value: siteSettings?.address || 'ul. Boryny 3, 02-257 Warszawa',
+      href: `https://maps.google.com/?q=${encodeURIComponent(siteSettings?.address || 'ul. Boryny 3, 02-257 Warszawa')}`,
     },
     {
       icon: Phone,
       label: t('contact.phone'),
-      value: '+48 732 099 201',
-      href: 'tel:+48732099201',
+      value: siteSettings?.phone || '+48 732 099 201',
+      href: `tel:${(siteSettings?.phone || '+48 732 099 201').replace(/\s/g, '')}`,
     },
     {
       icon: Mail,
       label: t('contact.email'),
-      value: 'wmsauna@gmail.com',
-      href: 'mailto:wmsauna@gmail.com',
+      value: siteSettings?.email || 'wmsauna@gmail.com',
+      href: `mailto:${siteSettings?.email || 'wmsauna@gmail.com'}`,
     },
     {
       icon: Clock,
       label: t('contact.hours'),
-      value: t('contact.hours_value'),
+      value: siteSettings?.working_hours || t('contact.hours_value'),
       href: null,
     },
   ];
@@ -243,12 +245,12 @@ export const Contact = () => {
             {/* Company Info */}
             <div className="bg-white p-6 border border-black/5">
               <h4 className="font-semibold text-[#1A1A1A] mb-3">
-                W.M. GROUP Sp. z o.o.
+                {siteSettings?.company_name || 'W.M. GROUP Sp. z o.o.'}
               </h4>
               <p className="text-sm text-[#595959] space-y-1">
-                <span className="block">NIP: 9512561195</span>
-                <span className="block">REGON: 52438914000000</span>
-                <span className="block">ul. Boryny 3, 02-257 Warszawa</span>
+                <span className="block">NIP: {siteSettings?.nip || '9512561195'}</span>
+                <span className="block">REGON: {siteSettings?.regon || '52438914000000'}</span>
+                <span className="block">{siteSettings?.address || 'ul. Boryny 3, 02-257 Warszawa'}</span>
               </p>
             </div>
           </motion.div>
