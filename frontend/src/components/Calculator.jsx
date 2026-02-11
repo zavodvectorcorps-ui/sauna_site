@@ -218,7 +218,7 @@ export const Calculator = () => {
         {/* Calculator Content with fixed buttons */}
         <div className="bg-white border border-black/5">
           {/* Scrollable content area */}
-          <div className="p-4 md:p-6 max-h-[50vh] md:max-h-[55vh] overflow-y-auto">
+          <div className="p-4 md:p-6 min-h-[60vh] max-h-[70vh] overflow-y-auto">
             <AnimatePresence mode="wait">
               {/* Step 0: Model Selection */}
               {step === 0 && (
@@ -336,13 +336,13 @@ export const Calculator = () => {
                     {t('calculator.step_options')}
                   </h3>
                   <div className="space-y-6">
-                    {data.categories.slice(0, 8).map((category) => (
+                    {data.categories.map((category) => (
                       <div key={category.id}>
                         <h4 className="font-semibold text-[#1A1A1A] text-sm mb-2 pb-1 border-b border-black/5">
                           {category.name}
                         </h4>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                          {category.options.slice(0, 6).map((option) => (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                          {category.options.map((option) => (
                             <div
                               key={option.id}
                               data-testid={`option-${option.id}`}
