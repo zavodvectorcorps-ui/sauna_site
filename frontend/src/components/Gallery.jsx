@@ -177,34 +177,34 @@ export const Gallery = () => {
           </div>
         ) : (
           <>
-            {/* Mobile Horizontal Slider */}
-            <div className="md:hidden relative">
+            {/* Horizontal Slider for all screen sizes */}
+            <div className="relative">
               {/* Navigation buttons */}
               <button
                 onClick={() => scrollSlider('left')}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 shadow-md flex items-center justify-center text-[#1A1A1A] hover:bg-[#C6A87C] hover:text-white transition-colors"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white/90 shadow-md flex items-center justify-center text-[#1A1A1A] hover:bg-[#C6A87C] hover:text-white transition-colors"
               >
-                <ChevronLeft size={20} />
+                <ChevronLeft size={24} />
               </button>
               <button
                 onClick={() => scrollSlider('right')}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 shadow-md flex items-center justify-center text-[#1A1A1A] hover:bg-[#C6A87C] hover:text-white transition-colors"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white/90 shadow-md flex items-center justify-center text-[#1A1A1A] hover:bg-[#C6A87C] hover:text-white transition-colors"
               >
-                <ChevronRight size={20} />
+                <ChevronRight size={24} />
               </button>
 
               {/* Slider container */}
               <div
                 ref={sliderRef}
-                className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-2 pb-4"
+                className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-4 md:px-14 pb-4"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 {filteredImages.map((image, index) => (
                   <div
                     key={`${image.url}-${index}`}
-                    className="flex-shrink-0 w-[280px] snap-center cursor-pointer group"
+                    className="flex-shrink-0 w-[280px] md:w-[350px] lg:w-[400px] snap-center cursor-pointer group"
                     onClick={() => openLightbox(index)}
-                    data-testid={`gallery-image-mobile-${index}`}
+                    data-testid={`gallery-image-${index}`}
                   >
                     <div className="relative aspect-[4/3] overflow-hidden bg-[#F2F2F0]">
                       <img
@@ -214,72 +214,27 @@ export const Gallery = () => {
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <p className="text-white text-sm font-medium truncate bg-black/50 px-3 py-1.5 inline-block">
+                          {image.alt}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-sm text-[#595959] mt-2 truncate px-1">
-                      {image.alt}
-                    </p>
                   </div>
                 ))}
               </div>
 
               {/* Scroll indicator */}
-              <div className="flex justify-center gap-1 mt-4">
-                {filteredImages.slice(0, 5).map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-2 h-2 rounded-full bg-[#E5E5E5]"
-                  />
-                ))}
-                {filteredImages.length > 5 && (
-                  <span className="text-xs text-[#8C8C8C] ml-2">
-                    +{filteredImages.length - 5}
-                  </span>
-                )}
+              <div className="flex justify-center items-center gap-2 mt-4">
+                <span className="text-sm text-[#8C8C8C]">
+                  {filteredImages.length} zdjęć
+                </span>
+                <span className="text-[#C6A87C]">•</span>
+                <span className="text-sm text-[#8C8C8C]">
+                  Przewiń, aby zobaczyć więcej
+                </span>
               </div>
             </div>
-
-            {/* Desktop Grid */}
-            <motion.div 
-              layout 
-              className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-4"
-            >
-              <AnimatePresence>
-                {filteredImages.map((image, index) => (
-                  <motion.div
-                    key={`${image.url}-${index}`}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.3 }}
-                    className={`group cursor-pointer overflow-hidden ${
-                      index === 0 ? 'md:col-span-2 md:row-span-2' : ''
-                    }`}
-                    onClick={() => openLightbox(index)}
-                    data-testid={`gallery-image-${index}`}
-                  >
-                    <div
-                      className={`relative overflow-hidden bg-[#F2F2F0] ${
-                        index === 0 ? 'aspect-[4/3]' : 'aspect-square'
-                      }`}
-                    >
-                      <img
-                        src={image.url}
-                        alt={image.alt}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <p className="text-white text-sm font-medium truncate">
-                          {image.alt}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
           </>
         )}
       </div>
