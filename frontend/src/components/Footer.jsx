@@ -1,9 +1,11 @@
 import React from 'react';
 import { Phone, Mail, MapPin, Facebook, Instagram, Youtube } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 
 export const Footer = () => {
   const { t } = useLanguage();
+  const { siteSettings } = useSettings();
 
   const scrollToSection = (href) => {
     const element = document.querySelector(href);
@@ -54,7 +56,7 @@ export const Footer = () => {
             {/* Social Links */}
             <div className="flex gap-3">
               <a
-                href="https://facebook.com"
+                href={siteSettings?.facebook_url || 'https://facebook.com'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-white/10 flex items-center justify-center hover:bg-[#C6A87C] transition-colors duration-200"
@@ -63,7 +65,7 @@ export const Footer = () => {
                 <Facebook size={18} />
               </a>
               <a
-                href="https://instagram.com"
+                href={siteSettings?.instagram_url || 'https://instagram.com'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-white/10 flex items-center justify-center hover:bg-[#C6A87C] transition-colors duration-200"
@@ -72,7 +74,7 @@ export const Footer = () => {
                 <Instagram size={18} />
               </a>
               <a
-                href="https://youtube.com"
+                href={siteSettings?.youtube_url || 'https://youtube.com'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-white/10 flex items-center justify-center hover:bg-[#C6A87C] transition-colors duration-200"
@@ -128,25 +130,25 @@ export const Footer = () => {
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-[#C6A87C] flex-shrink-0 mt-0.5" />
                 <span className="text-white/60 text-sm">
-                  ul. Boryny 3, 02-257 Warszawa
+                  {siteSettings?.address || 'ul. Boryny 3, 02-257 Warszawa'}
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-[#C6A87C] flex-shrink-0" />
                 <a
-                  href="tel:+48732099201"
+                  href={`tel:${(siteSettings?.phone || '+48 732 099 201').replace(/\s/g, '')}`}
                   className="text-white/60 text-sm hover:text-[#C6A87C] transition-colors duration-200"
                 >
-                  +48 732 099 201
+                  {siteSettings?.phone || '+48 732 099 201'}
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-[#C6A87C] flex-shrink-0" />
                 <a
-                  href="mailto:wmsauna@gmail.com"
+                  href={`mailto:${siteSettings?.email || 'wmsauna@gmail.com'}`}
                   className="text-white/60 text-sm hover:text-[#C6A87C] transition-colors duration-200"
                 >
-                  wmsauna@gmail.com
+                  {siteSettings?.email || 'wmsauna@gmail.com'}
                 </a>
               </li>
             </ul>
