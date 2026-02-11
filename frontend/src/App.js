@@ -10,6 +10,7 @@ import { Reviews } from "./components/Reviews";
 import { About } from "./components/About";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
+import AdminPanel from "./pages/AdminPanel";
 
 const HomePage = () => {
   return (
@@ -35,6 +36,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/admin" element={<AdminPanel />} />
         </Routes>
       </BrowserRouter>
     </LanguageProvider>
