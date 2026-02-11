@@ -40,10 +40,10 @@ class StatusCheckCreate(BaseModel):
     client_name: str
 
 class ContactFormCreate(BaseModel):
-    name: str
+    name: str = Field(..., min_length=2, max_length=100)
     email: Optional[EmailStr] = None
-    phone: str
-    message: Optional[str] = None
+    phone: str = Field(..., min_length=6, max_length=20)
+    message: Optional[str] = Field(None, max_length=2000)
     model: Optional[str] = None
     variant: Optional[str] = None
     options: Optional[List[str]] = None
