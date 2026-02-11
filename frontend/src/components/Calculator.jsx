@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Users, Check, FileText, Send, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const Calculator = () => {
   const { t } = useLanguage();
+  const { calculatorConfig } = useSettings();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const [step, setStep] = useState(0);
@@ -44,6 +46,23 @@ export const Calculator = () => {
       }
       setLoading(false);
     }
+  };
+
+  // Filter models and categories based on admin config
+  const getFilteredModels = () => {
+    if (!data?.models) return [];
+    const enabledModels = calculatorConfig?.enabled_models || [];
+    return data.models.filter(m => 
+      m.active && (enabledModels.length === 0 || enabledModels.includes(m.id))
+    ).sort((a, b) => a.sortOrder - b.sortOrder);
+  };
+
+  const getFilteredCategories = () => {
+    if (!data?.categories) return [];
+    const enabledCategories = calculatorConfig?.enabled_categories || [];
+    return data.categories.filter(c => 
+      enabledCategories.length === 0 || enabledCategories.includes(c.id)
+    );
   };
 
   const getImageUrl = (url) => {
