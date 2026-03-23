@@ -468,6 +468,61 @@ async def update_gallery_config(config: GalleryConfig, username: str = Depends(v
     )
     return {"status": "success"}
 
+# Section content settings (admin)
+@api_router.put("/admin/settings/gallery-content")
+async def update_gallery_settings(settings: GallerySettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "gallery_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/calculator-content")
+async def update_calculator_settings(settings: CalculatorSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "calculator_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/stock")
+async def update_stock_settings(settings: StockSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "stock_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/reviews-content")
+async def update_reviews_settings(settings: ReviewsSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "reviews_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/contact")
+async def update_contact_settings(settings: ContactSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "contact_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/footer")
+async def update_footer_settings(settings: FooterSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "footer_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
 # Reviews management
 @api_router.get("/admin/reviews")
 async def get_all_reviews(username: str = Depends(verify_admin)):
