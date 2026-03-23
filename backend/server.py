@@ -182,8 +182,9 @@ class GalleryConfig(BaseModel):
 # Models showcase configuration
 class ModelsConfig(BaseModel):
     id: str = "models_config"
-    enabled_models: List[str] = []  # List of model IDs to show, empty = show all
+    enabled_models: List[str] = []
     show_section: bool = True
+    descriptions: Dict[str, Any] = {}  # {model_id: {description_pl: "", description_en: ""}}
 
 class ModelsSettings(BaseModel):
     id: str = "models_settings"
@@ -382,6 +383,28 @@ async def get_sauna_prices():
         # No cache available
         logger.error("No cached data available")
         raise HTTPException(status_code=502, detail="Calculator API unavailable and no cached data")
+
+@api_router.get("/sauna/public-models")
+async def get_public_models(lang: str = "pl"):
+    cache_key = f"sauna_public_models_{lang}"
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as http_client:
+            response = await http_client.get(f"{CALCULATOR_API_URL}/api/sauna/public/models", params={"lang": lang})
+            response.raise_for_status()
+            data = response.json()
+            await db.cache.update_one(
+                {"id": cache_key},
+                {"$set": {"id": cache_key, "data": data, "updated_at": datetime.now(timezone.utc).isoformat()}},
+                upsert=True
+            )
+            logger.info(f"Public models fetched and cached (lang={lang})")
+            return data
+    except (httpx.HTTPError, Exception) as e:
+        logger.warning(f"Public models API unavailable: {e}. Trying cache...")
+        cached = await db.cache.find_one({"id": cache_key}, {"_id": 0})
+        if cached and cached.get("data"):
+            return cached["data"]
+        raise HTTPException(status_code=502, detail="Public models API unavailable and no cached data")
 
 # Public settings endpoints
 @api_router.get("/settings/site")

@@ -2073,32 +2073,71 @@ const AdminPanel = () => {
                   Отметьте модели для отображения. Если ничего не выбрано — показываются все.
                 </p>
                 {apiData ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-3">
                     {apiData.models.filter(m => m.active).map((model) => {
                       const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
                       const imgUrl = model.imageUrl?.startsWith('http') ? model.imageUrl : `${CALCULATOR_API_URL}${model.imageUrl}`;
                       const isEnabled = modelsConfig.enabled_models.length === 0 || modelsConfig.enabled_models.includes(model.id);
+                      const desc = modelsConfig.descriptions?.[model.id] || {};
                       return (
-                        <label
+                        <div
                           key={model.id}
-                          className={`flex items-center gap-3 p-3 border cursor-pointer transition-all ${
-                            isEnabled ? 'border-[#C6A87C] bg-[#C6A87C]/5' : 'border-black/10 hover:border-[#C6A87C]/50'
+                          className={`border transition-all ${
+                            isEnabled ? 'border-[#C6A87C] bg-[#C6A87C]/5' : 'border-black/10'
                           }`}
                         >
-                          <input
-                            type="checkbox"
-                            checked={isEnabled}
-                            onChange={() => toggleShowcaseModel(model.id)}
-                            className="accent-[#C6A87C] flex-shrink-0"
-                          />
-                          <div className="w-14 h-14 bg-[#F2F2F0] overflow-hidden flex-shrink-0">
-                            <img src={imgUrl} alt={model.name} className="w-full h-full object-cover" loading="lazy" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium truncate">{model.name}</p>
-                            <p className="text-xs text-[#C6A87C]">{model.basePrice?.toLocaleString()} PLN</p>
-                          </div>
-                        </label>
+                          <label className="flex items-center gap-3 p-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={isEnabled}
+                              onChange={() => toggleShowcaseModel(model.id)}
+                              className="accent-[#C6A87C] flex-shrink-0"
+                            />
+                            <div className="w-14 h-14 bg-[#F2F2F0] overflow-hidden flex-shrink-0">
+                              <img src={imgUrl} alt={model.name} className="w-full h-full object-cover" loading="lazy" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium truncate">{model.name}</p>
+                              <p className="text-xs text-[#C6A87C]">{model.basePrice?.toLocaleString()} PLN • {model.variants?.length || 1} вариант(ов)</p>
+                              {model.description && <p className="text-xs text-[#8C8C8C] truncate mt-0.5">API: {model.description}</p>}
+                            </div>
+                          </label>
+                          {/* Description fields when enabled */}
+                          {isEnabled && (
+                            <div className="px-3 pb-3 grid grid-cols-2 gap-2">
+                              <div>
+                                <label className="block text-[10px] text-[#8C8C8C] mb-0.5">Описание (PL) — переопределяет API</label>
+                                <textarea
+                                  value={desc.description_pl || ''}
+                                  onChange={(e) => setModelsConfig({
+                                    ...modelsConfig,
+                                    descriptions: {
+                                      ...modelsConfig.descriptions,
+                                      [model.id]: { ...desc, description_pl: e.target.value }
+                                    }
+                                  })}
+                                  placeholder={model.description || 'Описание из API не задано'}
+                                  className="w-full p-1.5 border border-black/10 text-xs h-14 resize-none"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[10px] text-[#8C8C8C] mb-0.5">Описание (EN)</label>
+                                <textarea
+                                  value={desc.description_en || ''}
+                                  onChange={(e) => setModelsConfig({
+                                    ...modelsConfig,
+                                    descriptions: {
+                                      ...modelsConfig.descriptions,
+                                      [model.id]: { ...desc, description_en: e.target.value }
+                                    }
+                                  })}
+                                  placeholder="English description"
+                                  className="w-full p-1.5 border border-black/10 text-xs h-14 resize-none"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
