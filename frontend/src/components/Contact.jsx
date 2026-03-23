@@ -97,9 +97,11 @@ export const Contact = () => {
         <div className="text-center mb-12">
           <div className="gold-line mx-auto mb-6" />
           <h2 className="section-title" data-testid="contact-title">
-            {t('contact.title')}
+            {sectionContent ? sectionContent[`title_${language.toLowerCase()}`] : t('contact.title')}
           </h2>
-          <p className="section-subtitle mx-auto">{t('contact.subtitle')}</p>
+          <p className="section-subtitle mx-auto">
+            {sectionContent ? sectionContent[`subtitle_${language.toLowerCase()}`] : t('contact.subtitle')}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
