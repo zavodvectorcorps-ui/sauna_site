@@ -326,15 +326,10 @@ class IntegrationSettings(BaseModel):
     telegram_enabled: bool = False
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
-    # AMO CRM OAuth
+    # AMO CRM
     amocrm_enabled: bool = False
     amocrm_domain: str = ""
-    amocrm_client_id: str = ""
-    amocrm_client_secret: str = ""
-    amocrm_redirect_uri: str = ""
     amocrm_access_token: str = ""
-    amocrm_refresh_token: str = ""
-    amocrm_token_expires_at: str = ""
     # AMO CRM Lead settings
     amocrm_pipeline_id: int = 0
     amocrm_status_id: int = 0
@@ -392,61 +387,8 @@ async def send_telegram_notification(data: dict):
         logger.error(f"Telegram notification error: {e}")
 
 async def get_amocrm_token(settings: dict) -> str:
-    """Get valid AMO CRM access token, refreshing if needed."""
-    token = settings.get("amocrm_access_token", "")
-    expires_at = settings.get("amocrm_token_expires_at", "")
-    
-    # Check if token needs refresh
-    if expires_at:
-        try:
-            from datetime import datetime as dt
-            expiry = dt.fromisoformat(expires_at)
-            if dt.now(timezone.utc) < expiry:
-                return token
-        except Exception:
-            pass
-    
-    # Try to refresh
-    refresh_token = settings.get("amocrm_refresh_token", "")
-    client_id = settings.get("amocrm_client_id", "")
-    client_secret = settings.get("amocrm_client_secret", "")
-    domain = settings.get("amocrm_domain", "").rstrip("/")
-    if not domain.startswith("http"):
-        domain = f"https://{domain}"
-    
-    if not refresh_token or not client_id or not client_secret:
-        return token  # Can't refresh, return current token
-    
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            resp = await client.post(f"{domain}/oauth2/access_token", json={
-                "client_id": client_id,
-                "client_secret": client_secret,
-                "grant_type": "refresh_token",
-                "refresh_token": refresh_token,
-                "redirect_uri": settings.get("amocrm_redirect_uri", ""),
-            })
-            if resp.status_code == 200:
-                data = resp.json()
-                new_token = data["access_token"]
-                new_refresh = data["refresh_token"]
-                expires_in = data.get("expires_in", 86400)
-                new_expires = (datetime.now(timezone.utc) + timedelta(seconds=expires_in)).isoformat()
-                
-                await db.settings.update_one(
-                    {"id": "integration_settings"},
-                    {"$set": {
-                        "amocrm_access_token": new_token,
-                        "amocrm_refresh_token": new_refresh,
-                        "amocrm_token_expires_at": new_expires,
-                    }}
-                )
-                logger.info("AMO CRM token refreshed")
-                return new_token
-    except Exception as e:
-        logger.error(f"AMO CRM token refresh error: {e}")
-    
-    return token
+    """Get AMO CRM API token from settings."""
+    return settings.get("amocrm_access_token", "")
 
 async def send_amocrm_lead(data: dict):
     """Create a lead in AMO CRM if configured."""
@@ -1102,60 +1044,6 @@ async def test_amocrm_lead(username: str = Depends(verify_admin)):
         raise HTTPException(status_code=502, detail=f"Ошибка отправки: {str(e)}")
 
 
-@api_router.get("/admin/amocrm/callback")
-async def amocrm_oauth_callback(code: str, state: str = "", referer: str = ""):
-    """AMO CRM OAuth callback — exchanges code for tokens."""
-    settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
-    if not settings or not settings.get("amocrm_domain") or not settings.get("amocrm_client_id") or not settings.get("amocrm_client_secret"):
-        return {"error": "AMO CRM не настроен. Заполните домен, Client ID и Client Secret в админке."}
-    
-    domain = settings["amocrm_domain"].rstrip("/")
-    if not domain.startswith("http"):
-        domain = f"https://{domain}"
-    
-    try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            resp = await client.post(f"{domain}/oauth2/access_token", json={
-                "client_id": settings["amocrm_client_id"],
-                "client_secret": settings["amocrm_client_secret"],
-                "grant_type": "authorization_code",
-                "code": code,
-                "redirect_uri": settings.get("amocrm_redirect_uri", ""),
-            })
-            if resp.status_code == 200:
-                data = resp.json()
-                expires_at = (datetime.now(timezone.utc) + timedelta(seconds=data.get("expires_in", 86400))).isoformat()
-                await db.settings.update_one(
-                    {"id": "integration_settings"},
-                    {"$set": {
-                        "amocrm_access_token": data["access_token"],
-                        "amocrm_refresh_token": data["refresh_token"],
-                        "amocrm_token_expires_at": expires_at,
-                    }}
-                )
-                from starlette.responses import HTMLResponse
-                return HTMLResponse(content="""
-                    <html><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#F9F9F7">
-                    <div style="text-align:center;padding:40px;border:1px solid #C6A87C;max-width:400px">
-                        <h2 style="color:#1A1A1A">AMO CRM подключён!</h2>
-                        <p style="color:#595959">Токен получен и сохранён. Вы можете закрыть это окно и вернуться в админку.</p>
-                        <script>setTimeout(function(){window.close()},3000)</script>
-                    </div></body></html>
-                """, status_code=200)
-            else:
-                error_detail = resp.text[:500]
-                from starlette.responses import HTMLResponse
-                return HTMLResponse(content=f"""
-                    <html><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#F9F9F7">
-                    <div style="text-align:center;padding:40px;border:1px solid red;max-width:500px">
-                        <h2 style="color:red">Ошибка авторизации</h2>
-                        <p style="color:#595959">{error_detail}</p>
-                    </div></body></html>
-                """, status_code=200)
-    except Exception as e:
-        from starlette.responses import HTMLResponse
-        return HTMLResponse(content=f"<html><body><h2>Ошибка: {str(e)}</h2></body></html>", status_code=500)
-
 
 async def _amocrm_api_get(path: str) -> dict:
     """Helper: make authenticated GET to AMO CRM API."""
@@ -1243,19 +1131,9 @@ async def get_amocrm_status(username: str = Depends(verify_admin)):
     if not settings:
         return {"connected": False}
     has_token = bool(settings.get("amocrm_access_token"))
-    expires_at = settings.get("amocrm_token_expires_at", "")
-    expired = False
-    if expires_at:
-        try:
-            from datetime import datetime as dt
-            expiry = dt.fromisoformat(expires_at)
-            expired = dt.now(timezone.utc) >= expiry
-        except Exception:
-            pass
     return {
-        "connected": has_token and not expired,
+        "connected": has_token and bool(settings.get("amocrm_domain")),
         "has_token": has_token,
-        "expired": expired,
         "domain": settings.get("amocrm_domain", ""),
     }
 

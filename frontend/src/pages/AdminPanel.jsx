@@ -638,34 +638,6 @@ const AdminPanel = () => {
     }
   }, [activeTab, authHeader, integrationSettings?.amocrm_access_token, checkAmoStatus]);
 
-  // Handle OAuth popup close — poll for token update
-  const openAmoOAuth = () => {
-    if (!integrationSettings.amocrm_domain || !integrationSettings.amocrm_client_id) {
-      showMessage('error', 'Заполните домен и Client ID');
-      return;
-    }
-    const domain = integrationSettings.amocrm_domain.replace(/^https?:\/\//, '');
-    const url = `https://${domain}/oauth?client_id=${integrationSettings.amocrm_client_id}&state=wm_sauna&mode=post_message`;
-    const popup = window.open(url, '_blank', 'width=600,height=700');
-    
-    // Poll to detect when popup closes and refresh settings
-    const pollTimer = setInterval(async () => {
-      if (!popup || popup.closed) {
-        clearInterval(pollTimer);
-        // Re-fetch integration settings to get new token
-        try {
-          const res = await fetchWithAuth(`${API_URL}/api/admin/settings/integrations`);
-          const data = await res.json();
-          setIntegrationSettings(data);
-          if (data.amocrm_access_token) {
-            showMessage('success', 'AMO CRM успешно подключён!');
-            loadAmoData();
-          }
-        } catch {}
-      }
-    }, 1000);
-  };
-
   // Get statuses for selected pipeline
   const getSelectedPipelineStatuses = () => {
     const pipeline = amoPipelines.find(p => p.id === integrationSettings?.amocrm_pipeline_id);
@@ -2770,67 +2742,35 @@ const AdminPanel = () => {
                 </div>
 
                 <div className="space-y-4">
-                  {/* Step 1: OAuth credentials */}
+                  {/* Step 1: Domain + API Key */}
                   <div className="p-4 bg-[#F9F9F7] border border-black/5">
-                    <h4 className="text-sm font-semibold mb-3">Шаг 1: Данные интеграции</h4>
+                    <h4 className="text-sm font-semibold mb-3">Шаг 1: Подключение</h4>
                     <p className="text-[10px] text-[#8C8C8C] mb-3">
-                      AMO → Настройки → Интеграции → создайте интеграцию.
-                      В поле "Ссылка для перенаправления" укажите адрес ниже:
+                      Укажите домен вашего AMO CRM и долгосрочный API-ключ.
+                      Ключ можно получить: AMO → Настройки → Интеграции → создайте интеграцию → скопируйте ключ.
                     </p>
-                    <div className="mb-3">
-                      <label className="block text-xs text-[#8C8C8C] mb-1">Redirect URI (скопируйте в AMO)</label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          readOnly
-                          value={`${API_URL}/api/admin/amocrm/callback`}
-                          className="flex-1 p-2 border border-black/10 text-sm bg-white font-mono"
-                        />
-                        <button
-                          onClick={() => {navigator.clipboard.writeText(`${API_URL}/api/admin/amocrm/callback`); showMessage('success', 'Скопировано');}}
-                          className="px-3 py-2 bg-[#1A1A1A] text-white text-xs hover:bg-black"
-                        >
-                          Копировать
-                        </button>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-xs text-[#8C8C8C] mb-1">Домен AMO CRM</label>
-                      <input type="text" value={integrationSettings.amocrm_domain} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_domain: e.target.value })} placeholder="mycompany.amocrm.ru" className="w-full p-2 border border-black/10 text-sm" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3 mt-3">
+                    <div className="space-y-3">
                       <div>
-                        <label className="block text-xs text-[#8C8C8C] mb-1">Client ID</label>
-                        <input type="text" value={integrationSettings.amocrm_client_id} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_client_id: e.target.value })} placeholder="из настроек интеграции AMO" className="w-full p-2 border border-black/10 text-sm font-mono" />
+                        <label className="block text-xs text-[#8C8C8C] mb-1">Домен AMO CRM</label>
+                        <input type="text" value={integrationSettings.amocrm_domain || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_domain: e.target.value })} placeholder="mycompany.amocrm.ru" className="w-full p-2 border border-black/10 text-sm" data-testid="amo-domain-input" />
                       </div>
                       <div>
-                        <label className="block text-xs text-[#8C8C8C] mb-1">Client Secret</label>
-                        <input type="text" value={integrationSettings.amocrm_client_secret} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_client_secret: e.target.value })} placeholder="из настроек интеграции AMO" className="w-full p-2 border border-black/10 text-sm font-mono" />
+                        <label className="block text-xs text-[#8C8C8C] mb-1">API-ключ</label>
+                        <input type="password" value={integrationSettings.amocrm_access_token || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_access_token: e.target.value })} placeholder="Долгосрочный токен из настроек интеграции" className="w-full p-2 border border-black/10 text-sm font-mono" data-testid="amo-token-input" />
                       </div>
                     </div>
-                  </div>
-
-                  {/* Step 2: Authorize */}
-                  <div className="p-4 bg-[#F9F9F7] border border-black/5">
-                    <h4 className="text-sm font-semibold mb-3">Шаг 2: Авторизация</h4>
-                    <p className="text-[10px] text-[#8C8C8C] mb-3">Сначала сохраните настройки выше, затем нажмите кнопку для авторизации.</p>
-                    <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-3 mt-4 flex-wrap">
                       <button
-                        onClick={openAmoOAuth}
-                        disabled={!integrationSettings.amocrm_domain || !integrationSettings.amocrm_client_id}
+                        onClick={async () => {
+                          await saveIntegrationSettings();
+                          checkAmoStatus();
+                        }}
+                        disabled={!integrationSettings.amocrm_domain || !integrationSettings.amocrm_access_token}
                         className="px-4 py-2 bg-[#339DC7] text-white text-sm hover:bg-[#2a8bb3] disabled:opacity-40 disabled:cursor-not-allowed"
-                        data-testid="amo-oauth-btn"
+                        data-testid="amo-save-connect-btn"
                       >
-                        {integrationSettings.amocrm_access_token ? 'Переподключить AMO CRM' : 'Авторизовать в AMO CRM'}
+                        Сохранить и подключить
                       </button>
-                      {amoConnected && (
-                        <span className="text-xs text-green-600 flex items-center gap-1" data-testid="amo-connected-badge"><Check size={14} /> Подключено</span>
-                      )}
-                      {integrationSettings.amocrm_access_token && !amoConnected && (
-                        <span className="text-xs text-amber-600 flex items-center gap-1">Токен получен (проверьте подключение)</span>
-                      )}
-                    </div>
-                    <div className="flex gap-2 mt-3">
                       <button
                         onClick={testAmocrm}
                         disabled={testingAmo || !integrationSettings.amocrm_access_token}
@@ -2841,22 +2781,14 @@ const AdminPanel = () => {
                         Проверить подключение
                       </button>
                       {amoConnected && (
-                        <button
-                          onClick={loadAmoData}
-                          disabled={amoLoading}
-                          className="flex items-center gap-2 px-4 py-2 border border-black/10 text-[#595959] text-sm hover:bg-black/5 disabled:opacity-40"
-                          data-testid="amo-reload-btn"
-                        >
-                          {amoLoading ? <Loader2 size={14} className="animate-spin" /> : null}
-                          Обновить данные AMO
-                        </button>
+                        <span className="text-xs text-green-600 flex items-center gap-1" data-testid="amo-connected-badge"><Check size={14} /> Подключено</span>
                       )}
                     </div>
                   </div>
 
-                  {/* Step 3: Pipeline & Stage — dropdowns when connected */}
+                  {/* Step 2: Pipeline & Stage — dropdowns when connected */}
                   <div className="p-4 bg-[#F9F9F7] border border-black/5">
-                    <h4 className="text-sm font-semibold mb-3">Шаг 3: Воронка и этап</h4>
+                    <h4 className="text-sm font-semibold mb-3">Шаг 2: Воронка и этап</h4>
                     {amoConnected && amoPipelines.length > 0 ? (
                       <>
                         <div className="grid grid-cols-3 gap-3">
@@ -2928,9 +2860,9 @@ const AdminPanel = () => {
                     )}
                   </div>
 
-                  {/* Step 4: Field mapping — dropdowns when connected */}
+                  {/* Step 3: Field mapping */}
                   <div className="p-4 bg-[#F9F9F7] border border-black/5">
-                    <h4 className="text-sm font-semibold mb-3">Шаг 4: Маппинг полей</h4>
+                    <h4 className="text-sm font-semibold mb-3">Шаг 3: Маппинг полей</h4>
                     <p className="text-[10px] text-[#8C8C8C] mb-3">
                       {amoConnected ? 'Выберите поля AMO CRM для каждого значения из заявки. Если оставить пустым — будут использованы стандартные поля.' : 'Подключите AMO CRM для выбора полей из списка, или укажите ID вручную. Если оставить 0 — стандартные поля.'}
                     </p>
@@ -2974,9 +2906,9 @@ const AdminPanel = () => {
                     </div>
                   </div>
 
-                  {/* Step 5: Test lead */}
+                  {/* Step 4: Test lead */}
                   <div className="p-4 bg-[#F9F9F7] border border-black/5">
-                    <h4 className="text-sm font-semibold mb-3">Шаг 5: Проверка</h4>
+                    <h4 className="text-sm font-semibold mb-3">Шаг 4: Проверка</h4>
                     <p className="text-[10px] text-[#8C8C8C] mb-3">
                       Отправьте тестовую сделку в AMO CRM, чтобы убедиться, что заявки попадают в нужную воронку и этап с правильными полями. После проверки удалите тестовую сделку в AMO.
                     </p>
