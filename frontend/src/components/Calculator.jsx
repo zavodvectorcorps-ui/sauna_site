@@ -123,7 +123,6 @@ export const Calculator = () => {
           type: 'calculator_order',
         }),
       });
-      setShowInquiryForm(false);
       setSubmitted(true);
       setFormData({ name: '', phone: '', email: '', message: '' });
     } catch (error) {
@@ -281,11 +280,44 @@ export const Calculator = () => {
                       </div>
                       <button
                         data-testid="send-inquiry-btn"
-                        onClick={() => setShowInquiryForm(true)}
+                        onClick={() => { setShowInquiryForm(true); setSubmitted(false); }}
                         className="btn-primary w-full flex items-center justify-center gap-2 py-2.5 text-sm mt-3"
                       >
                         <Send size={14} />
                         {t('calculator.send_inquiry')}
+                      </button>
+                      <button
+                        data-testid="download-pdf-btn"
+                        onClick={async () => {
+                          try {
+                            const res = await fetch(`${BACKEND_URL}/api/sauna/generate-pdf`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                fullName: '-',
+                                phoneNumber: '-',
+                                selectedModel: selectedModel?.name || '',
+                                selectedVariant: selectedVariant?.namePl || selectedVariant?.name || '',
+                                selectedOptions: Object.values(selectedOptions).map(o => o.namePl || o.name || ''),
+                              }),
+                            });
+                            if (res.ok) {
+                              const blob = await res.blob();
+                              const url = window.URL.createObjectURL(blob);
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = `WM-Sauna-${selectedModel?.name || 'config'}.pdf`;
+                              a.click();
+                              window.URL.revokeObjectURL(url);
+                            }
+                          } catch (err) {
+                            console.error('PDF generation error:', err);
+                          }
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 text-sm mt-2 border border-[#1A1A1A] text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white transition-colors"
+                      >
+                        <Download size={14} />
+                        {language === 'EN' ? 'Download PDF' : 'Pobierz PDF'}
                       </button>
                     </div>
                   </motion.div>

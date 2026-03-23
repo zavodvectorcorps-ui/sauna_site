@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, Form
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, Form, Request
+from fastapi.responses import Response, FileResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -602,6 +603,33 @@ async def get_public_models(lang: str = "pl"):
         if cached and cached.get("data"):
             return cached["data"]
         raise HTTPException(status_code=502, detail="Public models API unavailable and no cached data")
+
+
+@api_router.post("/sauna/generate-pdf")
+async def generate_sauna_pdf(request: Request):
+    """Proxy PDF generation to the calculator API."""
+    try:
+        body = await request.json()
+        async with httpx.AsyncClient(timeout=30.0) as http_client:
+            resp = await http_client.post(
+                f"{CALCULATOR_API_URL}/api/sauna/generate-pdf",
+                json=body,
+                headers={"Content-Type": "application/json"},
+            )
+            if resp.status_code == 200:
+                return Response(
+                    content=resp.content,
+                    media_type="application/pdf",
+                    headers={"Content-Disposition": "attachment; filename=WM-Sauna-Configuration.pdf"},
+                )
+            else:
+                raise HTTPException(status_code=resp.status_code, detail=resp.text[:300])
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"PDF generation error: {e}")
+        raise HTTPException(status_code=502, detail="PDF generation failed")
+
 
 # Public settings endpoints
 @api_router.get("/settings/site")
