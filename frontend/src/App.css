@@ -22,17 +22,15 @@
   }
 }
 
-/* Section spacing */
-.section-spacing {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+/* Section spacing - using CSS variables from admin settings */
+:root {
+  --section-padding-top: 80px;
+  --section-padding-bottom: 80px;
 }
 
-@media (min-width: 768px) {
-  .section-spacing {
-    padding-top: 8rem;
-    padding-bottom: 8rem;
-  }
+.section-spacing {
+  padding-top: var(--section-padding-top);
+  padding-bottom: var(--section-padding-bottom);
 }
 
 /* Primary Button */
