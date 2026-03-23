@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Settings, Users, Image, MessageSquare, LayoutGrid, Save, LogOut, 
   Trash2, Plus, Eye, EyeOff, GripVertical, Upload, Check, X,
-  Phone, Mail, MapPin, Clock, FileText, Star, ChevronDown, ChevronUp
+  Phone, Mail, MapPin, Clock, FileText, Star, ChevronDown, ChevronUp, Loader2
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -49,6 +49,10 @@ const AdminPanel = () => {
   const [faqSettings, setFaqSettings] = useState(null);
   // Social proof
   const [socialProofSettings, setSocialProofSettings] = useState(null);
+  // Integrations
+  const [integrationSettings, setIntegrationSettings] = useState(null);
+  const [testingTelegram, setTestingTelegram] = useState(false);
+  const [testingAmo, setTestingAmo] = useState(false);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
@@ -113,7 +117,7 @@ const AdminPanel = () => {
       const [
         contactsRes, siteRes, heroRes, aboutRes, calcRes, sectionsRes, reviewsRes, galleryRes, apiRes, galleryConfigRes,
         gallerySettingsRes, calculatorSettingsRes, stockSettingsRes, reviewsSettingsRes, contactSettingsRes, footerSettingsRes,
-        stockSaunasRes, layoutRes, buttonsRes, modelsConfigRes, modelsSettingsRes, seoRes, faqRes, socialProofRes
+        stockSaunasRes, layoutRes, buttonsRes, modelsConfigRes, modelsSettingsRes, seoRes, faqRes, socialProofRes, integrationsRes
       ] = await Promise.all([
         fetchWithAuth(`${API_URL}/api/admin/contacts`),
         fetch(`${API_URL}/api/settings/site`),
@@ -139,6 +143,7 @@ const AdminPanel = () => {
         fetch(`${API_URL}/api/settings/seo`),
         fetch(`${API_URL}/api/settings/faq`),
         fetch(`${API_URL}/api/settings/social-proof`),
+        fetchWithAuth(`${API_URL}/api/admin/settings/integrations`),
       ]);
 
       setContacts(await contactsRes.json());
@@ -193,6 +198,7 @@ const AdminPanel = () => {
       setSeoSettings(await seoRes.json());
       setFaqSettings(await faqRes.json());
       setSocialProofSettings(await socialProofRes.json());
+      setIntegrationSettings(await integrationsRes.json());
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -514,6 +520,46 @@ const AdminPanel = () => {
     setSocialProofSettings({ ...socialProofSettings, items });
   };
 
+  // Integrations save
+  const saveIntegrationSettings = async () => {
+    setLoading(true);
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/settings/integrations`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(integrationSettings),
+      });
+      showMessage('success', 'Настройки интеграций сохранены');
+    } catch (error) {
+      showMessage('error', 'Ошибка сохранения');
+    }
+    setLoading(false);
+  };
+
+  const testTelegram = async () => {
+    setTestingTelegram(true);
+    try {
+      const res = await fetchWithAuth(`${API_URL}/api/admin/test-telegram`, { method: 'POST' });
+      const data = await res.json();
+      showMessage('success', data.message || 'Тест отправлен');
+    } catch (error) {
+      showMessage('error', error.message || 'Ошибка теста Telegram');
+    }
+    setTestingTelegram(false);
+  };
+
+  const testAmocrm = async () => {
+    setTestingAmo(true);
+    try {
+      const res = await fetchWithAuth(`${API_URL}/api/admin/test-amocrm`, { method: 'POST' });
+      const data = await res.json();
+      showMessage('success', data.message || 'Подключение успешно');
+    } catch (error) {
+      showMessage('error', error.message || 'Ошибка подключения AMO CRM');
+    }
+    setTestingAmo(false);
+  };
+
   // Import model to stock
   const importModelToStock = async (model) => {
     const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
@@ -815,6 +861,7 @@ const AdminPanel = () => {
     { id: 'faq', label: 'FAQ', icon: FileText },
     { id: 'site', label: 'Контакты', icon: Phone },
     { id: 'seo', label: 'SEO', icon: FileText },
+    { id: 'integrations', label: 'Интеграции', icon: Settings },
     { id: 'sections', label: 'Порядок', icon: GripVertical },
   ];
 
@@ -2518,6 +2565,149 @@ const AdminPanel = () => {
                       {seoSettings.description_pl || 'Описание страницы...'}
                     </p>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Integrations Tab */}
+          {activeTab === 'integrations' && !loading && integrationSettings && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Интеграции</h2>
+                <button onClick={saveIntegrationSettings} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
+                  <Save size={16} /> Сохранить
+                </button>
+              </div>
+              <p className="text-sm text-[#8C8C8C] mb-6">Настройте уведомления о заявках. Сначала сохраните данные, затем используйте кнопки тестирования.</p>
+
+              {/* Telegram */}
+              <div className="border border-black/5 p-6 mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#229ED9] flex items-center justify-center text-white font-bold text-lg">T</div>
+                    <div>
+                      <h3 className="font-semibold">Telegram</h3>
+                      <p className="text-xs text-[#8C8C8C]">Уведомления о заявках в Telegram</p>
+                    </div>
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={integrationSettings.telegram_enabled}
+                      onChange={(e) => setIntegrationSettings({ ...integrationSettings, telegram_enabled: e.target.checked })}
+                      className="w-5 h-5 accent-[#C6A87C]"
+                    />
+                    <span className="text-sm">{integrationSettings.telegram_enabled ? 'Включено' : 'Выключено'}</span>
+                  </label>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Токен бота</label>
+                    <input
+                      type="text"
+                      value={integrationSettings.telegram_bot_token}
+                      onChange={(e) => setIntegrationSettings({ ...integrationSettings, telegram_bot_token: e.target.value })}
+                      placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+                      className="w-full p-2 border border-black/10 text-sm font-mono"
+                    />
+                    <p className="text-[10px] text-[#8C8C8C] mt-1">Получите через @BotFather → /newbot</p>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Chat ID</label>
+                    <input
+                      type="text"
+                      value={integrationSettings.telegram_chat_id}
+                      onChange={(e) => setIntegrationSettings({ ...integrationSettings, telegram_chat_id: e.target.value })}
+                      placeholder="-1001234567890 или 123456789"
+                      className="w-full p-2 border border-black/10 text-sm font-mono"
+                    />
+                    <p className="text-[10px] text-[#8C8C8C] mt-1">Узнайте через @userinfobot (личные) или @getmyid_bot (группа)</p>
+                  </div>
+                  <button
+                    onClick={testTelegram}
+                    disabled={testingTelegram || !integrationSettings.telegram_bot_token || !integrationSettings.telegram_chat_id}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#229ED9] text-white text-sm hover:bg-[#1a8ec5] disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {testingTelegram ? <Loader2 size={14} className="animate-spin" /> : null}
+                    Отправить тестовое сообщение
+                  </button>
+                </div>
+              </div>
+
+              {/* AMO CRM */}
+              <div className="border border-black/5 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#339DC7] flex items-center justify-center text-white font-bold text-sm">AMO</div>
+                    <div>
+                      <h3 className="font-semibold">AMO CRM</h3>
+                      <p className="text-xs text-[#8C8C8C]">Создание сделок при новых заявках</p>
+                    </div>
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={integrationSettings.amocrm_enabled}
+                      onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_enabled: e.target.checked })}
+                      className="w-5 h-5 accent-[#C6A87C]"
+                    />
+                    <span className="text-sm">{integrationSettings.amocrm_enabled ? 'Включено' : 'Выключено'}</span>
+                  </label>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Домен AMO CRM</label>
+                    <input
+                      type="text"
+                      value={integrationSettings.amocrm_domain}
+                      onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_domain: e.target.value })}
+                      placeholder="mycompany.amocrm.ru"
+                      className="w-full p-2 border border-black/10 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Access Token</label>
+                    <textarea
+                      value={integrationSettings.amocrm_access_token}
+                      onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_access_token: e.target.value })}
+                      placeholder="Длинный токен из настроек интеграции AMO"
+                      className="w-full p-2 border border-black/10 text-sm h-20 font-mono resize-none"
+                    />
+                    <p className="text-[10px] text-[#8C8C8C] mt-1">Настройки → Интеграции → создайте интеграцию → скопируйте access token</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Pipeline ID (необязательно)</label>
+                      <input
+                        type="number"
+                        value={integrationSettings.amocrm_pipeline_id || ''}
+                        onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_pipeline_id: parseInt(e.target.value) || 0 })}
+                        placeholder="ID воронки"
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Ответственный ID (необязательно)</label>
+                      <input
+                        type="number"
+                        value={integrationSettings.amocrm_responsible_user_id || ''}
+                        onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_responsible_user_id: parseInt(e.target.value) || 0 })}
+                        placeholder="ID пользователя"
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={testAmocrm}
+                    disabled={testingAmo || !integrationSettings.amocrm_domain || !integrationSettings.amocrm_access_token}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#339DC7] text-white text-sm hover:bg-[#2a8bb3] disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {testingAmo ? <Loader2 size={14} className="animate-spin" /> : null}
+                    Проверить подключение
+                  </button>
                 </div>
               </div>
             </div>

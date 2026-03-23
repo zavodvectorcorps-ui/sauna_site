@@ -320,6 +320,115 @@ class SeoSettings(BaseModel):
     og_image: str = ""
     canonical_url: str = ""
 
+class IntegrationSettings(BaseModel):
+    id: str = "integration_settings"
+    telegram_enabled: bool = False
+    telegram_bot_token: str = ""
+    telegram_chat_id: str = ""
+    amocrm_enabled: bool = False
+    amocrm_domain: str = ""
+    amocrm_access_token: str = ""
+    amocrm_pipeline_id: int = 0
+    amocrm_responsible_user_id: int = 0
+
+# ============= Notification Helpers =============
+
+async def send_telegram_notification(data: dict):
+    """Send notification to Telegram if configured."""
+    try:
+        settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
+        if not settings or not settings.get("telegram_enabled") or not settings.get("telegram_bot_token") or not settings.get("telegram_chat_id"):
+            return
+        
+        msg_type = data.get("type", "contact")
+        if msg_type == "model_inquiry":
+            text = (
+                f"🔔 <b>Новая заявка на модель</b>\n\n"
+                f"<b>Модель:</b> {data.get('model', '—')}\n"
+                f"<b>Сумма:</b> {data.get('total', '—')} PLN\n"
+                f"<b>Имя:</b> {data.get('name', '—')}\n"
+                f"<b>Телефон:</b> {data.get('phone', '—')}\n"
+                f"<b>Email:</b> {data.get('email', '—')}\n"
+            )
+            if data.get("message"):
+                text += f"<b>Комментарий:</b> {data['message']}\n"
+        else:
+            text = (
+                f"📩 <b>Новое сообщение с сайта</b>\n\n"
+                f"<b>Имя:</b> {data.get('name', '—')}\n"
+                f"<b>Телефон:</b> {data.get('phone', '—')}\n"
+                f"<b>Email:</b> {data.get('email', '—')}\n"
+                f"<b>Сообщение:</b> {data.get('message', '—')}\n"
+            )
+        
+        token = settings["telegram_bot_token"]
+        chat_id = settings["telegram_chat_id"]
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            await client.post(url, json={
+                "chat_id": chat_id,
+                "text": text,
+                "parse_mode": "HTML"
+            })
+            logger.info("Telegram notification sent")
+    except Exception as e:
+        logger.error(f"Telegram notification error: {e}")
+
+async def send_amocrm_lead(data: dict):
+    """Create a lead in AMO CRM if configured."""
+    try:
+        settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
+        if not settings or not settings.get("amocrm_enabled") or not settings.get("amocrm_domain") or not settings.get("amocrm_access_token"):
+            return
+        
+        domain = settings["amocrm_domain"].rstrip("/")
+        if not domain.startswith("http"):
+            domain = f"https://{domain}"
+        token = settings["amocrm_access_token"]
+        
+        msg_type = data.get("type", "contact")
+        lead_name = f"WM-Sauna: {data.get('model', 'Запрос')}" if msg_type == "model_inquiry" else f"WM-Sauna: Запрос с сайта"
+        
+        note_text = f"Имя: {data.get('name', '')}\nТелефон: {data.get('phone', '')}\nEmail: {data.get('email', '')}"
+        if data.get("model"):
+            note_text += f"\nМодель: {data['model']}"
+        if data.get("total"):
+            note_text += f"\nСумма: {data['total']} PLN"
+        if data.get("message"):
+            note_text += f"\nКомментарий: {data['message']}"
+        
+        lead_data = [{
+            "name": lead_name,
+            "price": data.get("total", 0) if isinstance(data.get("total"), (int, float)) else 0,
+            "_embedded": {
+                "contacts": [{
+                    "first_name": data.get("name", ""),
+                    "custom_fields_values": [
+                        {"field_code": "PHONE", "values": [{"value": data.get("phone", ""), "enum_code": "WORK"}]},
+                        {"field_code": "EMAIL", "values": [{"value": data.get("email", ""), "enum_code": "WORK"}]},
+                    ]
+                }]
+            }
+        }]
+        
+        if settings.get("amocrm_pipeline_id"):
+            lead_data[0]["pipeline_id"] = settings["amocrm_pipeline_id"]
+        if settings.get("amocrm_responsible_user_id"):
+            lead_data[0]["responsible_user_id"] = settings["amocrm_responsible_user_id"]
+        
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(
+                f"{domain}/api/v4/leads/complex",
+                json=lead_data,
+                headers=headers
+            )
+            logger.info(f"AMO CRM response: {resp.status_code}")
+    except Exception as e:
+        logger.error(f"AMO CRM error: {e}")
+
 # ============= Public Routes =============
 
 @api_router.get("/")
@@ -339,6 +448,13 @@ async def submit_contact_form(form_data: ContactFormCreate):
         doc['created_at'] = doc['created_at'].isoformat()
         await db.contact_forms.insert_one(doc)
         logger.info(f"New contact form submitted: {contact.name} - {contact.phone}")
+        
+        # Send notifications (fire and forget)
+        notification_data = form_data.model_dump()
+        import asyncio
+        asyncio.create_task(send_telegram_notification(notification_data))
+        asyncio.create_task(send_amocrm_lead(notification_data))
+        
         return contact
     except Exception as e:
         logger.error(f"Error submitting contact form: {e}")
@@ -538,6 +654,13 @@ async def get_social_proof_public():
     settings = await db.settings.find_one({"id": "social_proof_settings"}, {"_id": 0})
     if not settings:
         return SocialProofSettings().model_dump()
+    return settings
+
+@api_router.get("/admin/settings/integrations")
+async def get_integration_settings(username: str = Depends(verify_admin)):
+    settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
+    if not settings:
+        return IntegrationSettings().model_dump()
     return settings
 
 @api_router.get("/settings/models")
@@ -749,6 +872,60 @@ async def update_social_proof(settings: SocialProofSettings, username: str = Dep
         upsert=True
     )
     return {"status": "success"}
+
+@api_router.put("/admin/settings/integrations")
+async def update_integration_settings(settings: IntegrationSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "integration_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.post("/admin/test-telegram")
+async def test_telegram(username: str = Depends(verify_admin)):
+    """Send a test message to verify Telegram configuration."""
+    settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
+    if not settings or not settings.get("telegram_bot_token") or not settings.get("telegram_chat_id"):
+        raise HTTPException(status_code=400, detail="Telegram не настроен")
+    try:
+        token = settings["telegram_bot_token"]
+        chat_id = settings["telegram_chat_id"]
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.post(url, json={
+                "chat_id": chat_id,
+                "text": "✅ WM-Sauna: тестовое уведомление. Telegram подключён!",
+                "parse_mode": "HTML"
+            })
+            if resp.status_code == 200:
+                return {"status": "success", "message": "Тестовое сообщение отправлено"}
+            else:
+                error_data = resp.json()
+                raise HTTPException(status_code=400, detail=f"Ошибка Telegram: {error_data.get('description', resp.status_code)}")
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=502, detail=f"Ошибка подключения: {str(e)}")
+
+@api_router.post("/admin/test-amocrm")
+async def test_amocrm(username: str = Depends(verify_admin)):
+    """Test AMO CRM connection."""
+    settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
+    if not settings or not settings.get("amocrm_domain") or not settings.get("amocrm_access_token"):
+        raise HTTPException(status_code=400, detail="AMO CRM не настроен")
+    try:
+        domain = settings["amocrm_domain"].rstrip("/")
+        if not domain.startswith("http"):
+            domain = f"https://{domain}"
+        headers = {"Authorization": f"Bearer {settings['amocrm_access_token']}"}
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(f"{domain}/api/v4/account", headers=headers)
+            if resp.status_code == 200:
+                account = resp.json()
+                return {"status": "success", "message": f"Подключено к: {account.get('name', domain)}"}
+            else:
+                raise HTTPException(status_code=400, detail=f"AMO CRM ошибка: {resp.status_code}")
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=502, detail=f"Ошибка подключения: {str(e)}")
 
 @api_router.put("/admin/settings/models")
 async def update_models_config(config: ModelsConfig, username: str = Depends(verify_admin)):
