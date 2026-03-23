@@ -8,7 +8,6 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const Gallery = () => {
   const { t, language } = useLanguage();
-  const [activeFilter, setActiveFilter] = useState('all');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [images, setImages] = useState([]);
@@ -16,12 +15,6 @@ export const Gallery = () => {
   const [galleryConfig, setGalleryConfig] = useState({ hidden_api_images: [], show_api_images: true });
   const [sectionContent, setSectionContent] = useState(null);
   const sliderRef = useRef(null);
-
-  const filters = [
-    { id: 'all', label: t('gallery.filter_all') },
-    { id: 'kwadro', label: t('gallery.filter_kwadro') },
-    { id: 'beczka', label: t('gallery.filter_barrel') },
-  ];
 
   useEffect(() => {
     fetchGalleryData();
