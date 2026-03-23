@@ -624,10 +624,12 @@ const AdminPanel = () => {
   const tabs = [
     { id: 'contacts', label: 'Сообщения', icon: MessageSquare },
     { id: 'layout', label: 'Оформление', icon: LayoutGrid },
+    { id: 'buttons', label: 'Кнопки', icon: Settings },
     { id: 'content', label: 'Тексты', icon: FileText },
     { id: 'hero', label: 'Hero', icon: Image },
     { id: 'about', label: 'О компании', icon: FileText },
     { id: 'gallery', label: 'Галерея', icon: Image },
+    { id: 'api_images', label: 'Фото из API', icon: Eye },
     { id: 'stock_saunas', label: 'В наличии', icon: Users },
     { id: 'calculator', label: 'Калькулятор', icon: LayoutGrid },
     { id: 'reviews', label: 'Отзывы', icon: Star },
