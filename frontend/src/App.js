@@ -25,6 +25,25 @@ const sectionComponents = {
 
 const MainContent = () => {
   const { sectionOrder, loading } = useSettings();
+  const [layoutSettings, setLayoutSettings] = React.useState(null);
+
+  React.useEffect(() => {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/api/settings/layout`)
+      .then(res => res.json())
+      .then(data => {
+        setLayoutSettings(data);
+        // Apply CSS variables for section spacing
+        const paddingMap = {
+          small: { top: 40, bottom: 40 },
+          medium: { top: 60, bottom: 60 },
+          large: { top: 80, bottom: 80 },
+        };
+        const padding = paddingMap[data.section_spacing] || { top: data.section_padding_top || 80, bottom: data.section_padding_bottom || 80 };
+        document.documentElement.style.setProperty('--section-padding-top', `${padding.top}px`);
+        document.documentElement.style.setProperty('--section-padding-bottom', `${padding.bottom}px`);
+      })
+      .catch(err => console.error('Error loading layout settings:', err));
+  }, []);
 
   if (loading) {
     return (
