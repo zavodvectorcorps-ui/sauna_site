@@ -37,6 +37,7 @@ const AdminPanel = () => {
   // Stock saunas and layout
   const [stockSaunas, setStockSaunas] = useState([]);
   const [layoutSettings, setLayoutSettings] = useState(null);
+  const [buttonConfig, setButtonConfig] = useState(null);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
