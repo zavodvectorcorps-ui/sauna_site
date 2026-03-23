@@ -1513,6 +1513,38 @@ const AdminPanel = () => {
             </div>
           )}
 
+          {/* Stock Saunas Tab */}
+          {activeTab === 'stock_saunas' && !loading && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Сауны в наличии</h2>
+                <button onClick={addStockSauna} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
+                  <Plus size={16} /> Добавить сауну
+                </button>
+              </div>
+              <p className="text-sm text-[#8C8C8C] mb-6">Управляйте карточками саун, которые отображаются в блоке "В наличии"</p>
+              
+              {stockSaunas.length === 0 ? (
+                <div className="text-center py-12 text-[#8C8C8C] border border-dashed border-black/10">
+                  <p>Нет саун в наличии</p>
+                  <p className="text-sm mt-2">Нажмите "Добавить сауну" чтобы создать первую карточку</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {stockSaunas.map((sauna) => (
+                    <StockSaunaEditor 
+                      key={sauna.id} 
+                      sauna={sauna} 
+                      onSave={saveStockSauna} 
+                      onDelete={() => deleteStockSauna(sauna.id)}
+                      onImageUpload={handleImageUpload}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Sections Tab */}
           {activeTab === 'sections' && !loading && sectionOrder && (
             <div>
