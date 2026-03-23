@@ -611,6 +611,51 @@ async def delete_gallery_image(image_id: str, username: str = Depends(verify_adm
         raise HTTPException(status_code=404, detail="Image not found")
     return {"status": "success"}
 
+# Stock Saunas management
+@api_router.get("/admin/stock-saunas")
+async def get_all_stock_saunas(username: str = Depends(verify_admin)):
+    saunas = await db.stock_saunas.find({}, {"_id": 0}).sort("sort_order", 1).to_list(100)
+    return saunas
+
+@api_router.post("/admin/stock-saunas")
+async def add_stock_sauna(sauna: StockSauna, username: str = Depends(verify_admin)):
+    await db.stock_saunas.insert_one(sauna.model_dump())
+    return sauna
+
+@api_router.put("/admin/stock-saunas/{sauna_id}")
+async def update_stock_sauna(sauna_id: str, sauna: StockSauna, username: str = Depends(verify_admin)):
+    sauna.id = sauna_id
+    await db.stock_saunas.update_one(
+        {"id": sauna_id},
+        {"$set": sauna.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.delete("/admin/stock-saunas/{sauna_id}")
+async def delete_stock_sauna(sauna_id: str, username: str = Depends(verify_admin)):
+    result = await db.stock_saunas.delete_one({"id": sauna_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Sauna not found")
+    return {"status": "success"}
+
+# Layout settings
+@api_router.get("/admin/settings/layout")
+async def get_layout_settings(username: str = Depends(verify_admin)):
+    settings = await db.settings.find_one({"id": "layout_settings"}, {"_id": 0})
+    if not settings:
+        return LayoutSettings().model_dump()
+    return settings
+
+@api_router.put("/admin/settings/layout")
+async def update_layout_settings(settings: LayoutSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "layout_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
 # Image upload
 @api_router.post("/admin/upload")
 async def upload_image(
