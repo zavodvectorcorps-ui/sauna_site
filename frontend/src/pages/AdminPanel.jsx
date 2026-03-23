@@ -515,14 +515,15 @@ const AdminPanel = () => {
 
   const tabs = [
     { id: 'contacts', label: 'Сообщения', icon: MessageSquare },
-    { id: 'site', label: 'Настройки', icon: Settings },
+    { id: 'site', label: 'Контакты', icon: Settings },
+    { id: 'content', label: 'Тексты разделов', icon: FileText },
     { id: 'hero', label: 'Hero', icon: Image },
     { id: 'about', label: 'О компании', icon: FileText },
     { id: 'calculator', label: 'Калькулятор', icon: LayoutGrid },
     { id: 'reviews', label: 'Отзывы', icon: Star },
     { id: 'gallery', label: 'Свои фото', icon: Image },
     { id: 'api_images', label: 'Фото из API', icon: Eye },
-    { id: 'sections', label: 'Секции', icon: GripVertical },
+    { id: 'sections', label: 'Порядок', icon: GripVertical },
   ];
 
   const sectionNames = {
