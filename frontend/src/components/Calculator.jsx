@@ -30,6 +30,23 @@ export const Calculator = () => {
     fetchData();
   }, []);
 
+  // Listen for model selection from Models component
+  useEffect(() => {
+    const handleSelectModel = (event) => {
+      const { modelId } = event.detail;
+      if (data?.models) {
+        const model = data.models.find(m => m.id === modelId);
+        if (model) {
+          setSelectedModel(model);
+          setStep(1); // Go to variant selection or options
+        }
+      }
+    };
+
+    window.addEventListener('selectModel', handleSelectModel);
+    return () => window.removeEventListener('selectModel', handleSelectModel);
+  }, [data]);
+
   const fetchData = async () => {
     try {
       const [pricesRes, contentRes] = await Promise.all([
