@@ -927,6 +927,110 @@ const AdminPanel = () => {
             </div>
           )}
 
+          {/* Buttons Tab */}
+          {activeTab === 'buttons' && !loading && buttonConfig && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Настройка кнопок</h2>
+                <button onClick={saveButtonConfig} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
+                  <Save size={16} /> Сохранить
+                </button>
+              </div>
+              <p className="text-sm text-[#8C8C8C] mb-6">Настройте действия и тексты кнопок на сайте</p>
+              
+              <div className="space-y-6">
+                {Object.entries(buttonConfig.buttons || {}).map(([buttonId, button]) => {
+                  const buttonLabels = {
+                    hero_primary: 'Главная кнопка (Hero)',
+                    hero_secondary: 'Вторая кнопка (Hero)',
+                    calculator_submit: 'Отправить запрос (Калькулятор)',
+                    stock_cta: 'Кнопка карточки (В наличии)',
+                    contact_submit: 'Отправить (Контакты)',
+                  };
+                  
+                  return (
+                    <div key={buttonId} className="border border-black/5 p-6">
+                      <h3 className="font-semibold mb-4">{buttonLabels[buttonId] || buttonId}</h3>
+                      
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <label className="block text-xs text-[#8C8C8C] mb-1">Текст (PL)</label>
+                          <input
+                            type="text"
+                            value={button.text_pl || ''}
+                            onChange={(e) => updateButton(buttonId, 'text_pl', e.target.value)}
+                            className="w-full p-2 border border-black/10 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-[#8C8C8C] mb-1">Текст (EN)</label>
+                          <input
+                            type="text"
+                            value={button.text_en || ''}
+                            onChange={(e) => updateButton(buttonId, 'text_en', e.target.value)}
+                            className="w-full p-2 border border-black/10 text-sm"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs text-[#8C8C8C] mb-1">Действие</label>
+                          <select
+                            value={button.action || 'anchor'}
+                            onChange={(e) => updateButton(buttonId, 'action', e.target.value)}
+                            className="w-full p-2 border border-black/10 text-sm"
+                          >
+                            <option value="anchor">Прокрутка к разделу</option>
+                            <option value="link">Внешняя ссылка</option>
+                            <option value="form">Открыть форму</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-[#8C8C8C] mb-1">
+                            {button.action === 'anchor' ? 'Раздел (якорь)' : button.action === 'link' ? 'URL ссылки' : 'Форма'}
+                          </label>
+                          {button.action === 'anchor' ? (
+                            <select
+                              value={button.target || '#calculator'}
+                              onChange={(e) => updateButton(buttonId, 'target', e.target.value)}
+                              className="w-full p-2 border border-black/10 text-sm"
+                            >
+                              <option value="#hero">Hero (Главный экран)</option>
+                              <option value="#calculator">Калькулятор</option>
+                              <option value="#gallery">Галерея</option>
+                              <option value="#stock">Сауны в наличии</option>
+                              <option value="#reviews">Отзывы</option>
+                              <option value="#about">О компании</option>
+                              <option value="#contact">Контакты</option>
+                            </select>
+                          ) : button.action === 'form' ? (
+                            <select
+                              value={button.target || 'contact'}
+                              onChange={(e) => updateButton(buttonId, 'target', e.target.value)}
+                              className="w-full p-2 border border-black/10 text-sm"
+                            >
+                              <option value="contact">Форма контактов</option>
+                              <option value="inquiry">Форма заказа</option>
+                            </select>
+                          ) : (
+                            <input
+                              type="url"
+                              value={button.target || ''}
+                              onChange={(e) => updateButton(buttonId, 'target', e.target.value)}
+                              className="w-full p-2 border border-black/10 text-sm"
+                              placeholder="https://..."
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Content Tab - All Section Texts */}
           {activeTab === 'content' && !loading && gallerySettings && calculatorSettings && stockSettings && reviewsSettings && contactSettings && footerSettings && (
             <div>
