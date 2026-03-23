@@ -121,7 +121,7 @@ Modern responsive website for WM-Sauna - Polish wooden sauna manufacturer and se
 1. **External API Dependency** - Calculator relies on wm-kalkulator.pl which can be temporarily unavailable (Cloudflare 520 errors). Currently shows generic error message.
 
 ## URLs
-- **Frontend:** https://sauna-calculator-2.preview.emergentagent.com
-- **Admin Panel:** https://sauna-calculator-2.preview.emergentagent.com/admin
-- **Backend API:** https://sauna-calculator-2.preview.emergentagent.com/api
+- **Frontend:** https://sauna-shop.preview.emergentagent.com
+- **Admin Panel:** https://sauna-shop.preview.emergentagent.com/admin
+- **Backend API:** https://sauna-shop.preview.emergentagent.com/api
 - **External Calculator API:** https://wm-kalkulator.pl/api/sauna/prices

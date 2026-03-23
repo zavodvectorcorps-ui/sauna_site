@@ -4,6 +4,7 @@ const translations = {
   pl: {
     // Navigation
     nav: {
+      models: 'Modele',
       calculator: 'Kalkulator',
       gallery: 'Realizacje',
       stock: 'Dostępne od ręki',
@@ -104,6 +105,7 @@ const translations = {
   },
   en: {
     nav: {
+      models: 'Models',
       calculator: 'Calculator',
       gallery: 'Projects',
       stock: 'In Stock',
@@ -196,6 +198,7 @@ const translations = {
   },
   ru: {
     nav: {
+      models: 'Модели',
       calculator: 'Калькулятор',
       gallery: 'Реализации',
       stock: 'В наличии',

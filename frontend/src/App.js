@@ -1,8 +1,10 @@
 import React from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider } from "./context/LanguageContext";
 import { SettingsProvider, useSettings } from "./context/SettingsContext";
+import { SeoHead } from "./components/SeoHead";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
 import { Models } from "./components/Models";
@@ -71,6 +73,7 @@ const MainContent = () => {
 const HomePage = () => {
   return (
     <div className="min-h-screen bg-[#F9F9F7]">
+      <SeoHead />
       <Header />
       <main>
         <MainContent />
@@ -82,16 +85,18 @@ const HomePage = () => {
 
 function App() {
   return (
-    <LanguageProvider>
-      <SettingsProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/admin" element={<AdminPanel />} />
-          </Routes>
-        </BrowserRouter>
-      </SettingsProvider>
-    </LanguageProvider>
+    <HelmetProvider>
+      <LanguageProvider>
+        <SettingsProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/admin" element={<AdminPanel />} />
+            </Routes>
+          </BrowserRouter>
+        </SettingsProvider>
+      </LanguageProvider>
+    </HelmetProvider>
   );
 }
 

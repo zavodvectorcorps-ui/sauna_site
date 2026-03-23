@@ -17,6 +17,7 @@ export const Header = () => {
   }, []);
 
   const navLinks = [
+    { href: '#models', label: t('nav.models') || 'Modele' },
     { href: '#calculator', label: t('nav.calculator') },
     { href: '#gallery', label: t('nav.gallery') },
     { href: '#stock', label: t('nav.stock') },

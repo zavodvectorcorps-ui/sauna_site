@@ -41,6 +41,10 @@ const AdminPanel = () => {
   // Models config
   const [modelsConfig, setModelsConfig] = useState(null);
   const [modelsSettings, setModelsSettings] = useState(null);
+  // SEO settings
+  const [seoSettings, setSeoSettings] = useState(null);
+  // Import modal
+  const [showImportModal, setShowImportModal] = useState(false);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
@@ -105,7 +109,7 @@ const AdminPanel = () => {
       const [
         contactsRes, siteRes, heroRes, aboutRes, calcRes, sectionsRes, reviewsRes, galleryRes, apiRes, galleryConfigRes,
         gallerySettingsRes, calculatorSettingsRes, stockSettingsRes, reviewsSettingsRes, contactSettingsRes, footerSettingsRes,
-        stockSaunasRes, layoutRes, buttonsRes
+        stockSaunasRes, layoutRes, buttonsRes, modelsConfigRes, modelsSettingsRes, seoRes
       ] = await Promise.all([
         fetchWithAuth(`${API_URL}/api/admin/contacts`),
         fetch(`${API_URL}/api/settings/site`),
@@ -126,6 +130,9 @@ const AdminPanel = () => {
         fetchWithAuth(`${API_URL}/api/admin/stock-saunas`),
         fetch(`${API_URL}/api/settings/layout`),
         fetch(`${API_URL}/api/settings/buttons`),
+        fetch(`${API_URL}/api/settings/models`),
+        fetch(`${API_URL}/api/settings/models-content`),
+        fetch(`${API_URL}/api/settings/seo`),
       ]);
 
       setContacts(await contactsRes.json());
@@ -175,6 +182,9 @@ const AdminPanel = () => {
       setStockSaunas(await stockSaunasRes.json());
       setLayoutSettings(await layoutRes.json());
       setButtonConfig(await buttonsRes.json());
+      setModelsConfig(await modelsConfigRes.json());
+      setModelsSettings(await modelsSettingsRes.json());
+      setSeoSettings(await seoRes.json());
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -385,6 +395,100 @@ const AdminPanel = () => {
       showMessage('error', 'Ошибка сохранения');
     }
     setLoading(false);
+  };
+
+  // Models config save
+  const saveModelsConfig = async () => {
+    setLoading(true);
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/settings/models`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(modelsConfig),
+      });
+      showMessage('success', 'Конфигурация моделей сохранена');
+    } catch (error) {
+      showMessage('error', 'Ошибка сохранения');
+    }
+    setLoading(false);
+  };
+
+  const saveModelsSettings = async () => {
+    setLoading(true);
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/settings/models-content`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(modelsSettings),
+      });
+      showMessage('success', 'Тексты блока моделей сохранены');
+    } catch (error) {
+      showMessage('error', 'Ошибка сохранения');
+    }
+    setLoading(false);
+  };
+
+  // SEO settings save
+  const saveSeoSettings = async () => {
+    setLoading(true);
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/settings/seo`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(seoSettings),
+      });
+      showMessage('success', 'SEO настройки сохранены');
+    } catch (error) {
+      showMessage('error', 'Ошибка сохранения');
+    }
+    setLoading(false);
+  };
+
+  // Import model to stock
+  const importModelToStock = async (model) => {
+    const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
+    const imageUrl = model.imageUrl?.startsWith('http') ? model.imageUrl : `${CALCULATOR_API_URL}${model.imageUrl}`;
+    const newSauna = {
+      id: `sauna_import_${Date.now()}`,
+      name: model.name,
+      image: imageUrl,
+      price: model.basePrice,
+      discount: model.discount || 0,
+      capacity: model.capacity || '',
+      steam_room_size: model.steamRoomSize || '',
+      relax_room_size: model.relaxRoomSize || '',
+      features: [],
+      active: true,
+      sort_order: stockSaunas.length,
+    };
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/stock-saunas`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newSauna),
+      });
+      showMessage('success', `Модель "${model.name}" добавлена в наличии`);
+      setShowImportModal(false);
+      fetchAllData();
+    } catch (error) {
+      showMessage('error', 'Ошибка импорта');
+    }
+  };
+
+  // Toggle model in models showcase
+  const toggleShowcaseModel = (modelId) => {
+    const enabled = modelsConfig.enabled_models || [];
+    if (enabled.includes(modelId)) {
+      setModelsConfig({
+        ...modelsConfig,
+        enabled_models: enabled.filter(id => id !== modelId),
+      });
+    } else {
+      setModelsConfig({
+        ...modelsConfig,
+        enabled_models: [...enabled, modelId],
+      });
+    }
   };
 
   const updateButton = (buttonId, field, value) => {
@@ -631,17 +735,20 @@ const AdminPanel = () => {
     { id: 'content', label: 'Тексты', icon: FileText },
     { id: 'hero', label: 'Hero', icon: Image },
     { id: 'about', label: 'О компании', icon: FileText },
+    { id: 'models', label: 'Модели', icon: LayoutGrid },
     { id: 'gallery', label: 'Галерея', icon: Image },
     { id: 'api_images', label: 'Фото из API', icon: Eye },
     { id: 'stock_saunas', label: 'В наличии', icon: Users },
     { id: 'calculator', label: 'Калькулятор', icon: LayoutGrid },
     { id: 'reviews', label: 'Отзывы', icon: Star },
     { id: 'site', label: 'Контакты', icon: Phone },
+    { id: 'seo', label: 'SEO', icon: FileText },
     { id: 'sections', label: 'Порядок', icon: GripVertical },
   ];
 
   const sectionNames = {
     hero: 'Hero (Главный экран)',
+    models: 'Модели саун',
     calculator: 'Калькулятор',
     gallery: 'Галерея',
     stock: 'Сауны в наличии',
@@ -1000,6 +1107,7 @@ const AdminPanel = () => {
                               className="w-full p-2 border border-black/10 text-sm"
                             >
                               <option value="#hero">Hero (Главный экран)</option>
+                              <option value="#models">Модели саун</option>
                               <option value="#calculator">Калькулятор</option>
                               <option value="#gallery">Галерея</option>
                               <option value="#stock">Сауны в наличии</option>
@@ -1723,16 +1831,181 @@ const AdminPanel = () => {
             </div>
           )}
 
+          {/* Models Showcase Tab */}
+          {activeTab === 'models' && !loading && modelsConfig && modelsSettings && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Блок «Модели саун»</h2>
+                <div className="flex gap-2">
+                  <button onClick={saveModelsSettings} className="flex items-center gap-2 bg-[#1A1A1A] text-white px-4 py-2 hover:bg-black text-sm">
+                    <Save size={16} /> Тексты
+                  </button>
+                  <button onClick={saveModelsConfig} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060] text-sm">
+                    <Save size={16} /> Конфигурация
+                  </button>
+                </div>
+              </div>
+
+              {/* Toggle section visibility */}
+              <div className="mb-6 p-4 bg-[#F9F9F7] border border-black/5">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={modelsConfig.show_section}
+                    onChange={(e) => setModelsConfig({ ...modelsConfig, show_section: e.target.checked })}
+                    className="w-5 h-5 accent-[#C6A87C]"
+                  />
+                  <div>
+                    <span className="font-medium">Показывать блок «Модели саун» на сайте</span>
+                    <p className="text-sm text-[#8C8C8C]">Если выключено, блок не отображается на главной странице</p>
+                  </div>
+                </label>
+              </div>
+
+              {/* Section texts */}
+              <div className="border border-black/5 p-6 mb-6">
+                <h3 className="font-semibold mb-4">Тексты блока</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (PL)</label>
+                    <input
+                      type="text"
+                      value={modelsSettings.title_pl}
+                      onChange={(e) => setModelsSettings({ ...modelsSettings, title_pl: e.target.value })}
+                      className="w-full p-2 border border-black/10 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (EN)</label>
+                    <input
+                      type="text"
+                      value={modelsSettings.title_en}
+                      onChange={(e) => setModelsSettings({ ...modelsSettings, title_en: e.target.value })}
+                      className="w-full p-2 border border-black/10 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (PL)</label>
+                    <textarea
+                      value={modelsSettings.subtitle_pl}
+                      onChange={(e) => setModelsSettings({ ...modelsSettings, subtitle_pl: e.target.value })}
+                      className="w-full p-2 border border-black/10 text-sm h-16"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (EN)</label>
+                    <textarea
+                      value={modelsSettings.subtitle_en}
+                      onChange={(e) => setModelsSettings({ ...modelsSettings, subtitle_en: e.target.value })}
+                      className="w-full p-2 border border-black/10 text-sm h-16"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Model selection */}
+              <div className="border border-black/5 p-6">
+                <h3 className="font-semibold mb-2">Выбор моделей</h3>
+                <p className="text-sm text-[#8C8C8C] mb-4">
+                  Отметьте модели для отображения. Если ничего не выбрано — показываются все.
+                </p>
+                {apiData ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {apiData.models.filter(m => m.active).map((model) => {
+                      const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
+                      const imgUrl = model.imageUrl?.startsWith('http') ? model.imageUrl : `${CALCULATOR_API_URL}${model.imageUrl}`;
+                      const isEnabled = modelsConfig.enabled_models.length === 0 || modelsConfig.enabled_models.includes(model.id);
+                      return (
+                        <label
+                          key={model.id}
+                          className={`flex items-center gap-3 p-3 border cursor-pointer transition-all ${
+                            isEnabled ? 'border-[#C6A87C] bg-[#C6A87C]/5' : 'border-black/10 hover:border-[#C6A87C]/50'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isEnabled}
+                            onChange={() => toggleShowcaseModel(model.id)}
+                            className="accent-[#C6A87C] flex-shrink-0"
+                          />
+                          <div className="w-14 h-14 bg-[#F2F2F0] overflow-hidden flex-shrink-0">
+                            <img src={imgUrl} alt={model.name} className="w-full h-full object-cover" loading="lazy" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium truncate">{model.name}</p>
+                            <p className="text-xs text-[#C6A87C]">{model.basePrice?.toLocaleString()} PLN</p>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-[#8C8C8C]">
+                    <p>Не удалось загрузить данные из API калькулятора.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Stock Saunas Tab */}
           {activeTab === 'stock_saunas' && !loading && (
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-[#1A1A1A]">Сауны в наличии</h2>
-                <button onClick={addStockSauna} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
-                  <Plus size={16} /> Добавить сауну
-                </button>
+                <div className="flex gap-2">
+                  {apiData && (
+                    <button onClick={() => setShowImportModal(true)} className="flex items-center gap-2 bg-[#1A1A1A] text-white px-4 py-2 hover:bg-black text-sm">
+                      <Plus size={16} /> Из каталога
+                    </button>
+                  )}
+                  <button onClick={addStockSauna} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060] text-sm">
+                    <Plus size={16} /> Добавить вручную
+                  </button>
+                </div>
               </div>
-              <p className="text-sm text-[#8C8C8C] mb-6">Управляйте карточками саун, которые отображаются в блоке "В наличии"</p>
+              <p className="text-sm text-[#8C8C8C] mb-6">Управляйте карточками саун в блоке "В наличии". Можно добавить вручную или импортировать из каталога моделей.</p>
+              
+              {/* Import from catalog modal */}
+              {showImportModal && apiData && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowImportModal(false)}>
+                  <div className="bg-white max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold">Импорт из каталога моделей</h3>
+                      <button onClick={() => setShowImportModal(false)} className="p-2 hover:bg-[#F9F9F7]">
+                        <X size={20} />
+                      </button>
+                    </div>
+                    <p className="text-sm text-[#8C8C8C] mb-4">Выберите модель для добавления в раздел "В наличии"</p>
+                    <div className="space-y-2">
+                      {apiData.models.filter(m => m.active).map((model) => {
+                        const CALC_URL = 'https://wm-kalkulator.pl';
+                        const imgUrl = model.imageUrl?.startsWith('http') ? model.imageUrl : `${CALC_URL}${model.imageUrl}`;
+                        return (
+                          <div key={model.id} className="flex items-center gap-4 p-3 border border-black/5 hover:border-[#C6A87C] transition-colors">
+                            <div className="w-16 h-16 bg-[#F2F2F0] overflow-hidden flex-shrink-0">
+                              <img src={imgUrl} alt={model.name} className="w-full h-full object-cover" loading="lazy" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate">{model.name}</p>
+                              <p className="text-xs text-[#8C8C8C]">
+                                {model.basePrice?.toLocaleString()} PLN
+                                {model.capacity && ` • ${model.capacity} os.`}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => importModelToStock(model)}
+                              className="flex-shrink-0 px-4 py-2 bg-[#C6A87C] text-white text-sm hover:bg-[#B09060] transition-colors"
+                            >
+                              Добавить
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
               
               {stockSaunas.length === 0 ? (
                 <div className="text-center py-12 text-[#8C8C8C] border border-dashed border-black/10">
@@ -1752,6 +2025,157 @@ const AdminPanel = () => {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* SEO Tab */}
+          {activeTab === 'seo' && !loading && seoSettings && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#1A1A1A]">SEO-оптимизация</h2>
+                <button onClick={saveSeoSettings} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
+                  <Save size={16} /> Сохранить
+                </button>
+              </div>
+              <p className="text-sm text-[#8C8C8C] mb-6">Настройте мета-теги для поисковых систем. Эти данные используются Google и другими поисковиками.</p>
+
+              <div className="space-y-6">
+                {/* Title */}
+                <div className="border border-black/5 p-6">
+                  <h3 className="font-semibold mb-4">Title (заголовок страницы)</h3>
+                  <p className="text-xs text-[#8C8C8C] mb-3">Отображается во вкладке браузера и в результатах поиска. Рекомендуется до 60 символов.</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Title (PL)</label>
+                      <input
+                        type="text"
+                        value={seoSettings.title_pl}
+                        onChange={(e) => setSeoSettings({ ...seoSettings, title_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                      <span className="text-[10px] text-[#8C8C8C]">{seoSettings.title_pl?.length || 0}/60</span>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Title (EN)</label>
+                      <input
+                        type="text"
+                        value={seoSettings.title_en}
+                        onChange={(e) => setSeoSettings({ ...seoSettings, title_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                      <span className="text-[10px] text-[#8C8C8C]">{seoSettings.title_en?.length || 0}/60</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="border border-black/5 p-6">
+                  <h3 className="font-semibold mb-4">Meta Description</h3>
+                  <p className="text-xs text-[#8C8C8C] mb-3">Описание, которое отображается в результатах поиска. Рекомендуется 120-160 символов.</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Description (PL)</label>
+                      <textarea
+                        value={seoSettings.description_pl}
+                        onChange={(e) => setSeoSettings({ ...seoSettings, description_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-20"
+                      />
+                      <span className="text-[10px] text-[#8C8C8C]">{seoSettings.description_pl?.length || 0}/160</span>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Description (EN)</label>
+                      <textarea
+                        value={seoSettings.description_en}
+                        onChange={(e) => setSeoSettings({ ...seoSettings, description_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-20"
+                      />
+                      <span className="text-[10px] text-[#8C8C8C]">{seoSettings.description_en?.length || 0}/160</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Keywords */}
+                <div className="border border-black/5 p-6">
+                  <h3 className="font-semibold mb-4">Keywords (ключевые слова)</h3>
+                  <p className="text-xs text-[#8C8C8C] mb-3">Через запятую. Используются некоторыми поисковиками.</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Keywords (PL)</label>
+                      <textarea
+                        value={seoSettings.keywords_pl}
+                        onChange={(e) => setSeoSettings({ ...seoSettings, keywords_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Keywords (EN)</label>
+                      <textarea
+                        value={seoSettings.keywords_en}
+                        onChange={(e) => setSeoSettings({ ...seoSettings, keywords_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* OG Image & Canonical */}
+                <div className="border border-black/5 p-6">
+                  <h3 className="font-semibold mb-4">Open Graph и прочее</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">OG Image (превью при шеринге)</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          value={seoSettings.og_image}
+                          onChange={(e) => setSeoSettings({ ...seoSettings, og_image: e.target.value })}
+                          className="flex-1 p-2 border border-black/10 text-sm"
+                          placeholder="https://example.com/image.jpg"
+                        />
+                        <label className="flex items-center gap-2 px-4 py-2 bg-[#1A1A1A] text-white cursor-pointer hover:bg-black text-sm">
+                          <Upload size={14} />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleImageUpload(e.target.files[0], (url) => setSeoSettings({ ...seoSettings, og_image: url }))}
+                          />
+                        </label>
+                      </div>
+                      {seoSettings.og_image && (
+                        <img src={seoSettings.og_image} alt="OG Preview" className="mt-2 h-24 object-cover border" />
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Canonical URL</label>
+                      <input
+                        type="url"
+                        value={seoSettings.canonical_url}
+                        onChange={(e) => setSeoSettings({ ...seoSettings, canonical_url: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                        placeholder="https://wm-sauna.pl"
+                      />
+                      <p className="text-[10px] text-[#8C8C8C] mt-1">Основной URL сайта для поисковых систем</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Preview */}
+                <div className="border border-black/5 p-6">
+                  <h3 className="font-semibold mb-4">Предпросмотр в поиске Google</h3>
+                  <div className="bg-white p-4 border border-black/10 max-w-lg">
+                    <p className="text-[#1a0dab] text-lg leading-tight mb-1 truncate" style={{ fontFamily: 'Arial' }}>
+                      {seoSettings.title_pl || 'Заголовок страницы'}
+                    </p>
+                    <p className="text-[#006621] text-sm mb-1 truncate" style={{ fontFamily: 'Arial' }}>
+                      {seoSettings.canonical_url || 'https://wm-sauna.pl'}
+                    </p>
+                    <p className="text-[#545454] text-sm line-clamp-2" style={{ fontFamily: 'Arial' }}>
+                      {seoSettings.description_pl || 'Описание страницы...'}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

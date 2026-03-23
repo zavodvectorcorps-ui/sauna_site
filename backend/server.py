@@ -163,7 +163,7 @@ class StockSauna(BaseModel):
 
 class SectionOrder(BaseModel):
     id: str = "section_order"
-    sections: List[str] = ["hero", "calculator", "gallery", "stock", "reviews", "about", "contact"]
+    sections: List[str] = ["hero", "models", "calculator", "gallery", "stock", "reviews", "about", "contact"]
 
 class LayoutSettings(BaseModel):
     id: str = "layout_settings"
@@ -271,6 +271,17 @@ class FooterSettings(BaseModel):
     tagline_en: str = "Polish premium wooden sauna manufacturer since 2015."
     copyright_pl: str = "Wszelkie prawa zastrzeżone."
     copyright_en: str = "All rights reserved."
+
+class SeoSettings(BaseModel):
+    id: str = "seo_settings"
+    title_pl: str = "WM-Sauna | Producent Saun Drewnianych w Polsce"
+    title_en: str = "WM-Sauna | Wooden Sauna Manufacturer in Poland"
+    description_pl: str = "WM-Sauna - polski producent saun drewnianych premium. Sauny beczki i kwadro z drewna skandynawskiego. Konfiguracja online, dostawa w 5-10 dni."
+    description_en: str = "WM-Sauna - Polish premium wooden sauna manufacturer. Barrel and square saunas from Scandinavian wood. Online configuration, delivery in 5-10 days."
+    keywords_pl: str = "sauna drewniana, producent saun, sauna beczka, sauna kwadro, sauna ogrodowa, sauna polska"
+    keywords_en: str = "wooden sauna, sauna manufacturer, barrel sauna, square sauna, garden sauna, sauna poland"
+    og_image: str = ""
+    canonical_url: str = ""
 
 # ============= Public Routes =============
 
@@ -448,6 +459,13 @@ async def get_button_config_public():
     if not config:
         return ButtonConfig().model_dump()
     return config
+
+@api_router.get("/settings/seo")
+async def get_seo_settings_public():
+    settings = await db.settings.find_one({"id": "seo_settings"}, {"_id": 0})
+    if not settings:
+        return SeoSettings().model_dump()
+    return settings
 
 @api_router.get("/settings/models")
 async def get_models_config_public():
@@ -628,6 +646,15 @@ async def update_button_config(config: ButtonConfig, username: str = Depends(ver
     await db.settings.update_one(
         {"id": "button_config"},
         {"$set": config.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/seo")
+async def update_seo_settings(settings: SeoSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "seo_settings"},
+        {"$set": settings.model_dump()},
         upsert=True
     )
     return {"status": "success"}
