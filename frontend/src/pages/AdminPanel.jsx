@@ -1648,6 +1648,78 @@ const AdminPanel = () => {
             </div>
           )}
 
+          {/* API Images Tab */}
+          {activeTab === 'api_images' && !loading && galleryConfig && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Фото из API</h2>
+                <button onClick={saveGalleryConfig} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
+                  <Save size={16} /> Сохранить
+                </button>
+              </div>
+              
+              {/* Master toggle */}
+              <div className="mb-6 p-4 bg-[#F9F9F7] border border-black/5">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={galleryConfig.show_api_images}
+                    onChange={(e) => setGalleryConfig({ ...galleryConfig, show_api_images: e.target.checked })}
+                    className="w-5 h-5 accent-[#C6A87C]"
+                  />
+                  <div>
+                    <span className="font-medium">Показывать фото из API</span>
+                    <p className="text-sm text-[#8C8C8C]">Включите, чтобы отображать фото из внешнего API калькулятора в галерее</p>
+                  </div>
+                </label>
+              </div>
+
+              {galleryConfig.show_api_images && (
+                <>
+                  <p className="text-sm text-[#8C8C8C] mb-4">
+                    Выберите, какие фото показывать в галерее. Кликните на фото чтобы скрыть/показать.
+                    <br />
+                    <span className="text-[#C6A87C]">Найдено фото: {apiImages.length}</span>
+                  </p>
+                  
+                  {apiImages.length === 0 ? (
+                    <div className="text-center py-12 text-[#8C8C8C]">
+                      <p>Не удалось загрузить фото из API.</p>
+                      <p className="text-sm mt-2">Внешний сервис временно недоступен.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                      {apiImages.map((img, index) => {
+                        const isHidden = galleryConfig.hidden_api_images?.includes(img.url);
+                        return (
+                          <div 
+                            key={`${img.url}-${index}`} 
+                            className={`border p-2 cursor-pointer transition-all ${isHidden ? 'border-red-300 bg-red-50 opacity-60' : 'border-green-300 bg-green-50'}`}
+                            onClick={() => toggleApiImage(img.url)}
+                          >
+                            <div className="aspect-square mb-2 overflow-hidden bg-[#F2F2F0] relative">
+                              <img 
+                                src={img.url} 
+                                alt={img.name} 
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                              <div className={`absolute top-1 right-1 w-6 h-6 flex items-center justify-center ${isHidden ? 'bg-red-500' : 'bg-green-500'} text-white`}>
+                                {isHidden ? <EyeOff size={14} /> : <Eye size={14} />}
+                              </div>
+                            </div>
+                            <p className="text-xs font-medium truncate">{img.name}</p>
+                            <p className="text-[10px] text-[#8C8C8C]">{img.type === 'model' ? 'Модель' : img.type === 'gallery' ? 'Галерея' : 'Опция'}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
           {/* Stock Saunas Tab */}
           {activeTab === 'stock_saunas' && !loading && (
             <div>
