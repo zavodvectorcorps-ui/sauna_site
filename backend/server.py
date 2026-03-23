@@ -386,6 +386,18 @@ async def get_footer_settings_public():
         return FooterSettings().model_dump()
     return settings
 
+@api_router.get("/settings/layout")
+async def get_layout_settings_public():
+    settings = await db.settings.find_one({"id": "layout_settings"}, {"_id": 0})
+    if not settings:
+        return LayoutSettings().model_dump()
+    return settings
+
+@api_router.get("/stock-saunas")
+async def get_stock_saunas_public():
+    saunas = await db.stock_saunas.find({"active": True}, {"_id": 0}).sort("sort_order", 1).to_list(100)
+    return saunas
+
 # ============= Admin Routes =============
 
 @api_router.post("/admin/login")
