@@ -484,7 +484,7 @@ async def send_amocrm_lead(data: dict):
         
         lead_data = [{
             "name": lead_name,
-            "price": data.get("total", 0) if isinstance(data.get("total"), (int, float)) else 0,
+            "price": int(data.get("total", 0)) if data.get("total") else 0,
             "_embedded": {"contacts": [contact]},
         }]
         
