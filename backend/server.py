@@ -163,7 +163,7 @@ class StockSauna(BaseModel):
 
 class SectionOrder(BaseModel):
     id: str = "section_order"
-    sections: List[str] = ["hero", "models", "calculator", "gallery", "stock", "reviews", "about", "contact"]
+    sections: List[str] = ["hero", "models", "calculator", "gallery", "stock", "reviews", "faq", "about", "contact"]
 
 class LayoutSettings(BaseModel):
     id: str = "layout_settings"
@@ -271,6 +271,39 @@ class FooterSettings(BaseModel):
     tagline_en: str = "Polish premium wooden sauna manufacturer since 2015."
     copyright_pl: str = "Wszelkie prawa zastrzeżone."
     copyright_en: str = "All rights reserved."
+
+class FaqItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    question_pl: str = ""
+    question_en: str = ""
+    answer_pl: str = ""
+    answer_en: str = ""
+    sort_order: int = 0
+    active: bool = True
+
+class FaqSettings(BaseModel):
+    id: str = "faq_settings"
+    title_pl: str = "Najczęściej zadawane pytania"
+    title_en: str = "Frequently Asked Questions"
+    subtitle_pl: str = "Odpowiedzi na najważniejsze pytania dotyczące naszych saun."
+    subtitle_en: str = "Answers to the most important questions about our saunas."
+    items: List[FaqItem] = [
+        FaqItem(id="faq1", question_pl="Jaki jest czas realizacji zamówienia?", question_en="What is the order fulfillment time?", answer_pl="Standardowy czas realizacji to 5-10 dni roboczych od momentu złożenia zamówienia. W przypadku saun z niestandardowymi opcjami czas może wynosić do 3 tygodni.", answer_en="Standard fulfillment time is 5-10 business days from placing the order. For saunas with custom options, it may take up to 3 weeks.", sort_order=0),
+        FaqItem(id="faq2", question_pl="Czy oferujecie dostawę i montaż?", question_en="Do you offer delivery and installation?", answer_pl="Tak, oferujemy dostawę na terenie całej Polski. Montaż jest możliwy za dodatkową opłatą. Nasz zespół profesjonalnie zainstaluje saunę w wybranym miejscu.", answer_en="Yes, we offer delivery throughout Poland. Installation is available for an additional fee. Our team will professionally install the sauna at your chosen location.", sort_order=1),
+        FaqItem(id="faq3", question_pl="Jaka jest gwarancja na sauny?", question_en="What is the warranty on saunas?", answer_pl="Udzielamy 12-miesięcznej gwarancji na wszystkie nasze produkty. Gwarancja obejmuje wady materiałowe i produkcyjne.", answer_en="We provide a 12-month warranty on all our products. The warranty covers material and manufacturing defects.", sort_order=2),
+        FaqItem(id="faq4", question_pl="Z jakiego drewna produkowane są sauny?", question_en="What wood are the saunas made from?", answer_pl="Używamy najwyższej jakości drewna skandynawskiego — świerku i sosny. Drewno jest suszone komorowo, co zapewnia trwałość i odporność na warunki atmosferyczne.", answer_en="We use the highest quality Scandinavian wood — spruce and pine. The wood is kiln-dried, which ensures durability and weather resistance.", sort_order=3),
+        FaqItem(id="faq5", question_pl="Czy mogę skonfigurować saunę według własnych potrzeb?", question_en="Can I configure the sauna to my own needs?", answer_pl="Oczywiście! Nasz konfigurator online pozwala wybrać model, rozmiar, rodzaj pieca, opcje dodatkowe i wiele więcej. Możesz również skontaktować się z nami, aby omówić indywidualny projekt.", answer_en="Of course! Our online configurator lets you choose the model, size, type of heater, additional options and much more. You can also contact us to discuss a custom project.", sort_order=4),
+    ]
+
+class SocialProofSettings(BaseModel):
+    id: str = "social_proof_settings"
+    show_section: bool = True
+    items: List[Dict[str, Any]] = [
+        {"value": "500+", "label_pl": "Wyprodukowanych saun", "label_en": "Saunas produced"},
+        {"value": "98%", "label_pl": "Zadowolonych klientów", "label_en": "Satisfied customers"},
+        {"value": "10+", "label_pl": "Lat doświadczenia", "label_en": "Years of experience"},
+        {"value": "5-10", "label_pl": "Dni czas realizacji", "label_en": "Days fulfillment time"},
+    ]
 
 class SeoSettings(BaseModel):
     id: str = "seo_settings"
@@ -467,6 +500,20 @@ async def get_seo_settings_public():
         return SeoSettings().model_dump()
     return settings
 
+@api_router.get("/settings/faq")
+async def get_faq_settings_public():
+    settings = await db.settings.find_one({"id": "faq_settings"}, {"_id": 0})
+    if not settings:
+        return FaqSettings().model_dump()
+    return settings
+
+@api_router.get("/settings/social-proof")
+async def get_social_proof_public():
+    settings = await db.settings.find_one({"id": "social_proof_settings"}, {"_id": 0})
+    if not settings:
+        return SocialProofSettings().model_dump()
+    return settings
+
 @api_router.get("/settings/models")
 async def get_models_config_public():
     config = await db.settings.find_one({"id": "models_config"}, {"_id": 0})
@@ -654,6 +701,24 @@ async def update_button_config(config: ButtonConfig, username: str = Depends(ver
 async def update_seo_settings(settings: SeoSettings, username: str = Depends(verify_admin)):
     await db.settings.update_one(
         {"id": "seo_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/faq")
+async def update_faq_settings(settings: FaqSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "faq_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/social-proof")
+async def update_social_proof(settings: SocialProofSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "social_proof_settings"},
         {"$set": settings.model_dump()},
         upsert=True
     )

@@ -45,6 +45,10 @@ const AdminPanel = () => {
   const [seoSettings, setSeoSettings] = useState(null);
   // Import modal
   const [showImportModal, setShowImportModal] = useState(false);
+  // FAQ settings
+  const [faqSettings, setFaqSettings] = useState(null);
+  // Social proof
+  const [socialProofSettings, setSocialProofSettings] = useState(null);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
@@ -109,7 +113,7 @@ const AdminPanel = () => {
       const [
         contactsRes, siteRes, heroRes, aboutRes, calcRes, sectionsRes, reviewsRes, galleryRes, apiRes, galleryConfigRes,
         gallerySettingsRes, calculatorSettingsRes, stockSettingsRes, reviewsSettingsRes, contactSettingsRes, footerSettingsRes,
-        stockSaunasRes, layoutRes, buttonsRes, modelsConfigRes, modelsSettingsRes, seoRes
+        stockSaunasRes, layoutRes, buttonsRes, modelsConfigRes, modelsSettingsRes, seoRes, faqRes, socialProofRes
       ] = await Promise.all([
         fetchWithAuth(`${API_URL}/api/admin/contacts`),
         fetch(`${API_URL}/api/settings/site`),
@@ -133,6 +137,8 @@ const AdminPanel = () => {
         fetch(`${API_URL}/api/settings/models`),
         fetch(`${API_URL}/api/settings/models-content`),
         fetch(`${API_URL}/api/settings/seo`),
+        fetch(`${API_URL}/api/settings/faq`),
+        fetch(`${API_URL}/api/settings/social-proof`),
       ]);
 
       setContacts(await contactsRes.json());
@@ -185,6 +191,8 @@ const AdminPanel = () => {
       setModelsConfig(await modelsConfigRes.json());
       setModelsSettings(await modelsSettingsRes.json());
       setSeoSettings(await seoRes.json());
+      setFaqSettings(await faqRes.json());
+      setSocialProofSettings(await socialProofRes.json());
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -442,6 +450,68 @@ const AdminPanel = () => {
       showMessage('error', 'Ошибка сохранения');
     }
     setLoading(false);
+  };
+
+  // FAQ save
+  const saveFaqSettings = async () => {
+    setLoading(true);
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/settings/faq`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(faqSettings),
+      });
+      showMessage('success', 'FAQ сохранено');
+    } catch (error) {
+      showMessage('error', 'Ошибка сохранения');
+    }
+    setLoading(false);
+  };
+
+  const addFaqItem = () => {
+    const newItem = {
+      id: `faq_${Date.now()}`,
+      question_pl: '',
+      question_en: '',
+      answer_pl: '',
+      answer_en: '',
+      sort_order: faqSettings.items.length,
+      active: true,
+    };
+    setFaqSettings({ ...faqSettings, items: [...faqSettings.items, newItem] });
+  };
+
+  const updateFaqItem = (id, field, value) => {
+    setFaqSettings({
+      ...faqSettings,
+      items: faqSettings.items.map(item => item.id === id ? { ...item, [field]: value } : item),
+    });
+  };
+
+  const removeFaqItem = (id) => {
+    setFaqSettings({ ...faqSettings, items: faqSettings.items.filter(item => item.id !== id) });
+  };
+
+  // Social proof save
+  const saveSocialProof = async () => {
+    setLoading(true);
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/settings/social-proof`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(socialProofSettings),
+      });
+      showMessage('success', 'Счётчики сохранены');
+    } catch (error) {
+      showMessage('error', 'Ошибка сохранения');
+    }
+    setLoading(false);
+  };
+
+  const updateSocialItem = (index, field, value) => {
+    const items = [...socialProofSettings.items];
+    items[index] = { ...items[index], [field]: value };
+    setSocialProofSettings({ ...socialProofSettings, items });
   };
 
   // Import model to stock
@@ -735,12 +805,14 @@ const AdminPanel = () => {
     { id: 'content', label: 'Тексты', icon: FileText },
     { id: 'hero', label: 'Hero', icon: Image },
     { id: 'about', label: 'О компании', icon: FileText },
+    { id: 'social_proof', label: 'Счётчики', icon: Users },
     { id: 'models', label: 'Модели', icon: LayoutGrid },
     { id: 'gallery', label: 'Галерея', icon: Image },
     { id: 'api_images', label: 'Фото из API', icon: Eye },
     { id: 'stock_saunas', label: 'В наличии', icon: Users },
     { id: 'calculator', label: 'Калькулятор', icon: LayoutGrid },
     { id: 'reviews', label: 'Отзывы', icon: Star },
+    { id: 'faq', label: 'FAQ', icon: FileText },
     { id: 'site', label: 'Контакты', icon: Phone },
     { id: 'seo', label: 'SEO', icon: FileText },
     { id: 'sections', label: 'Порядок', icon: GripVertical },
@@ -753,6 +825,7 @@ const AdminPanel = () => {
     gallery: 'Галерея',
     stock: 'Сауны в наличии',
     reviews: 'Отзывы',
+    faq: 'FAQ',
     about: 'О компании',
     contact: 'Контакты',
   };
@@ -1112,6 +1185,7 @@ const AdminPanel = () => {
                               <option value="#gallery">Галерея</option>
                               <option value="#stock">Сауны в наличии</option>
                               <option value="#reviews">Отзывы</option>
+                              <option value="#faq">FAQ</option>
                               <option value="#about">О компании</option>
                               <option value="#contact">Контакты</option>
                             </select>
@@ -2025,6 +2099,148 @@ const AdminPanel = () => {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Social Proof Tab */}
+          {activeTab === 'social_proof' && !loading && socialProofSettings && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Счётчики доверия</h2>
+                <button onClick={saveSocialProof} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
+                  <Save size={16} /> Сохранить
+                </button>
+              </div>
+              <p className="text-sm text-[#8C8C8C] mb-6">Блок со статистикой, который отображается сразу после Hero-секции.</p>
+
+              <div className="mb-6 p-4 bg-[#F9F9F7] border border-black/5">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={socialProofSettings.show_section}
+                    onChange={(e) => setSocialProofSettings({ ...socialProofSettings, show_section: e.target.checked })}
+                    className="w-5 h-5 accent-[#C6A87C]"
+                  />
+                  <span className="font-medium">Показывать блок счётчиков</span>
+                </label>
+              </div>
+
+              <div className="space-y-4">
+                {socialProofSettings.items.map((item, index) => (
+                  <div key={index} className="border border-black/5 p-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">Значение</label>
+                        <input
+                          type="text"
+                          value={item.value}
+                          onChange={(e) => updateSocialItem(index, 'value', e.target.value)}
+                          className="w-full p-2 border border-black/10 text-sm"
+                          placeholder="500+"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">Подпись (PL)</label>
+                        <input
+                          type="text"
+                          value={item.label_pl}
+                          onChange={(e) => updateSocialItem(index, 'label_pl', e.target.value)}
+                          className="w-full p-2 border border-black/10 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">Подпись (EN)</label>
+                        <input
+                          type="text"
+                          value={item.label_en}
+                          onChange={(e) => updateSocialItem(index, 'label_en', e.target.value)}
+                          className="w-full p-2 border border-black/10 text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* FAQ Tab */}
+          {activeTab === 'faq' && !loading && faqSettings && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#1A1A1A]">FAQ — Частые вопросы</h2>
+                <div className="flex gap-2">
+                  <button onClick={addFaqItem} className="flex items-center gap-2 bg-[#1A1A1A] text-white px-4 py-2 hover:bg-black text-sm">
+                    <Plus size={16} /> Добавить вопрос
+                  </button>
+                  <button onClick={saveFaqSettings} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060] text-sm">
+                    <Save size={16} /> Сохранить
+                  </button>
+                </div>
+              </div>
+
+              {/* Section texts */}
+              <div className="border border-black/5 p-6 mb-6">
+                <h3 className="font-semibold mb-4">Тексты блока</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (PL)</label>
+                    <input type="text" value={faqSettings.title_pl} onChange={(e) => setFaqSettings({ ...faqSettings, title_pl: e.target.value })} className="w-full p-2 border border-black/10 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (EN)</label>
+                    <input type="text" value={faqSettings.title_en} onChange={(e) => setFaqSettings({ ...faqSettings, title_en: e.target.value })} className="w-full p-2 border border-black/10 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (PL)</label>
+                    <input type="text" value={faqSettings.subtitle_pl} onChange={(e) => setFaqSettings({ ...faqSettings, subtitle_pl: e.target.value })} className="w-full p-2 border border-black/10 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (EN)</label>
+                    <input type="text" value={faqSettings.subtitle_en} onChange={(e) => setFaqSettings({ ...faqSettings, subtitle_en: e.target.value })} className="w-full p-2 border border-black/10 text-sm" />
+                  </div>
+                </div>
+              </div>
+
+              {/* FAQ items */}
+              <div className="space-y-4">
+                {faqSettings.items.map((item, index) => (
+                  <div key={item.id} className={`border p-5 ${item.active ? 'border-black/5' : 'border-red-200 bg-red-50/30'}`}>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm font-medium text-[#8C8C8C]">Вопрос #{index + 1}</span>
+                      <div className="flex items-center gap-2">
+                        <label className="flex items-center gap-2 text-sm cursor-pointer">
+                          <input type="checkbox" checked={item.active} onChange={(e) => updateFaqItem(item.id, 'active', e.target.checked)} className="accent-[#C6A87C]" />
+                          {item.active ? 'Активен' : 'Скрыт'}
+                        </label>
+                        <button onClick={() => removeFaqItem(item.id)} className="p-1 text-red-400 hover:text-red-600">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mb-3">
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">Вопрос (PL)</label>
+                        <input type="text" value={item.question_pl} onChange={(e) => updateFaqItem(item.id, 'question_pl', e.target.value)} className="w-full p-2 border border-black/10 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">Вопрос (EN)</label>
+                        <input type="text" value={item.question_en} onChange={(e) => updateFaqItem(item.id, 'question_en', e.target.value)} className="w-full p-2 border border-black/10 text-sm" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">Ответ (PL)</label>
+                        <textarea value={item.answer_pl} onChange={(e) => updateFaqItem(item.id, 'answer_pl', e.target.value)} className="w-full p-2 border border-black/10 text-sm h-20" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">Ответ (EN)</label>
+                        <textarea value={item.answer_en} onChange={(e) => updateFaqItem(item.id, 'answer_en', e.target.value)} className="w-full p-2 border border-black/10 text-sm h-20" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

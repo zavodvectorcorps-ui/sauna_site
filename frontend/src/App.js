@@ -7,14 +7,18 @@ import { SettingsProvider, useSettings } from "./context/SettingsContext";
 import { SeoHead } from "./components/SeoHead";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
+import { SocialProof } from "./components/SocialProof";
 import { Models } from "./components/Models";
 import { Calculator } from "./components/Calculator";
 import { Gallery } from "./components/Gallery";
 import { StockSaunas } from "./components/StockSaunas";
 import { Reviews } from "./components/Reviews";
+import { FAQ } from "./components/FAQ";
 import { About } from "./components/About";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
+import { StickyCTA } from "./components/StickyCTA";
+import { FloatingContact } from "./components/FloatingContact";
 import AdminPanel from "./pages/AdminPanel";
 
 const sectionComponents = {
@@ -24,6 +28,7 @@ const sectionComponents = {
   gallery: Gallery,
   stock: StockSaunas,
   reviews: Reviews,
+  faq: FAQ,
   about: About,
   contact: Contact,
 };
@@ -37,7 +42,6 @@ const MainContent = () => {
       .then(res => res.json())
       .then(data => {
         setLayoutSettings(data);
-        // Apply CSS variables for section spacing
         const paddingMap = {
           small: { top: 40, bottom: 40 },
           medium: { top: 60, bottom: 60 },
@@ -58,13 +62,20 @@ const MainContent = () => {
     );
   }
 
-  const sections = sectionOrder?.sections || ['hero', 'models', 'calculator', 'gallery', 'stock', 'reviews', 'about', 'contact'];
+  const sections = sectionOrder?.sections || ['hero', 'models', 'calculator', 'gallery', 'stock', 'reviews', 'faq', 'about', 'contact'];
 
   return (
     <>
-      {sections.map((sectionKey) => {
+      {sections.map((sectionKey, index) => {
         const Component = sectionComponents[sectionKey];
-        return Component ? <Component key={sectionKey} /> : null;
+        if (!Component) return null;
+        return (
+          <React.Fragment key={sectionKey}>
+            <Component />
+            {/* Social proof after hero */}
+            {sectionKey === 'hero' && <SocialProof />}
+          </React.Fragment>
+        );
       })}
     </>
   );
@@ -79,6 +90,8 @@ const HomePage = () => {
         <MainContent />
       </main>
       <Footer />
+      <StickyCTA />
+      <FloatingContact />
     </div>
   );
 };
