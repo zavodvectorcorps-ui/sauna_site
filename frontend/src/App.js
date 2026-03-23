@@ -5,6 +5,7 @@ import { LanguageProvider } from "./context/LanguageContext";
 import { SettingsProvider, useSettings } from "./context/SettingsContext";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
+import { Models } from "./components/Models";
 import { Calculator } from "./components/Calculator";
 import { Gallery } from "./components/Gallery";
 import { StockSaunas } from "./components/StockSaunas";
@@ -16,6 +17,7 @@ import AdminPanel from "./pages/AdminPanel";
 
 const sectionComponents = {
   hero: Hero,
+  models: Models,
   calculator: Calculator,
   gallery: Gallery,
   stock: StockSaunas,
