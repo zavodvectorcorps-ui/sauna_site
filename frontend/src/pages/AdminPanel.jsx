@@ -591,14 +591,15 @@ const AdminPanel = () => {
 
   const tabs = [
     { id: 'contacts', label: 'Сообщения', icon: MessageSquare },
-    { id: 'site', label: 'Контакты', icon: Settings },
-    { id: 'content', label: 'Тексты разделов', icon: FileText },
+    { id: 'layout', label: 'Оформление', icon: LayoutGrid },
+    { id: 'content', label: 'Тексты', icon: FileText },
     { id: 'hero', label: 'Hero', icon: Image },
     { id: 'about', label: 'О компании', icon: FileText },
+    { id: 'gallery', label: 'Галерея', icon: Image },
+    { id: 'stock_saunas', label: 'В наличии', icon: Users },
     { id: 'calculator', label: 'Калькулятор', icon: LayoutGrid },
     { id: 'reviews', label: 'Отзывы', icon: Star },
-    { id: 'gallery', label: 'Свои фото', icon: Image },
-    { id: 'api_images', label: 'Фото из API', icon: Eye },
+    { id: 'site', label: 'Контакты', icon: Phone },
     { id: 'sections', label: 'Порядок', icon: GripVertical },
   ];
 
