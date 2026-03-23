@@ -449,6 +449,20 @@ async def get_button_config_public():
         return ButtonConfig().model_dump()
     return config
 
+@api_router.get("/settings/models")
+async def get_models_config_public():
+    config = await db.settings.find_one({"id": "models_config"}, {"_id": 0})
+    if not config:
+        return ModelsConfig().model_dump()
+    return config
+
+@api_router.get("/settings/models-content")
+async def get_models_settings_public():
+    settings = await db.settings.find_one({"id": "models_settings"}, {"_id": 0})
+    if not settings:
+        return ModelsSettings().model_dump()
+    return settings
+
 @api_router.get("/stock-saunas")
 async def get_stock_saunas_public():
     saunas = await db.stock_saunas.find({"active": True}, {"_id": 0}).sort("sort_order", 1).to_list(100)
