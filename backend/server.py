@@ -176,6 +176,42 @@ class GalleryConfig(BaseModel):
     hidden_api_images: List[str] = []  # List of image URLs to hide from API
     show_api_images: bool = False  # Master toggle for API images - disabled by default now
 
+# Button configuration
+class ButtonConfig(BaseModel):
+    id: str = "button_config"
+    buttons: dict = {
+        "hero_primary": {
+            "text_pl": "Oblicz cenę",
+            "text_en": "Calculate price",
+            "action": "anchor",  # anchor, link, form
+            "target": "#calculator",  # anchor id, url, or form name
+        },
+        "hero_secondary": {
+            "text_pl": "Zobacz ofertę",
+            "text_en": "See offer",
+            "action": "anchor",
+            "target": "#gallery",
+        },
+        "calculator_submit": {
+            "text_pl": "Wyślij zapytanie",
+            "text_en": "Send inquiry",
+            "action": "form",
+            "target": "inquiry",
+        },
+        "stock_cta": {
+            "text_pl": "Skonfiguruj",
+            "text_en": "Configure",
+            "action": "anchor",
+            "target": "#calculator",
+        },
+        "contact_submit": {
+            "text_pl": "Wyślij wiadomość",
+            "text_en": "Send message",
+            "action": "form",
+            "target": "contact",
+        },
+    }
+
 # Section Content Settings
 class GallerySettings(BaseModel):
     id: str = "gallery_settings"
