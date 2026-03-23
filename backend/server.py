@@ -145,7 +145,19 @@ class GalleryImage(BaseModel):
     url: str
     alt: str
     category: str = "all"  # all, kwadro, beczka
-    source: str = "custom"  # api or custom
+    active: bool = True
+    sort_order: int = 0
+
+class StockSauna(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    image: str
+    price: float
+    discount: int = 0
+    capacity: str = "2-4"
+    steam_room_size: str = ""
+    relax_room_size: str = ""
+    features: List[str] = []
     active: bool = True
     sort_order: int = 0
 
@@ -153,10 +165,16 @@ class SectionOrder(BaseModel):
     id: str = "section_order"
     sections: List[str] = ["hero", "calculator", "gallery", "stock", "reviews", "about", "contact"]
 
+class LayoutSettings(BaseModel):
+    id: str = "layout_settings"
+    section_spacing: str = "large"  # small, medium, large
+    section_padding_top: int = 80  # px
+    section_padding_bottom: int = 80  # px
+
 class GalleryConfig(BaseModel):
     id: str = "gallery_config"
     hidden_api_images: List[str] = []  # List of image URLs to hide from API
-    show_api_images: bool = True  # Master toggle for API images
+    show_api_images: bool = False  # Master toggle for API images - disabled by default now
 
 # Section Content Settings
 class GallerySettings(BaseModel):
