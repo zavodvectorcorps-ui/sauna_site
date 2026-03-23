@@ -287,15 +287,15 @@ export const Gallery = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              src={filteredImages[currentImageIndex]?.url}
-              alt={filteredImages[currentImageIndex]?.alt}
+              src={images[currentImageIndex]?.url}
+              alt={images[currentImageIndex]?.alt}
               className="max-w-[90vw] max-h-[85vh] object-contain"
               onClick={(e) => e.stopPropagation()}
             />
 
             {/* Counter */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-sm bg-black/50 px-4 py-2">
-              {currentImageIndex + 1} / {filteredImages.length}
+              {currentImageIndex + 1} / {images.length}
             </div>
           </motion.div>
         )}
