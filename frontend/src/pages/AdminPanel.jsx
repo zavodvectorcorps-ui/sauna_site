@@ -27,6 +27,13 @@ const AdminPanel = () => {
   const [apiData, setApiData] = useState(null);
   const [galleryConfig, setGalleryConfig] = useState(null);
   const [apiImages, setApiImages] = useState([]);
+  // Section content settings
+  const [gallerySettings, setGallerySettings] = useState(null);
+  const [calculatorSettings, setCalculatorSettings] = useState(null);
+  const [stockSettings, setStockSettings] = useState(null);
+  const [reviewsSettings, setReviewsSettings] = useState(null);
+  const [contactSettings, setContactSettings] = useState(null);
+  const [footerSettings, setFooterSettings] = useState(null);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
