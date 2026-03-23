@@ -1576,6 +1576,37 @@ const AdminPanel = () => {
                     <span>Белый фон</span>
                   </div>
                 </div>
+
+                {/* Background position */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Расположение фона</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { value: 'top', label: 'Верх' },
+                      { value: 'center', label: 'Центр' },
+                      { value: 'bottom', label: 'Низ' },
+                      { value: 'left', label: 'Лево' },
+                      { value: 'right', label: 'Право' },
+                      { value: 'top left', label: 'Верх-лево' },
+                      { value: 'top right', label: 'Верх-право' },
+                      { value: 'bottom left', label: 'Низ-лево' },
+                      { value: 'bottom right', label: 'Низ-право' },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setHeroSettings({ ...heroSettings, bg_position: opt.value })}
+                        className={`py-2 px-3 text-sm border transition-colors ${
+                          (heroSettings.bg_position || 'center') === opt.value
+                            ? 'border-[#C6A87C] bg-[#C6A87C]/10 text-[#C6A87C] font-medium'
+                            : 'border-black/10 hover:border-[#C6A87C]/50'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 
                 <div className="grid grid-cols-1 gap-4">
                   <div>

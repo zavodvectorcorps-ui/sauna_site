@@ -43,6 +43,8 @@ export const Hero = () => {
   const opVia = overlayOpacity / 100;
   const opTo = Math.max(overlayOpacity - 40, 0) / 100;
 
+  const bgPosition = heroSettings?.bg_position || 'center';
+
   return (
     <section
       data-testid="hero-section"
@@ -54,6 +56,7 @@ export const Hero = () => {
           src={backgroundImage}
           alt="Luxury wooden sauna"
           className="w-full h-full object-cover"
+          style={{ objectPosition: bgPosition }}
         />
         <div
           className="absolute inset-0"
