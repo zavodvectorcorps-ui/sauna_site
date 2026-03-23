@@ -200,7 +200,7 @@ export const Gallery = () => {
                 className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-4 md:px-14 pb-4"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                {filteredImages.map((image, index) => (
+                {images.map((image, index) => (
                   <div
                     key={`${image.url}-${index}`}
                     className="flex-shrink-0 w-[280px] md:w-[350px] lg:w-[400px] snap-center cursor-pointer group"
@@ -228,7 +228,7 @@ export const Gallery = () => {
               {/* Scroll indicator */}
               <div className="flex justify-center items-center gap-2 mt-4">
                 <span className="text-sm text-[#8C8C8C]">
-                  {filteredImages.length} zdjęć
+                  {images.length} zdjęć
                 </span>
                 <span className="text-[#C6A87C]">•</span>
                 <span className="text-sm text-[#8C8C8C]">
@@ -242,7 +242,7 @@ export const Gallery = () => {
 
       {/* Lightbox */}
       <AnimatePresence>
-        {lightboxOpen && filteredImages.length > 0 && (
+        {lightboxOpen && images.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
