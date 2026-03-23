@@ -38,6 +38,9 @@ const AdminPanel = () => {
   const [stockSaunas, setStockSaunas] = useState([]);
   const [layoutSettings, setLayoutSettings] = useState(null);
   const [buttonConfig, setButtonConfig] = useState(null);
+  // Models config
+  const [modelsConfig, setModelsConfig] = useState(null);
+  const [modelsSettings, setModelsSettings] = useState(null);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
