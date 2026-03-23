@@ -1509,50 +1509,6 @@ const AdminPanel = () => {
               )}
             </div>
           )}
-                <>
-                  <p className="text-sm text-[#8C8C8C] mb-4">
-                    Выберите, какие фото показывать в галерее. Отмеченные фото будут отображаться, неотмеченные — скрыты.
-                    <br />
-                    <span className="text-[#C6A87C]">Найдено фото: {apiImages.length}</span>
-                  </p>
-                  
-                  {apiImages.length === 0 ? (
-                    <div className="text-center py-12 text-[#8C8C8C]">
-                      <p>Не удалось загрузить фото из API.</p>
-                      <p className="text-sm mt-2">Внешний сервис временно недоступен.</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                      {apiImages.map((img, index) => {
-                        const isHidden = galleryConfig.hidden_api_images?.includes(img.url);
-                        return (
-                          <div 
-                            key={`${img.url}-${index}`} 
-                            className={`border p-2 cursor-pointer transition-all ${isHidden ? 'border-red-300 bg-red-50 opacity-60' : 'border-green-300 bg-green-50'}`}
-                            onClick={() => toggleApiImage(img.url)}
-                          >
-                            <div className="aspect-square mb-2 overflow-hidden bg-[#F2F2F0] relative">
-                              <img 
-                                src={img.url} 
-                                alt={img.name} 
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                              <div className={`absolute top-1 right-1 w-6 h-6 flex items-center justify-center ${isHidden ? 'bg-red-500' : 'bg-green-500'} text-white`}>
-                                {isHidden ? <EyeOff size={14} /> : <Eye size={14} />}
-                              </div>
-                            </div>
-                            <p className="text-xs font-medium truncate">{img.name}</p>
-                            <p className="text-[10px] text-[#8C8C8C]">{img.type === 'model' ? 'Модель' : img.type === 'gallery' ? 'Галерея' : 'Опция'}</p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          )}
 
           {/* Stock Saunas Tab */}
           {activeTab === 'stock_saunas' && !loading && (
