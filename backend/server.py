@@ -1080,6 +1080,110 @@ async def amocrm_oauth_callback(code: str, state: str = "", referer: str = ""):
         from starlette.responses import HTMLResponse
         return HTMLResponse(content=f"<html><body><h2>Ошибка: {str(e)}</h2></body></html>", status_code=500)
 
+
+async def _amocrm_api_get(path: str) -> dict:
+    """Helper: make authenticated GET to AMO CRM API."""
+    settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
+    if not settings or not settings.get("amocrm_domain"):
+        raise HTTPException(status_code=400, detail="AMO CRM не настроен")
+    token = await get_amocrm_token(settings)
+    if not token:
+        raise HTTPException(status_code=400, detail="Нет валидного токена AMO CRM. Пройдите авторизацию.")
+    domain = settings["amocrm_domain"].rstrip("/")
+    if not domain.startswith("http"):
+        domain = f"https://{domain}"
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        resp = await client.get(f"{domain}{path}", headers={"Authorization": f"Bearer {token}"})
+        if resp.status_code == 401:
+            raise HTTPException(status_code=401, detail="Токен AMO CRM истёк. Авторизуйтесь повторно.")
+        if resp.status_code != 200:
+            raise HTTPException(status_code=resp.status_code, detail=f"AMO CRM ошибка: {resp.text[:300]}")
+        return resp.json()
+
+
+@api_router.get("/admin/amocrm/pipelines")
+async def get_amocrm_pipelines(username: str = Depends(verify_admin)):
+    """Fetch pipelines with statuses from AMO CRM."""
+    try:
+        data = await _amocrm_api_get("/api/v4/leads/pipelines")
+        pipelines = []
+        for p in data.get("_embedded", {}).get("pipelines", []):
+            statuses = []
+            for s in p.get("_embedded", {}).get("statuses", []):
+                statuses.append({"id": s["id"], "name": s["name"], "sort": s.get("sort", 0)})
+            pipelines.append({
+                "id": p["id"],
+                "name": p["name"],
+                "statuses": sorted(statuses, key=lambda x: x["sort"]),
+            })
+        return {"pipelines": pipelines}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Ошибка получения воронок: {str(e)}")
+
+
+@api_router.get("/admin/amocrm/users")
+async def get_amocrm_users(username: str = Depends(verify_admin)):
+    """Fetch users from AMO CRM."""
+    try:
+        data = await _amocrm_api_get("/api/v4/users")
+        users = []
+        for u in data.get("_embedded", {}).get("users", []):
+            users.append({"id": u["id"], "name": u.get("name", ""), "email": u.get("email", "")})
+        return {"users": users}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Ошибка получения пользователей: {str(e)}")
+
+
+@api_router.get("/admin/amocrm/fields")
+async def get_amocrm_fields(entity: str = "leads", username: str = Depends(verify_admin)):
+    """Fetch custom fields from AMO CRM for leads or contacts."""
+    if entity not in ("leads", "contacts"):
+        entity = "leads"
+    try:
+        data = await _amocrm_api_get(f"/api/v4/{entity}/custom_fields")
+        fields = []
+        for f in data.get("_embedded", {}).get("custom_fields", []):
+            fields.append({
+                "id": f["id"],
+                "name": f.get("name", ""),
+                "type": f.get("type", ""),
+                "code": f.get("code", ""),
+            })
+        return {"fields": fields, "entity": entity}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Ошибка получения полей: {str(e)}")
+
+
+@api_router.get("/admin/amocrm/status")
+async def get_amocrm_status(username: str = Depends(verify_admin)):
+    """Check AMO CRM connection status."""
+    settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
+    if not settings:
+        return {"connected": False}
+    has_token = bool(settings.get("amocrm_access_token"))
+    expires_at = settings.get("amocrm_token_expires_at", "")
+    expired = False
+    if expires_at:
+        try:
+            from datetime import datetime as dt
+            expiry = dt.fromisoformat(expires_at)
+            expired = dt.now(timezone.utc) >= expiry
+        except Exception:
+            pass
+    return {
+        "connected": has_token and not expired,
+        "has_token": has_token,
+        "expired": expired,
+        "domain": settings.get("amocrm_domain", ""),
+    }
+
+
 @api_router.put("/admin/settings/models")
 async def update_models_config(config: ModelsConfig, username: str = Depends(verify_admin)):
     await db.settings.update_one(

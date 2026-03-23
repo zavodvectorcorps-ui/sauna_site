@@ -53,6 +53,13 @@ const AdminPanel = () => {
   const [integrationSettings, setIntegrationSettings] = useState(null);
   const [testingTelegram, setTestingTelegram] = useState(false);
   const [testingAmo, setTestingAmo] = useState(false);
+  // AMO CRM data (loaded after OAuth)
+  const [amoPipelines, setAmoPipelines] = useState([]);
+  const [amoUsers, setAmoUsers] = useState([]);
+  const [amoLeadFields, setAmoLeadFields] = useState([]);
+  const [amoContactFields, setAmoContactFields] = useState([]);
+  const [amoLoading, setAmoLoading] = useState(false);
+  const [amoConnected, setAmoConnected] = useState(false);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
@@ -558,6 +565,98 @@ const AdminPanel = () => {
       showMessage('error', error.message || 'Ошибка подключения AMO CRM');
     }
     setTestingAmo(false);
+  };
+
+  // Load AMO CRM data (pipelines, users, fields) after successful connection
+  const loadAmoData = async () => {
+    setAmoLoading(true);
+    try {
+      const [pipelinesRes, usersRes, leadFieldsRes, contactFieldsRes] = await Promise.allSettled([
+        fetchWithAuth(`${API_URL}/api/admin/amocrm/pipelines`),
+        fetchWithAuth(`${API_URL}/api/admin/amocrm/users`),
+        fetchWithAuth(`${API_URL}/api/admin/amocrm/fields?entity=leads`),
+        fetchWithAuth(`${API_URL}/api/admin/amocrm/fields?entity=contacts`),
+      ]);
+      if (pipelinesRes.status === 'fulfilled') {
+        const d = await pipelinesRes.value.json();
+        setAmoPipelines(d.pipelines || []);
+      }
+      if (usersRes.status === 'fulfilled') {
+        const d = await usersRes.value.json();
+        setAmoUsers(d.users || []);
+      }
+      if (leadFieldsRes.status === 'fulfilled') {
+        const d = await leadFieldsRes.value.json();
+        setAmoLeadFields(d.fields || []);
+      }
+      if (contactFieldsRes.status === 'fulfilled') {
+        const d = await contactFieldsRes.value.json();
+        setAmoContactFields(d.fields || []);
+      }
+      setAmoConnected(true);
+    } catch (error) {
+      showMessage('error', 'Ошибка загрузки данных AMO CRM');
+    }
+    setAmoLoading(false);
+  };
+
+  // Check AMO CRM connection status and load data if connected
+  const checkAmoStatus = useCallback(async () => {
+    if (!authHeader) return;
+    try {
+      const res = await fetch(`${API_URL}/api/admin/amocrm/status`, {
+        headers: { 'Authorization': authHeader },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAmoConnected(data.connected);
+        if (data.connected) {
+          loadAmoData();
+        }
+      }
+    } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authHeader]);
+
+  // Auto-check AMO status when integrations tab is opened
+  useEffect(() => {
+    if (activeTab === 'integrations' && authHeader && integrationSettings?.amocrm_access_token) {
+      checkAmoStatus();
+    }
+  }, [activeTab, authHeader, integrationSettings?.amocrm_access_token, checkAmoStatus]);
+
+  // Handle OAuth popup close — poll for token update
+  const openAmoOAuth = () => {
+    if (!integrationSettings.amocrm_domain || !integrationSettings.amocrm_client_id) {
+      showMessage('error', 'Заполните домен и Client ID');
+      return;
+    }
+    const domain = integrationSettings.amocrm_domain.replace(/^https?:\/\//, '');
+    const url = `https://${domain}/oauth?client_id=${integrationSettings.amocrm_client_id}&state=wm_sauna&mode=post_message`;
+    const popup = window.open(url, '_blank', 'width=600,height=700');
+    
+    // Poll to detect when popup closes and refresh settings
+    const pollTimer = setInterval(async () => {
+      if (!popup || popup.closed) {
+        clearInterval(pollTimer);
+        // Re-fetch integration settings to get new token
+        try {
+          const res = await fetchWithAuth(`${API_URL}/api/admin/settings/integrations`);
+          const data = await res.json();
+          setIntegrationSettings(data);
+          if (data.amocrm_access_token) {
+            showMessage('success', 'AMO CRM успешно подключён!');
+            loadAmoData();
+          }
+        } catch {}
+      }
+    }, 1000);
+  };
+
+  // Get statuses for selected pipeline
+  const getSelectedPipelineStatuses = () => {
+    const pipeline = amoPipelines.find(p => p.id === integrationSettings?.amocrm_pipeline_id);
+    return pipeline?.statuses || [];
   };
 
   // Import model to stock
@@ -2702,85 +2801,163 @@ const AdminPanel = () => {
                   <div className="p-4 bg-[#F9F9F7] border border-black/5">
                     <h4 className="text-sm font-semibold mb-3">Шаг 2: Авторизация</h4>
                     <p className="text-[10px] text-[#8C8C8C] mb-3">Сначала сохраните настройки выше, затем нажмите кнопку для авторизации.</p>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <button
-                        onClick={() => {
-                          if (!integrationSettings.amocrm_domain || !integrationSettings.amocrm_client_id) {
-                            showMessage('error', 'Заполните домен и Client ID');
-                            return;
-                          }
-                          const domain = integrationSettings.amocrm_domain.replace(/^https?:\/\//, '');
-                          const url = `https://${domain}/oauth?client_id=${integrationSettings.amocrm_client_id}&state=wm_sauna&mode=post_message`;
-                          window.open(url, '_blank', 'width=600,height=700');
-                        }}
+                        onClick={openAmoOAuth}
                         disabled={!integrationSettings.amocrm_domain || !integrationSettings.amocrm_client_id}
                         className="px-4 py-2 bg-[#339DC7] text-white text-sm hover:bg-[#2a8bb3] disabled:opacity-40 disabled:cursor-not-allowed"
+                        data-testid="amo-oauth-btn"
                       >
-                        Авторизовать в AMO CRM
+                        {integrationSettings.amocrm_access_token ? 'Переподключить AMO CRM' : 'Авторизовать в AMO CRM'}
                       </button>
-                      {integrationSettings.amocrm_access_token && (
-                        <span className="text-xs text-green-600 flex items-center gap-1"><Check size={14} /> Токен получен</span>
+                      {amoConnected && (
+                        <span className="text-xs text-green-600 flex items-center gap-1" data-testid="amo-connected-badge"><Check size={14} /> Подключено</span>
+                      )}
+                      {integrationSettings.amocrm_access_token && !amoConnected && (
+                        <span className="text-xs text-amber-600 flex items-center gap-1">Токен получен (проверьте подключение)</span>
                       )}
                     </div>
-                    <button
-                      onClick={testAmocrm}
-                      disabled={testingAmo || !integrationSettings.amocrm_access_token}
-                      className="mt-3 flex items-center gap-2 px-4 py-2 border border-[#339DC7] text-[#339DC7] text-sm hover:bg-[#339DC7]/5 disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      {testingAmo ? <Loader2 size={14} className="animate-spin" /> : null}
-                      Проверить подключение
-                    </button>
-                  </div>
-
-                  {/* Step 3: Pipeline & Stage */}
-                  <div className="p-4 bg-[#F9F9F7] border border-black/5">
-                    <h4 className="text-sm font-semibold mb-3">Шаг 3: Воронка и этап</h4>
-                    <p className="text-[10px] text-[#8C8C8C] mb-3">
-                      Укажите ID воронки и этапа. Найти можно: AMO → Сделки → Настроить → наведите на этап → в URL будет pipeline_id и status_id.
-                    </p>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <label className="block text-xs text-[#8C8C8C] mb-1">ID воронки (Pipeline)</label>
-                        <input type="number" value={integrationSettings.amocrm_pipeline_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_pipeline_id: parseInt(e.target.value) || 0 })} placeholder="123456" className="w-full p-2 border border-black/10 text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-xs text-[#8C8C8C] mb-1">ID этапа (Status)</label>
-                        <input type="number" value={integrationSettings.amocrm_status_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_status_id: parseInt(e.target.value) || 0 })} placeholder="789012" className="w-full p-2 border border-black/10 text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-xs text-[#8C8C8C] mb-1">ID ответственного</label>
-                        <input type="number" value={integrationSettings.amocrm_responsible_user_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_responsible_user_id: parseInt(e.target.value) || 0 })} placeholder="ID пользователя" className="w-full p-2 border border-black/10 text-sm" />
-                      </div>
+                    <div className="flex gap-2 mt-3">
+                      <button
+                        onClick={testAmocrm}
+                        disabled={testingAmo || !integrationSettings.amocrm_access_token}
+                        className="flex items-center gap-2 px-4 py-2 border border-[#339DC7] text-[#339DC7] text-sm hover:bg-[#339DC7]/5 disabled:opacity-40 disabled:cursor-not-allowed"
+                        data-testid="amo-test-btn"
+                      >
+                        {testingAmo ? <Loader2 size={14} className="animate-spin" /> : null}
+                        Проверить подключение
+                      </button>
+                      {amoConnected && (
+                        <button
+                          onClick={loadAmoData}
+                          disabled={amoLoading}
+                          className="flex items-center gap-2 px-4 py-2 border border-black/10 text-[#595959] text-sm hover:bg-black/5 disabled:opacity-40"
+                          data-testid="amo-reload-btn"
+                        >
+                          {amoLoading ? <Loader2 size={14} className="animate-spin" /> : null}
+                          Обновить данные AMO
+                        </button>
+                      )}
                     </div>
                   </div>
 
-                  {/* Step 4: Field mapping */}
+                  {/* Step 3: Pipeline & Stage — dropdowns when connected */}
+                  <div className="p-4 bg-[#F9F9F7] border border-black/5">
+                    <h4 className="text-sm font-semibold mb-3">Шаг 3: Воронка и этап</h4>
+                    {amoConnected && amoPipelines.length > 0 ? (
+                      <>
+                        <div className="grid grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-xs text-[#8C8C8C] mb-1">Воронка</label>
+                            <select
+                              value={integrationSettings.amocrm_pipeline_id || ''}
+                              onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_pipeline_id: parseInt(e.target.value) || 0, amocrm_status_id: 0 })}
+                              className="w-full p-2 border border-black/10 text-sm bg-white"
+                              data-testid="amo-pipeline-select"
+                            >
+                              <option value="">-- выберите --</option>
+                              {amoPipelines.map(p => (
+                                <option key={p.id} value={p.id}>{p.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-[#8C8C8C] mb-1">Этап</label>
+                            <select
+                              value={integrationSettings.amocrm_status_id || ''}
+                              onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_status_id: parseInt(e.target.value) || 0 })}
+                              className="w-full p-2 border border-black/10 text-sm bg-white"
+                              disabled={!integrationSettings.amocrm_pipeline_id}
+                              data-testid="amo-status-select"
+                            >
+                              <option value="">-- выберите --</option>
+                              {getSelectedPipelineStatuses().map(s => (
+                                <option key={s.id} value={s.id}>{s.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-[#8C8C8C] mb-1">Ответственный</label>
+                            <select
+                              value={integrationSettings.amocrm_responsible_user_id || ''}
+                              onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_responsible_user_id: parseInt(e.target.value) || 0 })}
+                              className="w-full p-2 border border-black/10 text-sm bg-white"
+                              data-testid="amo-user-select"
+                            >
+                              <option value="">-- не указан --</option>
+                              {amoUsers.map(u => (
+                                <option key={u.id} value={u.id}>{u.name}{u.email ? ` (${u.email})` : ''}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-[10px] text-[#8C8C8C] mb-3">
+                          {amoConnected ? 'Загрузка воронок...' : 'Подключите AMO CRM для выбора воронки и этапа, или укажите ID вручную.'}
+                        </p>
+                        <div className="grid grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-xs text-[#8C8C8C] mb-1">ID воронки (Pipeline)</label>
+                            <input type="number" value={integrationSettings.amocrm_pipeline_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_pipeline_id: parseInt(e.target.value) || 0 })} placeholder="123456" className="w-full p-2 border border-black/10 text-sm" />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-[#8C8C8C] mb-1">ID этапа (Status)</label>
+                            <input type="number" value={integrationSettings.amocrm_status_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_status_id: parseInt(e.target.value) || 0 })} placeholder="789012" className="w-full p-2 border border-black/10 text-sm" />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-[#8C8C8C] mb-1">ID ответственного</label>
+                            <input type="number" value={integrationSettings.amocrm_responsible_user_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_responsible_user_id: parseInt(e.target.value) || 0 })} placeholder="ID пользователя" className="w-full p-2 border border-black/10 text-sm" />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Step 4: Field mapping — dropdowns when connected */}
                   <div className="p-4 bg-[#F9F9F7] border border-black/5">
                     <h4 className="text-sm font-semibold mb-3">Шаг 4: Маппинг полей</h4>
                     <p className="text-[10px] text-[#8C8C8C] mb-3">
-                      Укажите ID полей AMO CRM, в которые нужно записывать данные из заявки. Если оставить 0 — будут использованы стандартные поля AMO.
-                      ID полей: AMO → Настройки → Поля → наведите на поле.
+                      {amoConnected ? 'Выберите поля AMO CRM для каждого значения из заявки. Если оставить пустым — будут использованы стандартные поля.' : 'Подключите AMO CRM для выбора полей из списка, или укажите ID вручную. Если оставить 0 — стандартные поля.'}
                     </p>
                     <div className="grid grid-cols-3 gap-3">
                       {[
-                        { key: 'amocrm_field_name', label: 'Имя клиента', hint: 'ID поля для имени' },
-                        { key: 'amocrm_field_phone', label: 'Телефон', hint: 'ID поля телефона' },
-                        { key: 'amocrm_field_email', label: 'Email', hint: 'ID поля email' },
-                        { key: 'amocrm_field_model', label: 'Модель сауны', hint: 'ID поля в сделке' },
-                        { key: 'amocrm_field_price', label: 'Стоимость', hint: 'ID поля в сделке' },
-                        { key: 'amocrm_field_message', label: 'Комментарий', hint: 'ID поля в сделке' },
-                      ].map(f => (
-                        <div key={f.key}>
-                          <label className="block text-xs text-[#8C8C8C] mb-1">{f.label}</label>
-                          <input
-                            type="number"
-                            value={integrationSettings[f.key] || ''}
-                            onChange={(e) => setIntegrationSettings({ ...integrationSettings, [f.key]: parseInt(e.target.value) || 0 })}
-                            placeholder={f.hint}
-                            className="w-full p-2 border border-black/10 text-sm"
-                          />
-                        </div>
-                      ))}
+                        { key: 'amocrm_field_name', label: 'Имя клиента', entity: 'contacts' },
+                        { key: 'amocrm_field_phone', label: 'Телефон', entity: 'contacts' },
+                        { key: 'amocrm_field_email', label: 'Email', entity: 'contacts' },
+                        { key: 'amocrm_field_model', label: 'Модель сауны', entity: 'leads' },
+                        { key: 'amocrm_field_price', label: 'Стоимость', entity: 'leads' },
+                        { key: 'amocrm_field_message', label: 'Комментарий', entity: 'leads' },
+                      ].map(f => {
+                        const fieldsList = f.entity === 'leads' ? amoLeadFields : amoContactFields;
+                        return (
+                          <div key={f.key}>
+                            <label className="block text-xs text-[#8C8C8C] mb-1">{f.label}</label>
+                            {amoConnected && fieldsList.length > 0 ? (
+                              <select
+                                value={integrationSettings[f.key] || ''}
+                                onChange={(e) => setIntegrationSettings({ ...integrationSettings, [f.key]: parseInt(e.target.value) || 0 })}
+                                className="w-full p-2 border border-black/10 text-sm bg-white"
+                                data-testid={`amo-field-${f.key}`}
+                              >
+                                <option value="0">-- стандартное --</option>
+                                {fieldsList.map(cf => (
+                                  <option key={cf.id} value={cf.id}>{cf.name}{cf.code ? ` [${cf.code}]` : ''}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                type="number"
+                                value={integrationSettings[f.key] || ''}
+                                onChange={(e) => setIntegrationSettings({ ...integrationSettings, [f.key]: parseInt(e.target.value) || 0 })}
+                                placeholder="ID поля"
+                                className="w-full p-2 border border-black/10 text-sm"
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
