@@ -116,11 +116,6 @@ export const Gallery = () => {
     }
   };
 
-  const filteredImages =
-    activeFilter === 'all'
-      ? images
-      : images.filter((img) => img.category === activeFilter);
-
   const openLightbox = (index) => {
     setCurrentImageIndex(index);
     setLightboxOpen(true);
@@ -134,13 +129,13 @@ export const Gallery = () => {
 
   const nextImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === filteredImages.length - 1 ? 0 : prev + 1
+      prev === images.length - 1 ? 0 : prev + 1
     );
   };
 
   const prevImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === 0 ? filteredImages.length - 1 : prev - 1
+      prev === 0 ? images.length - 1 : prev - 1
     );
   };
 
