@@ -1,12 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
 export const Reviews = () => {
   const { language, t } = useLanguage();
   const { reviews } = useSettings();
+  const [sectionContent, setSectionContent] = useState(null);
+
+  useEffect(() => {
+    fetchContent();
+  }, []);
+
+  const fetchContent = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/settings/reviews-content`);
+      const content = await response.json();
+      setSectionContent(content);
+    } catch (error) {
+      console.error('Error fetching reviews content:', error);
+    }
+  };
 
   const getReviewText = (review) => {
     const key = `text_${language}`;
@@ -24,9 +41,11 @@ export const Reviews = () => {
         <div className="text-center mb-12">
           <div className="gold-line mx-auto mb-6" />
           <h2 className="section-title" data-testid="reviews-title">
-            {t('reviews.title')}
+            {sectionContent ? sectionContent[`title_${language.toLowerCase()}`] : t('reviews.title')}
           </h2>
-          <p className="section-subtitle mx-auto">{t('reviews.subtitle')}</p>
+          <p className="section-subtitle mx-auto">
+            {sectionContent ? sectionContent[`subtitle_${language.toLowerCase()}`] : t('reviews.subtitle')}
+          </p>
         </div>
 
         {/* Reviews Grid */}
