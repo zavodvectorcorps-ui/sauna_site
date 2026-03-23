@@ -167,9 +167,11 @@ export const StockSaunas = () => {
         <div className="text-center mb-12">
           <div className="gold-line mx-auto mb-6" />
           <h2 className="section-title" data-testid="stock-title">
-            {t('stock.title')}
+            {sectionContent ? sectionContent[`title_${language.toLowerCase()}`] : t('stock.title')}
           </h2>
-          <p className="section-subtitle mx-auto">{t('stock.subtitle')}</p>
+          <p className="section-subtitle mx-auto">
+            {sectionContent ? sectionContent[`subtitle_${language.toLowerCase()}`] : t('stock.subtitle')}
+          </p>
         </div>
 
         {/* Grid */}
