@@ -61,6 +61,9 @@ const AdminPanel = () => {
   const [amoContactFields, setAmoContactFields] = useState([]);
   const [amoLoading, setAmoLoading] = useState(false);
   const [amoConnected, setAmoConnected] = useState(false);
+  // Catalog
+  const [catalogInfo, setCatalogInfo] = useState(null);
+  const [catalogUploading, setCatalogUploading] = useState(false);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
@@ -644,6 +647,60 @@ const AdminPanel = () => {
     return pipeline?.statuses || [];
   };
 
+  // Catalog management
+  const fetchCatalogInfo = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/catalog/info`);
+      if (res.ok) setCatalogInfo(await res.json());
+    } catch {}
+  };
+
+  const handleCatalogUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      showMessage('error', 'Только PDF-файлы');
+      return;
+    }
+    setCatalogUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${API_URL}/api/admin/catalog/upload`, {
+        method: 'POST',
+        headers: { 'Authorization': authHeader },
+        body: formData,
+      });
+      if (res.ok) {
+        showMessage('success', 'Каталог загружен');
+        fetchCatalogInfo();
+      } else {
+        const data = await res.json();
+        showMessage('error', data.detail || 'Ошибка загрузки');
+      }
+    } catch (error) {
+      showMessage('error', 'Ошибка загрузки каталога');
+    }
+    setCatalogUploading(false);
+    e.target.value = '';
+  };
+
+  const deleteCatalog = async () => {
+    try {
+      const res = await fetchWithAuth(`${API_URL}/api/admin/catalog`, { method: 'DELETE' });
+      if (res.ok) {
+        showMessage('success', 'Каталог удалён');
+        setCatalogInfo({ available: false });
+      }
+    } catch {
+      showMessage('error', 'Ошибка удаления');
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'catalog' && authHeader) fetchCatalogInfo();
+  }, [activeTab, authHeader]);
+
   // Import model to stock
   const importModelToStock = async (model) => {
     const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
@@ -946,6 +1003,7 @@ const AdminPanel = () => {
     { id: 'site', label: 'Контакты', icon: Phone },
     { id: 'seo', label: 'SEO', icon: FileText },
     { id: 'integrations', label: 'Интеграции', icon: Settings },
+    { id: 'catalog', label: 'Каталог', icon: FileText },
     { id: 'sections', label: 'Порядок', icon: GripVertical },
   ];
 
@@ -2934,6 +2992,79 @@ const AdminPanel = () => {
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+
+          {/* Catalog Tab */}
+          {activeTab === 'catalog' && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Каталог PDF</h2>
+              </div>
+              <p className="text-sm text-[#595959] mb-6">
+                Загрузите PDF-каталог. Кнопка "Pobierz katalog" автоматически появится в блоке Hero, в sticky-панели и в формах обратной связи после отправки.
+              </p>
+              <div className="bg-white border border-black/5 p-6">
+                {catalogInfo?.available ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-[#F9F9F7] border border-black/5">
+                      <div>
+                        <p className="font-medium text-[#1A1A1A]">{catalogInfo.filename || 'catalog.pdf'}</p>
+                        <p className="text-xs text-[#8C8C8C]">
+                          {catalogInfo.size ? `${(catalogInfo.size / 1024 / 1024).toFixed(1)} МБ` : ''}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <a
+                          href={`${API_URL}/api/catalog/download`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 text-sm border border-[#339DC7] text-[#339DC7] hover:bg-[#339DC7]/5"
+                          data-testid="admin-catalog-preview"
+                        >
+                          Просмотр
+                        </a>
+                        <button
+                          onClick={deleteCatalog}
+                          className="px-4 py-2 text-sm border border-red-300 text-red-500 hover:bg-red-50"
+                          data-testid="admin-catalog-delete"
+                        >
+                          Удалить
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-2">Заменить каталог</label>
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleCatalogUpload}
+                        disabled={catalogUploading}
+                        className="text-sm"
+                        data-testid="admin-catalog-replace"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-[#595959] mb-4">Каталог ещё не загружен</p>
+                    <label className="inline-flex items-center gap-2 px-6 py-3 bg-[#C6A87C] text-white text-sm font-medium cursor-pointer hover:bg-[#B09060] transition-colors">
+                      {catalogUploading ? <Loader2 size={16} className="animate-spin" /> : null}
+                      {catalogUploading ? 'Загрузка...' : 'Загрузить PDF-каталог'}
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleCatalogUpload}
+                        disabled={catalogUploading}
+                        className="hidden"
+                        data-testid="admin-catalog-upload"
+                      />
+                    </label>
+                    <p className="text-xs text-[#8C8C8C] mt-2">Максимум 50 МБ, только PDF</p>
+                  </div>
+                )}
               </div>
             </div>
           )}

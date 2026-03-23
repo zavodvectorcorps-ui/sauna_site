@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, Clock, Send, Loader2, CheckCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, Loader2, CheckCircle, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
 
@@ -10,6 +10,7 @@ export const Contact = () => {
   const { t, language } = useLanguage();
   const { siteSettings } = useSettings();
   const [sectionContent, setSectionContent] = useState(null);
+  const [hasCatalog, setHasCatalog] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,6 +22,7 @@ export const Contact = () => {
 
   useEffect(() => {
     fetchContent();
+    fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
   }, []);
 
   const fetchContent = async () => {
@@ -119,6 +121,18 @@ export const Contact = () => {
                 <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">
                   {t('contact.form_success')}
                 </h3>
+                {hasCatalog && (
+                  <a
+                    href={`${BACKEND_URL}/api/catalog/download`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-testid="contact-catalog-btn"
+                    className="mt-4 inline-flex items-center gap-2 bg-[#1A1A1A] text-white px-6 py-3 text-sm font-medium hover:bg-black transition-colors"
+                  >
+                    <Download size={16} />
+                    {language === 'EN' ? 'Download our catalog' : 'Pobierz nasz katalog'}
+                  </a>
+                )}
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">

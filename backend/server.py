@@ -1342,6 +1342,66 @@ async def get_uploaded_image(image_id: str):
     image_data = base64.b64decode(image["data"])
     return Response(content=image_data, media_type=image["content_type"])
 
+
+CATALOG_DIR = Path("/app/backend/uploads")
+CATALOG_DIR.mkdir(exist_ok=True)
+
+
+@api_router.post("/admin/catalog/upload")
+async def upload_catalog(file: UploadFile = File(...), username: str = Depends(verify_admin)):
+    """Upload a PDF catalog file."""
+    if not file.filename.lower().endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Только PDF-файлы")
+    try:
+        contents = await file.read()
+        if len(contents) > 50 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Файл слишком большой (макс 50 МБ)")
+        catalog_path = CATALOG_DIR / "catalog.pdf"
+        catalog_path.write_bytes(contents)
+        await db.settings.update_one(
+            {"id": "catalog_settings"},
+            {"$set": {"id": "catalog_settings", "filename": file.filename, "size": len(contents), "uploaded_at": datetime.now(timezone.utc).isoformat()}},
+            upsert=True,
+        )
+        return {"status": "success", "filename": file.filename, "size": len(contents)}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка загрузки: {str(e)}")
+
+
+@api_router.get("/catalog/download")
+async def download_catalog():
+    """Download the catalog PDF."""
+    from fastapi.responses import FileResponse
+    catalog_path = CATALOG_DIR / "catalog.pdf"
+    if not catalog_path.exists():
+        raise HTTPException(status_code=404, detail="Каталог не загружен")
+    settings = await db.settings.find_one({"id": "catalog_settings"}, {"_id": 0})
+    filename = settings.get("filename", "WM-Sauna-Katalog.pdf") if settings else "WM-Sauna-Katalog.pdf"
+    return FileResponse(str(catalog_path), media_type="application/pdf", filename=filename)
+
+
+@api_router.get("/catalog/info")
+async def catalog_info():
+    """Check if catalog is available."""
+    catalog_path = CATALOG_DIR / "catalog.pdf"
+    if not catalog_path.exists():
+        return {"available": False}
+    settings = await db.settings.find_one({"id": "catalog_settings"}, {"_id": 0})
+    return {"available": True, "filename": settings.get("filename", ""), "size": settings.get("size", 0)} if settings else {"available": True}
+
+
+@api_router.delete("/admin/catalog")
+async def delete_catalog(username: str = Depends(verify_admin)):
+    """Delete the catalog."""
+    catalog_path = CATALOG_DIR / "catalog.pdf"
+    if catalog_path.exists():
+        catalog_path.unlink()
+    await db.settings.delete_one({"id": "catalog_settings"})
+    return {"status": "deleted"}
+
+
 # Helper functions
 def get_default_reviews():
     return [

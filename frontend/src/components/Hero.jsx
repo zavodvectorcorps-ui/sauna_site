@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const Hero = () => {
   const { language, t } = useLanguage();
   const { heroSettings } = useSettings();
+  const [hasCatalog, setHasCatalog] = useState(false);
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
+  }, []);
 
   const scrollToSection = (href) => {
     const element = document.querySelector(href);
@@ -136,6 +143,18 @@ export const Hero = () => {
             >
               {t('hero.cta_secondary')}
             </button>
+            {hasCatalog && (
+              <a
+                href={`${BACKEND_URL}/api/catalog/download`}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="hero-catalog-btn"
+                className="flex items-center gap-2 border-2 border-white/30 text-white px-8 py-4 text-sm font-semibold uppercase tracking-wider hover:bg-white/10 transition-colors backdrop-blur-sm"
+              >
+                <Download size={16} />
+                {language === 'EN' ? 'Download catalog' : 'Pobierz katalog'}
+              </a>
+            )}
           </motion.div>
         </div>
       </div>

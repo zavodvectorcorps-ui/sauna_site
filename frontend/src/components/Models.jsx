@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, ChevronLeft, ChevronRight, X, Send, Loader2, CheckCircle, GitCompareArrows, Ruler, Maximize2 } from 'lucide-react';
+import { Users, ChevronLeft, ChevronRight, X, Send, Loader2, CheckCircle, GitCompareArrows, Ruler, Maximize2, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
@@ -27,10 +27,14 @@ export const Models = () => {
   const [activeVariantIdx, setActiveVariantIdx] = useState(0);
   const [compareList, setCompareList] = useState([]);
   const [showCompare, setShowCompare] = useState(false);
+  const [hasCatalog, setHasCatalog] = useState(false);
 
   const lang = language.toLowerCase();
 
-  useEffect(() => { fetchModels(); }, []);
+  useEffect(() => {
+    fetchModels();
+    fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
+  }, []);
 
   const fetchModels = async () => {
     try {
@@ -452,7 +456,23 @@ export const Models = () => {
                 ) : (
                   <div className="border border-black/10 p-6">
                     {submitted ? (
-                      <div className="text-center py-8"><CheckCircle size={48} className="mx-auto text-green-500 mb-4" /><h3 className="text-xl font-semibold mb-2">{l.thanks}</h3><p className="text-[#595959]">{l.contactSoon}</p></div>
+                      <div className="text-center py-8">
+                        <CheckCircle size={48} className="mx-auto text-green-500 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2">{l.thanks}</h3>
+                        <p className="text-[#595959]">{l.contactSoon}</p>
+                        {hasCatalog && (
+                          <a
+                            href={`${BACKEND_URL}/api/catalog/download`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-testid="model-catalog-btn"
+                            className="mt-4 inline-flex items-center gap-2 bg-[#1A1A1A] text-white px-5 py-2.5 text-sm font-medium hover:bg-black transition-colors"
+                          >
+                            <Download size={14} />
+                            Pobierz katalog
+                          </a>
+                        )}
+                      </div>
                     ) : (
                       <>
                         <h3 className="text-lg font-semibold mb-4">{l.order} {selectedModel.name}</h3>

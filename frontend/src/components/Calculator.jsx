@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Check, FileText, Send, Loader2, ChevronDown } from 'lucide-react';
+import { Users, Check, FileText, Send, Loader2, ChevronDown, Download, CheckCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
 
@@ -19,11 +19,14 @@ export const Calculator = () => {
   const [showInquiryForm, setShowInquiryForm] = useState(false);
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [hasCatalog, setHasCatalog] = useState(false);
 
   useEffect(() => {
     fetchData();
     fetchSectionContent();
+    fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
   }, []);
 
   const fetchData = async () => {
@@ -121,6 +124,7 @@ export const Calculator = () => {
         }),
       });
       setShowInquiryForm(false);
+      setSubmitted(true);
       setFormData({ name: '', phone: '', email: '', message: '' });
     } catch (error) {
       console.error('Error submitting inquiry:', error);
@@ -401,6 +405,30 @@ export const Calculator = () => {
               className="bg-white p-6 max-w-md w-full"
             >
               <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">{t('calculator.send_inquiry')}</h3>
+              {submitted ? (
+                <div className="text-center py-6">
+                  <CheckCircle size={48} className="mx-auto text-green-500 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">{language === 'EN' ? 'Thank you!' : 'Dziękujemy!'}</h3>
+                  <p className="text-[#595959] mb-4">{language === 'EN' ? 'We will contact you shortly.' : 'Skontaktujemy się wkrótce.'}</p>
+                  {hasCatalog && (
+                    <a
+                      href={`${BACKEND_URL}/api/catalog/download`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-testid="calc-catalog-btn"
+                      className="inline-flex items-center gap-2 bg-[#1A1A1A] text-white px-5 py-2.5 text-sm font-medium hover:bg-black transition-colors"
+                    >
+                      <Download size={14} />
+                      {language === 'EN' ? 'Download our catalog' : 'Pobierz nasz katalog'}
+                    </a>
+                  )}
+                  <div className="mt-4">
+                    <button onClick={() => { setShowInquiryForm(false); setSubmitted(false); }} className="text-sm text-[#8C8C8C] hover:text-[#1A1A1A]">
+                      {language === 'EN' ? 'Close' : 'Zamknij'}
+                    </button>
+                  </div>
+                </div>
+              ) : (
               <form onSubmit={handleSubmitInquiry} className="space-y-3">
                 <input type="text" placeholder={t('contact.form_name')} value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="input-custom" required />
                 <input type="tel" placeholder={t('contact.form_phone')} value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="input-custom" required />
@@ -414,6 +442,7 @@ export const Calculator = () => {
                   </button>
                 </div>
               </form>
+              )}
             </motion.div>
           </motion.div>
         )}

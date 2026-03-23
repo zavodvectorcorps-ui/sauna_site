@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, X } from 'lucide-react';
+import { ArrowRight, X, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const StickyCTA = () => {
   const { language } = useLanguage();
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [hasCatalog, setHasCatalog] = useState(false);
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,8 +44,8 @@ export const StickyCTA = () => {
   };
 
   const labels = {
-    pl: { cta: 'Oblicz cenę sauny', subtitle: 'Konfiguracja online w 2 minuty' },
-    en: { cta: 'Calculate sauna price', subtitle: 'Online configuration in 2 minutes' },
+    pl: { cta: 'Oblicz cenę sauny', subtitle: 'Konfiguracja online w 2 minuty', catalog: 'Pobierz katalog' },
+    en: { cta: 'Calculate sauna price', subtitle: 'Online configuration in 2 minutes', catalog: 'Download catalog' },
   };
   const lang = language.toLowerCase();
   const l = labels[lang] || labels.pl;
@@ -68,6 +75,18 @@ export const StickyCTA = () => {
                 {l.cta}
                 <ArrowRight size={18} />
               </button>
+              {hasCatalog && (
+                <a
+                  href={`${BACKEND_URL}/api/catalog/download`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:flex items-center gap-2 border border-white/20 text-white px-4 py-3 font-medium hover:bg-white/10 transition-colors text-sm"
+                  data-testid="sticky-catalog-btn"
+                >
+                  <Download size={16} />
+                  {l.catalog}
+                </a>
+              )}
               <button
                 onClick={() => setDismissed(true)}
                 className="w-9 h-9 flex items-center justify-center text-white/40 hover:text-white transition-colors flex-shrink-0"
