@@ -56,7 +56,7 @@ const MainContent = () => {
     );
   }
 
-  const sections = sectionOrder?.sections || ['hero', 'calculator', 'gallery', 'stock', 'reviews', 'about', 'contact'];
+  const sections = sectionOrder?.sections || ['hero', 'models', 'calculator', 'gallery', 'stock', 'reviews', 'about', 'contact'];
 
   return (
     <>
