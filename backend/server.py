@@ -325,6 +325,49 @@ async def get_gallery_config_public():
         return GalleryConfig().model_dump()
     return config
 
+# Section content settings endpoints
+@api_router.get("/settings/gallery-content")
+async def get_gallery_settings_public():
+    settings = await db.settings.find_one({"id": "gallery_settings"}, {"_id": 0})
+    if not settings:
+        return GallerySettings().model_dump()
+    return settings
+
+@api_router.get("/settings/calculator-content")
+async def get_calculator_settings_public():
+    settings = await db.settings.find_one({"id": "calculator_settings"}, {"_id": 0})
+    if not settings:
+        return CalculatorSettings().model_dump()
+    return settings
+
+@api_router.get("/settings/stock")
+async def get_stock_settings_public():
+    settings = await db.settings.find_one({"id": "stock_settings"}, {"_id": 0})
+    if not settings:
+        return StockSettings().model_dump()
+    return settings
+
+@api_router.get("/settings/reviews-content")
+async def get_reviews_settings_public():
+    settings = await db.settings.find_one({"id": "reviews_settings"}, {"_id": 0})
+    if not settings:
+        return ReviewsSettings().model_dump()
+    return settings
+
+@api_router.get("/settings/contact")
+async def get_contact_settings_public():
+    settings = await db.settings.find_one({"id": "contact_settings"}, {"_id": 0})
+    if not settings:
+        return ContactSettings().model_dump()
+    return settings
+
+@api_router.get("/settings/footer")
+async def get_footer_settings_public():
+    settings = await db.settings.find_one({"id": "footer_settings"}, {"_id": 0})
+    if not settings:
+        return FooterSettings().model_dump()
+    return settings
+
 # ============= Admin Routes =============
 
 @api_router.post("/admin/login")
