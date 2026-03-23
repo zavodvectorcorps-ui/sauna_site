@@ -1607,6 +1607,43 @@ const AdminPanel = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* Text color */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Цвет текста</label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: '#1A1A1A', label: 'Тёмный', preview: 'bg-[#1A1A1A]' },
+                      { value: '#FFFFFF', label: 'Белый', preview: 'bg-white border border-black/20' },
+                      { value: '#C6A87C', label: 'Золотой', preview: 'bg-[#C6A87C]' },
+                      { value: '#F9F9F7', label: 'Кремовый', preview: 'bg-[#F9F9F7] border border-black/10' },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setHeroSettings({ ...heroSettings, text_color: opt.value })}
+                        className={`flex items-center gap-2 py-2 px-4 text-sm border transition-colors ${
+                          (heroSettings.text_color || '#1A1A1A') === opt.value
+                            ? 'border-[#C6A87C] bg-[#C6A87C]/10 font-medium'
+                            : 'border-black/10 hover:border-[#C6A87C]/50'
+                        }`}
+                      >
+                        <span className={`w-5 h-5 rounded-full ${opt.preview}`} />
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <label className="text-xs text-[#8C8C8C]">Свой цвет:</label>
+                    <input
+                      type="color"
+                      value={heroSettings.text_color || '#1A1A1A'}
+                      onChange={(e) => setHeroSettings({ ...heroSettings, text_color: e.target.value })}
+                      className="w-8 h-8 border border-black/10 cursor-pointer"
+                    />
+                    <span className="text-xs text-[#8C8C8C]">{heroSettings.text_color || '#1A1A1A'}</span>
+                  </div>
+                </div>
                 
                 <div className="grid grid-cols-1 gap-4">
                   <div>
