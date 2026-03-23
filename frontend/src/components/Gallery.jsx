@@ -172,9 +172,11 @@ export const Gallery = () => {
         <div className="text-center mb-12">
           <div className="gold-line mx-auto mb-6" />
           <h2 className="section-title" data-testid="gallery-title">
-            {t('gallery.title')}
+            {sectionContent ? sectionContent[`title_${language.toLowerCase()}`] : t('gallery.title')}
           </h2>
-          <p className="section-subtitle mx-auto">{t('gallery.subtitle')}</p>
+          <p className="section-subtitle mx-auto">
+            {sectionContent ? sectionContent[`subtitle_${language.toLowerCase()}`] : t('gallery.subtitle')}
+          </p>
         </div>
 
         {/* Filters */}
