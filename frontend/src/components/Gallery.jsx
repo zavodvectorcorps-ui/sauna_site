@@ -7,13 +7,14 @@ const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const Gallery = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeFilter, setActiveFilter] = useState('all');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [galleryConfig, setGalleryConfig] = useState({ hidden_api_images: [], show_api_images: true });
+  const [sectionContent, setSectionContent] = useState(null);
   const sliderRef = useRef(null);
 
   const filters = [
@@ -28,15 +29,18 @@ export const Gallery = () => {
 
   const fetchGalleryData = async () => {
     try {
-      // Fetch gallery config and custom images first
-      const [configRes, customRes] = await Promise.all([
+      // Fetch gallery config, custom images and section content
+      const [configRes, customRes, contentRes] = await Promise.all([
         fetch(`${BACKEND_URL}/api/settings/gallery`),
-        fetch(`${BACKEND_URL}/api/gallery`)
+        fetch(`${BACKEND_URL}/api/gallery`),
+        fetch(`${BACKEND_URL}/api/settings/gallery-content`)
       ]);
       
       const config = await configRes.json();
       const customImages = await customRes.json();
+      const content = await contentRes.json();
       setGalleryConfig(config);
+      setSectionContent(content);
 
       // Start with custom images
       const allImages = customImages.map(img => ({
