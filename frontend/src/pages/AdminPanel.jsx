@@ -1902,4 +1902,52 @@ const StockSaunaEditor = ({ sauna, onSave, onDelete, onImageUpload }) => {
   );
 };
 
+// Simple Gallery Editor Component (no categories)
+const GalleryEditorSimple = ({ image, onSave, onDelete, onImageUpload }) => {
+  const [data, setData] = useState(image);
+
+  return (
+    <div className="border border-black/5 p-2">
+      <div className="aspect-square bg-[#F2F2F0] mb-2 relative overflow-hidden">
+        {data.url ? (
+          <img src={data.url} alt={data.alt} className="w-full h-full object-cover" />
+        ) : (
+          <div className="flex items-center justify-center h-full text-[#8C8C8C]">
+            <Image size={32} />
+          </div>
+        )}
+        <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 cursor-pointer transition-opacity">
+          <Upload size={24} className="text-white" />
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              onImageUpload(e.target.files[0], (url) => {
+                const newData = { ...data, url };
+                setData(newData);
+                onSave(newData);
+              });
+            }}
+          />
+        </label>
+      </div>
+      <input
+        value={data.alt}
+        onChange={(e) => setData({ ...data, alt: e.target.value })}
+        placeholder="Описание"
+        className="w-full p-1 border border-black/10 text-xs mb-2"
+      />
+      <div className="flex gap-1">
+        <button onClick={() => onSave(data)} className="flex-1 p-1 bg-[#C6A87C] text-white text-xs">
+          <Check size={12} className="mx-auto" />
+        </button>
+        <button onClick={onDelete} className="p-1 bg-red-500 text-white text-xs">
+          <Trash2 size={12} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export default AdminPanel;
