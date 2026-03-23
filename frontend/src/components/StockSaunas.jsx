@@ -7,9 +7,10 @@ const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const StockSaunas = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [saunas, setSaunas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sectionContent, setSectionContent] = useState(null);
   const sliderRef = useRef(null);
 
   useEffect(() => {
@@ -19,8 +20,13 @@ export const StockSaunas = () => {
   const fetchSaunas = async () => {
     try {
       // Use backend proxy to avoid CORS issues
-      const response = await fetch(`${BACKEND_URL}/api/sauna/prices`);
-      const data = await response.json();
+      const [pricesRes, contentRes] = await Promise.all([
+        fetch(`${BACKEND_URL}/api/sauna/prices`),
+        fetch(`${BACKEND_URL}/api/settings/stock`)
+      ]);
+      const data = await pricesRes.json();
+      const content = await contentRes.json();
+      setSectionContent(content);
 
       // Take first 4 active models as "in stock"
       const stockItems = data.models
