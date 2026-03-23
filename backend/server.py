@@ -607,28 +607,31 @@ async def get_public_models(lang: str = "pl"):
 
 @api_router.post("/sauna/generate-pdf")
 async def generate_sauna_pdf(request: Request):
-    """Proxy PDF generation to the calculator API."""
+    """Generate a branded PDF for the sauna configuration."""
+    from pdf_generator import generate_config_pdf
     try:
         body = await request.json()
-        async with httpx.AsyncClient(timeout=30.0) as http_client:
-            resp = await http_client.post(
-                f"{CALCULATOR_API_URL}/api/sauna/generate-pdf",
-                json=body,
-                headers={"Content-Type": "application/json"},
-            )
-            if resp.status_code == 200:
-                return Response(
-                    content=resp.content,
-                    media_type="application/pdf",
-                    headers={"Content-Disposition": "attachment; filename=WM-Sauna-Configuration.pdf"},
-                )
-            else:
-                raise HTTPException(status_code=resp.status_code, detail=resp.text[:300])
-    except HTTPException:
-        raise
+        pdf_bytes = generate_config_pdf(
+            model_name=body.get("modelName", ""),
+            variant_name=body.get("variantName", ""),
+            base_price=float(body.get("basePrice", 0)),
+            variant_price=float(body.get("variantPrice", 0)),
+            discount_percent=float(body.get("discountPercent", 0)),
+            options=body.get("options", []),
+            total_price=float(body.get("totalPrice", 0)),
+            customer_name=body.get("customerName", ""),
+            customer_phone=body.get("customerPhone", ""),
+            customer_email=body.get("customerEmail", ""),
+        )
+        filename = f"WM-Sauna-{body.get('modelName', 'Config').replace(' ', '-')}.pdf"
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
     except Exception as e:
         logger.error(f"PDF generation error: {e}")
-        raise HTTPException(status_code=502, detail="PDF generation failed")
+        raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
 
 
 # Public settings endpoints

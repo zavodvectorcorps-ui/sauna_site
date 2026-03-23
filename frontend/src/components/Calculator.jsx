@@ -97,14 +97,16 @@ export const Calculator = () => {
 
   const getFilteredModels = () => {
     if (!data?.models) return [];
-    if (!calculatorConfig?.enabledModels || calculatorConfig.enabledModels.length === 0) return data.models;
-    return data.models.filter((m) => calculatorConfig.enabledModels.includes(String(m.id)));
+    const enabled = calculatorConfig?.enabled_models;
+    if (!enabled || enabled.length === 0) return data.models;
+    return data.models.filter((m) => enabled.includes(String(m.id)) || enabled.includes(m.id));
   };
 
   const getFilteredCategories = () => {
     if (!data?.categories) return [];
-    if (!calculatorConfig?.enabledCategories || calculatorConfig.enabledCategories.length === 0) return data.categories;
-    return data.categories.filter((c) => calculatorConfig.enabledCategories.includes(String(c.id)));
+    const enabled = calculatorConfig?.enabled_categories;
+    if (!enabled || enabled.length === 0) return data.categories;
+    return data.categories.filter((c) => enabled.includes(String(c.id)) || enabled.includes(c.id));
   };
 
   const handleSubmitInquiry = async (e) => {
@@ -177,47 +179,30 @@ export const Calculator = () => {
           
           {/* LEFT COLUMN — Model selector + photo */}
           <div className="lg:w-[380px] xl:w-[420px] flex-shrink-0 border-r border-black/5">
-            {/* Model list */}
+            {/* Model dropdown */}
             <div className="border-b border-black/5">
               <div className="p-3 bg-[#F9F9F7]">
                 <h3 className="text-xs font-semibold text-[#8C8C8C] uppercase tracking-wider">
                   {t('calculator.step_model')}
                 </h3>
               </div>
-              <div className="max-h-[240px] overflow-y-auto">
-                {models.map((model) => (
-                  <div
-                    key={model.id}
-                    data-testid={`model-card-${model.id}`}
-                    onClick={() => handleModelSelect(model)}
-                    className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors border-b border-black/[0.03] last:border-b-0 ${
-                      selectedModel?.id === model.id
-                        ? 'bg-[#C6A87C]/5 border-l-2 border-l-[#C6A87C]'
-                        : 'hover:bg-[#F9F9F7] border-l-2 border-l-transparent'
-                    }`}
-                  >
-                    {model.imageUrl && (
-                      <div className="w-14 h-10 flex-shrink-0 overflow-hidden bg-[#F2F2F0]">
-                        <img src={getImageUrl(model.imageUrl)} alt={model.name} className="w-full h-full object-cover" loading="lazy" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium text-[#1A1A1A] truncate">{model.name}</h4>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-[#C6A87C]">{model.basePrice.toLocaleString()} PLN</span>
-                        {model.capacity && (
-                          <span className="text-[10px] text-[#8C8C8C] flex items-center gap-0.5">
-                            <Users size={10} />{model.capacity}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {selectedModel?.id === model.id && <Check size={16} className="text-[#C6A87C] flex-shrink-0" />}
-                    {model.discount > 0 && (
-                      <span className="text-[9px] bg-red-600 text-white px-1.5 py-0.5 font-bold flex-shrink-0">-{model.discount}%</span>
-                    )}
-                  </div>
-                ))}
+              <div className="p-3">
+                <select
+                  data-testid="model-select"
+                  value={selectedModel?.id || ''}
+                  onChange={(e) => {
+                    const m = models.find(x => String(x.id) === e.target.value);
+                    if (m) handleModelSelect(m);
+                  }}
+                  className="w-full p-2.5 border border-black/10 text-sm bg-white appearance-none cursor-pointer"
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238C8C8C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
+                >
+                  {models.map((model) => (
+                    <option key={model.id} value={model.id}>
+                      {model.name} — {model.basePrice.toLocaleString()} PLN{model.discount > 0 ? ` (-${model.discount}%)` : ''}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -290,15 +275,25 @@ export const Calculator = () => {
                         data-testid="download-pdf-btn"
                         onClick={async () => {
                           try {
+                            const optionsPayload = Object.entries(selectedOptions).map(([catId, opt]) => {
+                              const cat = categories.find(c => String(c.id) === String(catId));
+                              return {
+                                name: opt.namePl || opt.name || '',
+                                price: opt.price || 0,
+                                category: cat?.name || '',
+                              };
+                            });
                             const res = await fetch(`${BACKEND_URL}/api/sauna/generate-pdf`, {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },
                               body: JSON.stringify({
-                                fullName: '-',
-                                phoneNumber: '-',
-                                selectedModel: selectedModel?.name || '',
-                                selectedVariant: selectedVariant?.namePl || selectedVariant?.name || '',
-                                selectedOptions: Object.values(selectedOptions).map(o => o.namePl || o.name || ''),
+                                modelName: selectedModel?.name || '',
+                                variantName: selectedVariant?.namePl || selectedVariant?.name || '',
+                                basePrice: selectedModel?.basePrice || 0,
+                                variantPrice: selectedVariant?.price || 0,
+                                discountPercent: selectedModel?.discount || 0,
+                                options: optionsPayload,
+                                totalPrice: calculateTotal(),
                               }),
                             });
                             if (res.ok) {
