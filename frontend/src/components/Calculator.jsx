@@ -149,6 +149,7 @@ export const Calculator = () => {
           variant: selectedVariant?.namePl,
           options: Object.values(selectedOptions).map((o) => o.name || o.namePl),
           total: calculateTotal(),
+          type: 'calculator_order',
         }),
       });
       setShowInquiryForm(false);

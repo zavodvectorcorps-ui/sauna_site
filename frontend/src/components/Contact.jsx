@@ -42,7 +42,7 @@ export const Contact = () => {
       const response = await fetch(`${backendUrl}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({...formData, type: 'contact'}),
       });
 
       if (response.ok) {

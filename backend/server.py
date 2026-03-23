@@ -69,6 +69,7 @@ class ContactFormCreate(BaseModel):
     variant: Optional[str] = None
     options: Optional[List[str]] = None
     total: Optional[float] = None
+    type: Optional[str] = "contact"
 
 class ContactForm(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -81,6 +82,7 @@ class ContactForm(BaseModel):
     variant: Optional[str] = None
     options: Optional[List[str]] = None
     total: Optional[float] = None
+    type: Optional[str] = "contact"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     status: str = "new"
 
@@ -352,11 +354,28 @@ async def send_telegram_notification(data: dict):
             return
         
         msg_type = data.get("type", "contact")
-        if msg_type == "model_inquiry":
+        if msg_type == "calculator_order":
             text = (
-                f"🔔 <b>Новая заявка на модель</b>\n\n"
+                f"🧮 <b>Заказ из калькулятора</b>\n\n"
                 f"<b>Модель:</b> {data.get('model', '—')}\n"
-                f"<b>Сумма:</b> {data.get('total', '—')} PLN\n"
+                f"<b>Вариант:</b> {data.get('variant', '—')}\n"
+            )
+            options = data.get("options")
+            if options and isinstance(options, list) and len(options) > 0:
+                text += f"<b>Опции:</b> {', '.join(str(o) for o in options)}\n"
+            text += (
+                f"<b>Сумма:</b> {data.get('total', '—')} PLN\n\n"
+                f"<b>Имя:</b> {data.get('name', '—')}\n"
+                f"<b>Телефон:</b> {data.get('phone', '—')}\n"
+                f"<b>Email:</b> {data.get('email', '—')}\n"
+            )
+            if data.get("message"):
+                text += f"<b>Комментарий:</b> {data['message']}\n"
+        elif msg_type == "model_inquiry":
+            text = (
+                f"🔔 <b>Заявка на модель</b>\n\n"
+                f"<b>Модель:</b> {data.get('model', '—')}\n"
+                f"<b>Сумма:</b> {data.get('total', '—')} PLN\n\n"
                 f"<b>Имя:</b> {data.get('name', '—')}\n"
                 f"<b>Телефон:</b> {data.get('phone', '—')}\n"
                 f"<b>Email:</b> {data.get('email', '—')}\n"
@@ -365,7 +384,7 @@ async def send_telegram_notification(data: dict):
                 text += f"<b>Комментарий:</b> {data['message']}\n"
         else:
             text = (
-                f"📩 <b>Новое сообщение с сайта</b>\n\n"
+                f"📩 <b>Сообщение с сайта</b>\n\n"
                 f"<b>Имя:</b> {data.get('name', '—')}\n"
                 f"<b>Телефон:</b> {data.get('phone', '—')}\n"
                 f"<b>Email:</b> {data.get('email', '—')}\n"
@@ -407,14 +426,31 @@ async def send_amocrm_lead(data: dict):
             domain = f"https://{domain}"
         
         msg_type = data.get("type", "contact")
-        lead_name = f"WM-Sauna: {data.get('model', 'Запрос')}" if msg_type == "model_inquiry" else "WM-Sauna: Запрос с сайта"
+        if msg_type == "calculator_order":
+            variant_info = f" ({data.get('variant', '')})" if data.get('variant') else ""
+            lead_name = f"WM-Sauna: {data.get('model', 'Калькулятор')}{variant_info}"
+        elif msg_type == "model_inquiry":
+            lead_name = f"WM-Sauna: {data.get('model', 'Запрос')}"
+        else:
+            lead_name = "WM-Sauna: Запрос с сайта"
         
         # Build custom fields for lead
         lead_custom_fields = []
+        # Compose message with variant/options info
+        message_parts = []
+        if data.get("variant"):
+            message_parts.append(f"Вариант: {data['variant']}")
+        options = data.get("options")
+        if options and isinstance(options, list) and len(options) > 0:
+            message_parts.append(f"Опции: {', '.join(str(o) for o in options)}")
+        if data.get("message"):
+            message_parts.append(data["message"])
+        full_message = "\n".join(message_parts) if message_parts else ""
+
         field_map = {
             "amocrm_field_model": data.get("model", ""),
             "amocrm_field_price": str(data.get("total", "")),
-            "amocrm_field_message": data.get("message", ""),
+            "amocrm_field_message": full_message,
         }
         for setting_key, value in field_map.items():
             field_id = settings.get(setting_key, 0)

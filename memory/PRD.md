@@ -18,53 +18,51 @@ Modern responsive website for WM-Sauna - Polish wooden sauna manufacturer and se
 
 ## Implemented Features (All tested)
 - [x] Hero section with CTAs
-- [x] **Social proof counters** — animated stats after hero (500+ саун, 98%, 10+ лет, 5-10 дней)
-- [x] **Models showcase** — cards from API with gallery, configure/order buttons
-- [x] **Model comparison** — select up to 3 models, floating bar, side-by-side table
+- [x] Social proof counters
+- [x] Models showcase with gallery, configure/order buttons
+- [x] Model comparison (up to 3 models)
 - [x] Interactive sauna calculator (API proxy with caching)
 - [x] Gallery with custom + API photo management
-- [x] Stock saunas section with **import from catalog**
+- [x] Stock saunas section with import from catalog
 - [x] Customer reviews with star ratings
-- [x] **FAQ section** — accordion Q&A with JSON-LD schema for SEO
+- [x] FAQ section with JSON-LD schema for SEO
 - [x] About company section
-- [x] Contact form
-- [x] **Sticky CTA bar** — "Oblicz cenę sauny" appears on scroll
-- [x] **Floating WhatsApp/Phone button** — quick contact widget
-- [x] **SEO optimization** — meta tags, OG, JSON-LD (LocalBusiness + FAQPage)
+- [x] Contact form with notifications
+- [x] Sticky CTA bar
+- [x] Floating WhatsApp/Phone button
+- [x] SEO optimization (meta tags, OG, JSON-LD)
 - [x] Multi-language (PL/EN)
 - [x] Responsive design
 - [x] Full admin panel (Russian)
-- [x] **Telegram notifications** — sends to configured bot/chat on new leads
-- [x] **AMO CRM OAuth2 integration** — full OAuth flow, auto token refresh, lead creation, dropdown selectors for pipelines/statuses/users/fields after connection
+- [x] **Telegram notifications** — 3 types: contact, model_inquiry, calculator_order
+- [x] **AMO CRM integration** — API key auth, pipeline/status selection, field mapping, test lead
+- [x] **Notification system** — all forms (contact, models, calculator) send to Telegram + AMO CRM with type badges in admin
+
+## Notification Types
+| Source | type | Telegram Format | AMO CRM Lead Name |
+|---|---|---|---|
+| Contact form | `contact` | Сообщение с сайта | WM-Sauna: Запрос с сайта |
+| Model card | `model_inquiry` | Заявка на модель | WM-Sauna: {model} |
+| Calculator | `calculator_order` | Заказ из калькулятора (+ variant, options) | WM-Sauna: {model} ({variant}) |
 
 ## Admin Panel Tabs
-Сообщения, Оформление, Кнопки, Тексты, Hero, О компании, Счётчики, Модели, Галерея, Фото из API, В наличии, Калькулятор, Отзывы, FAQ, Контакты, SEO, **Интеграции**, Порядок
+Сообщения (with type badges), Оформление, Кнопки, Тексты, Hero, О компании, Счётчики, Модели, Галерея, Фото из API, В наличии, Калькулятор, Отзывы, FAQ, Контакты, SEO, Интеграции, Порядок
 
-## AMO CRM Integration (New)
-### Backend Endpoints:
-- `GET /api/admin/amocrm/callback` — OAuth2 callback, exchanges code for tokens
-- `GET /api/admin/amocrm/status` — Check connection status
-- `GET /api/admin/amocrm/pipelines` — Fetch pipelines with statuses
-- `GET /api/admin/amocrm/users` — Fetch CRM users
-- `GET /api/admin/amocrm/fields?entity=leads|contacts` — Fetch custom fields
-- `POST /api/admin/test-amocrm` — Test connection to AMO CRM
-### Frontend Flow:
-1. Step 1: Enter domain, Client ID, Client Secret, copy Redirect URI
-2. Step 2: Click OAuth button → popup → auto-detect token on popup close
-3. Step 3: Select pipeline/status/user from dropdowns (loaded from AMO API)
-4. Step 4: Select field mapping from dropdowns (loaded from AMO API)
-- Falls back to manual ID inputs when AMO is not connected
+## AMO CRM Integration
+- Auth: Long-lived API key (no OAuth)
+- Steps: Domain + Key → Pipeline/Status → Field Mapping → Test Lead
+- Backend: `/api/admin/amocrm/status`, `/pipelines`, `/users`, `/fields`, `/test-amocrm`, `/test-amocrm-lead`
 
 ## Key DB Collections
-- `settings`: Key-value store — `models_config`, `models_content`, `seo_settings`, `faq_settings`, `social_proof_settings`, `section_order`, `button_config`, `layout_settings`, `integration_settings`, etc.
+- `settings`: Key-value store for all config
 - `stock_saunas`: CRUD items for in-stock section
-- `messages`: Contact form submissions
+- `contact_forms`: Contact submissions (with `type` field)
 
 ## Credentials
 - Admin: `/admin` | login: `admin` | password: `220066`
 
 ## Backlog
-- [ ] P1: Refactor AdminPanel.jsx into smaller components (>3200 lines)
+- [ ] P1: Refactor AdminPanel.jsx into smaller components (>3300 lines)
 - [ ] P1: Full i18next integration for static UI strings
 - [ ] P2: Improve frontend API error handling (toast notifications)
 - [ ] P3: A/B testing for CTA buttons

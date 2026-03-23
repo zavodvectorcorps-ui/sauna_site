@@ -1023,13 +1023,21 @@ const AdminPanel = () => {
                   <div key={contact.id} className="border border-black/5 p-4">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="font-semibold text-[#1A1A1A]">{contact.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-[#1A1A1A]">{contact.name}</h3>
+                          {contact.type === 'calculator_order' && <span className="text-[10px] px-2 py-0.5 bg-[#C6A87C]/10 text-[#C6A87C] border border-[#C6A87C]/20">Калькулятор</span>}
+                          {contact.type === 'model_inquiry' && <span className="text-[10px] px-2 py-0.5 bg-[#339DC7]/10 text-[#339DC7] border border-[#339DC7]/20">Модель</span>}
+                          {(!contact.type || contact.type === 'contact') && <span className="text-[10px] px-2 py-0.5 bg-black/5 text-[#595959] border border-black/10">Контакт</span>}
+                        </div>
                         <p className="text-sm text-[#595959]">{contact.phone} • {contact.email}</p>
                         {contact.model && (
                           <p className="text-sm text-[#C6A87C] mt-1">
                             {contact.model} {contact.variant && `• ${contact.variant}`}
                             {contact.total && ` • ${contact.total.toLocaleString()} PLN`}
                           </p>
+                        )}
+                        {contact.options && contact.options.length > 0 && (
+                          <p className="text-xs text-[#595959] mt-1">Опции: {contact.options.join(', ')}</p>
                         )}
                         {contact.message && <p className="text-sm mt-2">{contact.message}</p>}
                         <p className="text-xs text-[#8C8C8C] mt-2">
