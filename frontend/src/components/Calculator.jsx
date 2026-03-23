@@ -8,10 +8,11 @@ const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const Calculator = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { calculatorConfig } = useSettings();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
+  const [sectionContent, setSectionContent] = useState(null);
   const [step, setStep] = useState(0);
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -31,9 +32,14 @@ export const Calculator = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/sauna/prices`);
-      const json = await response.json();
+      const [pricesRes, contentRes] = await Promise.all([
+        fetch(`${BACKEND_URL}/api/sauna/prices`),
+        fetch(`${BACKEND_URL}/api/settings/calculator-content`)
+      ]);
+      const json = await pricesRes.json();
+      const content = await contentRes.json();
       setData(json);
+      setSectionContent(content);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching calculator data from proxy:', error);
