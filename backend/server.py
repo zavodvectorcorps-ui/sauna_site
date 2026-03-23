@@ -1026,6 +1026,82 @@ async def test_amocrm(username: str = Depends(verify_admin)):
     except httpx.HTTPError as e:
         raise HTTPException(status_code=502, detail=f"Ошибка подключения: {str(e)}")
 
+@api_router.post("/admin/test-amocrm-lead")
+async def test_amocrm_lead(username: str = Depends(verify_admin)):
+    """Send a test lead to AMO CRM with pre-filled data."""
+    settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
+    if not settings or not settings.get("amocrm_domain") or not settings.get("amocrm_access_token"):
+        raise HTTPException(status_code=400, detail="AMO CRM не настроен. Сначала пройдите авторизацию.")
+    try:
+        token = await get_amocrm_token(settings)
+        if not token:
+            raise HTTPException(status_code=400, detail="Нет валидного токена. Авторизуйтесь повторно.")
+        domain = settings["amocrm_domain"].rstrip("/")
+        if not domain.startswith("http"):
+            domain = f"https://{domain}"
+
+        test_data = {
+            "name": "Тест WM-Sauna",
+            "phone": "+48000000000",
+            "email": "test@wm-sauna.pl",
+            "model": "Sauna testowa",
+            "total": 15000,
+            "message": "Это тестовая заявка из админ-панели WM-Sauna. Можно удалить.",
+            "type": "model_inquiry",
+        }
+
+        lead_name = f"WM-Sauna [ТЕСТ]: {test_data['model']}"
+        lead_custom_fields = []
+        field_map = {
+            "amocrm_field_model": test_data["model"],
+            "amocrm_field_price": str(test_data["total"]),
+            "amocrm_field_message": test_data["message"],
+        }
+        for setting_key, value in field_map.items():
+            field_id = settings.get(setting_key, 0)
+            if field_id and value:
+                lead_custom_fields.append({"field_id": field_id, "values": [{"value": value}]})
+
+        contact = {"first_name": test_data["name"], "custom_fields_values": []}
+        phone_field_id = settings.get("amocrm_field_phone", 0)
+        email_field_id = settings.get("amocrm_field_email", 0)
+        if phone_field_id:
+            contact["custom_fields_values"].append({"field_id": phone_field_id, "values": [{"value": test_data["phone"]}]})
+        else:
+            contact["custom_fields_values"].append({"field_code": "PHONE", "values": [{"value": test_data["phone"], "enum_code": "WORK"}]})
+        if email_field_id:
+            contact["custom_fields_values"].append({"field_id": email_field_id, "values": [{"value": test_data["email"]}]})
+        else:
+            contact["custom_fields_values"].append({"field_code": "EMAIL", "values": [{"value": test_data["email"], "enum_code": "WORK"}]})
+
+        lead_data = [{
+            "name": lead_name,
+            "price": test_data["total"],
+            "_embedded": {"contacts": [contact]},
+        }]
+        if lead_custom_fields:
+            lead_data[0]["custom_fields_values"] = lead_custom_fields
+        if settings.get("amocrm_pipeline_id"):
+            lead_data[0]["pipeline_id"] = settings["amocrm_pipeline_id"]
+        if settings.get("amocrm_status_id"):
+            lead_data[0]["status_id"] = settings["amocrm_status_id"]
+        if settings.get("amocrm_responsible_user_id"):
+            lead_data[0]["responsible_user_id"] = settings["amocrm_responsible_user_id"]
+
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(f"{domain}/api/v4/leads/complex", json=lead_data, headers=headers)
+            if resp.status_code in (200, 201):
+                return {"status": "success", "message": "Тестовая сделка создана! Проверьте AMO CRM."}
+            else:
+                error_text = resp.text[:300]
+                raise HTTPException(status_code=400, detail=f"AMO CRM вернул ошибку ({resp.status_code}): {error_text}")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Ошибка отправки: {str(e)}")
+
+
 @api_router.get("/admin/amocrm/callback")
 async def amocrm_oauth_callback(code: str, state: str = "", referer: str = ""):
     """AMO CRM OAuth callback — exchanges code for tokens."""

@@ -53,6 +53,7 @@ const AdminPanel = () => {
   const [integrationSettings, setIntegrationSettings] = useState(null);
   const [testingTelegram, setTestingTelegram] = useState(false);
   const [testingAmo, setTestingAmo] = useState(false);
+  const [testingAmoLead, setTestingAmoLead] = useState(false);
   // AMO CRM data (loaded after OAuth)
   const [amoPipelines, setAmoPipelines] = useState([]);
   const [amoUsers, setAmoUsers] = useState([]);
@@ -565,6 +566,18 @@ const AdminPanel = () => {
       showMessage('error', error.message || 'Ошибка подключения AMO CRM');
     }
     setTestingAmo(false);
+  };
+
+  const testAmoLead = async () => {
+    setTestingAmoLead(true);
+    try {
+      const res = await fetchWithAuth(`${API_URL}/api/admin/test-amocrm-lead`, { method: 'POST' });
+      const data = await res.json();
+      showMessage('success', data.message || 'Тестовая сделка отправлена');
+    } catch (error) {
+      showMessage('error', error.message || 'Ошибка отправки тестовой сделки');
+    }
+    setTestingAmoLead(false);
   };
 
   // Load AMO CRM data (pipelines, users, fields) after successful connection
@@ -2959,6 +2972,26 @@ const AdminPanel = () => {
                         );
                       })}
                     </div>
+                  </div>
+
+                  {/* Step 5: Test lead */}
+                  <div className="p-4 bg-[#F9F9F7] border border-black/5">
+                    <h4 className="text-sm font-semibold mb-3">Шаг 5: Проверка</h4>
+                    <p className="text-[10px] text-[#8C8C8C] mb-3">
+                      Отправьте тестовую сделку в AMO CRM, чтобы убедиться, что заявки попадают в нужную воронку и этап с правильными полями. После проверки удалите тестовую сделку в AMO.
+                    </p>
+                    <button
+                      onClick={testAmoLead}
+                      disabled={testingAmoLead || !integrationSettings.amocrm_access_token}
+                      className="flex items-center gap-2 px-4 py-2 bg-[#C6A87C] text-white text-sm hover:bg-[#B09060] disabled:opacity-40 disabled:cursor-not-allowed"
+                      data-testid="amo-test-lead-btn"
+                    >
+                      {testingAmoLead ? <Loader2 size={14} className="animate-spin" /> : null}
+                      Отправить тестовую сделку
+                    </button>
+                    <p className="text-[10px] text-[#8C8C8C] mt-2">
+                      Будет создана сделка «WM-Sauna [ТЕСТ]: Sauna testowa» с контактом test@wm-sauna.pl, +48000000000
+                    </p>
                   </div>
                 </div>
               </div>
