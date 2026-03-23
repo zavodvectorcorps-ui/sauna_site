@@ -632,6 +632,24 @@ async def update_button_config(config: ButtonConfig, username: str = Depends(ver
     )
     return {"status": "success"}
 
+@api_router.put("/admin/settings/models")
+async def update_models_config(config: ModelsConfig, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "models_config"},
+        {"$set": config.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/models-content")
+async def update_models_settings(settings: ModelsSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "models_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
 # Reviews management
 @api_router.get("/admin/reviews")
 async def get_all_reviews(username: str = Depends(verify_admin)):
