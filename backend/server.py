@@ -9,7 +9,7 @@ from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional, Dict, Any
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import httpx
 import secrets
 import base64
@@ -322,14 +322,30 @@ class SeoSettings(BaseModel):
 
 class IntegrationSettings(BaseModel):
     id: str = "integration_settings"
+    # Telegram
     telegram_enabled: bool = False
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
+    # AMO CRM OAuth
     amocrm_enabled: bool = False
     amocrm_domain: str = ""
+    amocrm_client_id: str = ""
+    amocrm_client_secret: str = ""
+    amocrm_redirect_uri: str = ""
     amocrm_access_token: str = ""
+    amocrm_refresh_token: str = ""
+    amocrm_token_expires_at: str = ""
+    # AMO CRM Lead settings
     amocrm_pipeline_id: int = 0
+    amocrm_status_id: int = 0
     amocrm_responsible_user_id: int = 0
+    # AMO CRM field mapping {form_field: amo_field_id}
+    amocrm_field_name: int = 0
+    amocrm_field_phone: int = 0
+    amocrm_field_email: int = 0
+    amocrm_field_model: int = 0
+    amocrm_field_price: int = 0
+    amocrm_field_message: int = 0
 
 # ============= Notification Helpers =============
 
@@ -375,57 +391,139 @@ async def send_telegram_notification(data: dict):
     except Exception as e:
         logger.error(f"Telegram notification error: {e}")
 
+async def get_amocrm_token(settings: dict) -> str:
+    """Get valid AMO CRM access token, refreshing if needed."""
+    token = settings.get("amocrm_access_token", "")
+    expires_at = settings.get("amocrm_token_expires_at", "")
+    
+    # Check if token needs refresh
+    if expires_at:
+        try:
+            from datetime import datetime as dt
+            expiry = dt.fromisoformat(expires_at)
+            if dt.now(timezone.utc) < expiry:
+                return token
+        except Exception:
+            pass
+    
+    # Try to refresh
+    refresh_token = settings.get("amocrm_refresh_token", "")
+    client_id = settings.get("amocrm_client_id", "")
+    client_secret = settings.get("amocrm_client_secret", "")
+    domain = settings.get("amocrm_domain", "").rstrip("/")
+    if not domain.startswith("http"):
+        domain = f"https://{domain}"
+    
+    if not refresh_token or not client_id or not client_secret:
+        return token  # Can't refresh, return current token
+    
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.post(f"{domain}/oauth2/access_token", json={
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_token,
+                "redirect_uri": settings.get("amocrm_redirect_uri", ""),
+            })
+            if resp.status_code == 200:
+                data = resp.json()
+                new_token = data["access_token"]
+                new_refresh = data["refresh_token"]
+                expires_in = data.get("expires_in", 86400)
+                new_expires = (datetime.now(timezone.utc) + timedelta(seconds=expires_in)).isoformat()
+                
+                await db.settings.update_one(
+                    {"id": "integration_settings"},
+                    {"$set": {
+                        "amocrm_access_token": new_token,
+                        "amocrm_refresh_token": new_refresh,
+                        "amocrm_token_expires_at": new_expires,
+                    }}
+                )
+                logger.info("AMO CRM token refreshed")
+                return new_token
+    except Exception as e:
+        logger.error(f"AMO CRM token refresh error: {e}")
+    
+    return token
+
 async def send_amocrm_lead(data: dict):
     """Create a lead in AMO CRM if configured."""
     try:
         settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
-        if not settings or not settings.get("amocrm_enabled") or not settings.get("amocrm_domain") or not settings.get("amocrm_access_token"):
+        if not settings or not settings.get("amocrm_enabled") or not settings.get("amocrm_domain"):
+            return
+        
+        token = await get_amocrm_token(settings)
+        if not token:
+            logger.warning("AMO CRM: no valid token")
             return
         
         domain = settings["amocrm_domain"].rstrip("/")
         if not domain.startswith("http"):
             domain = f"https://{domain}"
-        token = settings["amocrm_access_token"]
         
         msg_type = data.get("type", "contact")
-        lead_name = f"WM-Sauna: {data.get('model', 'Запрос')}" if msg_type == "model_inquiry" else f"WM-Sauna: Запрос с сайта"
+        lead_name = f"WM-Sauna: {data.get('model', 'Запрос')}" if msg_type == "model_inquiry" else "WM-Sauna: Запрос с сайта"
         
-        note_text = f"Имя: {data.get('name', '')}\nТелефон: {data.get('phone', '')}\nEmail: {data.get('email', '')}"
-        if data.get("model"):
-            note_text += f"\nМодель: {data['model']}"
-        if data.get("total"):
-            note_text += f"\nСумма: {data['total']} PLN"
-        if data.get("message"):
-            note_text += f"\nКомментарий: {data['message']}"
+        # Build custom fields for lead
+        lead_custom_fields = []
+        field_map = {
+            "amocrm_field_model": data.get("model", ""),
+            "amocrm_field_price": str(data.get("total", "")),
+            "amocrm_field_message": data.get("message", ""),
+        }
+        for setting_key, value in field_map.items():
+            field_id = settings.get(setting_key, 0)
+            if field_id and value:
+                lead_custom_fields.append({"field_id": field_id, "values": [{"value": value}]})
+        
+        # Build contact custom fields
+        contact_custom_fields = []
+        # Phone and Email use standard field_code
+        contact_fields_data = {
+            "amocrm_field_name": ("first_name_override", data.get("name", "")),
+            "amocrm_field_phone": ("PHONE", data.get("phone", "")),
+            "amocrm_field_email": ("EMAIL", data.get("email", "")),
+        }
+        
+        contact = {"first_name": data.get("name", ""), "custom_fields_values": []}
+        
+        phone_field_id = settings.get("amocrm_field_phone", 0)
+        email_field_id = settings.get("amocrm_field_email", 0)
+        name_field_id = settings.get("amocrm_field_name", 0)
+        
+        if phone_field_id and data.get("phone"):
+            contact["custom_fields_values"].append({"field_id": phone_field_id, "values": [{"value": data["phone"]}]})
+        elif data.get("phone"):
+            contact["custom_fields_values"].append({"field_code": "PHONE", "values": [{"value": data["phone"], "enum_code": "WORK"}]})
+        
+        if email_field_id and data.get("email"):
+            contact["custom_fields_values"].append({"field_id": email_field_id, "values": [{"value": data["email"]}]})
+        elif data.get("email"):
+            contact["custom_fields_values"].append({"field_code": "EMAIL", "values": [{"value": data["email"], "enum_code": "WORK"}]})
         
         lead_data = [{
             "name": lead_name,
             "price": data.get("total", 0) if isinstance(data.get("total"), (int, float)) else 0,
-            "_embedded": {
-                "contacts": [{
-                    "first_name": data.get("name", ""),
-                    "custom_fields_values": [
-                        {"field_code": "PHONE", "values": [{"value": data.get("phone", ""), "enum_code": "WORK"}]},
-                        {"field_code": "EMAIL", "values": [{"value": data.get("email", ""), "enum_code": "WORK"}]},
-                    ]
-                }]
-            }
+            "_embedded": {"contacts": [contact]},
         }]
         
+        if lead_custom_fields:
+            lead_data[0]["custom_fields_values"] = lead_custom_fields
         if settings.get("amocrm_pipeline_id"):
             lead_data[0]["pipeline_id"] = settings["amocrm_pipeline_id"]
+        if settings.get("amocrm_status_id"):
+            lead_data[0]["status_id"] = settings["amocrm_status_id"]
         if settings.get("amocrm_responsible_user_id"):
             lead_data[0]["responsible_user_id"] = settings["amocrm_responsible_user_id"]
         
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
         
         async with httpx.AsyncClient(timeout=15.0) as client:
-            resp = await client.post(
-                f"{domain}/api/v4/leads/complex",
-                json=lead_data,
-                headers=headers
-            )
-            logger.info(f"AMO CRM response: {resp.status_code}")
+            resp = await client.post(f"{domain}/api/v4/leads/complex", json=lead_data, headers=headers)
+            logger.info(f"AMO CRM response: {resp.status_code} {resp.text[:200]}")
     except Exception as e:
         logger.error(f"AMO CRM error: {e}")
 
@@ -911,12 +1009,13 @@ async def test_amocrm(username: str = Depends(verify_admin)):
     """Test AMO CRM connection."""
     settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
     if not settings or not settings.get("amocrm_domain") or not settings.get("amocrm_access_token"):
-        raise HTTPException(status_code=400, detail="AMO CRM не настроен")
+        raise HTTPException(status_code=400, detail="AMO CRM не настроен. Сначала пройдите авторизацию.")
     try:
+        token = await get_amocrm_token(settings)
         domain = settings["amocrm_domain"].rstrip("/")
         if not domain.startswith("http"):
             domain = f"https://{domain}"
-        headers = {"Authorization": f"Bearer {settings['amocrm_access_token']}"}
+        headers = {"Authorization": f"Bearer {token}"}
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.get(f"{domain}/api/v4/account", headers=headers)
             if resp.status_code == 200:
@@ -926,6 +1025,60 @@ async def test_amocrm(username: str = Depends(verify_admin)):
                 raise HTTPException(status_code=400, detail=f"AMO CRM ошибка: {resp.status_code}")
     except httpx.HTTPError as e:
         raise HTTPException(status_code=502, detail=f"Ошибка подключения: {str(e)}")
+
+@api_router.get("/admin/amocrm/callback")
+async def amocrm_oauth_callback(code: str, state: str = "", referer: str = ""):
+    """AMO CRM OAuth callback — exchanges code for tokens."""
+    settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
+    if not settings or not settings.get("amocrm_domain") or not settings.get("amocrm_client_id") or not settings.get("amocrm_client_secret"):
+        return {"error": "AMO CRM не настроен. Заполните домен, Client ID и Client Secret в админке."}
+    
+    domain = settings["amocrm_domain"].rstrip("/")
+    if not domain.startswith("http"):
+        domain = f"https://{domain}"
+    
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(f"{domain}/oauth2/access_token", json={
+                "client_id": settings["amocrm_client_id"],
+                "client_secret": settings["amocrm_client_secret"],
+                "grant_type": "authorization_code",
+                "code": code,
+                "redirect_uri": settings.get("amocrm_redirect_uri", ""),
+            })
+            if resp.status_code == 200:
+                data = resp.json()
+                expires_at = (datetime.now(timezone.utc) + timedelta(seconds=data.get("expires_in", 86400))).isoformat()
+                await db.settings.update_one(
+                    {"id": "integration_settings"},
+                    {"$set": {
+                        "amocrm_access_token": data["access_token"],
+                        "amocrm_refresh_token": data["refresh_token"],
+                        "amocrm_token_expires_at": expires_at,
+                    }}
+                )
+                from starlette.responses import HTMLResponse
+                return HTMLResponse(content="""
+                    <html><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#F9F9F7">
+                    <div style="text-align:center;padding:40px;border:1px solid #C6A87C;max-width:400px">
+                        <h2 style="color:#1A1A1A">AMO CRM подключён!</h2>
+                        <p style="color:#595959">Токен получен и сохранён. Вы можете закрыть это окно и вернуться в админку.</p>
+                        <script>setTimeout(function(){window.close()},3000)</script>
+                    </div></body></html>
+                """, status_code=200)
+            else:
+                error_detail = resp.text[:500]
+                from starlette.responses import HTMLResponse
+                return HTMLResponse(content=f"""
+                    <html><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#F9F9F7">
+                    <div style="text-align:center;padding:40px;border:1px solid red;max-width:500px">
+                        <h2 style="color:red">Ошибка авторизации</h2>
+                        <p style="color:#595959">{error_detail}</p>
+                    </div></body></html>
+                """, status_code=200)
+    except Exception as e:
+        from starlette.responses import HTMLResponse
+        return HTMLResponse(content=f"<html><body><h2>Ошибка: {str(e)}</h2></body></html>", status_code=500)
 
 @api_router.put("/admin/settings/models")
 async def update_models_config(config: ModelsConfig, username: str = Depends(verify_admin)):

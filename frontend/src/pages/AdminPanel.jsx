@@ -2657,57 +2657,132 @@ const AdminPanel = () => {
                   </label>
                 </div>
 
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs text-[#8C8C8C] mb-1">Домен AMO CRM</label>
-                    <input
-                      type="text"
-                      value={integrationSettings.amocrm_domain}
-                      onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_domain: e.target.value })}
-                      placeholder="mycompany.amocrm.ru"
-                      className="w-full p-2 border border-black/10 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-[#8C8C8C] mb-1">Access Token</label>
-                    <textarea
-                      value={integrationSettings.amocrm_access_token}
-                      onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_access_token: e.target.value })}
-                      placeholder="Длинный токен из настроек интеграции AMO"
-                      className="w-full p-2 border border-black/10 text-sm h-20 font-mono resize-none"
-                    />
-                    <p className="text-[10px] text-[#8C8C8C] mt-1">Настройки → Интеграции → создайте интеграцию → скопируйте access token</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs text-[#8C8C8C] mb-1">Pipeline ID (необязательно)</label>
-                      <input
-                        type="number"
-                        value={integrationSettings.amocrm_pipeline_id || ''}
-                        onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_pipeline_id: parseInt(e.target.value) || 0 })}
-                        placeholder="ID воронки"
-                        className="w-full p-2 border border-black/10 text-sm"
-                      />
+                <div className="space-y-4">
+                  {/* Step 1: OAuth credentials */}
+                  <div className="p-4 bg-[#F9F9F7] border border-black/5">
+                    <h4 className="text-sm font-semibold mb-3">Шаг 1: Данные интеграции</h4>
+                    <p className="text-[10px] text-[#8C8C8C] mb-3">
+                      AMO → Настройки → Интеграции → создайте интеграцию.
+                      В поле "Ссылка для перенаправления" укажите адрес ниже:
+                    </p>
+                    <div className="mb-3">
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Redirect URI (скопируйте в AMO)</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          readOnly
+                          value={`${API_URL}/api/admin/amocrm/callback`}
+                          className="flex-1 p-2 border border-black/10 text-sm bg-white font-mono"
+                        />
+                        <button
+                          onClick={() => {navigator.clipboard.writeText(`${API_URL}/api/admin/amocrm/callback`); showMessage('success', 'Скопировано');}}
+                          className="px-3 py-2 bg-[#1A1A1A] text-white text-xs hover:bg-black"
+                        >
+                          Копировать
+                        </button>
+                      </div>
                     </div>
                     <div>
-                      <label className="block text-xs text-[#8C8C8C] mb-1">Ответственный ID (необязательно)</label>
-                      <input
-                        type="number"
-                        value={integrationSettings.amocrm_responsible_user_id || ''}
-                        onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_responsible_user_id: parseInt(e.target.value) || 0 })}
-                        placeholder="ID пользователя"
-                        className="w-full p-2 border border-black/10 text-sm"
-                      />
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Домен AMO CRM</label>
+                      <input type="text" value={integrationSettings.amocrm_domain} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_domain: e.target.value })} placeholder="mycompany.amocrm.ru" className="w-full p-2 border border-black/10 text-sm" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mt-3">
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">Client ID</label>
+                        <input type="text" value={integrationSettings.amocrm_client_id} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_client_id: e.target.value })} placeholder="из настроек интеграции AMO" className="w-full p-2 border border-black/10 text-sm font-mono" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">Client Secret</label>
+                        <input type="text" value={integrationSettings.amocrm_client_secret} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_client_secret: e.target.value })} placeholder="из настроек интеграции AMO" className="w-full p-2 border border-black/10 text-sm font-mono" />
+                      </div>
                     </div>
                   </div>
-                  <button
-                    onClick={testAmocrm}
-                    disabled={testingAmo || !integrationSettings.amocrm_domain || !integrationSettings.amocrm_access_token}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#339DC7] text-white text-sm hover:bg-[#2a8bb3] disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    {testingAmo ? <Loader2 size={14} className="animate-spin" /> : null}
-                    Проверить подключение
-                  </button>
+
+                  {/* Step 2: Authorize */}
+                  <div className="p-4 bg-[#F9F9F7] border border-black/5">
+                    <h4 className="text-sm font-semibold mb-3">Шаг 2: Авторизация</h4>
+                    <p className="text-[10px] text-[#8C8C8C] mb-3">Сначала сохраните настройки выше, затем нажмите кнопку для авторизации.</p>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => {
+                          if (!integrationSettings.amocrm_domain || !integrationSettings.amocrm_client_id) {
+                            showMessage('error', 'Заполните домен и Client ID');
+                            return;
+                          }
+                          const domain = integrationSettings.amocrm_domain.replace(/^https?:\/\//, '');
+                          const url = `https://${domain}/oauth?client_id=${integrationSettings.amocrm_client_id}&state=wm_sauna&mode=post_message`;
+                          window.open(url, '_blank', 'width=600,height=700');
+                        }}
+                        disabled={!integrationSettings.amocrm_domain || !integrationSettings.amocrm_client_id}
+                        className="px-4 py-2 bg-[#339DC7] text-white text-sm hover:bg-[#2a8bb3] disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        Авторизовать в AMO CRM
+                      </button>
+                      {integrationSettings.amocrm_access_token && (
+                        <span className="text-xs text-green-600 flex items-center gap-1"><Check size={14} /> Токен получен</span>
+                      )}
+                    </div>
+                    <button
+                      onClick={testAmocrm}
+                      disabled={testingAmo || !integrationSettings.amocrm_access_token}
+                      className="mt-3 flex items-center gap-2 px-4 py-2 border border-[#339DC7] text-[#339DC7] text-sm hover:bg-[#339DC7]/5 disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {testingAmo ? <Loader2 size={14} className="animate-spin" /> : null}
+                      Проверить подключение
+                    </button>
+                  </div>
+
+                  {/* Step 3: Pipeline & Stage */}
+                  <div className="p-4 bg-[#F9F9F7] border border-black/5">
+                    <h4 className="text-sm font-semibold mb-3">Шаг 3: Воронка и этап</h4>
+                    <p className="text-[10px] text-[#8C8C8C] mb-3">
+                      Укажите ID воронки и этапа. Найти можно: AMO → Сделки → Настроить → наведите на этап → в URL будет pipeline_id и status_id.
+                    </p>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">ID воронки (Pipeline)</label>
+                        <input type="number" value={integrationSettings.amocrm_pipeline_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_pipeline_id: parseInt(e.target.value) || 0 })} placeholder="123456" className="w-full p-2 border border-black/10 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">ID этапа (Status)</label>
+                        <input type="number" value={integrationSettings.amocrm_status_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_status_id: parseInt(e.target.value) || 0 })} placeholder="789012" className="w-full p-2 border border-black/10 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-[#8C8C8C] mb-1">ID ответственного</label>
+                        <input type="number" value={integrationSettings.amocrm_responsible_user_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_responsible_user_id: parseInt(e.target.value) || 0 })} placeholder="ID пользователя" className="w-full p-2 border border-black/10 text-sm" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 4: Field mapping */}
+                  <div className="p-4 bg-[#F9F9F7] border border-black/5">
+                    <h4 className="text-sm font-semibold mb-3">Шаг 4: Маппинг полей</h4>
+                    <p className="text-[10px] text-[#8C8C8C] mb-3">
+                      Укажите ID полей AMO CRM, в которые нужно записывать данные из заявки. Если оставить 0 — будут использованы стандартные поля AMO.
+                      ID полей: AMO → Настройки → Поля → наведите на поле.
+                    </p>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { key: 'amocrm_field_name', label: 'Имя клиента', hint: 'ID поля для имени' },
+                        { key: 'amocrm_field_phone', label: 'Телефон', hint: 'ID поля телефона' },
+                        { key: 'amocrm_field_email', label: 'Email', hint: 'ID поля email' },
+                        { key: 'amocrm_field_model', label: 'Модель сауны', hint: 'ID поля в сделке' },
+                        { key: 'amocrm_field_price', label: 'Стоимость', hint: 'ID поля в сделке' },
+                        { key: 'amocrm_field_message', label: 'Комментарий', hint: 'ID поля в сделке' },
+                      ].map(f => (
+                        <div key={f.key}>
+                          <label className="block text-xs text-[#8C8C8C] mb-1">{f.label}</label>
+                          <input
+                            type="number"
+                            value={integrationSettings[f.key] || ''}
+                            onChange={(e) => setIntegrationSettings({ ...integrationSettings, [f.key]: parseInt(e.target.value) || 0 })}
+                            placeholder={f.hint}
+                            className="w-full p-2 border border-black/10 text-sm"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
