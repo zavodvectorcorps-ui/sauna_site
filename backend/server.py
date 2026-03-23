@@ -158,6 +158,53 @@ class GalleryConfig(BaseModel):
     hidden_api_images: List[str] = []  # List of image URLs to hide from API
     show_api_images: bool = True  # Master toggle for API images
 
+# Section Content Settings
+class GallerySettings(BaseModel):
+    id: str = "gallery_settings"
+    title_pl: str = "Nasze realizacje"
+    title_en: str = "Our Projects"
+    subtitle_pl: str = "Zobacz nasze najnowsze projekty i inspiracje. Każda sauna to unikalne dzieło rzemiosła."
+    subtitle_en: str = "See our latest projects and inspirations. Each sauna is a unique piece of craftsmanship."
+
+class CalculatorSettings(BaseModel):
+    id: str = "calculator_settings"
+    title_pl: str = "Skonfiguruj swoją saunę"
+    title_en: str = "Configure your sauna"
+    subtitle_pl: str = "Wybierz model i dostosuj go do swoich potrzeb. Otrzymasz dokładną wycenę w kilka minut."
+    subtitle_en: str = "Choose a model and customize it to your needs. Get an accurate quote in minutes."
+
+class StockSettings(BaseModel):
+    id: str = "stock_settings"
+    title_pl: str = "Sauny dostępne od ręki"
+    title_en: str = "Saunas available now"
+    subtitle_pl: str = "Gotowe modele z natychmiastową dostawą. Idealne rozwiązanie, gdy nie chcesz czekać."
+    subtitle_en: str = "Ready-made models with immediate delivery. Perfect solution when you don't want to wait."
+
+class ReviewsSettings(BaseModel):
+    id: str = "reviews_settings"
+    title_pl: str = "Co mówią nasi klienci"
+    title_en: str = "What our clients say"
+    subtitle_pl: str = "Dołącz do grona zadowolonych właścicieli saun WM-Sauna."
+    subtitle_en: str = "Join the group of satisfied WM-Sauna owners."
+
+class ContactSettings(BaseModel):
+    id: str = "contact_settings"
+    title_pl: str = "Skontaktuj się z nami"
+    title_en: str = "Contact us"
+    subtitle_pl: str = "Masz pytania? Chętnie na nie odpowiemy. Skontaktuj się z nami telefonicznie lub wypełnij formularz."
+    subtitle_en: str = "Have questions? We'll be happy to answer them. Contact us by phone or fill out the form."
+    form_title_pl: str = "Wyślij zapytanie"
+    form_title_en: str = "Send inquiry"
+    form_subtitle_pl: str = "Wypełnij formularz, a oddzwonimy w ciągu 24h"
+    form_subtitle_en: str = "Fill out the form and we'll call you back within 24 hours"
+
+class FooterSettings(BaseModel):
+    id: str = "footer_settings"
+    tagline_pl: str = "Polski producent saun drewnianych premium od 2015 roku."
+    tagline_en: str = "Polish premium wooden sauna manufacturer since 2015."
+    copyright_pl: str = "Wszelkie prawa zastrzeżone."
+    copyright_en: str = "All rights reserved."
+
 # ============= Public Routes =============
 
 @api_router.get("/")
