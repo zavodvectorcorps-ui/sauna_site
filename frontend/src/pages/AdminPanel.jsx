@@ -258,6 +258,22 @@ const AdminPanel = () => {
     setLoading(false);
   };
 
+  // Section content save functions
+  const saveSectionContent = async (endpoint, data, name) => {
+    setLoading(true);
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/settings/${endpoint}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      showMessage('success', `${name} сохранены`);
+    } catch (error) {
+      showMessage('error', 'Ошибка сохранения');
+    }
+    setLoading(false);
+  };
+
   const toggleApiImage = (imageUrl) => {
     const hidden = galleryConfig.hidden_api_images || [];
     if (hidden.includes(imageUrl)) {
