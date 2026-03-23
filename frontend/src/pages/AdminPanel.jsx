@@ -95,7 +95,10 @@ const AdminPanel = () => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [contactsRes, siteRes, heroRes, aboutRes, calcRes, sectionsRes, reviewsRes, galleryRes, apiRes, galleryConfigRes] = await Promise.all([
+      const [
+        contactsRes, siteRes, heroRes, aboutRes, calcRes, sectionsRes, reviewsRes, galleryRes, apiRes, galleryConfigRes,
+        gallerySettingsRes, calculatorSettingsRes, stockSettingsRes, reviewsSettingsRes, contactSettingsRes, footerSettingsRes
+      ] = await Promise.all([
         fetchWithAuth(`${API_URL}/api/admin/contacts`),
         fetch(`${API_URL}/api/settings/site`),
         fetch(`${API_URL}/api/settings/hero`),
@@ -106,6 +109,12 @@ const AdminPanel = () => {
         fetchWithAuth(`${API_URL}/api/admin/gallery`),
         fetch(`${API_URL}/api/sauna/prices`),
         fetch(`${API_URL}/api/settings/gallery`),
+        fetch(`${API_URL}/api/settings/gallery-content`),
+        fetch(`${API_URL}/api/settings/calculator-content`),
+        fetch(`${API_URL}/api/settings/stock`),
+        fetch(`${API_URL}/api/settings/reviews-content`),
+        fetch(`${API_URL}/api/settings/contact`),
+        fetch(`${API_URL}/api/settings/footer`),
       ]);
 
       setContacts(await contactsRes.json());
@@ -146,6 +155,12 @@ const AdminPanel = () => {
       
       setApiImages(extractedImages);
       setGalleryConfig(await galleryConfigRes.json());
+      setGallerySettings(await gallerySettingsRes.json());
+      setCalculatorSettings(await calculatorSettingsRes.json());
+      setStockSettings(await stockSettingsRes.json());
+      setReviewsSettings(await reviewsSettingsRes.json());
+      setContactSettings(await contactSettingsRes.json());
+      setFooterSettings(await footerSettingsRes.json());
     } catch (error) {
       console.error('Error fetching data:', error);
     }
