@@ -739,6 +739,312 @@ const AdminPanel = () => {
             </div>
           )}
 
+          {/* Content Tab - All Section Texts */}
+          {activeTab === 'content' && !loading && gallerySettings && calculatorSettings && stockSettings && reviewsSettings && contactSettings && footerSettings && (
+            <div>
+              <h2 className="text-xl font-bold text-[#1A1A1A] mb-6">Тексты разделов</h2>
+              <p className="text-sm text-[#8C8C8C] mb-6">Редактируйте заголовки и описания всех секций сайта</p>
+              
+              <div className="space-y-8">
+                {/* Gallery Section */}
+                <div className="border border-black/5 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-lg">Галерея (Nasze realizacje)</h3>
+                    <button onClick={() => saveSectionContent('gallery-content', gallerySettings, 'Настройки галереи')} className="flex items-center gap-2 bg-[#C6A87C] text-white px-3 py-1 text-sm hover:bg-[#B09060]">
+                      <Save size={14} /> Сохранить
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (PL)</label>
+                      <input
+                        type="text"
+                        value={gallerySettings.title_pl}
+                        onChange={(e) => setGallerySettings({ ...gallerySettings, title_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (EN)</label>
+                      <input
+                        type="text"
+                        value={gallerySettings.title_en}
+                        onChange={(e) => setGallerySettings({ ...gallerySettings, title_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (PL)</label>
+                      <textarea
+                        value={gallerySettings.subtitle_pl}
+                        onChange={(e) => setGallerySettings({ ...gallerySettings, subtitle_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (EN)</label>
+                      <textarea
+                        value={gallerySettings.subtitle_en}
+                        onChange={(e) => setGallerySettings({ ...gallerySettings, subtitle_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Calculator Section */}
+                <div className="border border-black/5 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-lg">Калькулятор</h3>
+                    <button onClick={() => saveSectionContent('calculator-content', calculatorSettings, 'Настройки калькулятора')} className="flex items-center gap-2 bg-[#C6A87C] text-white px-3 py-1 text-sm hover:bg-[#B09060]">
+                      <Save size={14} /> Сохранить
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (PL)</label>
+                      <input
+                        type="text"
+                        value={calculatorSettings.title_pl}
+                        onChange={(e) => setCalculatorSettings({ ...calculatorSettings, title_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (EN)</label>
+                      <input
+                        type="text"
+                        value={calculatorSettings.title_en}
+                        onChange={(e) => setCalculatorSettings({ ...calculatorSettings, title_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (PL)</label>
+                      <textarea
+                        value={calculatorSettings.subtitle_pl}
+                        onChange={(e) => setCalculatorSettings({ ...calculatorSettings, subtitle_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (EN)</label>
+                      <textarea
+                        value={calculatorSettings.subtitle_en}
+                        onChange={(e) => setCalculatorSettings({ ...calculatorSettings, subtitle_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stock Saunas Section */}
+                <div className="border border-black/5 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-lg">Сауны в наличии</h3>
+                    <button onClick={() => saveSectionContent('stock', stockSettings, 'Настройки блока наличия')} className="flex items-center gap-2 bg-[#C6A87C] text-white px-3 py-1 text-sm hover:bg-[#B09060]">
+                      <Save size={14} /> Сохранить
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (PL)</label>
+                      <input
+                        type="text"
+                        value={stockSettings.title_pl}
+                        onChange={(e) => setStockSettings({ ...stockSettings, title_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (EN)</label>
+                      <input
+                        type="text"
+                        value={stockSettings.title_en}
+                        onChange={(e) => setStockSettings({ ...stockSettings, title_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (PL)</label>
+                      <textarea
+                        value={stockSettings.subtitle_pl}
+                        onChange={(e) => setStockSettings({ ...stockSettings, subtitle_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (EN)</label>
+                      <textarea
+                        value={stockSettings.subtitle_en}
+                        onChange={(e) => setStockSettings({ ...stockSettings, subtitle_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reviews Section */}
+                <div className="border border-black/5 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-lg">Отзывы</h3>
+                    <button onClick={() => saveSectionContent('reviews-content', reviewsSettings, 'Настройки отзывов')} className="flex items-center gap-2 bg-[#C6A87C] text-white px-3 py-1 text-sm hover:bg-[#B09060]">
+                      <Save size={14} /> Сохранить
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (PL)</label>
+                      <input
+                        type="text"
+                        value={reviewsSettings.title_pl}
+                        onChange={(e) => setReviewsSettings({ ...reviewsSettings, title_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (EN)</label>
+                      <input
+                        type="text"
+                        value={reviewsSettings.title_en}
+                        onChange={(e) => setReviewsSettings({ ...reviewsSettings, title_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (PL)</label>
+                      <textarea
+                        value={reviewsSettings.subtitle_pl}
+                        onChange={(e) => setReviewsSettings({ ...reviewsSettings, subtitle_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (EN)</label>
+                      <textarea
+                        value={reviewsSettings.subtitle_en}
+                        onChange={(e) => setReviewsSettings({ ...reviewsSettings, subtitle_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Section */}
+                <div className="border border-black/5 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-lg">Контакты</h3>
+                    <button onClick={() => saveSectionContent('contact', contactSettings, 'Настройки контактов')} className="flex items-center gap-2 bg-[#C6A87C] text-white px-3 py-1 text-sm hover:bg-[#B09060]">
+                      <Save size={14} /> Сохранить
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (PL)</label>
+                      <input
+                        type="text"
+                        value={contactSettings.title_pl}
+                        onChange={(e) => setContactSettings({ ...contactSettings, title_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок (EN)</label>
+                      <input
+                        type="text"
+                        value={contactSettings.title_en}
+                        onChange={(e) => setContactSettings({ ...contactSettings, title_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (PL)</label>
+                      <textarea
+                        value={contactSettings.subtitle_pl}
+                        onChange={(e) => setContactSettings({ ...contactSettings, subtitle_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Подзаголовок (EN)</label>
+                      <textarea
+                        value={contactSettings.subtitle_en}
+                        onChange={(e) => setContactSettings({ ...contactSettings, subtitle_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm h-16"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок формы (PL)</label>
+                      <input
+                        type="text"
+                        value={contactSettings.form_title_pl}
+                        onChange={(e) => setContactSettings({ ...contactSettings, form_title_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Заголовок формы (EN)</label>
+                      <input
+                        type="text"
+                        value={contactSettings.form_title_en}
+                        onChange={(e) => setContactSettings({ ...contactSettings, form_title_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Section */}
+                <div className="border border-black/5 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-lg">Подвал (Footer)</h3>
+                    <button onClick={() => saveSectionContent('footer', footerSettings, 'Настройки подвала')} className="flex items-center gap-2 bg-[#C6A87C] text-white px-3 py-1 text-sm hover:bg-[#B09060]">
+                      <Save size={14} /> Сохранить
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Слоган (PL)</label>
+                      <input
+                        type="text"
+                        value={footerSettings.tagline_pl}
+                        onChange={(e) => setFooterSettings({ ...footerSettings, tagline_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Слоган (EN)</label>
+                      <input
+                        type="text"
+                        value={footerSettings.tagline_en}
+                        onChange={(e) => setFooterSettings({ ...footerSettings, tagline_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Копирайт (PL)</label>
+                      <input
+                        type="text"
+                        value={footerSettings.copyright_pl}
+                        onChange={(e) => setFooterSettings({ ...footerSettings, copyright_pl: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8C8C8C] mb-1">Копирайт (EN)</label>
+                      <input
+                        type="text"
+                        value={footerSettings.copyright_en}
+                        onChange={(e) => setFooterSettings({ ...footerSettings, copyright_en: e.target.value })}
+                        className="w-full p-2 border border-black/10 text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Hero Tab */}
           {activeTab === 'hero' && !loading && heroSettings && (
             <div>
