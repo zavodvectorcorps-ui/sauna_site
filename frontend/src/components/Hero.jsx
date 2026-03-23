@@ -37,6 +37,12 @@ export const Hero = () => {
   const backgroundImage = heroSettings?.background_image || 
     'https://images.unsplash.com/photo-1759302353458-3c617bfd428b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGludGVyaW9yJTIwcGFub3JhbWljJTIwd2luZG93JTIwbmF0dXJlJTIwdmlld3xlbnwwfHx8fDE3NzA4NDMyODh8MA&ixlib=rb-4.1.0&q=85';
 
+  // Overlay opacity: 0-100, default 80
+  const overlayOpacity = heroSettings?.overlay_opacity ?? 80;
+  const opFrom = Math.min(overlayOpacity + 10, 100) / 100;
+  const opVia = overlayOpacity / 100;
+  const opTo = Math.max(overlayOpacity - 40, 0) / 100;
+
   return (
     <section
       data-testid="hero-section"
@@ -49,7 +55,12 @@ export const Hero = () => {
           alt="Luxury wooden sauna"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/40" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(to right, rgba(255,255,255,${opFrom}), rgba(255,255,255,${opVia}), rgba(255,255,255,${opTo}))`,
+          }}
+        />
         {/* Top gradient for header readability */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/40 to-transparent" />
       </div>

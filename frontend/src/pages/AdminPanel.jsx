@@ -1555,6 +1555,27 @@ const AdminPanel = () => {
                     <img src={heroSettings.background_image} alt="Preview" className="mt-2 h-32 object-cover" />
                   )}
                 </div>
+
+                {/* Overlay opacity slider */}
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Прозрачность наложения: {heroSettings.overlay_opacity ?? 80}%
+                  </label>
+                  <p className="text-xs text-[#8C8C8C] mb-2">0% — фото без наложения, 100% — полностью белый фон</p>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="5"
+                    value={heroSettings.overlay_opacity ?? 80}
+                    onChange={(e) => setHeroSettings({ ...heroSettings, overlay_opacity: parseInt(e.target.value) })}
+                    className="w-full accent-[#C6A87C]"
+                  />
+                  <div className="flex justify-between text-xs text-[#8C8C8C] mt-1">
+                    <span>Фото видно</span>
+                    <span>Белый фон</span>
+                  </div>
+                </div>
                 
                 <div className="grid grid-cols-1 gap-4">
                   <div>
