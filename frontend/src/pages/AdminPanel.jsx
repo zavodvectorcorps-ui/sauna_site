@@ -102,7 +102,7 @@ const AdminPanel = () => {
       const [
         contactsRes, siteRes, heroRes, aboutRes, calcRes, sectionsRes, reviewsRes, galleryRes, apiRes, galleryConfigRes,
         gallerySettingsRes, calculatorSettingsRes, stockSettingsRes, reviewsSettingsRes, contactSettingsRes, footerSettingsRes,
-        stockSaunasRes, layoutRes
+        stockSaunasRes, layoutRes, buttonsRes
       ] = await Promise.all([
         fetchWithAuth(`${API_URL}/api/admin/contacts`),
         fetch(`${API_URL}/api/settings/site`),
@@ -122,6 +122,7 @@ const AdminPanel = () => {
         fetch(`${API_URL}/api/settings/footer`),
         fetchWithAuth(`${API_URL}/api/admin/stock-saunas`),
         fetch(`${API_URL}/api/settings/layout`),
+        fetch(`${API_URL}/api/settings/buttons`),
       ]);
 
       setContacts(await contactsRes.json());
@@ -170,6 +171,7 @@ const AdminPanel = () => {
       setFooterSettings(await footerSettingsRes.json());
       setStockSaunas(await stockSaunasRes.json());
       setLayoutSettings(await layoutRes.json());
+      setButtonConfig(await buttonsRes.json());
     } catch (error) {
       console.error('Error fetching data:', error);
     }
