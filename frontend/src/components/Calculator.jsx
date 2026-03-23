@@ -212,9 +212,11 @@ export const Calculator = () => {
         <div className="text-center mb-8">
           <div className="gold-line mx-auto mb-4" />
           <h2 className="section-title" data-testid="calculator-title">
-            {t('calculator.title')}
+            {sectionContent ? sectionContent[`title_${language.toLowerCase()}`] : t('calculator.title')}
           </h2>
-          <p className="section-subtitle mx-auto">{t('calculator.subtitle')}</p>
+          <p className="section-subtitle mx-auto">
+            {sectionContent ? sectionContent[`subtitle_${language.toLowerCase()}`] : t('calculator.subtitle')}
+          </p>
         </div>
 
         {/* Step Indicator */}
