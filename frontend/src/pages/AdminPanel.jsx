@@ -297,6 +297,74 @@ const AdminPanel = () => {
     }
   };
 
+  // Stock Saunas CRUD
+  const addStockSauna = async () => {
+    const newSauna = {
+      id: `sauna_${Date.now()}`,
+      name: 'Новая сауна',
+      image: '',
+      price: 0,
+      discount: 0,
+      capacity: '2-4',
+      steam_room_size: '',
+      relax_room_size: '',
+      features: [],
+      active: true,
+      sort_order: stockSaunas.length,
+    };
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/stock-saunas`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newSauna),
+      });
+      showMessage('success', 'Сауна добавлена');
+      fetchAllData();
+    } catch (error) {
+      showMessage('error', 'Ошибка добавления');
+    }
+  };
+
+  const saveStockSauna = async (sauna) => {
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/stock-saunas/${sauna.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sauna),
+      });
+      showMessage('success', 'Сауна сохранена');
+    } catch (error) {
+      showMessage('error', 'Ошибка сохранения');
+    }
+  };
+
+  const deleteStockSauna = async (id) => {
+    if (!window.confirm('Вы уверены, что хотите удалить эту сауну?')) return;
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/stock-saunas/${id}`, { method: 'DELETE' });
+      showMessage('success', 'Сауна удалена');
+      fetchAllData();
+    } catch (error) {
+      showMessage('error', 'Ошибка удаления');
+    }
+  };
+
+  // Layout settings
+  const saveLayoutSettings = async () => {
+    setLoading(true);
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/settings/layout`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(layoutSettings),
+      });
+      showMessage('success', 'Настройки отступов сохранены');
+    } catch (error) {
+      showMessage('error', 'Ошибка сохранения');
+    }
+    setLoading(false);
+  };
+
   const saveReview = async (review) => {
     setLoading(true);
     try {
