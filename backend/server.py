@@ -176,6 +176,19 @@ class GalleryConfig(BaseModel):
     hidden_api_images: List[str] = []  # List of image URLs to hide from API
     show_api_images: bool = False  # Master toggle for API images - disabled by default now
 
+# Models showcase configuration
+class ModelsConfig(BaseModel):
+    id: str = "models_config"
+    enabled_models: List[str] = []  # List of model IDs to show, empty = show all
+    show_section: bool = True
+
+class ModelsSettings(BaseModel):
+    id: str = "models_settings"
+    title_pl: str = "Nasze modele saun"
+    title_en: str = "Our sauna models"
+    subtitle_pl: str = "Wybierz model sauny i poznaj jej szczegóły. Każda sauna może być dostosowana do Twoich potrzeb."
+    subtitle_en: str = "Choose a sauna model and learn its details. Each sauna can be customized to your needs."
+
 # Button configuration
 class ButtonConfig(BaseModel):
     id: str = "button_config"
