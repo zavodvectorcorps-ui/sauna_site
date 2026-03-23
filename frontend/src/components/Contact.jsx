@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, Send, Loader2, CheckCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
 export const Contact = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { siteSettings } = useSettings();
+  const [sectionContent, setSectionContent] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,6 +18,20 @@ export const Contact = () => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    fetchContent();
+  }, []);
+
+  const fetchContent = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/settings/contact`);
+      const content = await response.json();
+      setSectionContent(content);
+    } catch (error) {
+      console.error('Error fetching contact content:', error);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
