@@ -816,6 +816,83 @@ const AdminPanel = () => {
             </div>
           )}
 
+          {/* Layout Tab - Section Spacing */}
+          {activeTab === 'layout' && !loading && layoutSettings && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Оформление</h2>
+                <button onClick={saveLayoutSettings} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
+                  <Save size={16} /> Сохранить
+                </button>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="border border-black/5 p-6">
+                  <h3 className="font-semibold mb-4">Расстояние между блоками</h3>
+                  <p className="text-sm text-[#8C8C8C] mb-4">Выберите размер отступов между секциями сайта</p>
+                  
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      {[
+                        { value: 'small', label: 'Маленькое', desc: '40px' },
+                        { value: 'medium', label: 'Среднее', desc: '60px' },
+                        { value: 'large', label: 'Большое', desc: '80px' },
+                      ].map((option) => (
+                        <label
+                          key={option.value}
+                          className={`flex flex-col items-center p-4 border cursor-pointer transition-all ${
+                            layoutSettings.section_spacing === option.value
+                              ? 'border-[#C6A87C] bg-[#C6A87C]/10'
+                              : 'border-black/10 hover:border-[#C6A87C]'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="section_spacing"
+                            value={option.value}
+                            checked={layoutSettings.section_spacing === option.value}
+                            onChange={(e) => setLayoutSettings({ ...layoutSettings, section_spacing: e.target.value })}
+                            className="sr-only"
+                          />
+                          <span className="font-medium">{option.label}</span>
+                          <span className="text-xs text-[#8C8C8C]">{option.desc}</span>
+                        </label>
+                      ))}
+                    </div>
+                    
+                    <div className="mt-6">
+                      <h4 className="font-medium mb-3">Точная настройка (в пикселях)</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs text-[#8C8C8C] mb-1">Отступ сверху</label>
+                          <input
+                            type="number"
+                            value={layoutSettings.section_padding_top}
+                            onChange={(e) => setLayoutSettings({ ...layoutSettings, section_padding_top: parseInt(e.target.value) || 0 })}
+                            className="w-full p-2 border border-black/10"
+                            min="0"
+                            max="200"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-[#8C8C8C] mb-1">Отступ снизу</label>
+                          <input
+                            type="number"
+                            value={layoutSettings.section_padding_bottom}
+                            onChange={(e) => setLayoutSettings({ ...layoutSettings, section_padding_bottom: parseInt(e.target.value) || 0 })}
+                            className="w-full p-2 border border-black/10"
+                            min="0"
+                            max="200"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Content Tab - All Section Texts */}
           {activeTab === 'content' && !loading && gallerySettings && calculatorSettings && stockSettings && reviewsSettings && contactSettings && footerSettings && (
             <div>
