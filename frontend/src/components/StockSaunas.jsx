@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Users, Check, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const StockSaunas = () => {
@@ -19,31 +18,25 @@ export const StockSaunas = () => {
 
   const fetchSaunas = async () => {
     try {
-      // Use backend proxy to avoid CORS issues
-      const [pricesRes, contentRes] = await Promise.all([
-        fetch(`${BACKEND_URL}/api/sauna/prices`),
+      const [saunasRes, contentRes] = await Promise.all([
+        fetch(`${BACKEND_URL}/api/stock-saunas`),
         fetch(`${BACKEND_URL}/api/settings/stock`)
       ]);
-      const data = await pricesRes.json();
+      const saunasData = await saunasRes.json();
       const content = await contentRes.json();
       setSectionContent(content);
 
-      // Take first 4 active models as "in stock"
-      const stockItems = data.models
-        .filter((m) => m.active)
-        .slice(0, 4)
-        .map((model) => ({
-          id: model.id,
-          name: model.name,
-          image: model.imageUrl?.startsWith('http')
-            ? model.imageUrl
-            : `${CALCULATOR_API_URL}${model.imageUrl}`,
-          price: model.basePrice,
-          discount: model.discount,
-          capacity: model.capacity,
-          steamRoomSize: model.steamRoomSize,
-          relaxRoomSize: model.relaxRoomSize,
-        }));
+      // Map data to expected format
+      const stockItems = saunasData.map((sauna) => ({
+        id: sauna.id,
+        name: sauna.name,
+        image: sauna.image,
+        price: sauna.price,
+        discount: sauna.discount,
+        capacity: sauna.capacity,
+        steamRoomSize: sauna.steam_room_size,
+        relaxRoomSize: sauna.relax_room_size,
+      }));
 
       setSaunas(stockItems);
       setLoading(false);
