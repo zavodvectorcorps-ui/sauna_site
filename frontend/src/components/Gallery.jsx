@@ -179,28 +179,14 @@ export const Gallery = () => {
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="flex justify-center gap-2 mb-10">
-          {filters.map((filter) => (
-            <button
-              key={filter.id}
-              data-testid={`gallery-filter-${filter.id}`}
-              onClick={() => setActiveFilter(filter.id)}
-              className={`px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 ${
-                activeFilter === filter.id
-                  ? 'bg-[#1A1A1A] text-white'
-                  : 'bg-transparent border border-black/10 text-[#595959] hover:border-[#C6A87C] hover:text-[#C6A87C]'
-              }`}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-
         {/* Loading */}
         {loading ? (
           <div className="flex justify-center py-20">
             <div className="spinner" />
+          </div>
+        ) : images.length === 0 ? (
+          <div className="text-center py-20 text-[#8C8C8C]">
+            <p>Галерея пуста</p>
           </div>
         ) : (
           <>
