@@ -368,6 +368,35 @@ const AdminPanel = () => {
     setLoading(false);
   };
 
+  // Button config
+  const saveButtonConfig = async () => {
+    setLoading(true);
+    try {
+      await fetchWithAuth(`${API_URL}/api/admin/settings/buttons`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buttonConfig),
+      });
+      showMessage('success', 'Настройки кнопок сохранены');
+    } catch (error) {
+      showMessage('error', 'Ошибка сохранения');
+    }
+    setLoading(false);
+  };
+
+  const updateButton = (buttonId, field, value) => {
+    setButtonConfig({
+      ...buttonConfig,
+      buttons: {
+        ...buttonConfig.buttons,
+        [buttonId]: {
+          ...buttonConfig.buttons[buttonId],
+          [field]: value,
+        },
+      },
+    });
+  };
+
   const saveReview = async (review) => {
     setLoading(true);
     try {
