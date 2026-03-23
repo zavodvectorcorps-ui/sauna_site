@@ -596,6 +596,15 @@ async def update_footer_settings(settings: FooterSettings, username: str = Depen
     )
     return {"status": "success"}
 
+@api_router.put("/admin/settings/buttons")
+async def update_button_config(config: ButtonConfig, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "button_config"},
+        {"$set": config.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
 # Reviews management
 @api_router.get("/admin/reviews")
 async def get_all_reviews(username: str = Depends(verify_admin)):
