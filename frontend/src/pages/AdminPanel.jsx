@@ -34,6 +34,9 @@ const AdminPanel = () => {
   const [reviewsSettings, setReviewsSettings] = useState(null);
   const [contactSettings, setContactSettings] = useState(null);
   const [footerSettings, setFooterSettings] = useState(null);
+  // Stock saunas and layout
+  const [stockSaunas, setStockSaunas] = useState([]);
+  const [layoutSettings, setLayoutSettings] = useState(null);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
