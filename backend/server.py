@@ -525,11 +525,16 @@ async def submit_contact_form(form_data: ContactFormCreate):
         await db.contact_forms.insert_one(doc)
         logger.info(f"New contact form submitted: {contact.name} - {contact.phone}")
         
-        # Send notifications (fire and forget)
+        # Send notifications directly (await to ensure delivery)
         notification_data = form_data.model_dump()
-        import asyncio
-        asyncio.create_task(send_telegram_notification(notification_data))
-        asyncio.create_task(send_amocrm_lead(notification_data))
+        try:
+            await send_telegram_notification(notification_data)
+        except Exception as e:
+            logger.error(f"Telegram notification failed: {e}")
+        try:
+            await send_amocrm_lead(notification_data)
+        except Exception as e:
+            logger.error(f"AMO CRM lead failed: {e}")
         
         return contact
     except Exception as e:
