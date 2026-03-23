@@ -1425,49 +1425,90 @@ const AdminPanel = () => {
           )}
 
           {/* Gallery Tab */}
-          {activeTab === 'gallery' && !loading && (
+          {activeTab === 'gallery' && !loading && galleryConfig && (
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-[#1A1A1A]">Галерея</h2>
-                <button onClick={addGalleryImage} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
-                  <Plus size={16} /> Добавить фото
-                </button>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {gallery.map((img) => (
-                  <GalleryEditor key={img.id} image={img} onSave={saveGalleryImage} onDelete={() => deleteGalleryImage(img.id)} onImageUpload={handleImageUpload} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* API Images Tab */}
-          {activeTab === 'api_images' && !loading && galleryConfig && (
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-[#1A1A1A]">Фото из API</h2>
-                <button onClick={saveGalleryConfig} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
-                  <Save size={16} /> Сохранить
-                </button>
+                <div className="flex gap-2">
+                  <label className="flex items-center gap-2 bg-[#1A1A1A] text-white px-4 py-2 cursor-pointer hover:bg-black">
+                    <Upload size={16} /> Массовая загрузка
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files);
+                        setLoading(true);
+                        for (const file of files) {
+                          await handleImageUpload(file, async (url) => {
+                            const newImage = {
+                              id: `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                              url: url,
+                              alt: file.name.replace(/\.[^/.]+$/, ''),
+                              category: 'all',
+                              active: true,
+                              sort_order: gallery.length,
+                            };
+                            await fetchWithAuth(`${API_URL}/api/admin/gallery`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify(newImage),
+                            });
+                          });
+                        }
+                        showMessage('success', `Загружено ${files.length} фото`);
+                        fetchAllData();
+                      }}
+                    />
+                  </label>
+                  <button onClick={addGalleryImage} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]">
+                    <Plus size={16} /> Добавить фото
+                  </button>
+                </div>
               </div>
               
-              {/* Master toggle */}
+              {/* API Images Toggle */}
               <div className="mb-6 p-4 bg-[#F9F9F7] border border-black/5">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={galleryConfig.show_api_images}
-                    onChange={(e) => setGalleryConfig({ ...galleryConfig, show_api_images: e.target.checked })}
-                    className="w-5 h-5 accent-[#C6A87C]"
-                  />
-                  <div>
-                    <span className="font-medium">Показывать фото из API</span>
-                    <p className="text-sm text-[#8C8C8C]">Включите, чтобы отображать фото из внешнего API калькулятора</p>
-                  </div>
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={galleryConfig.show_api_images}
+                      onChange={(e) => {
+                        const newConfig = { ...galleryConfig, show_api_images: e.target.checked };
+                        setGalleryConfig(newConfig);
+                        fetchWithAuth(`${API_URL}/api/admin/settings/gallery`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify(newConfig),
+                        }).then(() => showMessage('success', 'Настройка сохранена'));
+                      }}
+                      className="w-5 h-5 accent-[#C6A87C]"
+                    />
+                    <div>
+                      <span className="font-medium">Показывать фото из API калькулятора</span>
+                      <p className="text-sm text-[#8C8C8C]">Автоматически добавлять фото моделей саун из внешнего API</p>
+                    </div>
+                  </label>
+                </div>
               </div>
 
-              {galleryConfig.show_api_images && (
+              {/* Gallery Grid */}
+              {gallery.length === 0 && !galleryConfig.show_api_images ? (
+                <div className="text-center py-12 text-[#8C8C8C] border border-dashed border-black/10">
+                  <p>Галерея пуста</p>
+                  <p className="text-sm mt-2">Загрузите фото или включите фото из API</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                  {gallery.map((img) => (
+                    <GalleryEditorSimple key={img.id} image={img} onSave={saveGalleryImage} onDelete={() => deleteGalleryImage(img.id)} onImageUpload={handleImageUpload} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
                 <>
                   <p className="text-sm text-[#8C8C8C] mb-4">
                     Выберите, какие фото показывать в галерее. Отмеченные фото будут отображаться, неотмеченные — скрыты.
