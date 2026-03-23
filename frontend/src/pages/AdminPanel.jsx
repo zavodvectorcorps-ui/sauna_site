@@ -1768,4 +1768,141 @@ const GalleryEditor = ({ image, onSave, onDelete, onImageUpload }) => {
   );
 };
 
+// Stock Sauna Editor Component
+const StockSaunaEditor = ({ sauna, onSave, onDelete, onImageUpload }) => {
+  const [data, setData] = useState(sauna);
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="border border-black/5 p-4">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-16 h-16 bg-[#F2F2F0] overflow-hidden">
+            {data.image ? (
+              <img src={data.image} alt={data.name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[#8C8C8C]">
+                <Image size={24} />
+              </div>
+            )}
+          </div>
+          <div>
+            <h4 className="font-medium">{data.name}</h4>
+            <p className="text-sm text-[#C6A87C]">
+              {data.discount > 0 ? (
+                <>
+                  <span className="line-through text-[#8C8C8C] mr-2">{data.price?.toLocaleString()} PLN</span>
+                  {Math.round(data.price * (1 - data.discount / 100)).toLocaleString()} PLN
+                </>
+              ) : (
+                <>{data.price?.toLocaleString()} PLN</>
+              )}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={data.active}
+              onChange={(e) => {
+                const newData = { ...data, active: e.target.checked };
+                setData(newData);
+                onSave(newData);
+              }}
+              className="accent-[#C6A87C]"
+            />
+            Активна
+          </label>
+          <button onClick={() => setExpanded(!expanded)} className="p-2 hover:bg-[#F9F9F7]">
+            {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+          <button onClick={() => onSave(data)} className="p-2 text-[#C6A87C] hover:bg-[#F9F9F7]">
+            <Save size={16} />
+          </button>
+          <button onClick={onDelete} className="p-2 text-red-500 hover:bg-red-50">
+            <Trash2 size={16} />
+          </button>
+        </div>
+      </div>
+      
+      {expanded && (
+        <div className="space-y-4 mt-4 pt-4 border-t border-black/5">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <label className="text-xs text-[#8C8C8C]">Название</label>
+              <input
+                value={data.name}
+                onChange={(e) => setData({ ...data, name: e.target.value })}
+                className="w-full p-2 border border-black/10 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-[#8C8C8C]">Цена (PLN)</label>
+              <input
+                type="number"
+                value={data.price}
+                onChange={(e) => setData({ ...data, price: parseFloat(e.target.value) || 0 })}
+                className="w-full p-2 border border-black/10 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-[#8C8C8C]">Скидка (%)</label>
+              <input
+                type="number"
+                value={data.discount}
+                onChange={(e) => setData({ ...data, discount: parseInt(e.target.value) || 0 })}
+                className="w-full p-2 border border-black/10 text-sm"
+                min="0"
+                max="100"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-[#8C8C8C]">Вместимость</label>
+              <input
+                value={data.capacity}
+                onChange={(e) => setData({ ...data, capacity: e.target.value })}
+                className="w-full p-2 border border-black/10 text-sm"
+                placeholder="2-4"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-[#8C8C8C]">Парилка (м²)</label>
+              <input
+                value={data.steam_room_size}
+                onChange={(e) => setData({ ...data, steam_room_size: e.target.value })}
+                className="w-full p-2 border border-black/10 text-sm"
+                placeholder="2.5"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label className="text-xs text-[#8C8C8C]">URL изображения</label>
+            <div className="flex gap-2">
+              <input
+                value={data.image}
+                onChange={(e) => setData({ ...data, image: e.target.value })}
+                className="flex-1 p-2 border border-black/10 text-sm"
+              />
+              <label className="flex items-center gap-1 px-3 py-2 bg-[#1A1A1A] text-white text-sm cursor-pointer">
+                <Upload size={14} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => onImageUpload(e.target.files[0], (url) => setData({ ...data, image: url }))}
+                />
+              </label>
+            </div>
+            {data.image && (
+              <img src={data.image} alt="Preview" className="mt-2 h-24 object-cover" />
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default AdminPanel;
