@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { ArrowLeft, Search, Loader2, User, DollarSign, Calendar, ChevronDown, ChevronUp, Lock } from 'lucide-react';
+import { ArrowLeft, Search, Loader2, User, DollarSign, Calendar, ChevronDown, ChevronUp, Lock, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -128,6 +128,73 @@ export default function PipelineView() {
     setLoading(false);
   }, [pipelineId, authHeader]);
 
+  const exportToCSV = useCallback(() => {
+    if (!data) return;
+
+    // Build status map for lookup
+    const statusMap = {};
+    data.statuses.forEach(s => { statusMap[s.id] = s.name; });
+
+    // Collect all unique custom field names across all leads
+    const allLeads = Object.values(data.leads_by_status).flat();
+    const customFieldNames = [];
+    const cfSet = new Set();
+    allLeads.forEach(lead => {
+      (lead.custom_fields || []).forEach(cf => {
+        if (!cfSet.has(cf.name)) {
+          cfSet.add(cf.name);
+          customFieldNames.push(cf.name);
+        }
+      });
+    });
+
+    // CSV header
+    const headers = [
+      'ID', 'Название', 'Этап', 'Цена', 'Контакты', 'ID контактов',
+      'Ответственный (ID)', 'Дата создания', 'Дата обновления',
+      'Причина отказа', ...customFieldNames
+    ];
+
+    const escapeCSV = (val) => {
+      const str = String(val ?? '');
+      if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes(';')) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    const rows = allLeads.map(lead => {
+      const statusName = statusMap[lead.status_id] || String(lead.status_id);
+      const contactNames = (lead.contacts || []).map(c => c.name).filter(Boolean).join('; ');
+      const contactIds = (lead.contacts || []).map(c => c.id).join('; ');
+      const created = lead.created_at ? new Date(lead.created_at * 1000).toLocaleString('pl-PL') : '';
+      const updated = lead.updated_at ? new Date(lead.updated_at * 1000).toLocaleString('pl-PL') : '';
+
+      // Map custom fields for this lead
+      const cfMap = {};
+      (lead.custom_fields || []).forEach(cf => {
+        cfMap[cf.name] = (cf.values || []).join('; ');
+      });
+
+      return [
+        lead.id, lead.name || '', statusName, lead.price || 0,
+        contactNames, contactIds, lead.responsible_user_id || '',
+        created, updated, lead.loss_reason || '',
+        ...customFieldNames.map(name => cfMap[name] || '')
+      ].map(escapeCSV).join(',');
+    });
+
+    const BOM = '\uFEFF';
+    const csv = BOM + headers.map(escapeCSV).join(',') + '\n' + rows.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pipeline_${data.pipeline_id}_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [data]);
+
   // Login form
   if (!isLoggedIn) {
     return (
@@ -213,6 +280,16 @@ export default function PipelineView() {
               {loading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
               Загрузить
             </button>
+            {data && (
+              <button
+                onClick={exportToCSV}
+                className="flex items-center gap-2 px-4 py-2 bg-[#C6A87C] text-white text-sm font-medium hover:bg-[#b89a6e] transition-colors"
+                data-testid="export-csv-btn"
+              >
+                <Download size={14} />
+                Экспорт CSV
+              </button>
+            )}
           </div>
         </div>
       </div>
