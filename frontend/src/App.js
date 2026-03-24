@@ -19,6 +19,8 @@ import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
 import { StickyCTA } from "./components/StickyCTA";
 import { FloatingContact } from "./components/FloatingContact";
+import { PromoFeatures } from "./components/PromoFeatures";
+import { PromoBanner } from "./components/PromoBanner";
 import AdminPanel from "./pages/AdminPanel";
 import PipelineView from "./pages/PipelineView";
 
@@ -75,6 +77,11 @@ const MainContent = () => {
             <Component />
             {/* Social proof after hero */}
             {sectionKey === 'hero' && <SocialProof />}
+            {/* Promo blocks after models, before calculator */}
+            {sectionKey === 'models' && <>
+              <PromoFeatures />
+              <PromoBanner />
+            </>}
           </React.Fragment>
         );
       })}

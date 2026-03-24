@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, ChevronLeft, ChevronRight, X, Send, Loader2, CheckCircle, GitCompareArrows, Ruler, Maximize2, Download } from 'lucide-react';
+import { Users, ChevronLeft, ChevronRight, X, Send, Loader2, CheckCircle, GitCompareArrows, Ruler, Maximize2, Download, Flame, Zap } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
@@ -10,6 +10,14 @@ const resolveImg = (url) => {
   if (!url) return null;
   if (url.startsWith('http')) return url;
   return `${CALCULATOR_API_URL}${url}`;
+};
+
+const getModelType = (model) => {
+  const id = (model.id || '').toLowerCase();
+  if (id.includes('wiking')) return 'wiking';
+  if (id.includes('kwadro')) return 'kwadro';
+  if (id.includes('beczka') && !id.includes('kwadro')) return 'beczka';
+  return 'other';
 };
 
 export const Models = () => {
@@ -28,13 +36,38 @@ export const Models = () => {
   const [compareList, setCompareList] = useState([]);
   const [showCompare, setShowCompare] = useState(false);
   const [hasCatalog, setHasCatalog] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [heaterPrices, setHeaterPrices] = useState({ electric: 2600, wood: 3600 });
 
   const lang = language.toLowerCase();
 
   useEffect(() => {
     fetchModels();
+    fetchHeaterPrices();
     fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
   }, []);
+
+  const fetchHeaterPrices = async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/sauna/prices`);
+      const data = await res.json();
+      const heaterCat = (data.categories || []).find(c => c.name === 'Piece');
+      if (heaterCat) {
+        let minElectric = Infinity, minWood = Infinity;
+        for (const opt of heaterCat.options) {
+          const id = (opt.id || '').toLowerCase();
+          const price = opt.price || 0;
+          if (price <= 0) continue;
+          if (id.includes('elektr')) minElectric = Math.min(minElectric, price);
+          if (id.includes('drewno') || id.includes('drew')) minWood = Math.min(minWood, price);
+        }
+        setHeaterPrices({
+          electric: minElectric === Infinity ? 2600 : minElectric,
+          wood: minWood === Infinity ? 3600 : minWood,
+        });
+      }
+    } catch (e) { /* keep defaults */ }
+  };
 
   const fetchModels = async () => {
     try {
@@ -61,9 +94,9 @@ export const Models = () => {
           resolveImg(model.imageUrl),
           ...(model.galleryImages || []).map(resolveImg)
         ].filter(Boolean),
-        // Admin description overrides API description
         adminDesc_pl: config.descriptions?.[model.id]?.description_pl || '',
         adminDesc_en: config.descriptions?.[model.id]?.description_en || '',
+        modelType: getModelType(model),
       }));
 
       setModels(processedModels);
@@ -73,8 +106,6 @@ export const Models = () => {
       setLoading(false);
     }
   };
-
-  const calcPrice = (price, discount) => discount ? Math.round(price * (1 - discount / 100)) : price;
 
   const openModelCard = (model) => {
     setSelectedModel(model);
@@ -105,7 +136,7 @@ export const Models = () => {
       const res = await fetch(`${BACKEND_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, model: selectedModel.name, total: calcPrice(selectedModel.basePrice, selectedModel.discount), type: 'model_inquiry' }),
+        body: JSON.stringify({ ...formData, model: selectedModel.name, total: selectedModel.basePrice, type: 'model_inquiry' }),
       });
       if (res.ok) { setSubmitted(true); setFormData({ name: '', phone: '', email: '', message: '' }); }
     } catch (err) { console.error(err); }
@@ -123,11 +154,16 @@ export const Models = () => {
   const isInCompare = (id) => compareList.some(m => m.id === id);
 
   const getDescription = (model) => {
-    // Admin description takes priority, then API description
     const adminDesc = lang === 'en' ? model.adminDesc_en : model.adminDesc_pl;
     if (adminDesc) return adminDesc;
     return model.description || '';
   };
+
+  // Filtered models
+  const filteredModels = activeFilter === 'all' ? models : models.filter(m => m.modelType === activeFilter);
+
+  // Check if filter categories exist in data
+  const hasType = (type) => models.some(m => m.modelType === type);
 
   // Labels
   const l = lang === 'en' ? {
@@ -138,6 +174,10 @@ export const Models = () => {
     contactSoon: 'We will contact you soon.', basePrice: 'Base price', order: 'Order', photos: 'photos',
     terrace: 'Terrace', entrance: 'Entrance', selectVariant: 'Available layouts',
     from: 'from', persons: 'persons', length: 'Length', foundation: 'Foundation',
+    withElectric: 'with electric heater', withWood: 'with wood heater',
+    priceInclVat: 'Price includes VAT', readySauna: 'Ready-made, fully assembled',
+    priceForReady: 'Price for ready sauna with heater',
+    all: 'All', barrels: 'Barrels', quadro: 'Quadro', viking: 'Viking',
   } : {
     compare: 'Porównaj', compareModels: 'Porównanie modeli', addToCompare: 'Porównaj', inCompare: 'W porównaniu',
     price: 'Cena', capacity: 'Pojemność', steamRoom: 'Łaźnia parowa', relaxRoom: 'Pokój wypoczynkowy',
@@ -146,7 +186,22 @@ export const Models = () => {
     contactSoon: 'Skontaktujemy się z Tobą wkrótce.', basePrice: 'Cena bazowa', order: 'Zamów', photos: 'zdjęć',
     terrace: 'Taras', entrance: 'Wejście', selectVariant: 'Dostępne układy',
     from: 'od', persons: 'os.', length: 'Długość', foundation: 'Fundament',
+    withElectric: 'z piecem elektrycznym', withWood: 'z piecem na drewno',
+    priceInclVat: 'Cena zawiera VAT', readySauna: 'Gotowa, zmontowana sauna',
+    priceForReady: 'Cena za gotową saunę z piecem',
+    all: 'Wszystkie', barrels: 'Beczki', quadro: 'Kwadro', viking: 'Wiking',
   };
+
+  const filters = [
+    { key: 'all', label: l.all },
+    ...(hasType('beczka') ? [{ key: 'beczka', label: l.barrels }] : []),
+    ...(hasType('kwadro') ? [{ key: 'kwadro', label: l.quadro }] : []),
+    ...(hasType('wiking') ? [{ key: 'wiking', label: l.viking }] : []),
+  ];
+
+  // Price helpers
+  const priceElectric = (base) => base + heaterPrices.electric;
+  const priceWood = (base) => base + heaterPrices.wood;
 
   if (!modelsConfig?.show_section) return null;
   if (loading) return <section className="section-spacing bg-[#F9F9F7]"><div className="container-main flex justify-center py-20"><div className="w-10 h-10 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" /></div></section>;
@@ -156,7 +211,7 @@ export const Models = () => {
     <>
       <section id="models" data-testid="models-section" className="section-spacing bg-[#F9F9F7]">
         <div className="container-main">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <div className="gold-line mx-auto mb-6" />
             <h2 className="section-title" data-testid="models-title">
               {sectionContent ? (sectionContent[`title_${lang}`] || sectionContent.title_pl) : 'Nasze modele saun'}
@@ -166,8 +221,28 @@ export const Models = () => {
             </p>
           </div>
 
+          {/* Filter tabs */}
+          {filters.length > 2 && (
+            <div className="flex justify-center gap-2 mb-8 flex-wrap" data-testid="models-filter">
+              {filters.map(f => (
+                <button
+                  key={f.key}
+                  onClick={() => setActiveFilter(f.key)}
+                  className={`px-5 py-2 text-sm font-medium transition-colors border ${
+                    activeFilter === f.key
+                      ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
+                      : 'bg-white text-[#595959] border-black/10 hover:border-[#C6A87C] hover:text-[#C6A87C]'
+                  }`}
+                  data-testid={`filter-${f.key}`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {models.map((model) => {
+            {filteredModels.map((model) => {
               const desc = getDescription(model);
               return (
                 <motion.div
@@ -175,13 +250,17 @@ export const Models = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
+                  layout
                   className="bg-white border border-black/5 overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow flex flex-col"
                   onClick={() => openModelCard(model)}
                   data-testid={`model-card-${model.id}`}
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <img src={model.mainImage} alt={model.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                    {model.discount > 0 && <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 text-sm font-semibold">-{model.discount}%</div>}
+                    {/* Ready sauna badge */}
+                    <div className="absolute top-4 left-4 bg-[#1A1A1A]/85 text-white px-3 py-1 text-[10px] font-medium tracking-wide uppercase">
+                      {l.readySauna}
+                    </div>
                     {model.galleryImages.length > 1 && <div className="absolute bottom-4 right-4 bg-black/50 text-white px-2 py-1 text-xs">+{model.galleryImages.length - 1} {l.photos}</div>}
                     <button onClick={(e) => toggleCompare(model, e)} className={`absolute top-4 right-4 px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 transition-all ${isInCompare(model.id) ? 'bg-[#C6A87C] text-white' : 'bg-white/90 text-[#1A1A1A] hover:bg-[#C6A87C] hover:text-white'}`} data-testid={`compare-toggle-${model.id}`}>
                       <GitCompareArrows size={14} />
@@ -201,14 +280,20 @@ export const Models = () => {
                     {desc && <p className="text-sm text-[#8C8C8C] mb-4 line-clamp-2">{desc}</p>}
 
                     <div className="mt-auto">
-                      {model.discount > 0 ? (
-                        <div className="mb-4">
-                          <span className="text-sm text-[#8C8C8C] line-through mr-2">{model.basePrice?.toLocaleString()} PLN</span>
-                          <span className="text-xl font-bold text-[#C6A87C]">{calcPrice(model.basePrice, model.discount).toLocaleString()} PLN</span>
+                      {/* Two prices: electric + wood heater */}
+                      <div className="mb-3 space-y-1.5">
+                        <div className="flex items-center gap-2">
+                          <Zap size={14} className="text-amber-500 flex-shrink-0" />
+                          <span className="text-base font-bold text-[#1A1A1A]">{l.from} {priceElectric(model.basePrice).toLocaleString()} PLN</span>
+                          <span className="text-[10px] text-[#8C8C8C]">{l.withElectric}</span>
                         </div>
-                      ) : (
-                        <div className="mb-4"><span className="text-xl font-bold text-[#C6A87C]">{l.from} {model.basePrice?.toLocaleString()} PLN</span></div>
-                      )}
+                        <div className="flex items-center gap-2">
+                          <Flame size={14} className="text-orange-600 flex-shrink-0" />
+                          <span className="text-base font-bold text-[#1A1A1A]">{l.from} {priceWood(model.basePrice).toLocaleString()} PLN</span>
+                          <span className="text-[10px] text-[#8C8C8C]">{l.withWood}</span>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-[#8C8C8C] mb-4">{l.priceForReady}. {l.priceInclVat}.</p>
                       <button className="w-full py-3 bg-[#1A1A1A] text-white font-medium hover:bg-[#C6A87C] transition-colors">{l.details}</button>
                     </div>
                   </div>
@@ -267,13 +352,13 @@ export const Models = () => {
                   </thead>
                   <tbody>
                     {[
-                      { label: l.price, render: m => (<><div className="text-lg font-bold text-[#C6A87C]">{calcPrice(m.basePrice, m.discount).toLocaleString()} PLN</div>{m.discount > 0 && <div className="text-xs text-red-500 font-semibold">-{m.discount}%</div>}</>) },
+                      { label: `${l.price} (${l.withElectric})`, render: m => <span className="text-lg font-bold text-[#C6A87C]">{l.from} {priceElectric(m.basePrice).toLocaleString()} PLN</span> },
+                      { label: `${l.price} (${l.withWood})`, render: m => <span className="text-lg font-bold text-[#C6A87C]">{l.from} {priceWood(m.basePrice).toLocaleString()} PLN</span> },
                       { label: l.capacity, render: m => `${m.capacity || '—'} ${l.persons}` },
                       { label: l.length, render: m => m.layoutSize || '—' },
                       { label: l.steamRoom, render: m => m.steamRoomSize || '—' },
                       { label: l.relaxRoom, render: m => m.relaxRoomSize || '—' },
                       { label: l.variants, render: m => m.variants?.length || 1 },
-                      { label: l.foundation, render: m => m.foundationPrice ? `${m.foundationPrice} PLN/m` : '—' },
                     ].map((row, i) => (
                       <tr key={i} className={`border-t border-black/5 ${i % 2 ? 'bg-[#F9F9F7]' : ''}`}>
                         <td className="p-4 text-sm text-[#8C8C8C] font-medium">{row.label}</td>
@@ -318,21 +403,33 @@ export const Models = () => {
                     </div>
                   </>
                 )}
-                {selectedModel.discount > 0 && <div className="absolute top-4 left-4 bg-red-500 text-white px-4 py-2 text-lg font-semibold">-{selectedModel.discount}%</div>}
+                {/* Ready sauna badge on modal */}
+                <div className="absolute top-4 left-4 bg-[#1A1A1A]/85 text-white px-4 py-1.5 text-xs font-medium tracking-wide uppercase">
+                  {l.readySauna}
+                </div>
               </div>
 
               <div className="p-6 md:p-8">
-                {/* Title + Price */}
+                {/* Title + Prices */}
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
                   <div>
                     <h2 className="text-2xl font-bold text-[#1A1A1A] mb-1">{selectedModel.name}</h2>
                     {selectedModel.layoutSize && <span className="text-sm text-[#8C8C8C]">{l.length}: {selectedModel.layoutSize}</span>}
                   </div>
-                  <div className="text-right flex-shrink-0">
-                    {selectedModel.discount > 0 && <div className="text-sm text-[#8C8C8C] line-through">{selectedModel.basePrice?.toLocaleString()} PLN</div>}
-                    <div className="text-3xl font-bold text-[#C6A87C]">
-                      {selectedModel.discount > 0 ? calcPrice(selectedModel.basePrice, selectedModel.discount).toLocaleString() : `${l.from} ${selectedModel.basePrice?.toLocaleString()}`} PLN
+                  <div className="flex-shrink-0">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <Zap size={16} className="text-amber-500" />
+                        <span className="text-xl font-bold text-[#1A1A1A]">{l.from} {priceElectric(selectedModel.basePrice).toLocaleString()} PLN</span>
+                        <span className="text-xs text-[#8C8C8C]">{l.withElectric}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Flame size={16} className="text-orange-600" />
+                        <span className="text-xl font-bold text-[#1A1A1A]">{l.from} {priceWood(selectedModel.basePrice).toLocaleString()} PLN</span>
+                        <span className="text-xs text-[#8C8C8C]">{l.withWood}</span>
+                      </div>
                     </div>
+                    <p className="text-[10px] text-[#8C8C8C] mt-1">{l.priceForReady}. {l.priceInclVat}.</p>
                   </div>
                 </div>
 
@@ -363,8 +460,6 @@ export const Models = () => {
                 {selectedModel.variants?.length > 1 && (
                   <div className="mb-6">
                     <h3 className="text-lg font-semibold text-[#1A1A1A] mb-3">{l.selectVariant}</h3>
-
-                    {/* Variant tabs */}
                     <div className="flex flex-wrap gap-2 mb-4">
                       {selectedModel.variants.map((v, idx) => (
                         <button
@@ -378,8 +473,6 @@ export const Models = () => {
                         </button>
                       ))}
                     </div>
-
-                    {/* Active variant details */}
                     {(() => {
                       const v = selectedModel.variants[activeVariantIdx];
                       if (!v) return null;
@@ -409,7 +502,6 @@ export const Models = () => {
                       );
                     })()}
 
-                    {/* Comparison table from API */}
                     {selectedModel.comparisonTable?.rows?.length > 1 && (
                       <div className="mt-4 overflow-x-auto">
                         <table className="w-full text-sm border border-black/5">
@@ -440,7 +532,6 @@ export const Models = () => {
                   </div>
                 )}
 
-                {/* Single variant hint */}
                 {selectedModel.variants?.length === 1 && selectedModel.variants[0].description && (
                   <div className="mb-6 p-4 bg-[#F9F9F7] border border-black/5">
                     <p className="text-sm text-[#595959] whitespace-pre-line">{selectedModel.variants[0].description}</p>
@@ -461,15 +552,9 @@ export const Models = () => {
                         <h3 className="text-xl font-semibold mb-2">{l.thanks}</h3>
                         <p className="text-[#595959]">{l.contactSoon}</p>
                         {hasCatalog && (
-                          <a
-                            href={`${BACKEND_URL}/api/catalog/download`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            data-testid="model-catalog-btn"
-                            className="mt-4 inline-flex items-center gap-2 bg-[#1A1A1A] text-white px-5 py-2.5 text-sm font-medium hover:bg-black transition-colors"
-                          >
-                            <Download size={14} />
-                            Pobierz katalog
+                          <a href={`${BACKEND_URL}/api/catalog/download`} target="_blank" rel="noopener noreferrer" data-testid="model-catalog-btn"
+                            className="mt-4 inline-flex items-center gap-2 bg-[#1A1A1A] text-white px-5 py-2.5 text-sm font-medium hover:bg-black transition-colors">
+                            <Download size={14} /> Pobierz katalog
                           </a>
                         )}
                       </div>

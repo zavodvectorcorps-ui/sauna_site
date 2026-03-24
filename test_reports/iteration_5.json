@@ -1,0 +1,96 @@
+{
+  "summary": "Completed comprehensive frontend testing of WM-Sauna promotional blocks and model filtering features. All 10 requested features verified and working correctly.",
+  
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  
+  "passed_tests": [
+    "Filter tabs present: 'Wszystkie', 'Beczki', 'Kwadro', 'Wiking' with data-testid attributes",
+    "Filter 'Wszystkie' shows all 13 model cards",
+    "Filter 'Beczki' correctly filters to 5 barrel sauna models",
+    "Filter 'Kwadro' correctly filters to 7 quadro sauna models",
+    "Filter 'Wiking' correctly filters to 1 viking sauna model",
+    "Model cards show two prices: electric heater (Zap icon) and wood heater (Flame icon)",
+    "Model cards show 'Cena za gotową saunę z piecem. Cena zawiera VAT.' text",
+    "Model cards show 'GOTOWA, ZMONTOWANA SAUNA' badge on image",
+    "Model cards do NOT show discount badges or crossed-out prices (discounts only in StockSaunas section)",
+    "Model detail modal shows two prices with heater info and VAT text",
+    "Model detail modal shows 'GOTOWA, ZMONTOWANA SAUNA' badge",
+    "PromoFeatures section exists with 4 USP blocks: 'Gotowa sauna w 5-10 dni', 'Skandynawskie drewno klasy A+', 'Gwarancja i serwis', 'Doradca pomoże dobrać'",
+    "PromoBanner section exists with 'zniżka do 10%' text",
+    "PromoBanner CTA button 'Przejdź do kalkulatora' scrolls to calculator section",
+    "Compare table shows two price rows: 'Cena (z piecem elektrycznym)' and 'Cena (z piecem na drewno)'"
+  ],
+  
+  "test_report_links": [
+    "/app/test_reports/iteration_5.json"
+  ],
+  
+  "action_items": [],
+  
+  "critical_code_review_comments": [
+    "Console warnings about HTML hydration errors: '<span> cannot be a child of <tr>' and similar - these are caused by React's dynamic rendering with map() inside table elements. While not breaking functionality, should be addressed for cleaner HTML structure."
+  ],
+  
+  "updated_files": [],
+  
+  "success_rate": {
+    "backend": "N/A (frontend only testing)",
+    "frontend": "100%"
+  },
+  
+  "seed_data_creation": "None - tests use existing API data",
+  
+  "retest_needed": false,
+  
+  "should_main_agent_self_test": false,
+  
+  "context_for_next_testing_agent": "All 6 user-requested changes have been implemented and verified: 1) PromoFeatures (4 USP blocks) and PromoBanner (10% discount promo) sections added after models section. 2) Model filter tabs working (Wszystkie/Beczki/Kwadro/Wiking). 3) No discounts on model cards (discounts only in StockSaunas section). 4) 'Cena zawiera VAT' text on cards. 5) 'GOTOWA, ZMONTOWANA SAUNA' badge on cards. 6) Two prices shown (electric heater + wood heater) fetched from /api/sauna/prices API. The site is in Polish. Filter tabs have data-testid='filter-all', 'filter-beczka', 'filter-kwadro', 'filter-wiking'. Promo sections have data-testid='promo-features' and 'promo-banner'.",
+  
+  "features_verified": {
+    "model_filter_tabs": {
+      "status": "WORKING",
+      "details": "4 filter tabs (Wszystkie, Beczki, Kwadro, Wiking) correctly filter 13 models by type"
+    },
+    "two_prices_on_cards": {
+      "status": "WORKING",
+      "details": "Cards show basePrice + electric heater price and basePrice + wood heater price with icons"
+    },
+    "no_discounts_on_cards": {
+      "status": "WORKING",
+      "details": "No discount badges or crossed-out prices on model cards (discounts only in StockSaunas section)"
+    },
+    "vat_text_on_cards": {
+      "status": "WORKING",
+      "details": "'Cena za gotową saunę z piecem. Cena zawiera VAT.' displayed on all model cards"
+    },
+    "ready_sauna_badge": {
+      "status": "WORKING",
+      "details": "'GOTOWA, ZMONTOWANA SAUNA' badge displayed on model card images"
+    },
+    "promo_features_section": {
+      "status": "WORKING",
+      "details": "4 USP blocks with icons: delivery, wood quality, warranty, advisor"
+    },
+    "promo_banner_section": {
+      "status": "WORKING",
+      "details": "'zniżka do 10%' promo banner with CTA button that scrolls to calculator"
+    },
+    "model_detail_modal": {
+      "status": "WORKING",
+      "details": "Shows two prices, VAT text, and ready sauna badge"
+    },
+    "compare_table": {
+      "status": "WORKING",
+      "details": "Shows two price rows for electric and wood heater"
+    }
+  }
+}
