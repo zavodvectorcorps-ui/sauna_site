@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, X, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { CatalogFormGate } from './CatalogFormGate';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -76,16 +77,13 @@ export const StickyCTA = () => {
                 <ArrowRight size={18} />
               </button>
               {hasCatalog && (
-                <a
-                  href={`${BACKEND_URL}/api/catalog/download`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <CatalogFormGate
+                  testId="sticky-catalog-btn"
                   className="hidden sm:flex items-center gap-2 border border-white/20 text-white px-4 py-3 font-medium hover:bg-white/10 transition-colors text-sm"
-                  data-testid="sticky-catalog-btn"
                 >
                   <Download size={16} />
                   {l.catalog}
-                </a>
+                </CatalogFormGate>
               )}
               <button
                 onClick={() => setDismissed(true)}

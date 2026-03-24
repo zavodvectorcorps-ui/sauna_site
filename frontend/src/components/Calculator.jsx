@@ -22,6 +22,8 @@ export const Calculator = () => {
   const [submitted, setSubmitted] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState({});
   const [hasCatalog, setHasCatalog] = useState(false);
+  const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -137,6 +139,41 @@ export const Calculator = () => {
     setExpandedCategories((prev) => ({ ...prev, [catId]: !prev[catId] }));
   };
 
+  const downloadConfigPdf = async () => {
+    setGeneratingPdf(true);
+    try {
+      const optionsPayload = Object.entries(selectedOptions).map(([catId, opt]) => {
+        const cat = categories.find(c => String(c.id) === String(catId));
+        return { name: opt.namePl || opt.name || '', price: opt.price || 0, category: cat?.name || '' };
+      });
+      const res = await fetch(`${BACKEND_URL}/api/sauna/generate-pdf`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          modelName: selectedModel?.name || '',
+          variantName: selectedVariant?.namePl || selectedVariant?.name || '',
+          basePrice: selectedModel?.basePrice || 0,
+          variantPrice: selectedVariant?.price || 0,
+          discountPercent: selectedModel?.discount || 0,
+          options: optionsPayload,
+          totalPrice: calculateTotal(),
+        }),
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `WM-Sauna-${selectedModel?.name || 'config'}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('PDF generation error:', err);
+    }
+    setGeneratingPdf(false);
+  };
+
   if (loading) {
     return (
       <section id="calculator" className="section-spacing bg-[#F9F9F7]">
@@ -179,30 +216,56 @@ export const Calculator = () => {
           
           {/* LEFT COLUMN — Model selector + photo */}
           <div className="lg:w-[380px] xl:w-[420px] flex-shrink-0 border-r border-black/5">
-            {/* Model dropdown */}
+            {/* Custom model dropdown with thumbnails */}
             <div className="border-b border-black/5">
               <div className="p-3 bg-[#F9F9F7]">
                 <h3 className="text-xs font-semibold text-[#8C8C8C] uppercase tracking-wider">
                   {t('calculator.step_model')}
                 </h3>
               </div>
-              <div className="p-3">
-                <select
+              <div className="p-3 relative">
+                <button
                   data-testid="model-select"
-                  value={selectedModel?.id || ''}
-                  onChange={(e) => {
-                    const m = models.find(x => String(x.id) === e.target.value);
-                    if (m) handleModelSelect(m);
-                  }}
-                  className="w-full p-2.5 border border-black/10 text-sm bg-white appearance-none cursor-pointer"
-                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238C8C8C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
+                  onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
+                  className="w-full flex items-center gap-3 p-2 border border-black/10 bg-white cursor-pointer hover:border-[#C6A87C]/40 transition-colors text-left"
                 >
-                  {models.map((model) => (
-                    <option key={model.id} value={model.id}>
-                      {model.name} — {model.basePrice.toLocaleString()} PLN{model.discount > 0 ? ` (-${model.discount}%)` : ''}
-                    </option>
-                  ))}
-                </select>
+                  {selectedModel?.imageUrl && (
+                    <div className="w-12 h-8 flex-shrink-0 overflow-hidden bg-[#F2F2F0]">
+                      <img src={getImageUrl(selectedModel.imageUrl)} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-medium text-[#1A1A1A] truncate block">{selectedModel?.name || '—'}</span>
+                    <span className="text-xs text-[#C6A87C] font-semibold">{selectedModel?.basePrice?.toLocaleString()} PLN{selectedModel?.discount > 0 ? ` (-${selectedModel.discount}%)` : ''}</span>
+                  </div>
+                  <ChevronDown size={16} className={`text-[#8C8C8C] flex-shrink-0 transition-transform ${modelDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {modelDropdownOpen && (
+                  <div className="absolute left-3 right-3 top-full mt-1 bg-white border border-black/10 shadow-lg z-20 max-h-[300px] overflow-y-auto">
+                    {models.map((model) => (
+                      <button
+                        key={model.id}
+                        data-testid={`model-option-${model.id}`}
+                        onClick={() => { handleModelSelect(model); setModelDropdownOpen(false); }}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-[#F9F9F7] transition-colors border-b border-black/[0.03] last:border-b-0 ${
+                          selectedModel?.id === model.id ? 'bg-[#C6A87C]/5' : ''
+                        }`}
+                      >
+                        {model.imageUrl && (
+                          <div className="w-14 h-10 flex-shrink-0 overflow-hidden bg-[#F2F2F0]">
+                            <img src={getImageUrl(model.imageUrl)} alt={model.name} className="w-full h-full object-cover" loading="lazy" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-[#1A1A1A] truncate">{model.name}</h4>
+                          <span className="text-xs font-semibold text-[#C6A87C]">{model.basePrice.toLocaleString()} PLN</span>
+                          {model.discount > 0 && <span className="ml-2 text-[9px] bg-red-600 text-white px-1 py-0.5 font-bold">-{model.discount}%</span>}
+                        </div>
+                        {selectedModel?.id === model.id && <Check size={14} className="text-[#C6A87C] flex-shrink-0" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -270,49 +333,6 @@ export const Calculator = () => {
                       >
                         <Send size={14} />
                         {t('calculator.send_inquiry')}
-                      </button>
-                      <button
-                        data-testid="download-pdf-btn"
-                        onClick={async () => {
-                          try {
-                            const optionsPayload = Object.entries(selectedOptions).map(([catId, opt]) => {
-                              const cat = categories.find(c => String(c.id) === String(catId));
-                              return {
-                                name: opt.namePl || opt.name || '',
-                                price: opt.price || 0,
-                                category: cat?.name || '',
-                              };
-                            });
-                            const res = await fetch(`${BACKEND_URL}/api/sauna/generate-pdf`, {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({
-                                modelName: selectedModel?.name || '',
-                                variantName: selectedVariant?.namePl || selectedVariant?.name || '',
-                                basePrice: selectedModel?.basePrice || 0,
-                                variantPrice: selectedVariant?.price || 0,
-                                discountPercent: selectedModel?.discount || 0,
-                                options: optionsPayload,
-                                totalPrice: calculateTotal(),
-                              }),
-                            });
-                            if (res.ok) {
-                              const blob = await res.blob();
-                              const url = window.URL.createObjectURL(blob);
-                              const a = document.createElement('a');
-                              a.href = url;
-                              a.download = `WM-Sauna-${selectedModel?.name || 'config'}.pdf`;
-                              a.click();
-                              window.URL.revokeObjectURL(url);
-                            }
-                          } catch (err) {
-                            console.error('PDF generation error:', err);
-                          }
-                        }}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 text-sm mt-2 border border-[#1A1A1A] text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white transition-colors"
-                      >
-                        <Download size={14} />
-                        {language === 'EN' ? 'Download PDF' : 'Pobierz PDF'}
                       </button>
                     </div>
                   </motion.div>
@@ -437,18 +457,29 @@ export const Calculator = () => {
                   <CheckCircle size={48} className="mx-auto text-green-500 mb-4" />
                   <h3 className="text-xl font-semibold mb-2">{language === 'EN' ? 'Thank you!' : 'Dziękujemy!'}</h3>
                   <p className="text-[#595959] mb-4">{language === 'EN' ? 'We will contact you shortly.' : 'Skontaktujemy się wkrótce.'}</p>
-                  {hasCatalog && (
-                    <a
-                      href={`${BACKEND_URL}/api/catalog/download`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      data-testid="calc-catalog-btn"
-                      className="inline-flex items-center gap-2 bg-[#1A1A1A] text-white px-5 py-2.5 text-sm font-medium hover:bg-black transition-colors"
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={downloadConfigPdf}
+                      disabled={generatingPdf}
+                      data-testid="download-pdf-btn"
+                      className="w-full inline-flex items-center justify-center gap-2 bg-[#C6A87C] text-white px-5 py-2.5 text-sm font-medium hover:bg-[#B09060] transition-colors disabled:opacity-50"
                     >
-                      <Download size={14} />
-                      {language === 'EN' ? 'Download our catalog' : 'Pobierz nasz katalog'}
-                    </a>
-                  )}
+                      {generatingPdf ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+                      {language === 'EN' ? 'Download your configuration' : 'Pobierz swoją konfigurację'}
+                    </button>
+                    {hasCatalog && (
+                      <a
+                        href={`${BACKEND_URL}/api/catalog/download`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-testid="calc-catalog-btn"
+                        className="w-full inline-flex items-center justify-center gap-2 border border-[#1A1A1A] text-[#1A1A1A] px-5 py-2.5 text-sm font-medium hover:bg-[#1A1A1A] hover:text-white transition-colors"
+                      >
+                        <Download size={14} />
+                        {language === 'EN' ? 'Download our catalog' : 'Pobierz nasz katalog'}
+                      </a>
+                    )}
+                  </div>
                   <div className="mt-4">
                     <button onClick={() => { setShowInquiryForm(false); setSubmitted(false); }} className="text-sm text-[#8C8C8C] hover:text-[#1A1A1A]">
                       {language === 'EN' ? 'Close' : 'Zamknij'}

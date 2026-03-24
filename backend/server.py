@@ -389,8 +389,9 @@ async def send_telegram_notification(data: dict):
                 f"<b>Имя:</b> {data.get('name', '—')}\n"
                 f"<b>Телефон:</b> {data.get('phone', '—')}\n"
                 f"<b>Email:</b> {data.get('email', '—')}\n"
-                f"<b>Сообщение:</b> {data.get('message', '—')}\n"
             )
+            if data.get("message"):
+                text += f"<b>Сообщение:</b> {data['message']}\n"
         
         token = settings["telegram_bot_token"]
         chat_id = settings["telegram_chat_id"]

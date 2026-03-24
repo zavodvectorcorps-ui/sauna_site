@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Check, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
+import { CatalogFormGate } from './CatalogFormGate';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -144,16 +145,13 @@ export const Hero = () => {
               {t('hero.cta_secondary')}
             </button>
             {hasCatalog && (
-              <a
-                href={`${BACKEND_URL}/api/catalog/download`}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-testid="hero-catalog-btn"
+              <CatalogFormGate
+                testId="hero-catalog-btn"
                 className="flex items-center gap-2 border-2 border-white/30 text-white px-8 py-4 text-sm font-semibold uppercase tracking-wider hover:bg-white/10 transition-colors backdrop-blur-sm"
               >
                 <Download size={16} />
                 {language === 'EN' ? 'Download catalog' : 'Pobierz katalog'}
-              </a>
+              </CatalogFormGate>
             )}
           </motion.div>
         </div>
