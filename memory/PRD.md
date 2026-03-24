@@ -18,6 +18,7 @@
 - **Фильтр моделей** (Все / Бочки / Квадро / Викинг)
 - **Две цены на карточках**: с электропечкой и с дровяной печкой
 - **Промо-блоки**: USP-полоса + баннер со скидкой до 10% перед калькулятором
+- **Секция "Специальное предложение"** — подарки при заказе (бочка, LED, двери)
 - **Информация на карточках**: цена с НДС, готовая собранная саура
 
 ## Tech Stack
@@ -38,6 +39,7 @@
 │   │   │   ├── Models.jsx          # Model cards with filters, dual pricing
 │   │   │   ├── PromoFeatures.jsx   # USP features strip (4 blocks)
 │   │   │   ├── PromoBanner.jsx     # Pre-calculator promo banner (10% discount)
+│   │   │   ├── SpecialOffer.jsx    # Special offer section (gifts with order)
 │   │   │   ├── Calculator.jsx      # Two-column calculator
 │   │   │   ├── CatalogFormGate.jsx # Catalog download form gate
 │   │   │   ├── Hero.jsx
@@ -64,14 +66,19 @@
 - Password: 220066
 
 ## What's Been Done (Latest Session - Feb 2026)
-- Fixed auth bug: PipelineView now has its own login form + localStorage session
+- Fixed auth bug: PipelineView login form + localStorage session
 - Added CSV export for pipeline (all fields including custom fields)
 - Added PromoFeatures (4 USP blocks) and PromoBanner (10% discount promo) 
 - Added model filter tabs (Wszystkie/Beczki/Kwadro/Wiking)
 - Removed discounts from model cards (managers handle discounts)
 - Added two prices on cards: model+electric heater, model+wood heater
 - Added "Cena zawiera VAT" and "Gotowa, zmontowana sauna" text
+- Added SpecialOffer section with 3 gift cards (cooling tub, LED, glass doors)
 - All changes tested: 15/15 tests passed (iteration_5)
+
+## Notes
+- Catalog download button appears only when PDF catalog is uploaded via admin panel
+- Current catalog status: not uploaded (available: false)
 
 ## Backlog (Prioritized)
 ### P1

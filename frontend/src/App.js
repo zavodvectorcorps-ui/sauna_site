@@ -21,6 +21,7 @@ import { StickyCTA } from "./components/StickyCTA";
 import { FloatingContact } from "./components/FloatingContact";
 import { PromoFeatures } from "./components/PromoFeatures";
 import { PromoBanner } from "./components/PromoBanner";
+import { SpecialOffer } from "./components/SpecialOffer";
 import AdminPanel from "./pages/AdminPanel";
 import PipelineView from "./pages/PipelineView";
 
@@ -75,8 +76,11 @@ const MainContent = () => {
         return (
           <React.Fragment key={sectionKey}>
             <Component />
-            {/* Social proof after hero */}
-            {sectionKey === 'hero' && <SocialProof />}
+            {/* Social proof + special offer after hero */}
+            {sectionKey === 'hero' && <>
+              <SocialProof />
+              <SpecialOffer />
+            </>}
             {/* Promo blocks after models, before calculator */}
             {sectionKey === 'models' && <>
               <PromoFeatures />
