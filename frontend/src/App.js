@@ -20,6 +20,7 @@ import { Footer } from "./components/Footer";
 import { StickyCTA } from "./components/StickyCTA";
 import { FloatingContact } from "./components/FloatingContact";
 import AdminPanel from "./pages/AdminPanel";
+import PipelineView from "./pages/PipelineView";
 
 const sectionComponents = {
   hero: Hero,
@@ -105,6 +106,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin/pipeline" element={<PipelineView />} />
             </Routes>
           </BrowserRouter>
         </SettingsProvider>

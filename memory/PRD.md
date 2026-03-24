@@ -1,58 +1,71 @@
-# WM-Sauna Website - Product Requirements Document
+# WM-Sauna — PRD (Product Requirements Document)
 
-## Project Overview
-Modern responsive website for WM-Sauna - Polish wooden sauna manufacturer and seller.
-**Main Goal:** Motivate customers to calculate sauna price and place an order.
-**Style:** Minimalism, light wood, white background (#F9F9F7), black (#1A1A1A) and gold (#C6A87C) accents.
+## Original Problem Statement
+Создание современного адаптивного сайта для польского производителя деревянных саун WM-Sauna. Основная цель — продажа саун через калькулятор и формы заявок.
+
+## Core Features (Implemented)
+- Адаптивный сайт со всеми ключевыми разделами (Hero, Models, Calculator, Gallery, Stock Saunas, Reviews, FAQ, About, Contact)
+- Панель администратора `/admin` с аутентификацией (Basic Auth)
+- Интеграция с Telegram для уведомлений о заявках
+- Интеграция с AMO CRM (API-ключ) для создания сделок
+- Продвинутый калькулятор (двухколоночный дизайн, кастомный dropdown с миниатюрами)
+- Генерация PDF-конфигураций (reportlab)
+- Загрузка/скачивание PDF-каталога через админку
+- Скачивание каталога через форму-гейт (CatalogFormGate)
+- Страница просмотра воронки AMO CRM `/admin/pipeline` (канбан-доска)
+- SEO-настройки через админку
+- Управление контентом всех секций через админку
+
+## Tech Stack
+- **Backend:** FastAPI, Pydantic, MongoDB (motor), JWT, HTTPX, reportlab
+- **Frontend:** React, React Router, TailwindCSS, Framer Motion, react-helmet-async
+- **External APIs:** wm-kalkulator.pl, Telegram Bot API, AMO CRM API
 
 ## Architecture
-- **Frontend:** React 19, Tailwind CSS, Framer Motion, Shadcn/UI, react-helmet-async
-- **Backend:** FastAPI (Python), MongoDB (motor)
-- **External API:** wm-kalkulator.pl (prices, models, calculator)
+```
+/app/
+├── backend/
+│   ├── server.py             # Main FastAPI server
+│   ├── pdf_generator.py      # PDF generation for calculator configs
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/       # All site components
+│   │   ├── pages/
+│   │   │   ├── AdminPanel.jsx  # Admin panel (~3500 lines, needs refactoring)
+│   │   │   └── PipelineView.jsx # AMO CRM pipeline viewer
+│   │   ├── context/          # LanguageContext, SettingsContext
+│   │   └── App.js
+```
 
-### Key Files
-- `/app/frontend/src/App.js` — Main entry
-- `/app/frontend/src/components/` — All UI components
-- `/app/frontend/src/pages/AdminPanel.jsx` — Admin panel (Russian UI)
-- `/app/backend/server.py` — All API endpoints
+## Key API Endpoints
+- POST /api/contact — Submit contact/lead form
+- POST /api/admin/login — Admin authentication
+- POST /api/admin/catalog/upload — Upload PDF catalog
+- GET /api/catalog/download — Download PDF catalog
+- GET /api/catalog/info — Check catalog availability
+- POST /api/sauna/generate-pdf — Generate PDF config
+- GET /api/admin/amocrm/pipeline/{pipeline_id}/full — Get pipeline data from AMO CRM
 
-## Implemented Features (All tested)
-- [x] Hero section with CTAs + **catalog download button**
-- [x] Social proof counters
-- [x] Models showcase with gallery, order buttons
-- [x] Model comparison (up to 3 models)
-- [x] **Two-column calculator/configurator** (models+photo left, options right)
-- [x] Gallery with custom + API photo management
-- [x] Stock saunas with import from catalog
-- [x] Customer reviews with star ratings
-- [x] FAQ section with JSON-LD schema
-- [x] About company section
-- [x] Contact form with notifications + **catalog download after submission**
-- [x] **Sticky CTA bar** with catalog download button
-- [x] Floating WhatsApp/Phone button
-- [x] SEO optimization (meta tags, OG, JSON-LD)
-- [x] Multi-language (PL/EN)
-- [x] Responsive design
-- [x] Full admin panel (Russian)
-- [x] Telegram notifications (3 types: contact, model_inquiry, calculator_order)
-- [x] AMO CRM integration (API key auth, pipelines, field mapping, test lead)
-- [x] **PDF Catalog management** — admin upload, auto-show download buttons across site
+## Admin Credentials
+- Login: admin
+- Password: 220066
 
-## PDF Catalog Feature
-- **Admin:** Upload/replace/delete PDF via "Каталог" tab
-- **Backend:** POST /api/admin/catalog/upload, GET /api/catalog/download, GET /api/catalog/info, DELETE /api/admin/catalog
-- **Frontend buttons appear automatically when catalog is uploaded:**
-  - Hero section (next to OBLICZ CENĘ)
-  - Sticky CTA bar (next to calculator button)
-  - Contact form (after submission thank-you)
-  - Models inquiry form (after submission thank-you)
-  - Calculator inquiry form (after submission thank-you)
+## What's Been Done (Latest Session - Feb 2026)
+- Fixed auth bug: PipelineView now has its own login form
+- Added localStorage persistence for admin auth (shared between AdminPanel and PipelineView)
+- Session restore on page reload
 
-## Credentials
-- Admin: `/admin` | login: `admin` | password: `220066`
+## Backlog (Prioritized)
+### P0
+- Clarify "copy pipeline" requirement (viewing vs export vs duplication)
 
-## Backlog
-- [ ] P1: Refactor AdminPanel.jsx into smaller components (>3400 lines)
-- [ ] P1: Full i18next integration for static UI strings
-- [ ] P2: Improve frontend API error handling (toast notifications)
-- [ ] P3: A/B testing for CTA buttons
+### P1
+- Refactor AdminPanel.jsx (~3500 lines → split into sub-components)
+- i18next integration for static UI strings (PL/RU/EN)
+
+### P2
+- Improve frontend API error handling (toast notifications)
+
+### P3
+- A/B testing for CTA buttons

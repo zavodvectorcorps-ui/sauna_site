@@ -1211,6 +1211,89 @@ async def get_amocrm_status(username: str = Depends(verify_admin)):
     }
 
 
+@api_router.get("/admin/amocrm/pipeline/{pipeline_id}/full")
+async def get_pipeline_full(pipeline_id: int, username: str = Depends(verify_admin)):
+    """Fetch pipeline stages and ALL leads grouped by stage from AMO CRM."""
+    settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
+    if not settings or not settings.get("amocrm_domain") or not settings.get("amocrm_access_token"):
+        raise HTTPException(status_code=400, detail="AMO CRM не настроен")
+    token = settings.get("amocrm_access_token", "")
+    domain = settings["amocrm_domain"].rstrip("/")
+    if not domain.startswith("http"):
+        domain = f"https://{domain}"
+    headers = {"Authorization": f"Bearer {token}"}
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        # 1. Fetch pipeline info with stages
+        pipe_resp = await client.get(f"{domain}/api/v4/leads/pipelines/{pipeline_id}", headers=headers)
+        if pipe_resp.status_code != 200:
+            raise HTTPException(status_code=pipe_resp.status_code, detail=f"Воронка не найдена: {pipe_resp.text[:200]}")
+        pipe_data = pipe_resp.json()
+        pipeline_name = pipe_data.get("name", "")
+        statuses_raw = pipe_data.get("_embedded", {}).get("statuses", [])
+        statuses = []
+        for s in statuses_raw:
+            statuses.append({"id": s["id"], "name": s["name"], "sort": s.get("sort", 0), "color": s.get("color", "")})
+        statuses.sort(key=lambda x: x["sort"])
+
+        # 2. Fetch ALL leads from this pipeline (paginate)
+        all_leads = []
+        page = 1
+        while True:
+            leads_resp = await client.get(
+                f"{domain}/api/v4/leads",
+                params={"filter[pipe_id]": pipeline_id, "with": "contacts", "limit": 250, "page": page},
+                headers=headers,
+            )
+            if leads_resp.status_code != 200:
+                break
+            leads_data = leads_resp.json()
+            embedded_leads = leads_data.get("_embedded", {}).get("leads", [])
+            if not embedded_leads:
+                break
+            for lead in embedded_leads:
+                contacts = []
+                for c in lead.get("_embedded", {}).get("contacts", []):
+                    contacts.append({"id": c.get("id"), "name": c.get("name", "")})
+                custom_fields = []
+                for cf in (lead.get("custom_fields_values") or []):
+                    vals = [v.get("value", "") for v in cf.get("values", [])]
+                    custom_fields.append({"name": cf.get("field_name", ""), "values": vals})
+                all_leads.append({
+                    "id": lead["id"],
+                    "name": lead.get("name", ""),
+                    "price": lead.get("price", 0),
+                    "status_id": lead.get("status_id"),
+                    "responsible_user_id": lead.get("responsible_user_id"),
+                    "created_at": lead.get("created_at"),
+                    "updated_at": lead.get("updated_at"),
+                    "contacts": contacts,
+                    "custom_fields": custom_fields,
+                    "loss_reason": lead.get("loss_reason"),
+                })
+            # Check if there are more pages
+            next_link = leads_data.get("_links", {}).get("next")
+            if not next_link:
+                break
+            page += 1
+
+        # 3. Group leads by status
+        leads_by_status = {}
+        for lead in all_leads:
+            sid = lead["status_id"]
+            if sid not in leads_by_status:
+                leads_by_status[sid] = []
+            leads_by_status[sid].append(lead)
+
+        return {
+            "pipeline_id": pipeline_id,
+            "pipeline_name": pipeline_name,
+            "statuses": statuses,
+            "leads_by_status": {str(k): v for k, v in leads_by_status.items()},
+            "total_leads": len(all_leads),
+        }
+
+
 @api_router.put("/admin/settings/models")
 async def update_models_config(config: ModelsConfig, username: str = Depends(verify_admin)):
     await db.settings.update_one(

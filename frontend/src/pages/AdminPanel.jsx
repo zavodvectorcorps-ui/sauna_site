@@ -98,6 +98,7 @@ const AdminPanel = () => {
       
       if (response.ok) {
         setAuthHeader(auth);
+        localStorage.setItem('adminAuth', auth);
         setIsLoggedIn(true);
         showMessage('success', 'Вход выполнен успешно');
       } else {
@@ -112,8 +113,18 @@ const AdminPanel = () => {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setAuthHeader('');
+    localStorage.removeItem('adminAuth');
     setCredentials({ username: '', password: '' });
   };
+
+  // Restore session from localStorage
+  useEffect(() => {
+    const savedAuth = localStorage.getItem('adminAuth');
+    if (savedAuth) {
+      setAuthHeader(savedAuth);
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   // Fetch all data when logged in
   useEffect(() => {
@@ -2990,6 +3001,19 @@ const AdminPanel = () => {
                     <p className="text-[10px] text-[#8C8C8C] mt-2">
                       Будет создана сделка «WM-Sauna [ТЕСТ]: Sauna testowa» с контактом test@wm-sauna.pl, +48000000000
                     </p>
+                  </div>
+
+                  {/* Link to Pipeline View */}
+                  <div className="p-4 bg-[#F9F9F7] border border-black/5">
+                    <h4 className="text-sm font-semibold mb-2">Просмотр воронок</h4>
+                    <p className="text-[10px] text-[#8C8C8C] mb-3">Откройте копию воронки AMO CRM — все сделки, сгруппированные по этапам.</p>
+                    <a
+                      href="/admin/pipeline"
+                      className="inline-flex items-center gap-2 px-4 py-2 border border-black/10 text-[#595959] text-sm hover:bg-black/5"
+                      data-testid="pipeline-view-link"
+                    >
+                      Открыть воронку
+                    </a>
                   </div>
                 </div>
               </div>
