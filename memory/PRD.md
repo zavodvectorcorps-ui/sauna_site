@@ -5,16 +5,20 @@
 
 ## Core Features (Implemented)
 - Адаптивный сайт со всеми ключевыми разделами (Hero, Models, Calculator, Gallery, Stock Saunas, Reviews, FAQ, About, Contact)
-- Панель администратора `/admin` с аутентификацией (Basic Auth)
+- Панель администратора `/admin` с аутентификацией (Basic Auth + localStorage persistence)
 - Интеграция с Telegram для уведомлений о заявках
 - Интеграция с AMO CRM (API-ключ) для создания сделок
 - Продвинутый калькулятор (двухколоночный дизайн, кастомный dropdown с миниатюрами)
 - Генерация PDF-конфигураций (reportlab)
 - Загрузка/скачивание PDF-каталога через админку
 - Скачивание каталога через форму-гейт (CatalogFormGate)
-- Страница просмотра воронки AMO CRM `/admin/pipeline` (канбан-доска)
+- Страница просмотра воронки AMO CRM `/admin/pipeline` (канбан-доска + CSV экспорт)
 - SEO-настройки через админку
 - Управление контентом всех секций через админку
+- **Фильтр моделей** (Все / Бочки / Квадро / Викинг)
+- **Две цены на карточках**: с электропечкой и с дровяной печкой
+- **Промо-блоки**: USP-полоса + баннер со скидкой до 10% перед калькулятором
+- **Информация на карточках**: цена с НДС, готовая собранная саура
 
 ## Tech Stack
 - **Backend:** FastAPI, Pydantic, MongoDB (motor), JWT, HTTPX, reportlab
@@ -30,10 +34,17 @@
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── components/       # All site components
+│   │   ├── components/
+│   │   │   ├── Models.jsx          # Model cards with filters, dual pricing
+│   │   │   ├── PromoFeatures.jsx   # USP features strip (4 blocks)
+│   │   │   ├── PromoBanner.jsx     # Pre-calculator promo banner (10% discount)
+│   │   │   ├── Calculator.jsx      # Two-column calculator
+│   │   │   ├── CatalogFormGate.jsx # Catalog download form gate
+│   │   │   ├── Hero.jsx
+│   │   │   └── StickyCTA.jsx
 │   │   ├── pages/
 │   │   │   ├── AdminPanel.jsx  # Admin panel (~3500 lines, needs refactoring)
-│   │   │   └── PipelineView.jsx # AMO CRM pipeline viewer
+│   │   │   └── PipelineView.jsx # AMO CRM pipeline viewer + CSV export
 │   │   ├── context/          # LanguageContext, SettingsContext
 │   │   └── App.js
 ```
@@ -46,20 +57,23 @@
 - GET /api/catalog/info — Check catalog availability
 - POST /api/sauna/generate-pdf — Generate PDF config
 - GET /api/admin/amocrm/pipeline/{pipeline_id}/full — Get pipeline data from AMO CRM
+- GET /api/sauna/prices — Sauna prices with heater options
 
 ## Admin Credentials
 - Login: admin
 - Password: 220066
 
 ## What's Been Done (Latest Session - Feb 2026)
-- Fixed auth bug: PipelineView now has its own login form
-- Added localStorage persistence for admin auth (shared between AdminPanel and PipelineView)
-- Session restore on page reload
+- Fixed auth bug: PipelineView now has its own login form + localStorage session
+- Added CSV export for pipeline (all fields including custom fields)
+- Added PromoFeatures (4 USP blocks) and PromoBanner (10% discount promo) 
+- Added model filter tabs (Wszystkie/Beczki/Kwadro/Wiking)
+- Removed discounts from model cards (managers handle discounts)
+- Added two prices on cards: model+electric heater, model+wood heater
+- Added "Cena zawiera VAT" and "Gotowa, zmontowana sauna" text
+- All changes tested: 15/15 tests passed (iteration_5)
 
 ## Backlog (Prioritized)
-### P0
-- Clarify "copy pipeline" requirement (viewing vs export vs duplication)
-
 ### P1
 - Refactor AdminPanel.jsx (~3500 lines → split into sub-components)
 - i18next integration for static UI strings (PL/RU/EN)
