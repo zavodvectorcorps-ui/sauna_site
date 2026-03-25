@@ -1,9 +1,16 @@
-import { ShieldCheck, Hammer, Leaf, Truck, Wrench, Award, Flag } from 'lucide-react';
+import { ShieldCheck, Hammer, Leaf, Truck, Wrench, Award, Flag, Waves, Wind, Lightbulb, ThermometerSun } from 'lucide-react';
 
 const features = [
   { icon: ShieldCheck, title: '2 Lata Gwarancji', desc: 'Pełne bezpieczeństwo i wsparcie serwisowe na wszystkie nasze produkty.' },
   { icon: Hammer, title: 'Ręczna Produkcja', desc: 'Każdy detal dopracowany przez polskich rzemieślników z wieloletnim doświadczeniem.' },
-  { icon: Leaf, title: 'Eko Certyfikat', desc: 'Drewno pozyskiwane wyłącznie z odpowiedzialnych, certyfikowanych źródeł.' },
+  { icon: Leaf, title: 'Eko Materiały', desc: 'Modrzew syberyjski i świerk skandynawski z certyfikowanych, zrównoważonych źródeł.' },
+];
+
+const options = [
+  { icon: Waves, title: 'Hydromasaż', desc: 'System dysz masujących dla głębokiego relaksu' },
+  { icon: Wind, title: 'Aeromasaż', desc: 'Delikatne bąbelki powietrza dla odprężenia' },
+  { icon: Lightbulb, title: 'Oświetlenie LED', desc: 'Nastrojowe światła w różnych kolorach' },
+  { icon: ThermometerSun, title: 'Pokrywa termiczna', desc: 'Utrzymuje temperaturę i chroni przed zanieczyszczeniami' },
 ];
 
 const badges = [
@@ -25,7 +32,7 @@ export const BalieFeatures = () => (
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         {features.map((f, i) => (
           <div key={i} className="bg-[#1A1E27] border border-white/5 p-6 hover:border-[#D4AF37]/30 transition-colors">
             <f.icon size={28} className="text-[#D4AF37] mb-4" />
@@ -33,6 +40,20 @@ export const BalieFeatures = () => (
             <p className="text-white/40 text-sm leading-relaxed">{f.desc}</p>
           </div>
         ))}
+      </div>
+
+      {/* Additional options */}
+      <div className="mb-10">
+        <h3 className="text-center text-white/60 text-sm font-medium tracking-wider uppercase mb-6">Dostępne opcje dodatkowe</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {options.map((o, i) => (
+            <div key={i} className="bg-[#1A1E27]/50 border border-white/5 p-4 text-center hover:border-[#D4AF37]/20 transition-colors">
+              <o.icon size={24} className="text-[#D4AF37] mx-auto mb-2" />
+              <h4 className="text-white font-medium text-sm mb-1">{o.title}</h4>
+              <p className="text-white/30 text-xs">{o.desc}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

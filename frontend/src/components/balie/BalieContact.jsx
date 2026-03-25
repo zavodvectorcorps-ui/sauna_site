@@ -37,7 +37,7 @@ export const BalieContact = () => {
           <div className="space-y-6">
             <div className="flex items-start gap-4">
               <Phone size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
-              <div><div className="text-white font-medium">Telefon</div><div className="text-white/40 text-sm">+48 123 456 789</div></div>
+              <div><div className="text-white font-medium">Telefon</div><div className="text-white/40 text-sm">+48 515 995 190</div></div>
             </div>
             <div className="flex items-start gap-4">
               <Mail size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
@@ -45,7 +45,7 @@ export const BalieContact = () => {
             </div>
             <div className="flex items-start gap-4">
               <MapPin size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
-              <div><div className="text-white font-medium">Adres</div><div className="text-white/40 text-sm">Polska</div></div>
+              <div><div className="text-white font-medium">Adres</div><div className="text-white/40 text-sm">ul. Boryny 3, Warszawa, Polska</div></div>
             </div>
           </div>
 

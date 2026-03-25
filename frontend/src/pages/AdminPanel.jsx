@@ -952,6 +952,21 @@ const AdminPanel = () => {
     }
   };
 
+  const toggleOption = (optionId) => {
+    const disabled = calculatorConfig.disabled_options || [];
+    if (disabled.includes(optionId)) {
+      setCalculatorConfig({
+        ...calculatorConfig,
+        disabled_options: disabled.filter(id => id !== optionId),
+      });
+    } else {
+      setCalculatorConfig({
+        ...calculatorConfig,
+        disabled_options: [...disabled, optionId],
+      });
+    }
+  };
+
   // Login screen
   if (!isLoggedIn) {
     return (
@@ -2003,20 +2018,36 @@ const AdminPanel = () => {
               </div>
               
               <div>
-                <h3 className="font-semibold mb-4">Категории опций</h3>
-                <p className="text-sm text-[#8C8C8C] mb-4">Выберите категории для отображения. Пустой список = все включены.</p>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {apiData.categories.map((cat) => (
-                    <label key={cat.id} className="flex items-center gap-2 p-2 border border-black/5 cursor-pointer hover:border-[#C6A87C]">
-                      <input
-                        type="checkbox"
-                        checked={calculatorConfig.enabled_categories.length === 0 || calculatorConfig.enabled_categories.includes(cat.id)}
-                        onChange={() => toggleCategory(cat.id)}
-                        className="accent-[#C6A87C]"
-                      />
-                      <span className="text-sm truncate">{cat.name}</span>
-                    </label>
-                  ))}
+                <h3 className="font-semibold mb-4">Категории и опции</h3>
+                <p className="text-sm text-[#8C8C8C] mb-4">Категории: пустой список = все включены. Опции внутри категорий можно отключать по отдельности.</p>
+                <div className="space-y-4">
+                  {apiData.categories.map((cat) => {
+                    const catEnabled = calculatorConfig.enabled_categories.length === 0 || calculatorConfig.enabled_categories.includes(cat.id);
+                    const disabled = calculatorConfig.disabled_options || [];
+                    return (
+                      <div key={cat.id} className={`border ${catEnabled ? 'border-black/5' : 'border-red-200 bg-red-50/30'} p-3`}>
+                        <label className="flex items-center gap-2 cursor-pointer mb-2">
+                          <input type="checkbox" checked={catEnabled} onChange={() => toggleCategory(cat.id)} className="accent-[#C6A87C]" />
+                          <span className="font-medium text-sm">{cat.name}</span>
+                          <span className="text-xs text-[#8C8C8C]">({(cat.options || []).length} опций)</span>
+                        </label>
+                        {catEnabled && (cat.options || []).length > 0 && (
+                          <div className="ml-6 flex flex-wrap gap-1.5 mt-2">
+                            {cat.options.map(opt => {
+                              const optDisabled = disabled.includes(opt.id);
+                              return (
+                                <label key={opt.id} className={`flex items-center gap-1.5 px-2 py-1 text-xs border cursor-pointer transition-colors ${optDisabled ? 'border-red-200 bg-red-50 text-red-400 line-through' : 'border-black/5 hover:border-[#C6A87C]'}`}>
+                                  <input type="checkbox" checked={!optDisabled} onChange={() => toggleOption(opt.id)} className="accent-[#C6A87C] w-3 h-3" />
+                                  <span className="truncate max-w-[200px]">{opt.name}</span>
+                                  {opt.price > 0 && <span className="text-[#C6A87C] whitespace-nowrap">+{opt.price} PLN</span>}
+                                </label>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>

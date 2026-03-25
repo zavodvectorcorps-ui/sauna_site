@@ -107,8 +107,19 @@ export const Calculator = () => {
   const getFilteredCategories = () => {
     if (!data?.categories) return [];
     const enabled = calculatorConfig?.enabled_categories;
-    if (!enabled || enabled.length === 0) return data.categories;
-    return data.categories.filter((c) => enabled.includes(String(c.id)) || enabled.includes(c.id));
+    const disabledOpts = calculatorConfig?.disabled_options || [];
+    let cats = data.categories;
+    if (enabled && enabled.length > 0) {
+      cats = cats.filter((c) => enabled.includes(String(c.id)) || enabled.includes(c.id));
+    }
+    // Filter out disabled options within each category
+    if (disabledOpts.length > 0) {
+      cats = cats.map(cat => ({
+        ...cat,
+        options: (cat.options || []).filter(opt => !disabledOpts.includes(opt.id)),
+      })).filter(cat => cat.options.length > 0);
+    }
+    return cats;
   };
 
   const handleSubmitInquiry = async (e) => {
