@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Phone } from 'lucide-react';
+import { Menu, X, Phone, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export const Header = () => {
@@ -48,22 +48,27 @@ export const Header = () => {
       >
         <div className="container-main">
           <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-            <a
-              href="#"
-              data-testid="logo-link"
-              className="flex items-center gap-2"
-              onClick={(e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            >
-              <span className={`font-['Montserrat'] text-2xl font-bold tracking-tight transition-colors duration-300 ${
-                isScrolled ? 'text-[#1A1A1A]' : 'text-white'
-              }`}>
-                WM<span className="text-[#C6A87C]">-</span>SAUNA
-              </span>
-            </a>
+            {/* Logo with back link */}
+            <div className="flex items-center gap-3">
+              <a href="/" className={`transition-colors duration-300 ${isScrolled ? 'text-[#8C8C8C] hover:text-[#1A1A1A]' : 'text-white/40 hover:text-white'}`} data-testid="back-to-home">
+                <ArrowLeft size={18} />
+              </a>
+              <a
+                href="#"
+                data-testid="logo-link"
+                className="flex items-center gap-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
+                <span className={`font-['Montserrat'] text-2xl font-bold tracking-tight transition-colors duration-300 ${
+                  isScrolled ? 'text-[#1A1A1A]' : 'text-white'
+                }`}>
+                  WM<span className="text-[#C6A87C]">-</span>SAUNA
+                </span>
+              </a>
+            </div>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">

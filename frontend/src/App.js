@@ -24,6 +24,9 @@ import { PromoBanner } from "./components/PromoBanner";
 import { SpecialOffer } from "./components/SpecialOffer";
 import AdminPanel from "./pages/AdminPanel";
 import PipelineView from "./pages/PipelineView";
+import MainLanding from "./pages/MainLanding";
+import { BalieLandingPage } from "./components/balie/BalieLandingPage";
+import { BalieConfigurator } from "./components/balie/BalieConfigurator";
 
 const sectionComponents = {
   hero: Hero,
@@ -70,18 +73,16 @@ const MainContent = () => {
 
   return (
     <>
-      {sections.map((sectionKey, index) => {
+      {sections.map((sectionKey) => {
         const Component = sectionComponents[sectionKey];
         if (!Component) return null;
         return (
           <React.Fragment key={sectionKey}>
             <Component />
-            {/* Social proof + special offer after hero */}
             {sectionKey === 'hero' && <>
               <SocialProof />
               <SpecialOffer />
             </>}
-            {/* Promo blocks after models, before calculator */}
             {sectionKey === 'models' && <>
               <PromoFeatures />
               <PromoBanner />
@@ -93,7 +94,7 @@ const MainContent = () => {
   );
 };
 
-const HomePage = () => {
+const SaunaHomePage = () => {
   return (
     <div className="min-h-screen bg-[#F9F9F7]">
       <SeoHead />
@@ -115,7 +116,17 @@ function App() {
         <SettingsProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              {/* Main landing - choose Sauny or Balie */}
+              <Route path="/" element={<MainLanding />} />
+
+              {/* Sauna pages */}
+              <Route path="/sauny" element={<SaunaHomePage />} />
+
+              {/* Balie pages */}
+              <Route path="/balie" element={<BalieLandingPage />} />
+              <Route path="/balie/konfigurator" element={<BalieConfigurator />} />
+
+              {/* Admin */}
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/admin/pipeline" element={<PipelineView />} />
             </Routes>

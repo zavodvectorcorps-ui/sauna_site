@@ -1,92 +1,67 @@
-# WM-Sauna — PRD (Product Requirements Document)
+# WM-Sauna & WM-Balia — PRD
 
 ## Original Problem Statement
-Создание современного адаптивного сайта для польского производителя деревянных саун WM-Sauna. Основная цель — продажа саун через калькулятор и формы заявок.
-
-## Core Features (Implemented)
-- Адаптивный сайт со всеми ключевыми разделами (Hero, Models, Calculator, Gallery, Stock Saunas, Reviews, FAQ, About, Contact)
-- Панель администратора `/admin` с аутентификацией (Basic Auth + localStorage persistence)
-- Интеграция с Telegram для уведомлений о заявках
-- Интеграция с AMO CRM (API-ключ) для создания сделок
-- Продвинутый калькулятор (двухколоночный дизайн, кастомный dropdown с миниатюрами)
-- Генерация PDF-конфигураций (reportlab)
-- Загрузка/скачивание PDF-каталога через админку
-- Скачивание каталога через форму-гейт (CatalogFormGate)
-- Страница просмотра воронки AMO CRM `/admin/pipeline` (канбан-доска + CSV экспорт)
-- SEO-настройки через админку
-- Управление контентом всех секций через админку
-- **Фильтр моделей** (Все / Бочки / Квадро / Викинг)
-- **Две цены на карточках**: с электропечкой и с дровяной печкой
-- **Промо-блоки**: USP-полоса + баннер со скидкой до 10% перед калькулятором
-- **Секция "Специальное предложение"** — подарки при заказе (бочка, LED, двери)
-- **Информация на карточках**: цена с НДС, готовая собранная саура
-
-## Tech Stack
-- **Backend:** FastAPI, Pydantic, MongoDB (motor), JWT, HTTPX, reportlab
-- **Frontend:** React, React Router, TailwindCSS, Framer Motion, react-helmet-async
-- **External APIs:** wm-kalkulator.pl, Telegram Bot API, AMO CRM API
+Объединённый сайт для WM Group (WM-Sauna + WM-Balia). Общая главная страница с выбором продуктовой линейки, отдельные страницы для саун и купелей с полным функционалом.
 
 ## Architecture
 ```
-/app/
-├── backend/
-│   ├── server.py             # Main FastAPI server
-│   ├── pdf_generator.py      # PDF generation for calculator configs
-│   └── requirements.txt
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Models.jsx          # Model cards with filters, dual pricing
-│   │   │   ├── PromoFeatures.jsx   # USP features strip (4 blocks)
-│   │   │   ├── PromoBanner.jsx     # Pre-calculator promo banner (10% discount)
-│   │   │   ├── SpecialOffer.jsx    # Special offer section (gifts with order)
-│   │   │   ├── Calculator.jsx      # Two-column calculator
-│   │   │   ├── CatalogFormGate.jsx # Catalog download form gate
-│   │   │   ├── Hero.jsx
-│   │   │   └── StickyCTA.jsx
-│   │   ├── pages/
-│   │   │   ├── AdminPanel.jsx  # Admin panel (~3500 lines, needs refactoring)
-│   │   │   └── PipelineView.jsx # AMO CRM pipeline viewer + CSV export
-│   │   ├── context/          # LanguageContext, SettingsContext
-│   │   └── App.js
+/               → MainLanding (выбор: Sauny / Balie)
+/sauny          → Полный сайт саун (Hero, Models, Calculator, etc.)
+/balie          → Страница купелей (Hero, Features, Products, Testimonials, Contact)
+/balie/konfigurator → Конфигуратор купелей
+/admin          → Админ-панель
+/admin/pipeline → Воронка AMO CRM
 ```
 
-## Key API Endpoints
-- POST /api/contact — Submit contact/lead form
-- POST /api/admin/login — Admin authentication
-- POST /api/admin/catalog/upload — Upload PDF catalog
-- GET /api/catalog/download — Download PDF catalog
-- GET /api/catalog/info — Check catalog availability
-- POST /api/sauna/generate-pdf — Generate PDF config
-- GET /api/admin/amocrm/pipeline/{pipeline_id}/full — Get pipeline data from AMO CRM
-- GET /api/sauna/prices — Sauna prices with heater options
+## Core Features
+### Sauny (existing)
+- Все ранее реализованные функции (калькулятор, PDF, фильтры, промо-блоки, специальное предложение)
+- Интеграции: Telegram, AMO CRM
+
+### Balie (new)
+- Hero section с динамическим контентом из БД
+- Features section (гарантия, ручная работа, эко, доставка)
+- Products section (из MongoDB, управляется через API)
+- Testimonials (из MongoDB, карусель с навигацией)
+- Contact form (отправляет заявки через /api/contact)
+- Конфигуратор (модели из wm-kalkulator.pl API, опции, sticky price bar)
+
+## Backend API — Balia endpoints
+- GET/POST /api/balia/products — CRUD продуктов
+- DELETE /api/balia/products/{id}
+- GET/POST /api/balia/testimonials — CRUD отзывов
+- DELETE /api/balia/testimonials/{id}
+- GET/POST /api/balia/content — Контент страницы
+- GET/POST /api/balia/configurator-settings — Настройки конфигуратора
+- GET /api/balia/calculator/prices — Прокси к wm-kalkulator.pl
+- POST /api/balia/calculator/generate-pdf — Генерация PDF
+
+## MongoDB Collections (Balia)
+- balia_products
+- balia_testimonials
+- balia_content
+- balia_configurator_settings
 
 ## Admin Credentials
-- Login: admin
-- Password: 220066
+- Login: admin | Password: 220066
 
-## What's Been Done (Latest Session - Feb 2026)
-- Fixed auth bug: PipelineView login form + localStorage session
-- Added CSV export for pipeline (all fields including custom fields)
-- Added PromoFeatures (4 USP blocks) and PromoBanner (10% discount promo) 
-- Added model filter tabs (Wszystkie/Beczki/Kwadro/Wiking)
-- Removed discounts from model cards (managers handle discounts)
-- Added two prices on cards: model+electric heater, model+wood heater
-- Added "Cena zawiera VAT" and "Gotowa, zmontowana sauna" text
-- Added SpecialOffer section with 3 gift cards (cooling tub, LED, glass doors)
-- All changes tested: 15/15 tests passed (iteration_5)
+## Implemented (Latest Session)
+- Fixed PipelineView auth bug (login form + localStorage)
+- Added CSV export for pipeline
+- Added model filters, dual pricing, VAT text, ready-sauna badges
+- Added PromoFeatures, PromoBanner, SpecialOffer sections
+- **Merged Balia project**: MainLanding, BalieLandingPage, BalieConfigurator, all backend endpoints
+- Added demo products and testimonials for Balie
 
-## Notes
-- Catalog download button appears only when PDF catalog is uploaded via admin panel
-- Current catalog status: not uploaded (available: false)
-
-## Backlog (Prioritized)
+## Backlog
 ### P1
-- Refactor AdminPanel.jsx (~3500 lines → split into sub-components)
-- i18next integration for static UI strings (PL/RU/EN)
+- Refactor AdminPanel.jsx (add Balia management tabs)
+- i18next integration (PL/RU/EN)
+- Cloudinary integration for Balie gallery
 
 ### P2
-- Improve frontend API error handling (toast notifications)
+- Frontend API error handling (toasts)
+- Balie admin panel (products, testimonials, configurator settings management)
 
 ### P3
-- A/B testing for CTA buttons
+- A/B testing CTA buttons

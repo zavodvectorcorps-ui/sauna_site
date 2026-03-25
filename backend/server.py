@@ -1588,6 +1588,92 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     return status_checks
 
+# ========== BALIA SECTION ==========
+# Balia products
+@api_router.get("/balia/products")
+async def get_balia_products():
+    products = await db.balia_products.find({}, {"_id": 0}).sort("order", 1).to_list(100)
+    return products
+
+@api_router.post("/balia/products")
+async def save_balia_product(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["id"] = data.get("id", str(uuid.uuid4()))
+    data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.balia_products.update_one({"id": data["id"]}, {"$set": data}, upsert=True)
+    return {"status": "ok", "id": data["id"]}
+
+@api_router.delete("/balia/products/{product_id}")
+async def delete_balia_product(product_id: str, username: str = Depends(verify_admin)):
+    await db.balia_products.delete_one({"id": product_id})
+    return {"status": "deleted"}
+
+# Balia testimonials
+@api_router.get("/balia/testimonials")
+async def get_balia_testimonials():
+    testimonials = await db.balia_testimonials.find({}, {"_id": 0}).sort("order", 1).to_list(100)
+    return testimonials
+
+@api_router.post("/balia/testimonials")
+async def save_balia_testimonial(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["id"] = data.get("id", str(uuid.uuid4()))
+    await db.balia_testimonials.update_one({"id": data["id"]}, {"$set": data}, upsert=True)
+    return {"status": "ok", "id": data["id"]}
+
+@api_router.delete("/balia/testimonials/{testimonial_id}")
+async def delete_balia_testimonial(testimonial_id: str, username: str = Depends(verify_admin)):
+    await db.balia_testimonials.delete_one({"id": testimonial_id})
+    return {"status": "deleted"}
+
+# Balia content (hero, features, etc.)
+@api_router.get("/balia/content")
+async def get_balia_content():
+    content = await db.balia_content.find_one({"type": "main"}, {"_id": 0})
+    return content or {}
+
+@api_router.post("/balia/content")
+async def save_balia_content(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["type"] = "main"
+    await db.balia_content.update_one({"type": "main"}, {"$set": data}, upsert=True)
+    return {"status": "ok"}
+
+# Balia configurator settings
+@api_router.get("/balia/configurator-settings")
+async def get_balia_configurator_settings():
+    settings = await db.balia_configurator_settings.find_one({"type": "main"}, {"_id": 0})
+    return settings or {"hiddenModels": [], "hiddenCategories": [], "hiddenOptions": [], "categoryDescriptions": {}}
+
+@api_router.post("/balia/configurator-settings")
+async def save_balia_configurator_settings(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["type"] = "main"
+    await db.balia_configurator_settings.update_one({"type": "main"}, {"$set": data}, upsert=True)
+    return {"status": "ok"}
+
+# Balia calculator proxy (same external API)
+@api_router.get("/balia/calculator/prices")
+async def get_balia_calculator_prices():
+    async with httpx.AsyncClient(timeout=30.0) as client_http:
+        response = await client_http.get(f"{CALCULATOR_API_URL}/api/prices")
+        return response.json()
+
+@api_router.post("/balia/calculator/generate-pdf")
+async def generate_balia_pdf(request: Request):
+    data = await request.json()
+    async with httpx.AsyncClient(timeout=30.0) as client_http:
+        response = await client_http.post(
+            f"{CALCULATOR_API_URL}/api/generate-pdf",
+            json=data,
+            headers={"Content-Type": "application/json"}
+        )
+        return Response(
+            content=response.content,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="oferta-balia.pdf"'}
+        )
+
 # Include the router
 app.include_router(api_router)
 

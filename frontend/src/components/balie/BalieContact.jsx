@@ -1,0 +1,78 @@
+import { useState } from 'react';
+import { Send, CheckCircle, MapPin, Phone, Mail } from 'lucide-react';
+
+const API = process.env.REACT_APP_BACKEND_URL;
+
+export const BalieContact = () => {
+  const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await fetch(`${API}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, type: 'balia_contact' }),
+      });
+      setSubmitted(true);
+    } catch (err) { console.error(err); }
+    setSubmitting(false);
+  };
+
+  return (
+    <section id="kontakt-balie" className="py-20 bg-[#0F1218]" data-testid="balie-contact">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+            Skontaktuj się z <span className="text-[#D4AF37]">nami</span>
+          </h2>
+          <p className="text-white/50 text-sm">Chętnie odpowiemy na każde pytanie</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Info */}
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <Phone size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
+              <div><div className="text-white font-medium">Telefon</div><div className="text-white/40 text-sm">+48 123 456 789</div></div>
+            </div>
+            <div className="flex items-start gap-4">
+              <Mail size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
+              <div><div className="text-white font-medium">Email</div><div className="text-white/40 text-sm">kontakt@wm-balia.pl</div></div>
+            </div>
+            <div className="flex items-start gap-4">
+              <MapPin size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
+              <div><div className="text-white font-medium">Adres</div><div className="text-white/40 text-sm">Polska</div></div>
+            </div>
+          </div>
+
+          {/* Form */}
+          {submitted ? (
+            <div className="text-center py-8">
+              <CheckCircle size={48} className="mx-auto text-green-400 mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Dziękujemy!</h3>
+              <p className="text-white/50">Skontaktujemy się z Tobą wkrótce.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input type="text" placeholder="Imię i nazwisko *" required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30" data-testid="balie-contact-name" />
+              <input type="tel" placeholder="Telefon *" required value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
+                className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30" data-testid="balie-contact-phone" />
+              <input type="email" placeholder="Email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30" />
+              <textarea placeholder="Wiadomość" rows={3} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+                className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30 resize-none" />
+              <button type="submit" disabled={submitting} className="w-full py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors disabled:opacity-50 flex items-center justify-center gap-2" data-testid="balie-contact-submit">
+                <Send size={16} /> {submitting ? 'Wysyłanie...' : 'Wyślij wiadomość'}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
