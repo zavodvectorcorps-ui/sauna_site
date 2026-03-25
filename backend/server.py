@@ -14,6 +14,8 @@ from datetime import datetime, timezone, timedelta
 import httpx
 import secrets
 import base64
+import cloudinary
+import cloudinary.uploader
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -22,6 +24,13 @@ load_dotenv(ROOT_DIR / '.env')
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
+
+# Cloudinary configuration
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    api_key=os.environ.get('CLOUDINARY_API_KEY', ''),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET', ''),
+)
 
 # External API URL
 CALCULATOR_API_URL = "https://wm-kalkulator.pl"
@@ -1673,6 +1682,47 @@ async def generate_balia_pdf(request: Request):
             media_type="application/pdf",
             headers={"Content-Disposition": f'attachment; filename="oferta-balia.pdf"'}
         )
+
+# Balia gallery (Cloudinary)
+@api_router.get("/balia/gallery")
+async def get_balia_gallery():
+    images = await db.balia_gallery.find({}, {"_id": 0}).sort("order", 1).to_list(200)
+    return images
+
+@api_router.post("/balia/gallery/upload")
+async def upload_balia_gallery_image(file: UploadFile = File(...), username: str = Depends(verify_admin)):
+    try:
+        contents = await file.read()
+        result = cloudinary.uploader.upload(
+            contents,
+            folder="wm-balia/gallery",
+            resource_type="image",
+        )
+        image_data = {
+            "id": str(uuid.uuid4()),
+            "url": result["secure_url"],
+            "public_id": result["public_id"],
+            "width": result.get("width"),
+            "height": result.get("height"),
+            "order": 0,
+            "uploaded_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.balia_gallery.insert_one(image_data)
+        del image_data["_id"]
+        return image_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/balia/gallery/{image_id}")
+async def delete_balia_gallery_image(image_id: str, username: str = Depends(verify_admin)):
+    image = await db.balia_gallery.find_one({"id": image_id})
+    if image and image.get("public_id"):
+        try:
+            cloudinary.uploader.destroy(image["public_id"])
+        except Exception:
+            pass
+    await db.balia_gallery.delete_one({"id": image_id})
+    return {"status": "deleted"}
 
 # Include the router
 app.include_router(api_router)

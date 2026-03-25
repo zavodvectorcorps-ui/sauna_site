@@ -4,6 +4,10 @@ import {
   Trash2, Plus, Eye, EyeOff, GripVertical, Upload, Check, X,
   Phone, Mail, MapPin, Clock, FileText, Star, ChevronDown, ChevronUp, Loader2
 } from 'lucide-react';
+import { BaliaProductsAdmin } from '../components/admin/BaliaProductsAdmin';
+import { BaliaTestimonialsAdmin } from '../components/admin/BaliaTestimonialsAdmin';
+import { BaliaContentAdmin } from '../components/admin/BaliaContentAdmin';
+import { BaliaConfiguratorAdmin } from '../components/admin/BaliaConfiguratorAdmin';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -1016,6 +1020,10 @@ const AdminPanel = () => {
     { id: 'integrations', label: 'Интеграции', icon: Settings },
     { id: 'catalog', label: 'Каталог', icon: FileText },
     { id: 'sections', label: 'Порядок', icon: GripVertical },
+    { id: 'balia_products', label: 'Купели: Продукты', icon: LayoutGrid },
+    { id: 'balia_testimonials', label: 'Купели: Отзывы', icon: Star },
+    { id: 'balia_content', label: 'Купели: Контент', icon: FileText },
+    { id: 'balia_configurator', label: 'Купели: Конфигуратор', icon: Settings },
   ];
 
   const sectionNames = {
@@ -3127,6 +3135,20 @@ const AdminPanel = () => {
                 ))}
               </div>
             </div>
+          )}
+
+          {/* Balia Tabs */}
+          {activeTab === 'balia_products' && (
+            <BaliaProductsAdmin authHeader={authHeader} showMessage={showMessage} />
+          )}
+          {activeTab === 'balia_testimonials' && (
+            <BaliaTestimonialsAdmin authHeader={authHeader} showMessage={showMessage} />
+          )}
+          {activeTab === 'balia_content' && (
+            <BaliaContentAdmin authHeader={authHeader} showMessage={showMessage} />
+          )}
+          {activeTab === 'balia_configurator' && (
+            <BaliaConfiguratorAdmin authHeader={authHeader} showMessage={showMessage} />
           )}
         </main>
       </div>
