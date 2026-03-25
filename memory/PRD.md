@@ -31,7 +31,8 @@
 - [x] **Рефакторинг AdminPanel.jsx** (3558 → 233 строк, 93.5% сокращение)
 
 ## Admin Panel Architecture (After Refactoring — Feb 2026)
-AdminPanel.jsx — тонкий оркестратор (233 строки): логин, навигация, layout.
+AdminPanel.jsx — тонкий оркестратор (250 строк): логин, навигация, layout.
+**Сайдбар с группировкой** — 3 секции (Общее / Сауны / Купели) со сворачиваемыми группами.
 Все вкладки вынесены в `/components/admin/`:
 - SaunaMessagesAdmin.jsx — Сообщения
 - SaunaDesignAdmin.jsx — Настройки сайта, Оформление, Кнопки

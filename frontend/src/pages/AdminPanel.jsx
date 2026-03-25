@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Settings, Users, Image, MessageSquare, LayoutGrid, LogOut, 
-  Eye, GripVertical, Phone, FileText, Star
+  Eye, GripVertical, Phone, FileText, Star, ChevronDown, Droplets, Flame
 } from 'lucide-react';
 import { BaliaProductsAdmin } from '../components/admin/BaliaProductsAdmin';
 import { BaliaTestimonialsAdmin } from '../components/admin/BaliaTestimonialsAdmin';
@@ -28,6 +28,7 @@ const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('contacts');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [collapsedGroups, setCollapsedGroups] = useState({});
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
@@ -101,30 +102,58 @@ const AdminPanel = () => {
     );
   }
 
-  const tabs = [
-    { id: 'contacts', label: 'Сообщения', icon: MessageSquare },
-    { id: 'layout', label: 'Оформление', icon: LayoutGrid },
-    { id: 'buttons', label: 'Кнопки', icon: Settings },
-    { id: 'content', label: 'Тексты', icon: FileText },
-    { id: 'hero', label: 'Hero', icon: Image },
-    { id: 'about', label: 'О компании', icon: FileText },
-    { id: 'social_proof', label: 'Счётчики', icon: Users },
-    { id: 'models', label: 'Модели', icon: LayoutGrid },
-    { id: 'gallery', label: 'Галерея', icon: Image },
-    { id: 'api_images', label: 'Фото из API', icon: Eye },
-    { id: 'stock_saunas', label: 'В наличии', icon: Users },
-    { id: 'calculator', label: 'Калькулятор', icon: LayoutGrid },
-    { id: 'reviews', label: 'Отзывы', icon: Star },
-    { id: 'faq', label: 'FAQ', icon: FileText },
-    { id: 'site', label: 'Контакты', icon: Phone },
-    { id: 'seo', label: 'SEO', icon: FileText },
-    { id: 'integrations', label: 'Интеграции', icon: Settings },
-    { id: 'catalog', label: 'Каталог', icon: FileText },
-    { id: 'sections', label: 'Порядок', icon: GripVertical },
-    { id: 'balia_products', label: 'Купели: Продукты', icon: LayoutGrid },
-    { id: 'balia_testimonials', label: 'Купели: Отзывы', icon: Star },
-    { id: 'balia_content', label: 'Купели: Контент', icon: FileText },
-    { id: 'balia_configurator', label: 'Купели: Конфигуратор', icon: Settings },
+  const toggleGroup = (groupId) => {
+    setCollapsedGroups(prev => ({ ...prev, [groupId]: !prev[groupId] }));
+  };
+
+  const tabGroups = [
+    {
+      id: 'general',
+      label: 'Общее',
+      icon: MessageSquare,
+      color: '#595959',
+      tabs: [
+        { id: 'contacts', label: 'Сообщения', icon: MessageSquare },
+        { id: 'integrations', label: 'Интеграции', icon: Settings },
+      ],
+    },
+    {
+      id: 'sauna',
+      label: 'Сауны',
+      icon: Flame,
+      color: '#C6A87C',
+      tabs: [
+        { id: 'hero', label: 'Hero', icon: Image },
+        { id: 'content', label: 'Тексты', icon: FileText },
+        { id: 'about', label: 'О компании', icon: FileText },
+        { id: 'social_proof', label: 'Счётчики', icon: Users },
+        { id: 'models', label: 'Модели', icon: LayoutGrid },
+        { id: 'gallery', label: 'Галерея', icon: Image },
+        { id: 'api_images', label: 'Фото из API', icon: Eye },
+        { id: 'stock_saunas', label: 'В наличии', icon: Users },
+        { id: 'calculator', label: 'Калькулятор', icon: LayoutGrid },
+        { id: 'reviews', label: 'Отзывы', icon: Star },
+        { id: 'faq', label: 'FAQ', icon: FileText },
+        { id: 'layout', label: 'Оформление', icon: LayoutGrid },
+        { id: 'buttons', label: 'Кнопки', icon: Settings },
+        { id: 'site', label: 'Контакты', icon: Phone },
+        { id: 'seo', label: 'SEO', icon: FileText },
+        { id: 'catalog', label: 'Каталог', icon: FileText },
+        { id: 'sections', label: 'Порядок', icon: GripVertical },
+      ],
+    },
+    {
+      id: 'balia',
+      label: 'Купели',
+      icon: Droplets,
+      color: '#339DC7',
+      tabs: [
+        { id: 'balia_products', label: 'Продукты', icon: LayoutGrid },
+        { id: 'balia_testimonials', label: 'Отзывы', icon: Star },
+        { id: 'balia_content', label: 'Контент', icon: FileText },
+        { id: 'balia_configurator', label: 'Конфигуратор', icon: Settings },
+      ],
+    },
   ];
 
   // Map tab IDs to components
@@ -202,22 +231,47 @@ const AdminPanel = () => {
       <div className="max-w-7xl mx-auto p-4 flex gap-6">
         {/* Sidebar */}
         <nav className="w-56 flex-shrink-0">
-          <div className="bg-white border border-black/5 p-2 sticky top-4">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                data-testid={`admin-tab-${tab.id}`}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-[#C6A87C] text-white'
-                    : 'text-[#595959] hover:bg-[#F9F9F7]'
-                }`}
-              >
-                <tab.icon size={18} />
-                {tab.label}
-              </button>
-            ))}
+          <div className="bg-white border border-black/5 sticky top-4 overflow-hidden">
+            {tabGroups.map((group) => {
+              const isCollapsed = collapsedGroups[group.id];
+              const hasActiveTab = group.tabs.some(t => t.id === activeTab);
+              return (
+                <div key={group.id} data-testid={`admin-group-${group.id}`}>
+                  <button
+                    onClick={() => toggleGroup(group.id)}
+                    data-testid={`admin-group-toggle-${group.id}`}
+                    className={`w-full flex items-center justify-between px-4 py-3 text-xs font-bold uppercase tracking-wider border-b border-black/5 transition-colors ${
+                      hasActiveTab ? 'text-[#1A1A1A]' : 'text-[#8C8C8C]'
+                    } hover:bg-[#F9F9F7]`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <group.icon size={14} style={{ color: group.color }} />
+                      {group.label}
+                    </span>
+                    <ChevronDown size={14} className={`transition-transform duration-200 ${isCollapsed ? '-rotate-90' : ''}`} />
+                  </button>
+                  {!isCollapsed && (
+                    <div className="py-1 px-1">
+                      {group.tabs.map((tab) => (
+                        <button
+                          key={tab.id}
+                          onClick={() => setActiveTab(tab.id)}
+                          data-testid={`admin-tab-${tab.id}`}
+                          className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors ${
+                            activeTab === tab.id
+                              ? 'bg-[#C6A87C] text-white font-medium'
+                              : 'text-[#595959] hover:bg-[#F9F9F7]'
+                          }`}
+                        >
+                          <tab.icon size={15} />
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </nav>
 
