@@ -1,65 +1,61 @@
 # WM Group — PRD
 
-## Original Problem Statement
-Объединённый сайт для WM Group (WM-Sauna + WM-Balia). Общая главная страница с выбором продуктовой линейки, отдельные страницы для саун и купелей с полным функционалом. Панель управления для обоих продуктовых линеек.
+## Problem Statement
+Объединение двух проектов (WM-Sauna и WM-Balia) в единую мульти-продуктовую платформу с общей главной страницей, раздельными продуктовыми лендингами и единой панелью администратора.
 
 ## Architecture
-```
-/               → MainLanding (About + Contact + выбор: Sauny / Balie)
-/sauny          → Полный сайт саун
-/balie          → Страница купелей (Hero, Features, Products, Testimonials, Contact)
-/balie/konfigurator → Конфигуратор купелей
-/admin          → Единая админ-панель (Sauny + Balie management)
-/admin/pipeline → Воронка AMO CRM
-```
+- **Frontend:** React, React Router, TailwindCSS, Framer Motion
+- **Backend:** FastAPI, Pydantic, MongoDB (Motor), JWT
+- **Storage:** MongoDB, Cloudinary (купели), локальная папка (PDF)
+- **3rd Party:** wm-kalkulator.pl API, Telegram, AMO CRM, Cloudinary
 
-## Core Features
-### Main Landing (/)
-- About block: Polish manufacturer, Warsaw, quality materials, health & comfort
-- Contact form with phone, email, address
-- Two product cards: Sauny / Balie
+## Routing
+- `/` — MainLanding (выбор направления)
+- `/sauny` — сайт саун (лендинг с калькулятором)
+- `/sauny/kalkulator` — калькулятор саун
+- `/balie` — сайт купелей
+- `/balie/konfigurator` — конфигуратор купелей
+- `/admin` — панель администратора
+- `/admin/pipeline` — воронка AMO CRM
 
-### Sauny (/sauny)
-- All sections: Hero, Models (with filters), Calculator, Gallery, etc.
-- PromoFeatures, PromoBanner, SpecialOffer sections
-- Dual pricing (electric + wood heater), VAT, ready-sauna badges
-- PDF generation, catalog download
+## Completed Features
+- [x] Объединение двух проектов в единую платформу
+- [x] MainLanding.jsx с выбором направления
+- [x] Полный перенос сайта купелей (10 продуктов, галерея, конфигуратор)
+- [x] Cloudinary интеграция для медиа купелей
+- [x] Обновление карточек саун (2 цены, фильтры, промо-блоки)
+- [x] Единая админ-панель для обоих направлений
+- [x] AMO CRM интеграция с CSV-экспортом воронки
+- [x] Telegram уведомления
+- [x] Точечное отключение опций калькулятора саун
+- [x] **Рефакторинг AdminPanel.jsx** (3558 → 233 строк, 93.5% сокращение)
 
-### Balie (/balie + /balie/konfigurator)
-- Hero, Features, Products (MongoDB), Testimonials, Contact
-- Full configurator with model selection, heater types, options, PDF
-- Dark theme (bg-[#0F1218], gold #D4AF37)
-
-### Admin Panel (/admin)
-- Sauna management: all existing tabs (Messages, Design, Content, Models, Gallery, Calculator, Reviews, FAQ, SEO, Integrations, Catalog, Section Order)
-- Balia management: Products, Testimonials, Content, Configurator settings
-
-## Integrations
-- Telegram notifications
-- AMO CRM (API key)
-- Cloudinary (cloud_name: dhyj13jgs) — for Balia gallery
-- wm-kalkulator.pl API — prices for both saunas and hot tubs
-
-## Backend API — Balia
-- GET/POST /api/balia/products, DELETE /api/balia/products/{id}
-- GET/POST /api/balia/testimonials, DELETE /api/balia/testimonials/{id}
-- GET/POST /api/balia/content
-- GET/POST /api/balia/configurator-settings
-- GET /api/balia/calculator/prices
-- POST /api/balia/calculator/generate-pdf
-- GET /api/balia/gallery, POST /api/balia/gallery/upload, DELETE /api/balia/gallery/{id}
-
-## Admin Credentials
-- Login: admin | Password: 220066
+## Admin Panel Architecture (After Refactoring — Feb 2026)
+AdminPanel.jsx — тонкий оркестратор (233 строки): логин, навигация, layout.
+Все вкладки вынесены в `/components/admin/`:
+- SaunaMessagesAdmin.jsx — Сообщения
+- SaunaDesignAdmin.jsx — Настройки сайта, Оформление, Кнопки
+- SaunaContentAdmin.jsx — Тексты, Hero, О компании
+- SaunaCalculatorAdmin.jsx — Калькулятор (модели + категории + опции)
+- SaunaReviewsAdmin.jsx — Отзывы
+- SaunaGalleryAdmin.jsx — Галерея, Фото из API
+- SaunaModelsStockAdmin.jsx — Модели, В наличии, Счётчики
+- SaunaFaqAdmin.jsx — FAQ
+- SaunaSeoAdmin.jsx — SEO
+- SaunaIntegrationsAdmin.jsx — Telegram + AMO CRM
+- SaunaCatalogSectionsAdmin.jsx — Каталог PDF, Порядок секций
+- BaliaProductsAdmin.jsx — Купели: Продукты
+- BaliaTestimonialsAdmin.jsx — Купели: Отзывы
+- BaliaContentAdmin.jsx — Купели: Контент
+- BaliaConfiguratorAdmin.jsx — Купели: Конфигуратор
 
 ## Backlog
+
 ### P1
-- Refactor AdminPanel.jsx (still large, but now has separate Balia components)
-- i18next integration (PL/RU/EN)
-- Balia gallery section on /balie page (Cloudinary configured, endpoint ready)
+- Интеграция i18next для мультиязычности (PL/RU/EN)
 
 ### P2
-- Frontend API error handling (toasts)
+- Улучшение обработки ошибок API (toast-уведомления в catch)
 
 ### P3
-- A/B testing CTA buttons
+- A/B тестирование CTA-кнопок
