@@ -29,6 +29,9 @@
 - [x] Telegram уведомления
 - [x] Точечное отключение опций калькулятора саун
 - [x] **Рефакторинг AdminPanel.jsx** (3558 → 233 строк, 93.5% сокращение)
+- [x] Группировка вкладок сайдбара админки (Общее / Сауны / Купели)
+- [x] Секция «Kolory i Materiały» на сайте купелей (14 fiberglass, 8 acrylic, 13 spruce, 15 thermo, WPC)
+- [x] Секция «Opcje i Akcesoria» на сайте купелей (10 опций с описаниями и характеристиками)
 
 ## Admin Panel Architecture (After Refactoring — Feb 2026)
 AdminPanel.jsx — тонкий оркестратор (250 строк): логин, навигация, layout.

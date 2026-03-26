@@ -3,6 +3,8 @@ import { Droplets, Phone, ArrowLeft } from 'lucide-react';
 import { BalieHero } from './BalieHero';
 import { BalieProducts } from './BalieProducts';
 import { BalieFeatures } from './BalieFeatures';
+import { BalieColors } from './BalieColors';
+import { BalieOptionsDetail } from './BalieOptionsDetail';
 import { BalieAbout } from './BalieAbout';
 import { BalieGallery } from './BalieGallery';
 import { BalieConfiguratorCTA } from './BalieConfiguratorCTA';
@@ -28,6 +30,8 @@ export const BalieLandingPage = () => {
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm">
             <a href="#produkty" className="text-white/60 hover:text-[#D4AF37] transition-colors">Produkty</a>
+            <a href="#kolory" className="text-white/60 hover:text-[#D4AF37] transition-colors">Kolory</a>
+            <a href="#opcje" className="text-white/60 hover:text-[#D4AF37] transition-colors">Opcje</a>
             <a href="#balie-konfigurator" className="text-white/60 hover:text-[#D4AF37] transition-colors">Konfigurator</a>
             <a href="#opinie" className="text-white/60 hover:text-[#D4AF37] transition-colors">Opinie</a>
             <a href="#kontakt-balie" className="text-white/60 hover:text-[#D4AF37] transition-colors">Kontakt</a>
@@ -43,6 +47,8 @@ export const BalieLandingPage = () => {
       <BalieHero />
       <BalieFeatures />
       <BalieProducts />
+      <BalieColors />
+      <BalieOptionsDetail />
       <BalieAbout />
       <BalieGallery />
       <BalieConfiguratorCTA />
@@ -72,6 +78,8 @@ export const BalieLandingPage = () => {
               <h4 className="text-white font-semibold text-sm mb-3">Menu</h4>
               <div className="space-y-2 text-sm">
                 <a href="#produkty" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Produkty</a>
+                <a href="#kolory" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Kolory i materiały</a>
+                <a href="#opcje" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Opcje</a>
                 <a href="#balie-konfigurator" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Konfigurator</a>
                 <a href="#opinie" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Opinie</a>
                 <a href="#kontakt-balie" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Kontakt</a>
