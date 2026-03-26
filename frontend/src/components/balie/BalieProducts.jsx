@@ -131,12 +131,22 @@ const RequestForm = ({ product, selectedOptions, modelPrice, totalPrice, onClose
   );
 };
 
+const OptionImageLightbox = ({ src, alt, onClose }) => (
+  <div className="fixed inset-0 z-[70] bg-black/90 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="relative max-w-2xl w-full max-h-[80vh]" onClick={e => e.stopPropagation()}>
+      <button onClick={onClose} className="absolute -top-10 right-0 text-white/60 hover:text-white"><X size={24} /></button>
+      <img src={src} alt={alt} className="w-full h-auto max-h-[80vh] object-contain rounded" />
+    </div>
+  </div>
+);
+
 const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusions, onClose }) => {
   const [imgIdx, setImgIdx] = useState(0);
   const [selectedOpts, setSelectedOpts] = useState({});
   const [selectedHeaterType, setSelectedHeaterType] = useState(null);
   const [showRequestForm, setShowRequestForm] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
+  const [lightboxImg, setLightboxImg] = useState(null);
   const images = [product.image, ...(product.gallery_images || [])].filter(Boolean);
   const specs = apiModel?.specs || {};
 
@@ -302,23 +312,35 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
                               <div className="space-y-1.5">
                                 {cat.options?.map(opt => {
                                   const isSelected = selectedOpts[cat.id]?.id === opt.id;
+                                  const hasImage = !!opt.imageUrl;
                                   return (
-                                    <button key={opt.id} onClick={() => toggleOption(cat.id, opt)}
-                                      className={`w-full flex items-center justify-between px-3 py-2.5 text-left text-sm transition-all ${
-                                        isSelected ? 'bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-white' : 'bg-[#0F1218] border border-white/5 text-white/60 hover:border-white/15'
-                                      }`} data-testid={`balie-card-opt-${opt.id}`}>
-                                      <span className="flex items-center gap-2">
-                                        <span className={`w-4 h-4 border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-[#D4AF37] bg-[#D4AF37]' : 'border-white/20'}`}>
-                                          {isSelected && <Check size={10} className="text-[#0F1218]" />}
-                                        </span>
-                                        {opt.name}
-                                      </span>
-                                      {opt.price > 0 && (
-                                        <span className={`text-xs font-medium whitespace-nowrap ${isSelected ? 'text-[#D4AF37]' : 'text-white/30'}`}>
-                                          +{opt.price.toLocaleString()} PLN
-                                        </span>
+                                    <div key={opt.id} className="flex items-stretch gap-2">
+                                      {hasImage && (
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); setLightboxImg({ src: opt.imageUrl, alt: opt.name || opt.namePl }); }}
+                                          className="flex-shrink-0 w-14 h-14 overflow-hidden border border-white/10 hover:border-[#D4AF37]/50 transition-colors bg-[#0F1218] group/thumb"
+                                          data-testid={`balie-opt-img-${opt.id}`}
+                                        >
+                                          <img src={opt.imageUrl} alt={opt.name || opt.namePl} className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110" loading="lazy" />
+                                        </button>
                                       )}
-                                    </button>
+                                      <button onClick={() => toggleOption(cat.id, opt)}
+                                        className={`flex-1 flex items-center justify-between px-3 py-2.5 text-left text-sm transition-all ${
+                                          isSelected ? 'bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-white' : 'bg-[#0F1218] border border-white/5 text-white/60 hover:border-white/15'
+                                        }`} data-testid={`balie-card-opt-${opt.id}`}>
+                                        <span className="flex items-center gap-2">
+                                          <span className={`w-4 h-4 border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-[#D4AF37] bg-[#D4AF37]' : 'border-white/20'}`}>
+                                            {isSelected && <Check size={10} className="text-[#0F1218]" />}
+                                          </span>
+                                          {opt.namePl || opt.name}
+                                        </span>
+                                        {opt.price > 0 && (
+                                          <span className={`text-xs font-medium whitespace-nowrap ${isSelected ? 'text-[#D4AF37]' : 'text-white/30'}`}>
+                                            +{opt.price.toLocaleString()} PLN
+                                          </span>
+                                        )}
+                                      </button>
+                                    </div>
                                   );
                                 })}
                               </div>
@@ -402,6 +424,9 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
             <button onClick={() => setRequestSent(false)} className="px-6 py-2 border border-white/10 text-white/70 hover:bg-white/5">Zamknij</button>
           </div>
         </div>
+      )}
+      {lightboxImg && (
+        <OptionImageLightbox src={lightboxImg.src} alt={lightboxImg.alt} onClose={() => setLightboxImg(null)} />
       )}
     </>
   );
