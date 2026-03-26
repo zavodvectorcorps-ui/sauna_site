@@ -1,12 +1,144 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Flame, Droplets, MapPin, ShieldCheck, Leaf, Heart, Phone, Mail, Send, CheckCircle } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const DEFAULT_SAUNA_IMG = 'https://images.unsplash.com/photo-1759302354886-f2c37dd3dd8c?auto=format&fit=crop&w=800&q=80';
 const DEFAULT_BALIA_IMG = 'https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=80';
+
+/* Warm sparks for sauna */
+const SaunaParticles = () => (
+  <div className="absolute inset-0 z-[13] pointer-events-none overflow-hidden">
+    {Array.from({ length: 8 }).map((_, i) => (
+      <motion.div
+        key={i}
+        className="absolute rounded-full"
+        style={{
+          left: `${15 + Math.random() * 70}%`,
+          bottom: `${5 + Math.random() * 20}%`,
+          width: 2 + Math.random() * 3,
+          height: 2 + Math.random() * 3,
+          background: `rgba(${220 + Math.random() * 35}, ${150 + Math.random() * 60}, ${50 + Math.random() * 40}, 0.8)`,
+          boxShadow: `0 0 ${4 + Math.random() * 6}px rgba(220,160,60,0.4)`,
+        }}
+        initial={{ opacity: 0, y: 0 }}
+        animate={{
+          opacity: [0, 0.9, 0.6, 0],
+          y: [0, -80 - Math.random() * 120],
+          x: [-5 + Math.random() * 10, -10 + Math.random() * 20],
+        }}
+        transition={{ duration: 2 + Math.random() * 1.5, delay: i * 0.35, repeat: Infinity, ease: 'easeOut' }}
+      />
+    ))}
+  </div>
+);
+
+/* Water droplets for balia */
+const BaliaParticles = () => (
+  <div className="absolute inset-0 z-[13] pointer-events-none overflow-hidden">
+    {Array.from({ length: 8 }).map((_, i) => (
+      <motion.div
+        key={i}
+        className="absolute rounded-full"
+        style={{
+          left: `${10 + Math.random() * 80}%`,
+          bottom: `${5 + Math.random() * 15}%`,
+          width: 2 + Math.random() * 2.5,
+          height: 2 + Math.random() * 2.5,
+          background: `rgba(${160 + Math.random() * 40}, ${210 + Math.random() * 40}, 255, 0.7)`,
+          boxShadow: `0 0 ${3 + Math.random() * 5}px rgba(160,220,255,0.3)`,
+        }}
+        initial={{ opacity: 0, y: 0 }}
+        animate={{
+          opacity: [0, 0.8, 0.4, 0],
+          y: [0, -70 - Math.random() * 100],
+          x: [-3 + Math.random() * 6, -8 + Math.random() * 16],
+        }}
+        transition={{ duration: 2.5 + Math.random() * 1.5, delay: i * 0.4, repeat: Infinity, ease: 'easeOut' }}
+      />
+    ))}
+  </div>
+);
+
+/* Parallax card with all effects */
+const ProductCard = ({ img, imgPos, accentColor, icon: Icon, brand, title, desc, cta, onClick, direction, testId }) => {
+  const cardRef = useRef(null);
+  const [transform, setTransform] = useState({ x: 0, y: 0 });
+  const [hovered, setHovered] = useState(false);
+
+  const handleMouseMove = useCallback((e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    setTransform({ x: x * -12, y: y * -8 });
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setHovered(false);
+    setTransform({ x: 0, y: 0 });
+  }, []);
+
+  const isSauna = testId === 'card-sauny';
+  const glowColor = isSauna ? 'rgba(198,168,124' : 'rgba(212,175,55';
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, x: direction === 'left' ? -30 : 30 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: direction === 'left' ? 0.2 : 0.35 }}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="group relative overflow-hidden cursor-pointer min-h-[400px] md:min-h-[480px] flex flex-col justify-end"
+      data-testid={testId}
+    >
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10 group-hover:to-black/80 transition-all duration-700" />
+      {/* Parallax image */}
+      <img
+        src={img}
+        alt={title}
+        className="absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-110"
+        style={{
+          objectPosition: imgPos,
+          transform: hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.1)` : 'translate(0,0) scale(1)',
+        }}
+      />
+      {/* Golden glow */}
+      <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ boxShadow: `inset 0 0 40px ${glowColor},0.15), inset 0 0 80px ${glowColor},0.05)` }} />
+      {/* Light streak */}
+      <div className="absolute inset-0 z-[12] pointer-events-none overflow-hidden">
+        <div className="card-streak absolute -top-full -left-1/2 w-[200%] h-[200%]" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 55%, transparent 60%)' }} />
+      </div>
+      {/* Vignette */}
+      <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)' }} />
+      {/* Particles */}
+      <AnimatePresence>
+        {hovered && (isSauna ? <SaunaParticles /> : <BaliaParticles />)}
+      </AnimatePresence>
+      {/* Content */}
+      <div className="relative z-20 p-8 transition-transform duration-500 ease-out group-hover:-translate-y-2">
+        <div className="flex items-center gap-2 mb-3">
+          <Icon size={18} style={{ color: accentColor }} />
+          <span style={{ color: accentColor }} className="text-xs font-semibold tracking-[0.2em] uppercase">{brand}</span>
+        </div>
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">{title}</h2>
+        <p className="text-white/60 text-sm mb-6 max-w-sm transition-opacity duration-500 group-hover:text-white/80">{desc}</p>
+        <div className="flex items-center gap-2 text-white font-medium transition-all duration-300" style={{ '--hover-color': accentColor }}>
+          <span className="group-hover:text-[--hover-color] transition-colors duration-300">{cta}</span>
+          <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-2" />
+        </div>
+      </div>
+      {/* Bottom accent line */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] z-20 scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left" style={{ background: accentColor }} />
+    </motion.div>
+  );
+};
 
 const MainLanding = () => {
   const navigate = useNavigate();
@@ -55,61 +187,20 @@ const MainLanding = () => {
       {/* Product cards */}
       <section className="px-4 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          {/* Sauny */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-            onClick={() => navigate('/sauny')}
-            className="group relative overflow-hidden cursor-pointer min-h-[400px] md:min-h-[480px] flex flex-col justify-end"
-            data-testid="card-sauny"
-          >
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10 group-hover:to-black/80 transition-all duration-700" />
-            <img src={saunaImg} alt="Sauny" className="absolute inset-0 w-full h-full object-cover transition-all duration-[1.2s] ease-out group-hover:scale-110" style={{ objectPosition: saunaPos }} />
-            {/* Golden glow border */}
-            <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ boxShadow: 'inset 0 0 40px rgba(198,168,124,0.15), inset 0 0 80px rgba(198,168,124,0.05)' }} />
-            {/* Light streak */}
-            <div className="absolute inset-0 z-[12] pointer-events-none overflow-hidden">
-              <div className="card-streak absolute -top-full -left-1/2 w-[200%] h-[200%]" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 55%, transparent 60%)' }} />
-            </div>
-            {/* Vignette on hover */}
-            <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)' }} />
-            {/* Content — slides up on hover */}
-            <div className="relative z-20 p-8 transition-transform duration-500 ease-out group-hover:-translate-y-2">
-              <div className="flex items-center gap-2 mb-3"><Flame size={18} className="text-[#C6A87C]" /><span className="text-[#C6A87C] text-xs font-semibold tracking-[0.2em] uppercase">WM-Sauna</span></div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Sauny ogrodowe</h2>
-              <p className="text-white/60 text-sm mb-6 max-w-sm transition-opacity duration-500 group-hover:text-white/80">Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5–10 dni.</p>
-              <div className="flex items-center gap-2 text-white font-medium group-hover:text-[#C6A87C] transition-all duration-300">Zobacz sauny <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-2" /></div>
-            </div>
-            {/* Bottom golden accent line */}
-            <div className="absolute bottom-0 left-0 right-0 h-[2px] z-20 bg-[#C6A87C] scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left" />
-          </motion.div>
-
-          {/* Balie */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }}
-            onClick={() => navigate('/balie')}
-            className="group relative overflow-hidden cursor-pointer min-h-[400px] md:min-h-[480px] flex flex-col justify-end"
-            data-testid="card-balie"
-          >
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10 group-hover:to-black/80 transition-all duration-700" />
-            <img src={baliaImg} alt="Balie" className="absolute inset-0 w-full h-full object-cover transition-all duration-[1.2s] ease-out group-hover:scale-110" style={{ objectPosition: baliaPos }} />
-            {/* Golden glow border */}
-            <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ boxShadow: 'inset 0 0 40px rgba(212,175,55,0.15), inset 0 0 80px rgba(212,175,55,0.05)' }} />
-            {/* Light streak */}
-            <div className="absolute inset-0 z-[12] pointer-events-none overflow-hidden">
-              <div className="card-streak absolute -top-full -left-1/2 w-[200%] h-[200%]" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 55%, transparent 60%)' }} />
-            </div>
-            {/* Vignette on hover */}
-            <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)' }} />
-            {/* Content — slides up on hover */}
-            <div className="relative z-20 p-8 transition-transform duration-500 ease-out group-hover:-translate-y-2">
-              <div className="flex items-center gap-2 mb-3"><Droplets size={18} className="text-[#D4AF37]" /><span className="text-[#D4AF37] text-xs font-semibold tracking-[0.2em] uppercase">WM-Balia</span></div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Balie i jacuzzi</h2>
-              <p className="text-white/60 text-sm mb-6 max-w-sm transition-opacity duration-500 group-hover:text-white/80">Ręcznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyższa jakość.</p>
-              <div className="flex items-center gap-2 text-white font-medium group-hover:text-[#D4AF37] transition-all duration-300">Zobacz balie <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-2" /></div>
-            </div>
-            {/* Bottom golden accent line */}
-            <div className="absolute bottom-0 left-0 right-0 h-[2px] z-20 bg-[#D4AF37] scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left" />
-          </motion.div>
+          <ProductCard
+            img={saunaImg} imgPos={saunaPos} accentColor="#C6A87C"
+            icon={Flame} brand="WM-Sauna" title="Sauny ogrodowe"
+            desc="Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5-10 dni."
+            cta="Zobacz sauny" onClick={() => navigate('/sauny')}
+            direction="left" testId="card-sauny"
+          />
+          <ProductCard
+            img={baliaImg} imgPos={baliaPos} accentColor="#D4AF37"
+            icon={Droplets} brand="WM-Balia" title="Balie i jacuzzi"
+            desc="Recznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyzsza jakosc."
+            cta="Zobacz balie" onClick={() => navigate('/balie')}
+            direction="right" testId="card-balie"
+          />
         </div>
       </section>
 
