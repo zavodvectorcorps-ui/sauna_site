@@ -96,8 +96,8 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
 
   const enabledCategories = (cardOptions?.enabled_categories || []);
   
-  // Get model exclusions - which option IDs are excluded for this model
-  const modelExclusions = exclusions?.[product.api_model_id] || [];
+  // Get model exclusions - which option IDs are excluded for this product
+  const modelExclusions = exclusions?.[product.id] || [];
   
   const availableCategories = apiCategories
     .filter(c => enabledCategories.includes(c.id) && c.options?.length > 0)

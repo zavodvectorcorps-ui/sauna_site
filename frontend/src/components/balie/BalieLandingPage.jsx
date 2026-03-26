@@ -17,13 +17,33 @@ import { BalieStoveScheme } from './BalieStoveScheme';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
+const DEFAULT_ORDER = ['hero','features','products','installment','colors','options','schematic','stove','about','gallery','configurator','testimonials','contact'];
+
+const sectionComponents = {
+  hero: () => <BalieHero />,
+  features: ({ enabled }) => enabled ? <BalieFeatures /> : null,
+  products: () => <BalieProducts />,
+  installment: ({ enabled }) => enabled ? <BalieInstallment /> : null,
+  colors: () => <BalieColors />,
+  options: () => <BalieOptionsDetail />,
+  schematic: ({ enabled }) => enabled ? <BalieSchematic /> : null,
+  stove: ({ enabled }) => enabled ? <BalieStoveScheme /> : null,
+  about: ({ enabled }) => enabled ? <BalieAbout /> : null,
+  gallery: () => <BalieGallery />,
+  configurator: () => <BalieConfiguratorCTA />,
+  testimonials: () => <BalieTestimonials />,
+  contact: () => <BalieContact />,
+};
+
 export const BalieLandingPage = () => {
   const navigate = useNavigate();
   const [promoBlocks, setPromoBlocks] = useState(null);
+  const [sectionOrder, setSectionOrder] = useState(DEFAULT_ORDER);
 
   useEffect(() => {
     fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
       setPromoBlocks(data?.promo_blocks || null);
+      if (data?.section_order?.length) setSectionOrder(data.section_order);
     }).catch(() => {});
   }, []);
 
@@ -59,20 +79,12 @@ export const BalieLandingPage = () => {
         </div>
       </nav>
 
-      {/* Sections */}
-      <BalieHero />
-      {isEnabled('features') && <BalieFeatures />}
-      <BalieProducts />
-      {isEnabled('installment') && <BalieInstallment />}
-      <BalieColors />
-      <BalieOptionsDetail />
-      {isEnabled('schematic') && <BalieSchematic />}
-      {isEnabled('stove') && <BalieStoveScheme />}
-      {isEnabled('about') && <BalieAbout />}
-      <BalieGallery />
-      <BalieConfiguratorCTA />
-      <BalieTestimonials />
-      <BalieContact />
+      {/* Dynamic sections */}
+      {sectionOrder.map(sectionId => {
+        const Render = sectionComponents[sectionId];
+        if (!Render) return null;
+        return <Render key={sectionId} enabled={isEnabled(sectionId)} />;
+      })}
 
       {/* Footer */}
       <footer className="bg-[#0A0D12] border-t border-white/5 py-12">
@@ -106,7 +118,7 @@ export const BalieLandingPage = () => {
             </div>
           </div>
           <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-white/20 text-xs">© 2025 WM-Balia. Wszystkie prawa zastrzeżone.</p>
+            <p className="text-white/20 text-xs">&copy; 2025 WM-Balia. Wszystkie prawa zastrzeżone.</p>
             <button onClick={() => navigate('/')} className="text-[#D4AF37] text-xs hover:underline">Powrót na stronę główną WM Group</button>
           </div>
         </div>
