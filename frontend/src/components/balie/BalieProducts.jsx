@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, ArrowRight, Loader2, Users, Droplets, Ruler, ChevronLeft, ChevronRight, Check, Send, Sliders, Flame } from 'lucide-react';
+import { X, ArrowRight, Loader2, Users, Droplets, Ruler, ChevronLeft, ChevronRight, Check, Send, Sliders, Flame, GitCompareArrows, Thermometer, Box } from 'lucide-react';
 import { BalieInstallment } from './BalieInstallment';
 
 const API = process.env.REACT_APP_BACKEND_URL;
@@ -15,43 +15,56 @@ const getHeaterVariantPrices = (apiModel) => {
 
 const formatPrice = (price) => price > 0 ? `${price.toLocaleString()} PLN` : null;
 
-const ProductCard = ({ product, apiModel, onClick }) => {
+const ProductCard = ({ product, apiModel, onClick, isCompare, onToggleCompare }) => {
   const { variants, single } = getHeaterVariantPrices(apiModel);
 
   return (
-    <div onClick={() => onClick(product)} className="bg-[#1A1E27] border border-white/5 overflow-hidden cursor-pointer group hover:border-[#D4AF37]/30 transition-all" data-testid={`balie-product-${product.id}`}>
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-        {product.tags?.length > 0 && (
-          <div className="absolute top-3 left-3 flex gap-1.5">
-            {product.tags.slice(0, 2).map((tag, i) => (
-              <span key={i} className="bg-[#D4AF37] text-[#0F1218] text-[10px] font-semibold px-2 py-0.5 uppercase tracking-wider">{tag}</span>
-            ))}
+    <div className="relative bg-[#1A1E27] border border-white/5 overflow-hidden group hover:border-[#D4AF37]/30 transition-all" data-testid={`balie-product-${product.id}`}>
+      <div onClick={() => onClick(product)} className="cursor-pointer">
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+          {product.tags?.length > 0 && (
+            <div className="absolute top-3 left-3 flex gap-1.5">
+              {product.tags.slice(0, 2).map((tag, i) => (
+                <span key={i} className="bg-[#D4AF37] text-[#0F1218] text-[10px] font-semibold px-2 py-0.5 uppercase tracking-wider">{tag}</span>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="p-5">
+          <h3 className="text-white font-semibold text-lg mb-1">{product.name}</h3>
+          {variants.length >= 2 ? (
+            <div className="mb-2 space-y-0.5">
+              {variants.map(v => (
+                <p key={v.type} className="text-[#D4AF37] text-sm font-medium">
+                  <span className="text-white/40 text-xs">{v.type === 'integrated' ? 'z piecem wewn.' : 'z piecem zewn.'}</span>{' '}
+                  {formatPrice(v.price)}
+                </p>
+              ))}
+            </div>
+          ) : single ? (
+            <p className="text-[#D4AF37] font-bold mb-2">{formatPrice(single.price)}</p>
+          ) : (
+            <p className="text-[#D4AF37] font-bold mb-2">{product.price}</p>
+          )}
+          {product.description && <p className="text-white/40 text-sm line-clamp-2 mb-4">{product.description}</p>}
+          <div className="flex items-center gap-2 text-white/60 text-sm group-hover:text-[#D4AF37] transition-colors">
+            Szczegoly <ArrowRight size={14} />
           </div>
-        )}
-      </div>
-      <div className="p-5">
-        <h3 className="text-white font-semibold text-lg mb-1">{product.name}</h3>
-        {/* Price display from heaterVariants */}
-        {variants.length >= 2 ? (
-          <div className="mb-2 space-y-0.5">
-            {variants.map(v => (
-              <p key={v.type} className="text-[#D4AF37] text-sm font-medium">
-                <span className="text-white/40 text-xs">{v.type === 'integrated' ? 'z piecem wewn.' : 'z piecem zewn.'}</span>{' '}
-                {formatPrice(v.price)}
-              </p>
-            ))}
-          </div>
-        ) : single ? (
-          <p className="text-[#D4AF37] font-bold mb-2">{formatPrice(single.price)}</p>
-        ) : (
-          <p className="text-[#D4AF37] font-bold mb-2">{product.price}</p>
-        )}
-        {product.description && <p className="text-white/40 text-sm line-clamp-2 mb-4">{product.description}</p>}
-        <div className="flex items-center gap-2 text-white/60 text-sm group-hover:text-[#D4AF37] transition-colors">
-          Szczegoly <ArrowRight size={14} />
         </div>
       </div>
+      <button
+        onClick={(e) => { e.stopPropagation(); onToggleCompare(product.id); }}
+        className={`absolute top-3 right-3 z-10 px-2.5 py-1.5 text-xs font-medium flex items-center gap-1.5 transition-all ${
+          isCompare
+            ? 'bg-[#D4AF37] text-[#0F1218]'
+            : 'bg-black/60 text-white/70 hover:bg-black/80 hover:text-white backdrop-blur-sm'
+        }`}
+        data-testid={`balie-compare-toggle-${product.id}`}
+      >
+        <GitCompareArrows size={13} />
+        {isCompare ? 'Dodano' : 'Porownaj'}
+      </button>
     </div>
   );
 };
@@ -432,6 +445,110 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
   );
 };
 
+/* ─── Compare Modal ─── */
+const CompareModal = ({ products, apiModels, onClose, onRemove }) => {
+  const items = products.map(p => {
+    const api = apiModels.find(m => m.id === p.api_model_id);
+    const specs = api?.specs || {};
+    const hvs = (api?.heaterVariants || []).filter(v => (api?.availableHeaterTypes || []).includes(v.type) && v.price > 0);
+    return { product: p, specs, heaterVariants: hvs };
+  });
+
+  const rows = [
+    { label: 'Srednica / wymiary', icon: Ruler, render: (it) => it.specs.outerDiameter ? `${it.specs.outerDiameter} cm` : it.specs.dimensions || '—' },
+    { label: 'Glebokosc', icon: Droplets, render: (it) => it.specs.depth ? `${it.specs.depth} cm` : '—' },
+    { label: 'Pojemnosc wody', icon: Droplets, render: (it) => it.specs.waterCapacity ? `${it.specs.waterCapacity} L` : '—' },
+    { label: 'Wysokosc calkowita', icon: Box, render: (it) => it.specs.totalHeight ? `${it.specs.totalHeight} cm` : '—' },
+    { label: 'Liczba miejsc', icon: Users, render: (it) => it.specs.seats > 0 ? `${it.specs.seats} os.` : '—' },
+    { label: 'Moc pieca', icon: Thermometer, render: (it) => it.specs.heaterPower ? `${it.specs.heaterPower} kW` : '—' },
+    { label: 'Piec wewnetrzny', icon: Flame, render: (it) => {
+      const v = it.heaterVariants.find(h => h.type === 'integrated');
+      return v ? formatPrice(v.price) : '—';
+    }},
+    { label: 'Piec zewnetrzny', icon: Flame, render: (it) => {
+      const v = it.heaterVariants.find(h => h.type === 'external');
+      return v ? formatPrice(v.price) : '—';
+    }},
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/85 flex items-start justify-center overflow-y-auto p-4 pt-8" onClick={onClose}>
+      <div className="bg-[#1A1E27] max-w-4xl w-full my-4" onClick={e => e.stopPropagation()} data-testid="balie-compare-modal">
+        <div className="flex items-center justify-between p-5 border-b border-white/5">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <GitCompareArrows size={20} className="text-[#D4AF37]" /> Porownanie modeli
+          </h2>
+          <button onClick={onClose} className="text-white/40 hover:text-white"><X size={20} /></button>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[500px]">
+            {/* Header: photos + names */}
+            <thead>
+              <tr className="border-b border-white/5">
+                <th className="p-4 text-left text-white/30 text-xs uppercase tracking-wider w-[160px]">Model</th>
+                {items.map(it => (
+                  <th key={it.product.id} className="p-4 text-center">
+                    <div className="relative inline-block">
+                      <img src={it.product.image} alt={it.product.name} className="w-28 h-20 object-cover mx-auto mb-2 border border-white/10" />
+                      <button
+                        onClick={() => onRemove(it.product.id)}
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500/80 text-white flex items-center justify-center hover:bg-red-500 text-xs"
+                        data-testid={`compare-remove-${it.product.id}`}
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                    <div className="text-white font-semibold text-sm">{it.product.name}</div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, ri) => (
+                <tr key={ri} className={ri % 2 === 0 ? 'bg-white/[0.02]' : ''}>
+                  <td className="p-3.5 text-white/40 text-sm flex items-center gap-2">
+                    <row.icon size={14} className="text-[#D4AF37] flex-shrink-0" /> {row.label}
+                  </td>
+                  {items.map(it => {
+                    const val = row.render(it);
+                    const isDash = val === '—';
+                    return (
+                      <td key={it.product.id} className={`p-3.5 text-center text-sm font-medium ${isDash ? 'text-white/20' : 'text-white'}`}>
+                        {val}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Floating Compare Bar ─── */
+const CompareBar = ({ count, onCompare, onClear }) => {
+  if (count < 2) return null;
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#1A1E27]/95 border-t border-[#D4AF37]/30 backdrop-blur-md px-4 py-3" data-testid="balie-compare-bar">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="text-white text-sm">
+          <span className="text-[#D4AF37] font-bold">{count}</span> modele do porownania
+        </div>
+        <div className="flex items-center gap-3">
+          <button onClick={onClear} className="text-white/40 text-sm hover:text-white transition-colors" data-testid="compare-clear">Wyczysc</button>
+          <button onClick={onCompare} className="px-5 py-2 bg-[#D4AF37] text-[#0F1218] font-semibold text-sm hover:bg-[#C5A028] transition-colors flex items-center gap-2" data-testid="compare-open-btn">
+            <GitCompareArrows size={15} /> Porownaj
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const BalieProducts = () => {
   const [products, setProducts] = useState([]);
   const [apiModels, setApiModels] = useState([]);
@@ -440,6 +557,8 @@ export const BalieProducts = () => {
   const [exclusions, setExclusions] = useState({});
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
+  const [compareIds, setCompareIds] = useState([]);
+  const [showCompare, setShowCompare] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -459,6 +578,12 @@ export const BalieProducts = () => {
 
   const getApiModel = (id) => apiModels.find(m => m.id === id);
 
+  const toggleCompare = (productId) => {
+    setCompareIds(prev => prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId]);
+  };
+
+  const compareProducts = products.filter(p => compareIds.includes(p.id));
+
   if (loading) return <div className="py-20 flex justify-center"><Loader2 className="animate-spin text-[#D4AF37]" size={32} /></div>;
   if (products.length === 0) return null;
 
@@ -474,10 +599,32 @@ export const BalieProducts = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map(p => (
-            <ProductCard key={p.id} product={p} apiModel={getApiModel(p.api_model_id)} onClick={setSelected} />
+            <ProductCard
+              key={p.id}
+              product={p}
+              apiModel={getApiModel(p.api_model_id)}
+              onClick={setSelected}
+              isCompare={compareIds.includes(p.id)}
+              onToggleCompare={toggleCompare}
+            />
           ))}
         </div>
       </div>
+
+      <CompareBar count={compareIds.length} onCompare={() => setShowCompare(true)} onClear={() => setCompareIds([])} />
+
+      {showCompare && compareProducts.length >= 2 && (
+        <CompareModal
+          products={compareProducts}
+          apiModels={apiModels}
+          onClose={() => setShowCompare(false)}
+          onRemove={(id) => {
+            const next = compareIds.filter(i => i !== id);
+            setCompareIds(next);
+            if (next.length < 2) setShowCompare(false);
+          }}
+        />
+      )}
 
       {selected && (
         <ProductModal
