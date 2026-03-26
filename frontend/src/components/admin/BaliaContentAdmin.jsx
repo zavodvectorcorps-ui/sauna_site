@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Save, Loader2, Eye, EyeOff, Monitor, ChevronUp, ChevronDown, Plus, Trash2, GripVertical, Upload, Image, X } from 'lucide-react';
+import { Save, Loader2, Eye, EyeOff, Monitor, ChevronUp, ChevronDown, Plus, Trash2, GripVertical, Upload, Image, X, Video } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -137,6 +137,30 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
   };
 
   const updateHero = (f, v) => setContent(p => ({ ...p, hero: { ...p.hero, [f]: v } }));
+
+  const [videoUploading, setVideoUploading] = useState(false);
+  const handleHeroImageUpload = async (file, callback) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch(`${API}/api/admin/upload`, { method: 'POST', body: formData, headers: { 'Authorization': authHeader } });
+      const data = await res.json();
+      callback(`${API}${data.url}`);
+      showMessage('success', 'Фото загружено');
+    } catch { showMessage('error', 'Ошибка загрузки'); }
+  };
+  const handleHeroVideoUpload = async (file, callback) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    setVideoUploading(true);
+    try {
+      const res = await fetch(`${API}/api/admin/upload-video`, { method: 'POST', body: formData, headers: { 'Authorization': authHeader } });
+      const data = await res.json();
+      callback(`${API}${data.url}`);
+      showMessage('success', 'Видео загружено');
+    } catch { showMessage('error', 'Ошибка загрузки видео'); }
+    setVideoUploading(false);
+  };
   const updateStat = (i, f, v) => setContent(p => {
     const stats = [...p.hero.stats]; stats[i] = { ...stats[i], [f]: v };
     return { ...p, hero: { ...p.hero, stats } };
@@ -302,8 +326,54 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
       {/* Hero Tab */}
       {activeTab === 'hero' && (
         <div className="space-y-4">
+          {/* Background settings */}
           <div className="p-5 border border-gray-100 bg-[#F9F9F7]">
-            <h4 className="font-semibold mb-4">Hero секция</h4>
+            <h4 className="font-semibold mb-4">Фон Hero</h4>
+            {/* Mode selector */}
+            <div className="flex gap-3 mb-4">
+              <button type="button" onClick={() => updateHero('bg_mode', 'photo')}
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border transition-all ${(content.hero.bg_mode || 'photo') === 'photo' ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]' : 'border-gray-200 text-gray-400 hover:border-[#D4AF37]/50'}`}
+                data-testid="balia-hero-bg-mode-photo">
+                <Image size={15} /> Фото
+              </button>
+              <button type="button" onClick={() => updateHero('bg_mode', 'video')}
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border transition-all ${content.hero.bg_mode === 'video' ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]' : 'border-gray-200 text-gray-400 hover:border-[#D4AF37]/50'}`}
+                data-testid="balia-hero-bg-mode-video">
+                <Video size={15} /> Видео
+              </button>
+            </div>
+            {/* Background image */}
+            <div className="mb-4">
+              <label className="block text-xs text-gray-500 mb-1">Фоновое фото {content.hero.bg_mode === 'video' && <span className="text-gray-400">(заглушка пока грузится видео)</span>}</label>
+              <div className="flex gap-2">
+                <input type="url" value={content.hero.background_image || ''} onChange={e => updateHero('background_image', e.target.value)} placeholder="URL фото" className="flex-1 p-2 border border-gray-200 text-sm" data-testid="balia-hero-bg-image-url" />
+                <label className="flex items-center gap-2 px-4 py-2 bg-[#1A1A1A] text-white text-sm cursor-pointer hover:bg-black flex-shrink-0">
+                  <Upload size={14} />
+                  <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && handleHeroImageUpload(e.target.files[0], url => updateHero('background_image', url))} />
+                </label>
+                {content.hero.background_image && <button onClick={() => updateHero('background_image', '')} className="p-2 text-red-400 hover:text-red-600"><X size={14} /></button>}
+              </div>
+              {content.hero.background_image && <img src={content.hero.background_image} alt="Preview" className="mt-2 h-24 object-cover border border-gray-200" />}
+            </div>
+            {/* Background video */}
+            <div className={content.hero.bg_mode !== 'video' ? 'opacity-40 pointer-events-none' : ''}>
+              <label className="block text-xs text-gray-500 mb-1">Фоновое видео (MP4) — автоплей, без звука, зацикленное</label>
+              <div className="flex gap-2">
+                <input type="url" value={content.hero.background_video || ''} onChange={e => updateHero('background_video', e.target.value)} placeholder="URL видео (mp4)" className="flex-1 p-2 border border-gray-200 text-sm" data-testid="balia-hero-bg-video-url" />
+                <label className={`flex items-center gap-2 px-4 py-2 text-white text-sm cursor-pointer flex-shrink-0 ${videoUploading ? 'bg-gray-400' : 'bg-[#1A1A1A] hover:bg-black'}`}>
+                  <Upload size={14} /> {videoUploading ? 'Загрузка...' : 'Загрузить'}
+                  <input type="file" accept="video/mp4" className="hidden" disabled={videoUploading} onChange={e => e.target.files?.[0] && handleHeroVideoUpload(e.target.files[0], url => updateHero('background_video', url))} />
+                </label>
+                {content.hero.background_video && <button onClick={() => updateHero('background_video', '')} className="p-2 text-red-400 hover:text-red-600"><X size={14} /></button>}
+              </div>
+              {content.hero.background_video && (
+                <video src={content.hero.background_video} muted loop className="mt-2 h-24 object-cover border border-gray-200" onMouseEnter={e => e.target.play()} onMouseLeave={e => { e.target.pause(); e.target.currentTime = 0; }} />
+              )}
+            </div>
+          </div>
+
+          <div className="p-5 border border-gray-100 bg-[#F9F9F7]">
+            <h4 className="font-semibold mb-4">Hero секция — тексты</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Badge</label>

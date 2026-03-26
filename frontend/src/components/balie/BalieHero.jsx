@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, FileDown } from 'lucide-react';
 import { BalieCatalogGate } from './BalieCatalogGate';
 
@@ -16,10 +16,14 @@ export const BalieHero = () => {
       { value: '500+', label: 'Zadowolonych klientow' },
       { value: '2', label: 'Lata gwarancji' },
       { value: '100%', label: 'Eko materialy' }
-    ]
+    ],
+    background_image: '',
+    background_video: '',
+    bg_mode: 'photo',
   });
   const [catalogAvailable, setCatalogAvailable] = useState(false);
   const [showCatalogGate, setShowCatalogGate] = useState(false);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
@@ -31,11 +35,17 @@ export const BalieHero = () => {
           ctaPrimary: data.hero.cta_primary || prev.ctaPrimary,
           ctaSecondary: data.hero.cta_secondary || prev.ctaSecondary,
           stats: data.hero.stats?.length > 0 ? data.hero.stats : prev.stats,
+          background_image: data.hero.background_image || '',
+          background_video: data.hero.background_video || '',
+          bg_mode: data.hero.bg_mode || 'photo',
         }));
       }
     }).catch(() => {});
     fetch(`${API}/api/balia-catalog/info`).then(r => r.json()).then(d => setCatalogAvailable(d?.available)).catch(() => {});
   }, []);
+
+  const bgImage = content.background_image || DEFAULT_IMAGE;
+  const useVideo = content.bg_mode === 'video' && content.background_video;
 
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -49,7 +59,16 @@ export const BalieHero = () => {
     <>
       <section className="relative min-h-screen flex items-center justify-center pt-16" data-testid="balie-hero">
         <div className="absolute inset-0">
-          <img src={DEFAULT_IMAGE} alt="Balia" className="w-full h-full object-cover" />
+          <img src={bgImage} alt="Balia" className="w-full h-full object-cover" />
+          {useVideo && (
+            <video
+              ref={videoRef}
+              src={content.background_video}
+              autoPlay muted loop playsInline preload="auto"
+              className="absolute inset-0 w-full h-full object-cover"
+              data-testid="balie-hero-bg-video"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-b from-[#0F1218]/70 via-[#0F1218]/50 to-[#0F1218]" />
         </div>
 
