@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, ChevronLeft, ChevronRight, X, Send, Loader2, CheckCircle, GitCompareArrows, Ruler, Maximize2, Download, Flame, Zap } from 'lucide-react';
+import { Users, ChevronLeft, ChevronRight, X, Send, Loader2, CheckCircle, GitCompareArrows, Ruler, Maximize2, Download, Flame, Zap, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { SaunaInstallment } from './SaunaInstallment';
 
@@ -204,6 +204,13 @@ export const Models = () => {
     ...(hasType('wiking') ? [{ key: 'wiking', label: l.viking }] : []),
   ];
 
+  // Get representative image for each category
+  const getCategoryImage = (type) => {
+    const m = models.find(m => m.modelType === type);
+    return m?.mainImage || '';
+  };
+  const getCategoryCount = (type) => models.filter(m => m.modelType === type).length;
+
   // Price helpers
   const priceElectric = (base) => base + heaterPrices.electric;
   const priceWood = (base) => base + heaterPrices.wood;
@@ -226,27 +233,76 @@ export const Models = () => {
             </p>
           </div>
 
-          {/* Filter tabs */}
-          {filters.length > 2 && (
-            <div className="flex justify-center gap-2 mb-8 flex-wrap" data-testid="models-filter">
-              {filters.map(f => (
-                <button
-                  key={f.key}
-                  onClick={() => { setActiveFilter(f.key); setShowAll(false); }}
-                  className={`px-5 py-2 text-sm font-medium transition-colors border ${
-                    activeFilter === f.key
-                      ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
-                      : 'bg-white text-[#595959] border-black/10 hover:border-[#C6A87C] hover:text-[#C6A87C]'
-                  }`}
-                  data-testid={`filter-${f.key}`}
+          {/* Category cards or filter tabs */}
+          {activeFilter === 'all' ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6" data-testid="models-categories">
+              {[
+                { key: 'beczka', label: l.barrels, subtitle: 'Klasyczny kształt beczki' },
+                { key: 'kwadro', label: l.quadro, subtitle: 'Nowoczesna forma prostokątna' },
+                { key: 'wiking', label: l.viking, subtitle: 'Skandynawski styl' },
+              ].filter(c => hasType(c.key)).map((cat) => (
+                <motion.div
+                  key={cat.key}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  onClick={() => { setActiveFilter(cat.key); setShowAll(false); }}
+                  className="group relative overflow-hidden cursor-pointer aspect-[4/5] flex flex-col justify-end"
+                  data-testid={`category-${cat.key}`}
                 >
-                  {f.label}
-                </button>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 group-hover:from-black/70 transition-all duration-500" />
+                  {getCategoryImage(cat.key) ? (
+                    <img src={getCategoryImage(cat.key)} alt={cat.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  ) : (
+                    <div className="absolute inset-0 bg-[#2C2C2C]" />
+                  )}
+                  <div className="absolute top-4 left-4 z-20">
+                    <span className="bg-[#C6A87C] text-white text-[10px] font-bold tracking-widest uppercase px-3 py-1">Modele</span>
+                  </div>
+                  <div className="relative z-20 p-6">
+                    <h3 className="text-2xl font-bold text-white mb-1">{cat.label}</h3>
+                    <p className="text-white/50 text-sm mb-3">{cat.subtitle}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/40 text-xs">{getCategoryCount(cat.key)} {getCategoryCount(cat.key) === 1 ? 'model' : 'modeli'}</span>
+                      <div className="flex items-center gap-1 text-[#C6A87C] text-sm font-medium group-hover:gap-2 transition-all duration-300">
+                        {l.details || 'Zobacz'} <ArrowRight size={14} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] z-20 bg-[#C6A87C] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                </motion.div>
               ))}
             </div>
-          )}
+          ) : (
+            <>
+              {/* Back button + active filter */}
+              <div className="flex items-center gap-4 mb-8">
+                <button
+                  onClick={() => { setActiveFilter('all'); setShowAll(false); }}
+                  className="flex items-center gap-2 text-sm text-[#8C8C8C] hover:text-[#C6A87C] transition-colors"
+                  data-testid="models-back-btn"
+                >
+                  <ArrowRight size={14} className="rotate-180" /> {l.all}
+                </button>
+                <div className="flex gap-2">
+                  {filters.filter(f => f.key !== 'all').map(f => (
+                    <button
+                      key={f.key}
+                      onClick={() => { setActiveFilter(f.key); setShowAll(false); }}
+                      className={`px-5 py-2 text-sm font-medium transition-colors border ${
+                        activeFilter === f.key
+                          ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
+                          : 'bg-white text-[#595959] border-black/10 hover:border-[#C6A87C] hover:text-[#C6A87C]'
+                      }`}
+                      data-testid={`filter-${f.key}`}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {(showAll ? filteredModels : filteredModels.slice(0, INITIAL_COUNT)).map((model) => {
               const desc = getDescription(model);
               return (
@@ -323,6 +379,8 @@ export const Models = () => {
                 {l.showMore || 'Zobacz wszystkie modele'} ({filteredModels.length - INITIAL_COUNT})
               </button>
             </div>
+          )}
+            </>
           )}
         </div>
       </section>
