@@ -23,8 +23,8 @@ export const BalieHero = () => {
   });
   const [catalogAvailable, setCatalogAvailable] = useState(false);
   const [showCatalogGate, setShowCatalogGate] = useState(false);
-  const [settingsLoaded, setSettingsLoaded] = useState(false);
   const videoRef = useRef(null);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
@@ -41,8 +41,7 @@ export const BalieHero = () => {
           bg_mode: data.hero.bg_mode || 'photo',
         }));
       }
-      setSettingsLoaded(true);
-    }).catch(() => setSettingsLoaded(true));
+    }).catch(() => {});
     fetch(`${API}/api/balia-catalog/info`).then(r => r.json()).then(d => setCatalogAvailable(d?.available)).catch(() => {});
   }, []);
 
@@ -61,19 +60,16 @@ export const BalieHero = () => {
     <>
       <section className="relative min-h-screen flex items-center justify-center pt-16" data-testid="balie-hero">
         <div className="absolute inset-0">
-          {settingsLoaded && (
-            <>
-              <img src={bgImage} alt="Balia" className={`w-full h-full object-cover ${useVideo ? 'absolute inset-0 opacity-0' : ''}`} />
-              {useVideo && (
-                <video
-                  ref={videoRef}
-                  src={content.background_video}
-                  autoPlay muted loop playsInline preload="auto"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  data-testid="balie-hero-bg-video"
-                />
-              )}
-            </>
+          <img src={bgImage} alt="Balia" className={`w-full h-full object-cover transition-opacity duration-500 ${useVideo && videoReady ? 'opacity-0' : 'opacity-100'}`} />
+          {useVideo && (
+            <video
+              ref={videoRef}
+              src={content.background_video}
+              autoPlay muted loop playsInline preload="auto"
+              onCanPlay={() => setVideoReady(true)}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+              data-testid="balie-hero-bg-video"
+            />
           )}
           <div className="absolute inset-0 bg-gradient-to-b from-[#0F1218]/70 via-[#0F1218]/50 to-[#0F1218]" />
         </div>

@@ -12,6 +12,7 @@ export const Hero = () => {
   const { heroSettings } = useSettings();
   const [hasCatalog, setHasCatalog] = useState(false);
   const videoRef = useRef(null);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
@@ -67,7 +68,7 @@ export const Hero = () => {
         <img
           src={backgroundImage}
           alt="Luxury wooden sauna"
-          className={`w-full h-full object-cover ${useVideo ? 'absolute inset-0' : ''}`}
+          className={`w-full h-full object-cover transition-opacity duration-500 ${useVideo && videoReady ? 'opacity-0 absolute inset-0' : ''}`}
           style={{ objectPosition: bgPosition }}
         />
         {/* Video overlay */}
@@ -80,7 +81,8 @@ export const Hero = () => {
             loop
             playsInline
             preload="auto"
-            className="absolute inset-0 w-full h-full object-cover"
+            onCanPlay={() => setVideoReady(true)}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
             style={{ objectPosition: bgPosition }}
             data-testid="hero-bg-video"
           />
