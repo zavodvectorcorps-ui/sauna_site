@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Check, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -11,6 +11,7 @@ export const Hero = () => {
   const { language, t } = useLanguage();
   const { heroSettings } = useSettings();
   const [hasCatalog, setHasCatalog] = useState(false);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
@@ -51,19 +52,39 @@ export const Hero = () => {
   const bgPosition = heroSettings?.bg_position || 'center';
   const textColor = heroSettings?.text_color || '#1A1A1A';
 
+  const bgMode = heroSettings?.bg_mode || 'photo';
+  const backgroundVideo = heroSettings?.background_video || '';
+  const useVideo = bgMode === 'video' && backgroundVideo;
+
   return (
     <section
       data-testid="hero-section"
       className="relative min-h-screen flex items-center pt-20 overflow-hidden"
     >
-      {/* Background Image */}
+      {/* Background */}
       <div className="absolute inset-0 z-0">
+        {/* Photo (always rendered as fallback) */}
         <img
           src={backgroundImage}
           alt="Luxury wooden sauna"
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover ${useVideo ? 'absolute inset-0' : ''}`}
           style={{ objectPosition: bgPosition }}
         />
+        {/* Video overlay */}
+        {useVideo && (
+          <video
+            ref={videoRef}
+            src={backgroundVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: bgPosition }}
+            data-testid="hero-bg-video"
+          />
+        )}
         <div
           className="absolute inset-0"
           style={{

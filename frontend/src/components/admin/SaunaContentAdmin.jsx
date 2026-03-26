@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Save, Upload } from 'lucide-react';
+import { Save, Upload, Video, Image as ImageIcon } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -86,6 +86,20 @@ export const SaunaContentAdmin = ({ authHeader, showMessage, activeSubTab }) => 
       callback(`${API}${data.url}`);
       showMessage('success', 'Фото загружено');
     } catch { showMessage('error', 'Ошибка загрузки'); }
+  };
+
+  const [videoUploading, setVideoUploading] = useState(false);
+  const handleVideoUpload = async (file, callback) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    setVideoUploading(true);
+    try {
+      const response = await fetchWithAuth(`${API}/api/admin/upload-video`, { method: 'POST', body: formData });
+      const data = await response.json();
+      callback(`${API}${data.url}`);
+      showMessage('success', 'Видео загружено');
+    } catch { showMessage('error', 'Ошибка загрузки видео'); }
+    setVideoUploading(false);
   };
 
   if (loading) return <div className="flex items-center justify-center py-12"><div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" /></div>;
@@ -181,6 +195,7 @@ export const SaunaContentAdmin = ({ authHeader, showMessage, activeSubTab }) => 
 
   // Hero tab
   if (activeSubTab === 'hero' && heroSettings) {
+    const bgMode = heroSettings.bg_mode || 'photo';
     return (
       <div>
         <div className="flex items-center justify-between mb-6">
@@ -190,8 +205,31 @@ export const SaunaContentAdmin = ({ authHeader, showMessage, activeSubTab }) => 
           </button>
         </div>
         <div className="space-y-6">
+          {/* Background mode selector */}
           <div>
-            <label className="block text-sm font-medium mb-1">Фоновое изображение</label>
+            <label className="block text-sm font-medium mb-2">Фон Hero секции</label>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setHeroSettings({ ...heroSettings, bg_mode: 'photo' })}
+                className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border transition-all ${bgMode === 'photo' ? 'border-[#C6A87C] bg-[#C6A87C]/10 text-[#C6A87C]' : 'border-black/10 text-[#8C8C8C] hover:border-[#C6A87C]/50'}`}
+                data-testid="hero-bg-mode-photo"
+              >
+                <ImageIcon size={16} /> Фото
+              </button>
+              <button
+                type="button"
+                onClick={() => setHeroSettings({ ...heroSettings, bg_mode: 'video' })}
+                className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border transition-all ${bgMode === 'video' ? 'border-[#C6A87C] bg-[#C6A87C]/10 text-[#C6A87C]' : 'border-black/10 text-[#8C8C8C] hover:border-[#C6A87C]/50'}`}
+                data-testid="hero-bg-mode-video"
+              >
+                <Video size={16} /> Видео
+              </button>
+            </div>
+          </div>
+          {/* Background image */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Фоновое изображение {bgMode === 'video' && <span className="text-xs text-[#8C8C8C]">(запасное, пока грузится видео)</span>}</label>
             <div className="flex gap-2">
               <input type="url" value={heroSettings.background_image} onChange={(e) => setHeroSettings({ ...heroSettings, background_image: e.target.value })} className="flex-1 p-2 border border-black/10" />
               <label className="flex items-center gap-2 px-4 py-2 bg-[#1A1A1A] text-white cursor-pointer hover:bg-black">
@@ -200,6 +238,21 @@ export const SaunaContentAdmin = ({ authHeader, showMessage, activeSubTab }) => 
               </label>
             </div>
             {heroSettings.background_image && <img src={heroSettings.background_image} alt="Preview" className="mt-2 h-32 object-cover" />}
+          </div>
+          {/* Background video */}
+          <div className={bgMode !== 'video' ? 'opacity-40 pointer-events-none' : ''}>
+            <label className="block text-sm font-medium mb-1">Фоновое видео (MP4)</label>
+            <p className="text-xs text-[#8C8C8C] mb-2">Автоплей, без звука, зацикленное. Фото используется как заглушка пока видео загружается.</p>
+            <div className="flex gap-2">
+              <input type="url" value={heroSettings.background_video || ''} onChange={(e) => setHeroSettings({ ...heroSettings, background_video: e.target.value })} className="flex-1 p-2 border border-black/10" data-testid="hero-video-url" />
+              <label className={`flex items-center gap-2 px-4 py-2 text-white cursor-pointer ${videoUploading ? 'bg-gray-400' : 'bg-[#1A1A1A] hover:bg-black'}`}>
+                <Upload size={16} /> {videoUploading ? 'Загрузка...' : 'Загрузить'}
+                <input type="file" accept="video/mp4" className="hidden" disabled={videoUploading} onChange={(e) => e.target.files?.[0] && handleVideoUpload(e.target.files[0], (url) => setHeroSettings({ ...heroSettings, background_video: url }))} />
+              </label>
+            </div>
+            {heroSettings.background_video && (
+              <video src={heroSettings.background_video} muted loop className="mt-2 h-32 object-cover" onMouseEnter={e => e.target.play()} onMouseLeave={e => { e.target.pause(); e.target.currentTime = 0; }} />
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Прозрачность наложения: {heroSettings.overlay_opacity ?? 80}%</label>
