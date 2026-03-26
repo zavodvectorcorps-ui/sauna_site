@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Loader2, Eye, EyeOff, X, Plus } from 'lucide-react';
+import { Save, Loader2, Eye, EyeOff, X, Plus, Monitor } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -21,6 +21,7 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
   const [saving, setSaving] = useState(false);
   const [savingExcl, setSavingExcl] = useState(false);
   const [activeExclModel, setActiveExclModel] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -196,6 +197,103 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
             })}
           </div>
         </div>
+
+        {/* Preview Button */}
+        <div className="text-center">
+          <button
+            onClick={() => setShowPreview(!showPreview)}
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#1A1A1A] text-white text-sm font-medium hover:bg-black transition-colors"
+            data-testid="preview-toggle-btn"
+          >
+            <Monitor size={16} /> {showPreview ? 'Скрыть предпросмотр' : 'Предпросмотр'}
+          </button>
+        </div>
+
+        {/* Live Preview Panel */}
+        {showPreview && (
+          <div className="border border-gray-200 overflow-hidden" data-testid="balia-preview-panel">
+            <div className="bg-gray-800 text-white/60 text-[10px] px-3 py-1.5 flex items-center gap-2">
+              <div className="flex gap-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                <span className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+                <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
+              </div>
+              wm-balia.pl — предпросмотр
+            </div>
+            <div className="bg-[#0F1218] p-6 space-y-6 max-h-[600px] overflow-y-auto">
+              {/* Hero preview */}
+              <div className="relative overflow-hidden py-10 px-6 bg-gradient-to-b from-[#0F1218] to-[#1A1E27] text-center">
+                {content.hero.badge && (
+                  <span className="inline-block text-[#D4AF37] text-[10px] tracking-[0.2em] uppercase mb-2 border border-[#D4AF37]/20 px-3 py-1">
+                    {content.hero.badge}
+                  </span>
+                )}
+                <h2 className="text-white text-2xl font-bold mb-2">
+                  {content.hero.headline || 'Luksus w Twoim Ogrodzie'}
+                </h2>
+                <p className="text-white/40 text-sm mb-4 max-w-md mx-auto">
+                  {content.hero.subheadline || 'Podtytul hero sekcji'}
+                </p>
+                <div className="flex justify-center gap-3">
+                  <span className="px-4 py-2 bg-[#D4AF37] text-[#0F1218] text-xs font-semibold">{content.hero.cta_primary || 'CTA 1'}</span>
+                  <span className="px-4 py-2 border border-white/20 text-white/60 text-xs">{content.hero.cta_secondary || 'CTA 2'}</span>
+                </div>
+                {content.hero.stats?.length >= 3 && (
+                  <div className="flex justify-center gap-6 mt-4">
+                    {content.hero.stats.map((s, i) => (
+                      <div key={i} className="text-center">
+                        <div className="text-[#D4AF37] font-bold text-lg">{s.value || '—'}</div>
+                        <div className="text-white/30 text-[10px]">{s.label || '...'}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Promo blocks preview */}
+              <div className="space-y-3">
+                <p className="text-white/20 text-[10px] uppercase tracking-wider text-center">Промо-блоки на странице</p>
+                {promoBlocks.map(block => {
+                  const b = content.promo_blocks?.[block.id] || { enabled: true };
+                  const defaults = {
+                    features: { title: 'Cechy WM-Balia', subtitle: 'Dlaczego nasze balie?' },
+                    installment: { title: 'Komfort dostepny od razu!', subtitle: 'Kupuj na raty' },
+                    schematic: { title: 'Budowa Balii', subtitle: 'Kazdy element jest starannie zaprojektowany' },
+                    stove: { title: 'Jak dziala piec?', subtitle: 'Dwa typy piecow na drewno' },
+                    about: { title: 'O nas', subtitle: '' },
+                  };
+                  const d = defaults[block.id] || {};
+                  return (
+                    <div
+                      key={block.id}
+                      className={`p-3 border transition-all ${
+                        b.enabled !== false
+                          ? 'bg-[#1A1E27] border-white/10'
+                          : 'bg-[#1A1E27]/30 border-red-900/30 opacity-40'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-white text-sm font-medium">
+                            {b.title || d.title}
+                          </span>
+                          {(b.subtitle || d.subtitle) && (
+                            <span className="text-white/30 text-xs ml-2">{b.subtitle || d.subtitle}</span>
+                          )}
+                        </div>
+                        <span className={`text-[10px] px-2 py-0.5 ${
+                          b.enabled !== false ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
+                        }`}>
+                          {b.enabled !== false ? 'ON' : 'OFF'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Option Exclusions */}
         <div className="p-5 border border-gray-100 bg-[#F9F9F7]">

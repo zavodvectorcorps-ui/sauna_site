@@ -1,0 +1,76 @@
+{
+  "summary": "Completed testing of 3 new fixes in Iteration 9. All features verified working: 1) disabled_options in CalculatorConfig API, 2) Product card price fallback when apiModel.basePrice=0, 3) Admin preview panel for balie content. Backend: 13/13 tests passed. Frontend: All features verified via Playwright.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "passed_tests": [
+    "BUGFIX #1: disabled_options field in CalculatorConfig - GET /api/settings/calculator returns disabled_options array",
+    "BUGFIX #1: PUT /api/admin/settings/calculator saves disabled_options correctly",
+    "BUGFIX #1: GET returns saved disabled_options after PUT",
+    "BUGFIX #2: Product 'Kwadratowa 170x200cm' shows price 14,990 PLN in modal (parsed from 'od 14 990 zł')",
+    "BUGFIX #2: API model square_170x200 has basePrice=0.0 (confirming bug scenario)",
+    "BUGFIX #2: Frontend correctly falls back to parsing product.price string when apiModel.basePrice=0",
+    "FEATURE: Admin panel > КУПЕЛИ > Контент tab loads correctly",
+    "FEATURE: Preview toggle button (data-testid='preview-toggle-btn') present and clickable",
+    "FEATURE: Preview panel (data-testid='balia-preview-panel') appears when button clicked",
+    "FEATURE: Preview panel shows hero section with badge, headline, subheadline, CTA buttons",
+    "FEATURE: Preview panel shows promo blocks with ON/OFF status badges",
+    "Heater selector (data-testid='balie-heater-selector') working in product modal",
+    "Compact installment block (data-testid='balie-installment-compact') visible in product modal"
+  ],
+
+  "test_report_links": [
+    "/app/backend/tests/test_iteration9_fixes.py",
+    "/app/test_reports/pytest/pytest_iteration9.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "CalculatorConfig Pydantic model correctly includes disabled_options: List[str] = [] field (line ~156 in server.py)",
+    "BalieProducts.jsx parseProductPrice function correctly extracts numeric price from strings like 'od 14 990 zł' → 14990",
+    "BaliaContentAdmin.jsx preview panel renders with dark theme showing hero section and promo block statuses",
+    "Calculator.jsx getFilteredCategories correctly filters out disabled_options from category options"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_iteration9_fixes.py"
+  ],
+
+  "success_rate": {
+    "backend": "100% (13/13 tests passed)",
+    "frontend": "100% (all 3 fixes verified working)"
+  },
+
+  "seed_data_creation": "None - tests use existing API data",
+
+  "retest_needed": false,
+
+  "should_main_agent_self_test": false,
+
+  "context_for_next_testing_agent": "Iteration 9 tested 3 fixes: 1) disabled_options field added to CalculatorConfig Pydantic model - API now saves and returns this field correctly, 2) Product card modal price fallback - when apiModel.basePrice=0, frontend parses price from product.price string (e.g., 'od 14 990 zł' → 14990), 3) Admin preview panel in КУПЕЛИ > Контент tab - shows live preview of hero section and promo block ON/OFF statuses. All features working correctly.",
+
+  "features_verified": {
+    "disabled_options_api": {
+      "status": "WORKING",
+      "details": "CalculatorConfig model has disabled_options: List[str] = [] field. PUT saves correctly, GET returns saved values. Calculator.jsx filters these options from display."
+    },
+    "product_price_fallback": {
+      "status": "WORKING",
+      "details": "Kwadratowa 170x200cm product shows 14,990 PLN in modal despite API returning basePrice=0. parseProductPrice function in BalieProducts.jsx extracts digits from price string."
+    },
+    "admin_preview_panel": {
+      "status": "WORKING",
+      "details": "BaliaContentAdmin.jsx has 'Предпросмотр' button (data-testid='preview-toggle-btn') that toggles preview panel (data-testid='balia-preview-panel'). Preview shows hero section with badge, headline, CTA buttons, stats, and promo block ON/OFF statuses."
+    }
+  }
+}

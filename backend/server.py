@@ -153,6 +153,7 @@ class CalculatorConfig(BaseModel):
     id: str = "calculator_config"
     enabled_models: List[str] = []  # Empty means all enabled
     enabled_categories: List[str] = []  # Empty means all enabled
+    disabled_options: List[str] = []  # Individual options to hide
     show_discount_badge: bool = True
 
 class GalleryImage(BaseModel):

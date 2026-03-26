@@ -138,7 +138,15 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
   const totalOptionsPrice = Object.values(selectedOpts).reduce((sum, opt) => sum + (opt.price || 0), 0);
   const heaterPrice = selectedHeater?.price || 0;
 
-  const basePrice = apiModel?.basePrice || 0;
+  // Parse numeric price from product's price string as fallback (e.g. "od 14 990 zł" -> 14990)
+  const parseProductPrice = (priceStr) => {
+    if (!priceStr) return 0;
+    const digits = priceStr.replace(/[^\d]/g, '');
+    return digits ? parseInt(digits, 10) : 0;
+  };
+
+  const apiBasePrice = apiModel?.basePrice || 0;
+  const basePrice = apiBasePrice > 0 ? apiBasePrice : parseProductPrice(product.price);
   const totalPrice = basePrice + totalOptionsPrice + heaterPrice;
 
   useEffect(() => {
