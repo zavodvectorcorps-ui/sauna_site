@@ -71,15 +71,23 @@ export const Calculator = () => {
 
   const handleOptionSelect = (categoryId, option, inputType) => {
     setSelectedOptions((prev) => {
-      if (inputType === 'radio') {
-        if (prev[categoryId]?.id === option.id) {
-          const next = { ...prev };
-          delete next[categoryId];
-          return next;
+      if (inputType === 'checkbox') {
+        // Checkbox: allow multiple selections per category
+        const currentArr = Array.isArray(prev[categoryId]) ? prev[categoryId] : (prev[categoryId] ? [prev[categoryId]] : []);
+        const exists = currentArr.find(o => o.id === option.id);
+        if (exists) {
+          const filtered = currentArr.filter(o => o.id !== option.id);
+          if (filtered.length === 0) {
+            const next = { ...prev };
+            delete next[categoryId];
+            return next;
+          }
+          return { ...prev, [categoryId]: filtered };
         }
-        return { ...prev, [categoryId]: option };
+        return { ...prev, [categoryId]: [...currentArr, option] };
       }
-      if (prev[categoryId]?.id === option.id) {
+      // Radio: single selection per category (toggle off if same)
+      if (prev[categoryId]?.id === option.id || (Array.isArray(prev[categoryId]) && prev[categoryId].length === 1 && prev[categoryId][0].id === option.id)) {
         const next = { ...prev };
         delete next[categoryId];
         return next;
@@ -88,7 +96,17 @@ export const Calculator = () => {
     });
   };
 
-  const calculateOptionsTotal = () => Object.values(selectedOptions).reduce((sum, opt) => sum + (opt.price || 0), 0);
+  const calculateOptionsTotal = () => {
+    let sum = 0;
+    for (const val of Object.values(selectedOptions)) {
+      if (Array.isArray(val)) {
+        sum += val.reduce((s, o) => s + (o.price || 0), 0);
+      } else {
+        sum += val.price || 0;
+      }
+    }
+    return sum;
+  };
 
   const calculateTotal = () => {
     if (!selectedModel) return 0;
@@ -133,7 +151,7 @@ export const Calculator = () => {
           ...formData,
           model: selectedModel?.name,
           variant: selectedVariant?.namePl,
-          options: Object.values(selectedOptions).map((o) => o.name || o.namePl),
+          options: Object.values(selectedOptions).flatMap((o) => Array.isArray(o) ? o.map(x => x.name || x.namePl) : [o.name || o.namePl]),
           total: calculateTotal(),
           type: 'calculator_order',
         }),
@@ -153,9 +171,10 @@ export const Calculator = () => {
   const downloadConfigPdf = async () => {
     setGeneratingPdf(true);
     try {
-      const optionsPayload = Object.entries(selectedOptions).map(([catId, opt]) => {
+      const optionsPayload = Object.entries(selectedOptions).flatMap(([catId, opt]) => {
         const cat = categories.find(c => String(c.id) === String(catId));
-        return { name: opt.namePl || opt.name || '', price: opt.price || 0, category: cat?.name || '' };
+        const items = Array.isArray(opt) ? opt : [opt];
+        return items.map(o => ({ name: o.namePl || o.name || '', price: o.price || 0, category: cat?.name || '' }));
       });
       const res = await fetch(`${BACKEND_URL}/api/sauna/generate-pdf`, {
         method: 'POST',
@@ -397,6 +416,12 @@ export const Calculator = () => {
               {categories.map((category) => {
                 const isExpanded = expandedCategories[category.id] !== false; // default open
                 const selectedInCat = selectedOptions[category.id];
+                const isCheckbox = category.inputType === 'checkbox';
+                const selectedArr = isCheckbox ? (Array.isArray(selectedInCat) ? selectedInCat : (selectedInCat ? [selectedInCat] : [])) : [];
+                const isOptionSelected = (optId) => {
+                  if (isCheckbox) return selectedArr.some(o => o.id === optId);
+                  return selectedInCat?.id === optId;
+                };
                 return (
                   <div key={category.id} className="border-b border-black/5 last:border-b-0">
                     <button
@@ -405,7 +430,12 @@ export const Calculator = () => {
                     >
                       <div className="flex items-center gap-2">
                         <h4 className="text-xs font-semibold text-[#8C8C8C] uppercase tracking-wider">{category.name}</h4>
-                        {selectedInCat && (
+                        {isCheckbox && selectedArr.length > 0 && (
+                          <span className="text-[10px] bg-[#C6A87C]/10 text-[#C6A87C] px-1.5 py-0.5">
+                            {selectedArr.length} wyb.
+                          </span>
+                        )}
+                        {!isCheckbox && selectedInCat && (
                           <span className="text-[10px] bg-[#C6A87C]/10 text-[#C6A87C] px-1.5 py-0.5">
                             {selectedInCat.namePl || selectedInCat.name}
                           </span>
@@ -421,7 +451,7 @@ export const Calculator = () => {
                               key={option.id}
                               data-testid={`option-${option.id}`}
                               onClick={() => handleOptionSelect(category.id, option, category.inputType)}
-                              className={`calc-option p-2 cursor-pointer ${selectedOptions[category.id]?.id === option.id ? 'selected' : ''}`}
+                              className={`calc-option p-2 cursor-pointer ${isOptionSelected(option.id) ? 'selected' : ''}`}
                             >
                               {option.imageUrl && (
                                 <div className="aspect-[4/3] mb-1.5 overflow-hidden bg-[#F2F2F0]">
