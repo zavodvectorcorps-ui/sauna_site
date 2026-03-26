@@ -1,0 +1,127 @@
+{
+  "summary": "Completed testing of WM Group 6 new features. Backend: 13/13 tests passed. Frontend: All critical features verified working. Minor UI issue: Stove scheme SVG diagram not rendering visibly (colors may blend with dark background).",
+  
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "BalieStoveScheme",
+        "issue": "SVG diagram in stove scheme section has low contrast - SVG renders at correct size (534x350px) but diagram elements use dark colors (#1a3a5c, #333) that blend with dark background (#1A1E27). Consider using brighter stroke colors or adding a lighter background to the SVG container.",
+        "selector": "[data-testid='balie-stove-scheme'] svg",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  
+  "passed_tests": [
+    "Balie landing page loads with data-testid='balie-page' - WORKING",
+    "Balie installment section (data-testid='balie-installment') - WORKING",
+    "Balie schematic section (data-testid='balie-schematic') with SVG diagram - WORKING",
+    "Balie stove scheme section (data-testid='balie-stove-scheme') - WORKING (toggle buttons work)",
+    "Stove toggle buttons switch between internal/external - WORKING",
+    "Product modal opens with heater selector (data-testid='balie-heater-selector') - WORKING",
+    "Heater selector shows 2 options (v4a_integrated +945 PLN, v4a_external +756 PLN) - WORKING",
+    "Heater selection affects total price calculation - WORKING (10,990 base + 945 heater = 11,935 PLN)",
+    "Compact installment block in product modal (data-testid='balie-installment-compact') - WORKING",
+    "Sauna page (/sauny) loads with installment section (data-testid='sauna-installment') - WORKING",
+    "Sauna model modal shows compact installment (data-testid='sauna-installment-compact') - WORKING",
+    "GET /api/balia/option-exclusions returns exclusions object - WORKING",
+    "POST /api/balia/option-exclusions requires admin auth (401 without) - WORKING",
+    "POST /api/balia/option-exclusions saves exclusions with auth - WORKING",
+    "Admin panel (/admin) login with admin/220066 - WORKING",
+    "Admin Balie Content tab (Контент страницы купелей) - WORKING",
+    "Admin promo block toggles (5 blocks: features, installment, schematic, stove, about) - WORKING",
+    "Admin option exclusions manager with 3 models and 36 options - WORKING",
+    "Backend API: GET /api/health - WORKING",
+    "Backend API: GET /api/balia/products - WORKING",
+    "Backend API: GET /api/balia/calculator/prices (heater_upgrade category) - WORKING",
+    "Backend API: GET /api/balia/content - WORKING",
+    "Backend API: POST /api/balia/content (auth required) - WORKING",
+    "Backend API: GET /api/sauna/prices - WORKING",
+    "Backend API: GET /api/sauna/public-models - WORKING",
+    "Backend API: GET /api/balia/card-options-settings - WORKING"
+  ],
+  
+  "test_report_links": [
+    "/app/backend/tests/test_new_features.py",
+    "/app/test_reports/pytest/pytest_iteration8.xml"
+  ],
+  
+  "action_items": [
+    "LOW: Improve BalieStoveScheme SVG diagram contrast - SVG renders correctly (534x350px) but uses dark colors that blend with background. Consider brightening stroke colors or adding lighter background to SVG container."
+  ],
+  
+  "critical_code_review_comments": [
+    "All 6 requested features implemented and working",
+    "Heater selector correctly shows 2 options from API with prices affecting total",
+    "Promo blocks can be toggled on/off in admin panel",
+    "Option exclusions stored as {model_id: [excluded_option_ids]} format",
+    "Sauna installment component properly themed for light background"
+  ],
+  
+  "updated_files": [
+    "/app/backend/tests/test_new_features.py"
+  ],
+  
+  "success_rate": {
+    "backend": "100% (13/13 tests passed)",
+    "frontend": "100% (all features working, minor contrast issue in stove scheme SVG)"
+  },
+  
+  "seed_data_creation": "None - tests use existing API data",
+  
+  "retest_needed": false,
+  
+  "should_main_agent_self_test": true,
+  
+  "context_for_next_testing_agent": "Iteration 8 tested 6 new features: 1) Balie installment section, 2) Balie schematic section, 3) Balie stove scheme section, 4) Heater selector in product modal, 5) Compact installment blocks, 6) Sauna installment sections. All features working except minor SVG rendering issue in stove scheme. Admin panel has Balie Content tab under КУПЕЛИ group with promo block toggles and option exclusions manager. Sauna page is at /sauny (not /sauna).",
+  
+  "features_verified": {
+    "balie_installment": {
+      "status": "WORKING",
+      "details": "Full installment section on landing page with 4 benefit cards and CTA button"
+    },
+    "balie_schematic": {
+      "status": "WORKING",
+      "details": "Cross-section SVG diagram of hot tub with 5 labeled features"
+    },
+    "balie_stove_scheme": {
+      "status": "WORKING",
+      "details": "Toggle buttons work, info panel displays correctly, SVG diagram renders at correct size (534x350px) but has low contrast colors against dark background"
+    },
+    "heater_selector": {
+      "status": "WORKING",
+      "details": "2 heater options (internal +945 PLN, external +756 PLN) with price recalculation"
+    },
+    "compact_installment_balie": {
+      "status": "WORKING",
+      "details": "Compact installment block in product modal with dark theme"
+    },
+    "sauna_installment": {
+      "status": "WORKING",
+      "details": "Full installment section on /sauny page with light theme"
+    },
+    "sauna_installment_compact": {
+      "status": "WORKING",
+      "details": "Compact installment in model detail modal"
+    },
+    "option_exclusions_api": {
+      "status": "WORKING",
+      "details": "GET returns exclusions object, POST requires admin auth"
+    },
+    "admin_promo_blocks": {
+      "status": "WORKING",
+      "details": "5 promo block toggles with eye icons in Balie Content tab"
+    },
+    "admin_option_exclusions": {
+      "status": "WORKING",
+      "details": "3 model buttons, 36 option exclusion buttons when model selected"
+    }
+  }
+}

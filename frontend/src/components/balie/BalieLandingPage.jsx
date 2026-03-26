@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Droplets, Phone, ArrowLeft } from 'lucide-react';
 import { BalieHero } from './BalieHero';
@@ -10,9 +11,23 @@ import { BalieGallery } from './BalieGallery';
 import { BalieConfiguratorCTA } from './BalieConfiguratorCTA';
 import { BalieTestimonials } from './BalieTestimonials';
 import { BalieContact } from './BalieContact';
+import { BalieInstallment } from './BalieInstallment';
+import { BalieSchematic } from './BalieSchematic';
+import { BalieStoveScheme } from './BalieStoveScheme';
+
+const API = process.env.REACT_APP_BACKEND_URL;
 
 export const BalieLandingPage = () => {
   const navigate = useNavigate();
+  const [promoBlocks, setPromoBlocks] = useState(null);
+
+  useEffect(() => {
+    fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
+      setPromoBlocks(data?.promo_blocks || null);
+    }).catch(() => {});
+  }, []);
+
+  const isEnabled = (blockId) => promoBlocks?.[blockId]?.enabled !== false;
 
   return (
     <div className="min-h-screen bg-[#0F1218]" data-testid="balie-page">
@@ -32,6 +47,7 @@ export const BalieLandingPage = () => {
             <a href="#produkty" className="text-white/60 hover:text-[#D4AF37] transition-colors">Produkty</a>
             <a href="#kolory" className="text-white/60 hover:text-[#D4AF37] transition-colors">Kolory</a>
             <a href="#opcje" className="text-white/60 hover:text-[#D4AF37] transition-colors">Opcje</a>
+            <a href="#budowa" className="text-white/60 hover:text-[#D4AF37] transition-colors">Budowa</a>
             <a href="#balie-konfigurator" className="text-white/60 hover:text-[#D4AF37] transition-colors">Konfigurator</a>
             <a href="#opinie" className="text-white/60 hover:text-[#D4AF37] transition-colors">Opinie</a>
             <a href="#kontakt-balie" className="text-white/60 hover:text-[#D4AF37] transition-colors">Kontakt</a>
@@ -45,11 +61,14 @@ export const BalieLandingPage = () => {
 
       {/* Sections */}
       <BalieHero />
-      <BalieFeatures />
+      {isEnabled('features') && <BalieFeatures />}
       <BalieProducts />
+      {isEnabled('installment') && <BalieInstallment />}
       <BalieColors />
       <BalieOptionsDetail />
-      <BalieAbout />
+      {isEnabled('schematic') && <BalieSchematic />}
+      {isEnabled('stove') && <BalieStoveScheme />}
+      {isEnabled('about') && <BalieAbout />}
       <BalieGallery />
       <BalieConfiguratorCTA />
       <BalieTestimonials />

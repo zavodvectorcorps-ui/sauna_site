@@ -1773,6 +1773,19 @@ async def save_balia_card_options(request: Request, username: str = Depends(veri
     await db.settings.update_one({"id": "balia_card_options"}, {"$set": data}, upsert=True)
     return {"status": "ok"}
 
+@api_router.get("/balia/option-exclusions")
+async def get_balia_option_exclusions():
+    settings = await db.settings.find_one({"id": "balia_option_exclusions"}, {"_id": 0})
+    return settings or {"id": "balia_option_exclusions", "exclusions": {}}
+
+@api_router.post("/balia/option-exclusions")
+async def save_balia_option_exclusions(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["id"] = "balia_option_exclusions"
+    await db.settings.update_one({"id": "balia_option_exclusions"}, {"$set": data}, upsert=True)
+    return {"status": "ok"}
+
+
 # Include the router
 app.include_router(api_router)
 

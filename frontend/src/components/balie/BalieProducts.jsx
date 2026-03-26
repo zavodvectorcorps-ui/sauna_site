@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, ArrowRight, Loader2, Users, Droplets, Ruler, ChevronLeft, ChevronRight, Check, Send, Sliders } from 'lucide-react';
+import { X, ArrowRight, Loader2, Users, Droplets, Ruler, ChevronLeft, ChevronRight, Check, Send, Sliders, Flame } from 'lucide-react';
+import { BalieInstallment } from './BalieInstallment';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -84,18 +85,32 @@ const RequestForm = ({ product, selectedOptions, totalPrice, onClose, onSuccess 
   );
 };
 
-const ProductModal = ({ product, apiModel, apiCategories, cardOptions, onClose, onConfigure }) => {
+const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusions, onClose, onConfigure }) => {
   const [imgIdx, setImgIdx] = useState(0);
   const [selectedOpts, setSelectedOpts] = useState({});
+  const [selectedHeater, setSelectedHeater] = useState(null);
   const [showRequestForm, setShowRequestForm] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const images = [product.image, ...(product.gallery_images || [])].filter(Boolean);
   const specs = apiModel?.specs || {};
 
   const enabledCategories = (cardOptions?.enabled_categories || []);
+  
+  // Get model exclusions - which option IDs are excluded for this model
+  const modelExclusions = exclusions?.[product.api_model_id] || [];
+  
   const availableCategories = apiCategories
     .filter(c => enabledCategories.includes(c.id) && c.options?.length > 0)
-    .filter(c => !['fiberglass_color', 'acrylic_color', 'bowl_material'].includes(c.id));
+    .filter(c => !['fiberglass_color', 'acrylic_color', 'bowl_material', 'heater_upgrade', 'heater_extra'].includes(c.id))
+    .map(c => ({
+      ...c,
+      options: c.options.filter(opt => !modelExclusions.includes(opt.id))
+    }))
+    .filter(c => c.options.length > 0);
+
+  // Get heater options from API
+  const heaterCategory = apiCategories.find(c => c.id === 'heater_upgrade');
+  const heaterOptions = heaterCategory?.options || [];
 
   const toggleOption = (catId, option) => {
     setSelectedOpts(prev => {
@@ -109,15 +124,22 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, onClose, 
     });
   };
 
-  const getSelectedOptions = () => Object.entries(selectedOpts).map(([catId, opt]) => {
-    const cat = apiCategories.find(c => c.id === catId);
-    return { ...opt, catName: cat?.name || catId };
-  });
+  const getSelectedOptions = () => {
+    const opts = Object.entries(selectedOpts).map(([catId, opt]) => {
+      const cat = apiCategories.find(c => c.id === catId);
+      return { ...opt, catName: cat?.name || catId };
+    });
+    if (selectedHeater) {
+      opts.push({ ...selectedHeater, catName: 'Piec' });
+    }
+    return opts;
+  };
 
   const totalOptionsPrice = Object.values(selectedOpts).reduce((sum, opt) => sum + (opt.price || 0), 0);
+  const heaterPrice = selectedHeater?.price || 0;
 
   const basePrice = apiModel?.basePrice || 0;
-  const totalPrice = basePrice + totalOptionsPrice;
+  const totalPrice = basePrice + totalOptionsPrice + heaterPrice;
 
   useEffect(() => {
     const h = (e) => { if (e.key === 'Escape') onClose(); };
@@ -170,48 +192,94 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, onClose, 
 
             {/* RIGHT: Options + Price */}
             <div className="lg:w-1/2 border-l border-white/5 flex flex-col">
-              {availableCategories.length > 0 ? (
+              {availableCategories.length > 0 || heaterOptions.length > 0 ? (
                 <>
                   <div className="p-6 flex-1 overflow-y-auto max-h-[60vh] lg:max-h-none">
-                    <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-                      <Sliders size={14} className="text-[#D4AF37]" /> Wybierz opcje
-                    </h3>
-                    <div className="space-y-4">
-                      {availableCategories.map(cat => (
-                        <div key={cat.id} data-testid={`balie-card-cat-${cat.id}`}>
-                          <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-2">{cat.name}</p>
-                          <div className="space-y-1.5">
-                            {cat.options?.map(opt => {
-                              const isSelected = selectedOpts[cat.id]?.id === opt.id;
-                              return (
-                                <button
-                                  key={opt.id}
-                                  onClick={() => toggleOption(cat.id, opt)}
-                                  className={`w-full flex items-center justify-between px-3 py-2.5 text-left text-sm transition-all ${
-                                    isSelected
-                                      ? 'bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-white'
-                                      : 'bg-[#0F1218] border border-white/5 text-white/60 hover:border-white/15'
-                                  }`}
-                                  data-testid={`balie-card-opt-${opt.id}`}
-                                >
-                                  <span className="flex items-center gap-2">
-                                    <span className={`w-4 h-4 border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-[#D4AF37] bg-[#D4AF37]' : 'border-white/20'}`}>
-                                      {isSelected && <Check size={10} className="text-[#0F1218]" />}
-                                    </span>
-                                    {opt.name}
+                    {/* Heater selector */}
+                    {heaterOptions.length > 0 && (
+                      <div className="mb-5" data-testid="balie-heater-selector">
+                        <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+                          <Flame size={14} className="text-[#D4AF37]" /> Wybierz piec
+                        </h3>
+                        <div className="grid grid-cols-1 gap-2">
+                          {heaterOptions.map(opt => {
+                            const isSelected = selectedHeater?.id === opt.id;
+                            const isInternal = opt.id.includes('internal') || opt.id.includes('integrated');
+                            return (
+                              <button
+                                key={opt.id}
+                                onClick={() => setSelectedHeater(isSelected ? null : opt)}
+                                className={`w-full flex items-center justify-between px-3 py-3 text-left text-sm transition-all ${
+                                  isSelected
+                                    ? 'bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-white'
+                                    : 'bg-[#0F1218] border border-white/5 text-white/60 hover:border-white/15'
+                                }`}
+                                data-testid={`balie-heater-opt-${opt.id}`}
+                              >
+                                <span className="flex items-center gap-2">
+                                  <span className={`w-4 h-4 border rounded-full flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-[#D4AF37] bg-[#D4AF37]' : 'border-white/20'}`}>
+                                    {isSelected && <Check size={10} className="text-[#0F1218]" />}
                                   </span>
-                                  {opt.price > 0 && (
-                                    <span className={`text-xs font-medium whitespace-nowrap ${isSelected ? 'text-[#D4AF37]' : 'text-white/30'}`}>
-                                      +{opt.price.toLocaleString()} PLN
-                                    </span>
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
+                                  <span>
+                                    <span className="block">{isInternal ? 'Piec wewnetrzny' : 'Piec zewnetrzny'}</span>
+                                    <span className="block text-[10px] text-white/30">{opt.name}</span>
+                                  </span>
+                                </span>
+                                {opt.price > 0 && (
+                                  <span className={`text-xs font-medium whitespace-nowrap ${isSelected ? 'text-[#D4AF37]' : 'text-white/30'}`}>
+                                    +{opt.price.toLocaleString()} PLN
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    )}
+
+                    {availableCategories.length > 0 && (
+                      <>
+                        <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                          <Sliders size={14} className="text-[#D4AF37]" /> Wybierz opcje
+                        </h3>
+                        <div className="space-y-4">
+                          {availableCategories.map(cat => (
+                            <div key={cat.id} data-testid={`balie-card-cat-${cat.id}`}>
+                              <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-2">{cat.name}</p>
+                              <div className="space-y-1.5">
+                                {cat.options?.map(opt => {
+                                  const isSelected = selectedOpts[cat.id]?.id === opt.id;
+                                  return (
+                                    <button
+                                      key={opt.id}
+                                      onClick={() => toggleOption(cat.id, opt)}
+                                      className={`w-full flex items-center justify-between px-3 py-2.5 text-left text-sm transition-all ${
+                                        isSelected
+                                          ? 'bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-white'
+                                          : 'bg-[#0F1218] border border-white/5 text-white/60 hover:border-white/15'
+                                      }`}
+                                      data-testid={`balie-card-opt-${opt.id}`}
+                                    >
+                                      <span className="flex items-center gap-2">
+                                        <span className={`w-4 h-4 border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-[#D4AF37] bg-[#D4AF37]' : 'border-white/20'}`}>
+                                          {isSelected && <Check size={10} className="text-[#0F1218]" />}
+                                        </span>
+                                        {opt.name}
+                                      </span>
+                                      {opt.price > 0 && (
+                                        <span className={`text-xs font-medium whitespace-nowrap ${isSelected ? 'text-[#D4AF37]' : 'text-white/30'}`}>
+                                          +{opt.price.toLocaleString()} PLN
+                                        </span>
+                                      )}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* Price summary + buttons */}
@@ -223,18 +291,28 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, onClose, 
                           <span className="text-white/70 font-medium">{basePrice.toLocaleString()} PLN</span>
                         </div>
                       )}
+                      {heaterPrice > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-white/40 text-sm">Piec:</span>
+                          <span className="text-white/70 font-medium">+{heaterPrice.toLocaleString()} PLN</span>
+                        </div>
+                      )}
                       {totalOptionsPrice > 0 && (
                         <div className="flex items-center justify-between">
                           <span className="text-white/40 text-sm">Opcje dodatkowe:</span>
                           <span className="text-white/70 font-medium">+{totalOptionsPrice.toLocaleString()} PLN</span>
                         </div>
                       )}
-                      {(basePrice > 0 || totalOptionsPrice > 0) && (
+                      {(basePrice > 0 || totalOptionsPrice > 0 || heaterPrice > 0) && (
                         <div className="flex items-center justify-between pt-2 border-t border-white/10">
                           <span className="text-white font-semibold">Razem:</span>
                           <span className="text-[#D4AF37] font-bold text-xl" data-testid="balie-modal-total">{totalPrice.toLocaleString()} PLN</span>
                         </div>
                       )}
+                    </div>
+                    {/* Compact installment */}
+                    <div className="mb-3">
+                      <BalieInstallment variant="compact" />
                     </div>
                     <div className="grid grid-cols-1 gap-2">
                       <button
@@ -313,6 +391,7 @@ export const BalieProducts = () => {
   const [apiModels, setApiModels] = useState([]);
   const [apiCategories, setApiCategories] = useState([]);
   const [cardOptions, setCardOptions] = useState({ enabled_categories: [] });
+  const [exclusions, setExclusions] = useState({});
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
@@ -322,11 +401,13 @@ export const BalieProducts = () => {
       fetch(`${API}/api/balia/products`).then(r => r.json()).catch(() => []),
       fetch(`${API}/api/balia/calculator/prices`).then(r => r.json()).catch(() => ({ models: [], categories: [] })),
       fetch(`${API}/api/balia/card-options-settings`).then(r => r.json()).catch(() => ({ enabled_categories: [] })),
-    ]).then(([prods, api, opts]) => {
+      fetch(`${API}/api/balia/option-exclusions`).then(r => r.json()).catch(() => ({ exclusions: {} })),
+    ]).then(([prods, api, opts, excl]) => {
       setProducts(prods);
       setApiModels(api.models || []);
       setApiCategories(api.categories || []);
       setCardOptions(opts);
+      setExclusions(excl.exclusions || {});
       setLoading(false);
     });
   }, []);
@@ -370,6 +451,7 @@ export const BalieProducts = () => {
           apiModel={getApiModel(selected.api_model_id)}
           apiCategories={apiCategories}
           cardOptions={cardOptions}
+          exclusions={exclusions}
           onClose={() => setSelected(null)}
           onConfigure={() => handleConfigure(selected)}
         />

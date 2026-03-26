@@ -7,7 +7,7 @@ const schematicParts = [
 ];
 
 export const BalieSchematic = () => (
-  <section className="py-20 bg-[#0A0D12]" data-testid="balie-schematic">
+  <section id="budowa" className="py-20 bg-[#0A0D12]" data-testid="balie-schematic">
     <div className="max-w-7xl mx-auto px-4 sm:px-6">
       <div className="text-center mb-12">
         <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">

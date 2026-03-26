@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, ChevronLeft, ChevronRight, X, Send, Loader2, CheckCircle, GitCompareArrows, Ruler, Maximize2, Download, Flame, Zap } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { SaunaInstallment } from './SaunaInstallment';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -537,6 +538,11 @@ export const Models = () => {
                     <p className="text-sm text-[#595959] whitespace-pre-line">{selectedModel.variants[0].description}</p>
                   </div>
                 )}
+
+                {/* Installment compact */}
+                <div className="mb-6">
+                  <SaunaInstallment variant="compact" />
+                </div>
 
                 {/* CTA */}
                 {!showInquiryForm ? (
