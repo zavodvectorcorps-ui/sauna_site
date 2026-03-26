@@ -70,40 +70,42 @@ export const BalieStoveScheme = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           {/* SVG Diagram */}
-          <div className="bg-[#1A1E27] border border-white/5 p-8 flex items-center justify-center">
+          <div className="bg-[#111620] border border-white/5 p-8 flex items-center justify-center">
             <svg viewBox="0 0 500 350" className="w-full h-full max-h-[350px]" xmlns="http://www.w3.org/2000/svg">
+              {/* Background */}
+              <rect x="0" y="0" width="500" height="350" fill="#111620" rx="4" />
               {activeStove === 'external' ? (
                 <>
                   {/* External stove diagram */}
                   {/* Tub */}
-                  <path d="M60 100 Q60 250 80 260 L280 260 Q300 250 300 100 Z" fill="#1a3a5c" opacity="0.3" stroke="#4a8ab5" strokeWidth="2" />
-                  <path d="M60 100 L300 100" stroke="#4a8ab5" strokeWidth="2" />
-                  <text x="180" y="90" fill="#4a8ab5" fontSize="10" textAnchor="middle">Balia</text>
+                  <path d="M60 100 Q60 250 80 260 L280 260 Q300 250 300 100 Z" fill="#1a3a5c" opacity="0.5" stroke="#5ba8d5" strokeWidth="2" />
+                  <path d="M60 100 L300 100" stroke="#5ba8d5" strokeWidth="2" />
+                  <text x="180" y="90" fill="#5ba8d5" fontSize="10" textAnchor="middle">Balia</text>
 
                   {/* Water inside */}
                   {[120, 140, 160, 180, 200, 220, 240].map(y => (
-                    <path key={y} d={`M65 ${y} Q120 ${y-3} 180 ${y} Q240 ${y+3} 295 ${y}`} fill="none" stroke="#4a8ab5" strokeWidth="0.5" opacity="0.15" />
+                    <path key={y} d={`M65 ${y} Q120 ${y-3} 180 ${y} Q240 ${y+3} 295 ${y}`} fill="none" stroke="#5ba8d5" strokeWidth="0.5" opacity="0.2" />
                   ))}
 
                   {/* Stove (external) */}
-                  <rect x="350" y="100" width="80" height="160" rx="6" fill="#333" stroke="#D4AF37" strokeWidth="2" />
+                  <rect x="350" y="100" width="80" height="160" rx="6" fill="#444" stroke="#D4AF37" strokeWidth="2" />
                   <text x="390" y="130" fill="#D4AF37" fontSize="11" textAnchor="middle" fontWeight="bold">PIEC</text>
                   <text x="390" y="145" fill="#D4AF37" fontSize="8" textAnchor="middle">V4A</text>
 
                   {/* Fire inside stove */}
-                  <rect x="365" y="190" width="50" height="35" rx="3" fill="#1a1a1a" />
+                  <rect x="365" y="190" width="50" height="35" rx="3" fill="#222" />
                   <path d="M380 220 Q385 200 390 210 Q395 195 400 215" stroke="#D4AF37" strokeWidth="2" fill="none" />
-                  <circle cx="390" cy="207" r="8" fill="#D4AF37" opacity="0.2" />
+                  <circle cx="390" cy="207" r="8" fill="#D4AF37" opacity="0.3" />
 
                   {/* Chimney */}
-                  <rect x="382" y="40" width="16" height="60" rx="2" fill="#444" stroke="#555" strokeWidth="1" />
+                  <rect x="382" y="40" width="16" height="60" rx="2" fill="#555" stroke="#666" strokeWidth="1" />
                   <path d="M385 45 Q390 35 395 45" stroke="#888" strokeWidth="1" fill="none" />
                   <text x="390" y="32" fill="#888" fontSize="8" textAnchor="middle">komin</text>
 
                   {/* Cold water pipe (blue) - from tub to stove bottom */}
-                  <path d="M300 200 L330 200 Q345 200 345 190 L345 170 Q345 160 355 160 L350 160" fill="none" stroke="#4a8ab5" strokeWidth="3" />
-                  <polygon points="347,155 353,160 347,165" fill="#4a8ab5" />
-                  <text x="325" y="215" fill="#4a8ab5" fontSize="9" fontWeight="bold">zimna woda</text>
+                  <path d="M300 200 L330 200 Q345 200 345 190 L345 170 Q345 160 355 160 L350 160" fill="none" stroke="#5ba8d5" strokeWidth="3" />
+                  <polygon points="347,155 353,160 347,165" fill="#5ba8d5" />
+                  <text x="325" y="215" fill="#5ba8d5" fontSize="9" fontWeight="bold">zimna woda</text>
 
                   {/* Hot water pipe (red) - from stove top back to tub */}
                   <path d="M350 130 L340 130 Q325 130 325 140 L325 150 Q325 160 315 160 L300 160" fill="none" stroke="#e85050" strokeWidth="3" />
@@ -122,33 +124,33 @@ export const BalieStoveScheme = () => {
                 <>
                   {/* Internal stove diagram */}
                   {/* Tub - wider */}
-                  <path d="M60 100 Q60 250 80 260 L380 260 Q400 250 400 100 Z" fill="#1a3a5c" opacity="0.3" stroke="#4a8ab5" strokeWidth="2" />
-                  <path d="M60 100 L400 100" stroke="#4a8ab5" strokeWidth="2" />
-                  <text x="180" y="90" fill="#4a8ab5" fontSize="10" textAnchor="middle">Balia</text>
+                  <path d="M60 100 Q60 250 80 260 L380 260 Q400 250 400 100 Z" fill="#1a3a5c" opacity="0.5" stroke="#5ba8d5" strokeWidth="2" />
+                  <path d="M60 100 L400 100" stroke="#5ba8d5" strokeWidth="2" />
+                  <text x="180" y="90" fill="#5ba8d5" fontSize="10" textAnchor="middle">Balia</text>
 
                   {/* Water */}
                   {[120, 140, 160, 180, 200, 220, 240].map(y => (
-                    <path key={y} d={`M65 ${y} Q165 ${y-3} 260 ${y} Q340 ${y+3} 395 ${y}`} fill="none" stroke="#4a8ab5" strokeWidth="0.5" opacity="0.15" />
+                    <path key={y} d={`M65 ${y} Q165 ${y-3} 260 ${y} Q340 ${y+3} 395 ${y}`} fill="none" stroke="#5ba8d5" strokeWidth="0.5" opacity="0.2" />
                   ))}
 
                   {/* Internal stove (inside tub) */}
-                  <rect x="310" y="110" width="60" height="140" rx="4" fill="#333" stroke="#D4AF37" strokeWidth="2" />
+                  <rect x="310" y="110" width="60" height="140" rx="4" fill="#444" stroke="#D4AF37" strokeWidth="2" />
                   <text x="340" y="135" fill="#D4AF37" fontSize="10" textAnchor="middle" fontWeight="bold">PIEC</text>
 
                   {/* Fire */}
-                  <rect x="320" y="190" width="40" height="30" rx="2" fill="#1a1a1a" />
+                  <rect x="320" y="190" width="40" height="30" rx="2" fill="#222" />
                   <path d="M332 216 Q337 198 340 208 Q343 195 348 212" stroke="#D4AF37" strokeWidth="2" fill="none" />
 
                   {/* Chimney */}
-                  <rect x="333" y="40" width="14" height="60" rx="2" fill="#444" stroke="#555" strokeWidth="1" />
-                  <text x="340" y="32" fill="#888" fontSize="8" textAnchor="middle">komin</text>
+                  <rect x="333" y="40" width="14" height="60" rx="2" fill="#555" stroke="#666" strokeWidth="1" />
+                  <text x="340" y="32" fill="#999" fontSize="8" textAnchor="middle">komin</text>
 
                   {/* Safety fence */}
-                  <rect x="295" y="108" width="4" height="155" rx="1" fill="#666" />
+                  <rect x="295" y="108" width="4" height="155" rx="1" fill="#777" />
                   {[120, 145, 170, 195, 220, 245].map(y => (
-                    <rect key={y} x="296" y={y} width="12" height="2" rx="0.5" fill="#555" />
+                    <rect key={y} x="296" y={y} width="12" height="2" rx="0.5" fill="#666" />
                   ))}
-                  <text x="290" y="280" fill="#888" fontSize="7" textAnchor="middle">ogrodzenie</text>
+                  <text x="290" y="280" fill="#999" fontSize="7" textAnchor="middle">ogrodzenie</text>
 
                   {/* Heat arrows radiating from stove */}
                   {[140, 170, 200, 230].map(y => (
