@@ -14,54 +14,71 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
   const videoRef = useRef(null);
   const [transform, setTransform] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
-  const isMobile = typeof window !== 'undefined' && ('ontouchstart' in window || window.innerWidth < 768);
+  const touchStartRef = useRef({ x: 0, y: 0 });
 
-  // On mobile: autoplay video as background when card is visible
-  useEffect(() => {
-    if (!isMobile || !video || !videoRef.current) return;
-    const el = videoRef.current;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        el.play().catch(() => {});
-      } else {
-        el.pause();
-      }
-    }, { threshold: 0.3 });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [isMobile, video]);
-
-  const handleMouseMove = useCallback((e) => {
-    if (!cardRef.current || isMobile) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    setTransform({ x: x * -12, y: y * -8 });
-  }, [isMobile]);
-
-  const handleMouseEnter = useCallback(() => {
-    if (isMobile) return;
-    setHovered(true);
+  const playVideo = useCallback(() => {
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
       videoRef.current.play().catch(() => {});
     }
-  }, [isMobile]);
+  }, []);
 
-  const handleMouseLeave = useCallback(() => {
-    if (isMobile) return;
-    setHovered(false);
-    setTransform({ x: 0, y: 0 });
+  const stopVideo = useCallback(() => {
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
     }
-  }, [isMobile]);
+  }, []);
+
+  const handleMouseMove = useCallback((e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    setTransform({ x: x * -12, y: y * -8 });
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    setHovered(true);
+    playVideo();
+  }, [playVideo]);
+
+  const handleMouseLeave = useCallback(() => {
+    setHovered(false);
+    setTransform({ x: 0, y: 0 });
+    stopVideo();
+  }, [stopVideo]);
+
+  // Touch events for mobile
+  const handleTouchStart = useCallback((e) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    setHovered(true);
+    playVideo();
+  }, [playVideo]);
+
+  const handleTouchMove = useCallback((e) => {
+    if (!cardRef.current) return;
+    const touch = e.touches[0];
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((touch.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((touch.clientY - rect.top) / rect.height - 0.5) * 2;
+    setTransform({ x: x * -12, y: y * -8 });
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    setHovered(false);
+    setTransform({ x: 0, y: 0 });
+    stopVideo();
+    // Only navigate if not a drag (small movement)
+    const touch = e.changedTouches[0];
+    const dx = Math.abs(touch.clientX - touchStartRef.current.x);
+    const dy = Math.abs(touch.clientY - touchStartRef.current.y);
+    if (dx < 10 && dy < 10) onClick();
+  }, [stopVideo, onClick]);
 
   const isSauna = testId === 'card-sauny';
   const glowColor = isSauna ? 'rgba(198,168,124' : 'rgba(212,175,55';
-  const showVideo = isMobile ? !!video : (!!video && hovered);
-  const hideImage = isMobile ? !!video : (!!video && hovered);
 
   return (
     <motion.div
@@ -73,16 +90,19 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       className="group relative overflow-hidden cursor-pointer min-h-[400px] md:min-h-[480px] flex flex-col justify-end"
       data-testid={testId}
     >
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10 group-hover:to-black/80 transition-all duration-700" />
-      {/* Parallax image — hidden on mobile if video available */}
+      {/* Parallax image */}
       <img
         src={img}
         alt={title}
-        className={`absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-all duration-[1.2s] ease-out ${hideImage ? 'opacity-0' : 'opacity-100'} ${!video && !isMobile ? 'group-hover:scale-110' : ''}`}
+        className={`absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-all duration-[1.2s] ease-out ${video ? (hovered ? 'opacity-0' : 'opacity-100') : 'group-hover:scale-110'}`}
         style={{
           objectPosition: imgPos,
           transform: !video && hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.1)` : 'translate(0,0) scale(1)',
@@ -97,9 +117,9 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
           loop
           playsInline
           preload="auto"
-          className={`absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-opacity duration-700 ${showVideo ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-opacity duration-700 ${hovered ? 'opacity-100' : 'opacity-0'}`}
           style={{
-            transform: !isMobile && hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.05)` : 'translate(0,0) scale(1)',
+            transform: hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.05)` : 'translate(0,0) scale(1)',
             transition: 'transform 1.2s ease-out, opacity 0.7s ease',
           }}
         />
