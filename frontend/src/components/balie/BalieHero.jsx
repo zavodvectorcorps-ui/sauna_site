@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, FileDown } from 'lucide-react';
 import { BalieCatalogGate } from './BalieCatalogGate';
+import { useSettings } from '../../context/SettingsContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=1920&q=80";
 
 export const BalieHero = () => {
+  const { baliaHero } = useSettings();
   const [content, setContent] = useState({
     badge: 'Recznie robione w Polsce',
     headline: 'Luksus w Twoim Ogrodzie',
@@ -27,21 +29,22 @@ export const BalieHero = () => {
   const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
-    fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
-      if (data?.hero) {
-        setContent(prev => ({
-          badge: data.hero.badge || prev.badge,
-          headline: data.hero.headline || prev.headline,
-          subheadline: data.hero.subheadline || prev.subheadline,
-          ctaPrimary: data.hero.cta_primary || prev.ctaPrimary,
-          ctaSecondary: data.hero.cta_secondary || prev.ctaSecondary,
-          stats: data.hero.stats?.length > 0 ? data.hero.stats : prev.stats,
-          background_image: data.hero.background_image || '',
-          background_video: data.hero.background_video || '',
-          bg_mode: data.hero.bg_mode || 'photo',
-        }));
-      }
-    }).catch(() => {});
+    if (baliaHero) {
+      setContent(prev => ({
+        badge: baliaHero.badge || prev.badge,
+        headline: baliaHero.headline || prev.headline,
+        subheadline: baliaHero.subheadline || prev.subheadline,
+        ctaPrimary: baliaHero.cta_primary || prev.ctaPrimary,
+        ctaSecondary: baliaHero.cta_secondary || prev.ctaSecondary,
+        stats: baliaHero.stats?.length > 0 ? baliaHero.stats : prev.stats,
+        background_image: baliaHero.background_image || '',
+        background_video: baliaHero.background_video || '',
+        bg_mode: baliaHero.bg_mode || 'photo',
+      }));
+    }
+  }, [baliaHero]);
+
+  useEffect(() => {
     fetch(`${API}/api/balia-catalog/info`).then(r => r.json()).then(d => setCatalogAvailable(d?.available)).catch(() => {});
   }, []);
 

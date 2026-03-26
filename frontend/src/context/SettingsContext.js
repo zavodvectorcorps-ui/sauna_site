@@ -11,6 +11,7 @@ export const SettingsProvider = ({ children }) => {
   const [calculatorConfig, setCalculatorConfig] = useState(null);
   const [sectionOrder, setSectionOrder] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [baliaHero, setBaliaHero] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,13 +20,14 @@ export const SettingsProvider = ({ children }) => {
 
   const fetchAllSettings = async () => {
     try {
-      const [siteRes, heroRes, aboutRes, calcRes, sectionsRes, reviewsRes] = await Promise.all([
+      const [siteRes, heroRes, aboutRes, calcRes, sectionsRes, reviewsRes, baliaRes] = await Promise.all([
         fetch(`${API_URL}/api/settings/site`),
         fetch(`${API_URL}/api/settings/hero`),
         fetch(`${API_URL}/api/settings/about`),
         fetch(`${API_URL}/api/settings/calculator`),
         fetch(`${API_URL}/api/settings/sections`),
         fetch(`${API_URL}/api/reviews`),
+        fetch(`${API_URL}/api/balia/content`),
       ]);
 
       setSiteSettings(await siteRes.json());
@@ -34,6 +36,8 @@ export const SettingsProvider = ({ children }) => {
       setCalculatorConfig(await calcRes.json());
       setSectionOrder(await sectionsRes.json());
       setReviews(await reviewsRes.json());
+      const baliaData = await baliaRes.json();
+      setBaliaHero(baliaData?.hero || null);
     } catch (error) {
       console.error('Error fetching settings:', error);
     }
@@ -48,6 +52,7 @@ export const SettingsProvider = ({ children }) => {
       calculatorConfig,
       sectionOrder,
       reviews,
+      baliaHero,
       loading,
       refreshSettings: fetchAllSettings,
     }}>
