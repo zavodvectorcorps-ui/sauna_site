@@ -545,28 +545,40 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
               </div>
             </div>
 
-            {/* Image upload */}
+            {/* Image: SVG style selector + custom upload */}
             <div className="mb-4">
-              <label className="block text-xs text-gray-500 mb-2">Фото схемы (заменит SVG-диаграмму)</label>
-              <div className="flex items-center gap-3">
-                {content.schematic.image ? (
-                  <div className="relative w-40 h-28 border border-gray-200 overflow-hidden bg-[#1A1E27]">
-                    <img src={content.schematic.image} alt="schema" className="w-full h-full object-contain" />
-                    <button onClick={() => updateSchematic('image', null)} className="absolute top-1 right-1 bg-red-500 text-white p-0.5 rounded-full" data-testid="schematic-remove-image">
-                      <X size={12} />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="w-40 h-28 border-2 border-dashed border-gray-200 flex items-center justify-center">
-                    <span className="text-xs text-gray-400">SVG по умолчанию</span>
-                  </div>
-                )}
-                <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-[#C6A87C] text-white text-xs font-medium hover:bg-[#B09060]" data-testid="schematic-upload-btn">
-                  {uploading === 'schematic' ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-                  Загрузить фото
+              <label className="block text-xs text-gray-500 mb-2">Изображение схемы</label>
+              <div className="grid grid-cols-4 gap-2 mb-3">
+                {[
+                  { id: 'default', label: 'Классическая' },
+                  { id: 'minimal', label: 'Минимализм' },
+                  { id: 'blueprint', label: 'Чертёж' },
+                ].map(style => (
+                  <button key={style.id} onClick={() => { updateSchematic('svg_style', style.id); updateSchematic('image', null); }}
+                    className={`p-2 border text-xs font-medium transition-colors ${
+                      !content.schematic.image && (content.schematic.svg_style || 'default') === style.id
+                        ? 'bg-[#C6A87C] text-white border-[#C6A87C]'
+                        : 'border-gray-200 text-gray-500 hover:border-[#C6A87C]'
+                    }`} data-testid={`schematic-style-${style.id}`}>
+                    {style.label}
+                  </button>
+                ))}
+                <label className={`p-2 border text-xs font-medium transition-colors cursor-pointer text-center ${
+                  content.schematic.image ? 'bg-[#C6A87C] text-white border-[#C6A87C]' : 'border-gray-200 text-gray-500 hover:border-[#C6A87C]'
+                }`} data-testid="schematic-upload-btn">
+                  {uploading === 'schematic' ? <Loader2 size={14} className="animate-spin inline" /> : <Upload size={14} className="inline mr-1" />}
+                  Своё фото
                   <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && handleImageUpload(e.target.files[0], 'schematic')} />
                 </label>
               </div>
+              {content.schematic.image && (
+                <div className="relative w-40 h-28 border border-gray-200 overflow-hidden bg-[#1A1E27] inline-block">
+                  <img src={content.schematic.image} alt="schema" className="w-full h-full object-contain" />
+                  <button onClick={() => updateSchematic('image', null)} className="absolute top-1 right-1 bg-red-500 text-white p-0.5 rounded-full" data-testid="schematic-remove-image">
+                    <X size={12} />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Parts */}
@@ -619,28 +631,38 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
                   </div>
                 </div>
 
-                {/* Image upload for this stove type */}
+                {/* Image: SVG style + upload */}
                 <div className="mb-3">
-                  <label className="block text-xs text-gray-500 mb-2">Фото (заменит SVG-диаграмму)</label>
-                  <div className="flex items-center gap-3">
-                    {stove.image ? (
-                      <div className="relative w-36 h-24 border border-gray-200 overflow-hidden bg-[#1A1E27]">
-                        <img src={stove.image} alt={stove.title} className="w-full h-full object-contain" />
-                        <button onClick={() => updateStoveType(si, 'image', null)} className="absolute top-1 right-1 bg-red-500 text-white p-0.5 rounded-full">
-                          <X size={12} />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="w-36 h-24 border-2 border-dashed border-gray-200 flex items-center justify-center">
-                        <span className="text-[10px] text-gray-400">SVG по умолчанию</span>
-                      </div>
-                    )}
-                    <label className="cursor-pointer flex items-center gap-2 px-3 py-1.5 bg-[#C6A87C] text-white text-xs font-medium hover:bg-[#B09060]" data-testid={`stove-upload-${stove.id}`}>
-                      {uploading === `stove_${si}` ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
-                      Загрузить
+                  <label className="block text-xs text-gray-500 mb-2">Изображение</label>
+                  <div className="flex gap-2 mb-2 flex-wrap">
+                    {[
+                      { id: 'default', label: 'Классическая' },
+                      { id: 'minimal', label: 'Минимализм' },
+                      { id: 'detailed', label: 'Детальная' },
+                    ].map(style => (
+                      <button key={style.id} onClick={() => { updateStoveType(si, 'svg_style', style.id); updateStoveType(si, 'image', null); }}
+                        className={`px-2 py-1 border text-[11px] font-medium transition-colors ${
+                          !stove.image && (stove.svg_style || 'default') === style.id
+                            ? 'bg-[#C6A87C] text-white border-[#C6A87C]'
+                            : 'border-gray-200 text-gray-500 hover:border-[#C6A87C]'
+                        }`} data-testid={`stove-style-${stove.id}-${style.id}`}>
+                        {style.label}
+                      </button>
+                    ))}
+                    <label className={`px-2 py-1 border text-[11px] font-medium transition-colors cursor-pointer ${
+                      stove.image ? 'bg-[#C6A87C] text-white border-[#C6A87C]' : 'border-gray-200 text-gray-500 hover:border-[#C6A87C]'
+                    }`} data-testid={`stove-upload-${stove.id}`}>
+                      {uploading === `stove_${si}` ? <Loader2 size={10} className="animate-spin inline" /> : <Upload size={10} className="inline mr-1" />}
+                      Фото
                       <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && handleImageUpload(e.target.files[0], `stove_${si}`)} />
                     </label>
                   </div>
+                  {stove.image && (
+                    <div className="relative w-36 h-24 border border-gray-200 overflow-hidden bg-[#1A1E27] inline-block">
+                      <img src={stove.image} alt={stove.title} className="w-full h-full object-contain" />
+                      <button onClick={() => updateStoveType(si, 'image', null)} className="absolute top-1 right-1 bg-red-500 text-white p-0.5 rounded-full"><X size={12} /></button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Features */}

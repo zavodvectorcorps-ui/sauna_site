@@ -85,6 +85,120 @@ const InternalSvg = () => (
   </svg>
 );
 
+// Minimal style SVGs
+const ExternalMinimalSvg = () => (
+  <svg viewBox="0 0 500 350" className="w-full h-full max-h-[350px]" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="500" height="350" fill="#111620" rx="4" />
+    <ellipse cx="200" cy="180" rx="120" ry="70" fill="none" stroke="#D4AF37" strokeWidth="1.5" />
+    <ellipse cx="200" cy="180" rx="120" ry="10" fill="#D4AF37" opacity="0.1" />
+    <text x="200" y="185" fill="white" fontSize="10" textAnchor="middle" opacity="0.4">balia</text>
+    {/* External stove circle */}
+    <circle cx="390" cy="180" r="40" fill="none" stroke="#D4AF37" strokeWidth="1.5" />
+    <circle cx="390" cy="180" r="15" fill="#D4AF37" opacity="0.2" />
+    <text x="390" y="184" fill="#D4AF37" fontSize="9" textAnchor="middle" fontWeight="bold">P</text>
+    <text x="390" y="235" fill="white" fontSize="8" textAnchor="middle" opacity="0.4">piec zewnetrzny</text>
+    {/* Connection pipes */}
+    <path d="M320 165 L350 165" stroke="#5ba8d5" strokeWidth="2" />
+    <path d="M320 195 L350 195" stroke="#e85050" strokeWidth="2" />
+    <circle cx="335" cy="165" r="2" fill="#5ba8d5" />
+    <circle cx="335" cy="195" r="2" fill="#e85050" />
+    <text x="335" y="158" fill="#5ba8d5" fontSize="7" textAnchor="middle">zimna</text>
+    <text x="335" y="212" fill="#e85050" fontSize="7" textAnchor="middle">ciepla</text>
+    {/* Chimney line */}
+    <line x1="390" y1="140" x2="390" y2="90" stroke="#D4AF37" strokeWidth="1" opacity="0.5" />
+    <circle cx="390" cy="85" r="5" fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.5" />
+    <text x="250" y="300" fill="white" fontSize="10" textAnchor="middle" opacity="0.3">Podwojny obieg wody</text>
+  </svg>
+);
+
+const InternalMinimalSvg = () => (
+  <svg viewBox="0 0 500 350" className="w-full h-full max-h-[350px]" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="500" height="350" fill="#111620" rx="4" />
+    <ellipse cx="250" cy="180" rx="150" ry="80" fill="none" stroke="#D4AF37" strokeWidth="1.5" />
+    <ellipse cx="250" cy="180" rx="150" ry="10" fill="#D4AF37" opacity="0.1" />
+    <text x="180" y="185" fill="white" fontSize="10" textAnchor="middle" opacity="0.4">balia</text>
+    {/* Internal stove */}
+    <rect x="320" y="140" width="40" height="70" rx="4" fill="none" stroke="#D4AF37" strokeWidth="1.5" />
+    <text x="340" y="180" fill="#D4AF37" fontSize="8" textAnchor="middle" fontWeight="bold">PIEC</text>
+    {/* Fence */}
+    <line x1="310" y1="130" x2="310" y2="220" stroke="white" strokeWidth="1" opacity="0.3" strokeDasharray="4 3" />
+    <text x="305" y="240" fill="white" fontSize="7" textAnchor="middle" opacity="0.3">ogrodzenie</text>
+    {/* Heat waves */}
+    {[155,170,185,200].map(y => (
+      <path key={y} d={`M318 ${y} Q300 ${y} 290 ${y}`} stroke="#e85050" strokeWidth="1" opacity="0.4" strokeDasharray="3 2" />
+    ))}
+    <text x="270" y="165" fill="#e85050" fontSize="7" textAnchor="middle" opacity="0.6">cieplo</text>
+    {/* Chimney */}
+    <line x1="340" y1="140" x2="340" y2="90" stroke="#D4AF37" strokeWidth="1" opacity="0.5" />
+    <circle cx="340" cy="85" r="5" fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.5" />
+    <text x="250" y="300" fill="white" fontSize="10" textAnchor="middle" opacity="0.3">Bezposredni kontakt z woda</text>
+  </svg>
+);
+
+// Detailed/technical style SVGs
+const ExternalDetailedSvg = () => (
+  <svg viewBox="0 0 500 350" className="w-full h-full max-h-[350px]" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="500" height="350" fill="#0a1628" />
+    {Array.from({length: 22}, (_, i) => <line key={`h${i}`} x1="0" y1={i*16} x2="500" y2={i*16} stroke="#1a3050" strokeWidth="0.5" />)}
+    {Array.from({length: 31}, (_, i) => <line key={`v${i}`} x1={i*16} y1="0" x2={i*16} y2="350" stroke="#1a3050" strokeWidth="0.5" />)}
+    {/* Tub */}
+    <path d="M60 100 Q60 250 80 260 L280 260 Q300 250 300 100" fill="none" stroke="#4a9eff" strokeWidth="1.5" />
+    <line x1="60" y1="100" x2="300" y2="100" stroke="#4a9eff" strokeWidth="1" strokeDasharray="6 3" />
+    <text x="180" y="95" fill="#4a9eff" fontSize="8" textAnchor="middle">balia — przekroj</text>
+    {/* Stove */}
+    <rect x="340" y="100" width="80" height="160" rx="4" fill="none" stroke="#ff6b35" strokeWidth="1.5" />
+    <text x="380" y="130" fill="#ff6b35" fontSize="9" textAnchor="middle" fontWeight="bold">PIEC V4A</text>
+    <rect x="355" y="195" width="50" height="30" fill="none" stroke="#ff6b35" strokeWidth="1" strokeDasharray="3 2" />
+    <text x="380" y="214" fill="#ff6b35" fontSize="7" textAnchor="middle">palenisko</text>
+    {/* Pipes with labels */}
+    <path d="M300 175 L340 175" stroke="#4a9eff" strokeWidth="2.5" />
+    <text x="320" y="168" fill="#4a9eff" fontSize="7" textAnchor="middle">IN (zimna)</text>
+    <path d="M340 135 L300 135" stroke="#ff6b35" strokeWidth="2.5" />
+    <text x="320" y="128" fill="#ff6b35" fontSize="7" textAnchor="middle">OUT (ciepla)</text>
+    {/* Chimney */}
+    <rect x="372" y="40" width="16" height="60" fill="none" stroke="#ff6b35" strokeWidth="1" strokeDasharray="4 2" />
+    <text x="380" y="35" fill="#ff6b35" fontSize="6" textAnchor="middle">komin</text>
+    {/* Dimension */}
+    <line x1="40" y1="100" x2="40" y2="260" stroke="#ff6b35" strokeWidth="0.8" />
+    <text x="30" y="185" fill="#ff6b35" fontSize="7" textAnchor="middle" transform="rotate(-90 30 185)">1000mm</text>
+    <text x="250" y="300" fill="#4a9eff" fontSize="9" textAnchor="middle" opacity="0.5">System podwojnego obiegu</text>
+  </svg>
+);
+
+const InternalDetailedSvg = () => (
+  <svg viewBox="0 0 500 350" className="w-full h-full max-h-[350px]" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="500" height="350" fill="#0a1628" />
+    {Array.from({length: 22}, (_, i) => <line key={`h${i}`} x1="0" y1={i*16} x2="500" y2={i*16} stroke="#1a3050" strokeWidth="0.5" />)}
+    {Array.from({length: 31}, (_, i) => <line key={`v${i}`} x1={i*16} y1="0" x2={i*16} y2="350" stroke="#1a3050" strokeWidth="0.5" />)}
+    {/* Wider tub */}
+    <path d="M60 100 Q60 250 80 260 L380 260 Q400 250 400 100" fill="none" stroke="#4a9eff" strokeWidth="1.5" />
+    <line x1="60" y1="100" x2="400" y2="100" stroke="#4a9eff" strokeWidth="1" strokeDasharray="6 3" />
+    <text x="180" y="95" fill="#4a9eff" fontSize="8" textAnchor="middle">balia — przekroj</text>
+    {/* Internal stove */}
+    <rect x="310" y="110" width="60" height="140" rx="3" fill="none" stroke="#ff6b35" strokeWidth="1.5" />
+    <text x="340" y="135" fill="#ff6b35" fontSize="8" textAnchor="middle" fontWeight="bold">PIEC</text>
+    {/* Fence */}
+    <line x1="300" y1="108" x2="300" y2="255" stroke="#4a9eff" strokeWidth="1" strokeDasharray="3 2" />
+    <text x="295" y="270" fill="#4a9eff" fontSize="6" textAnchor="end">ogrodzenie</text>
+    {/* Heat arrows */}
+    {[140,165,190,215,240].map(y => (
+      <path key={y} d={`M308 ${y} L280 ${y}`} stroke="#ff6b35" strokeWidth="1" opacity="0.6" markerEnd="url(#arrD)" />
+    ))}
+    <text x="270" y="175" fill="#ff6b35" fontSize="7" textAnchor="end" opacity="0.7">cieplo</text>
+    {/* Chimney */}
+    <rect x="333" y="40" width="14" height="60" fill="none" stroke="#ff6b35" strokeWidth="1" strokeDasharray="4 2" />
+    <text x="340" y="35" fill="#ff6b35" fontSize="6" textAnchor="middle">komin</text>
+    <text x="160" y="190" fill="#4a9eff" fontSize="9" textAnchor="middle" opacity="0.4">strefa kapieli</text>
+    <text x="230" y="300" fill="#4a9eff" fontSize="9" textAnchor="middle" opacity="0.5">Bezposredni kontakt z woda</text>
+    <defs><marker id="arrD" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4" fill="#ff6b35" opacity="0.6" /></marker></defs>
+  </svg>
+);
+
+const stoveSvgs = {
+  external: { default: ExternalSvg, minimal: ExternalMinimalSvg, detailed: ExternalDetailedSvg },
+  internal: { default: InternalSvg, minimal: InternalMinimalSvg, detailed: InternalDetailedSvg },
+};
+
 export const BalieStoveScheme = () => {
   const [activeStove, setActiveStove] = useState('external');
   const [stoveTypes, setStoveTypes] = useState(defaultStoveTypes);
@@ -134,7 +248,12 @@ export const BalieStoveScheme = () => {
             {active?.image ? (
               <img src={active.image} alt={active.title} className="w-full h-full object-contain max-h-[350px]" />
             ) : (
-              activeStove === 'external' ? <ExternalSvg /> : <InternalSvg />
+              (() => {
+                const style = active?.svg_style || 'default';
+                const SvgMap = stoveSvgs[activeStove] || stoveSvgs.external;
+                const Svg = SvgMap[style] || SvgMap.default;
+                return <Svg />;
+              })()
             )}
           </div>
 

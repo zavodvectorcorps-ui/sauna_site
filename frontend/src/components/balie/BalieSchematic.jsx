@@ -39,24 +39,97 @@ const SvgDiagram = () => (
     <text x="425" y="135" fill="#888" fontSize="7" textAnchor="middle">komin</text>
     <circle cx="425" cy="270" r="6" fill="#D4AF37" opacity="0.4" />
     <text x="425" y="345" fill="#D4AF37" fontSize="8" textAnchor="middle" fontWeight="bold">PIEC</text>
-    <path d="M370 250 Q385 250 390 240 Q395 230 400 230" fill="none" stroke="#4a8ab5" strokeWidth="1.5" markerEnd="url(#arr)" />
-    <path d="M400 280 Q395 290 385 290 Q375 290 370 280" fill="none" stroke="#e85050" strokeWidth="1.5" markerEnd="url(#arr-r)" />
-    <text x="385" y="220" fill="#4a8ab5" fontSize="6" textAnchor="middle">zimna</text>
-    <text x="385" y="305" fill="#e85050" fontSize="6" textAnchor="middle">ciepla</text>
     <defs>
       <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#4a8ab5" /></marker>
       <marker id="arr-r" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#e85050" /></marker>
     </defs>
-    <path d="M82 145 L82 315" stroke="#D4AF37" strokeWidth="3" strokeDasharray="2 3" opacity="0.4" />
-    <text x="75" y="155" fill="#D4AF37" fontSize="6" textAnchor="end" opacity="0.6">izolacja</text>
   </svg>
 );
+
+const MinimalSvg = () => (
+  <svg viewBox="0 0 500 400" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+    {/* Minimal clean style */}
+    <rect x="80" y="130" width="250" height="200" rx="20" fill="none" stroke="#D4AF37" strokeWidth="2" />
+    <ellipse cx="205" cy="180" rx="100" ry="10" fill="#D4AF37" opacity="0.15" />
+    <text x="205" y="185" fill="#D4AF37" fontSize="9" textAnchor="middle" opacity="0.6">woda</text>
+    {/* Water fill */}
+    <rect x="82" y="180" width="246" height="148" rx="18" fill="#1a3a5c" opacity="0.25" />
+    {/* Dimension line */}
+    <line x1="60" y1="135" x2="60" y2="325" stroke="white" strokeWidth="0.5" opacity="0.3" />
+    <text x="50" y="240" fill="white" fontSize="9" textAnchor="middle" transform="rotate(-90 50 240)" opacity="0.4">100 cm</text>
+    {/* Cladding lines */}
+    <rect x="78" y="128" width="254" height="4" rx="2" fill="#D4AF37" opacity="0.3" />
+    <rect x="78" y="328" width="254" height="4" rx="2" fill="#D4AF37" opacity="0.3" />
+    {/* Steps */}
+    {[0,1,2].map(i => <rect key={i} x={335 + i*15} y={250 + i*25} width={40 - i*5} height="8" rx="2" fill="#D4AF37" opacity={0.15 + i*0.05} />)}
+    <text x="370" y="335" fill="white" fontSize="7" textAnchor="middle" opacity="0.3">schody</text>
+    {/* Stove */}
+    <circle cx="420" cy="260" r="35" fill="none" stroke="#D4AF37" strokeWidth="1.5" opacity="0.6" />
+    <circle cx="420" cy="260" r="12" fill="#D4AF37" opacity="0.2" />
+    <text x="420" y="264" fill="#D4AF37" fontSize="8" textAnchor="middle" fontWeight="bold">P</text>
+    <text x="420" y="310" fill="white" fontSize="7" textAnchor="middle" opacity="0.4">piec</text>
+    {/* Chimney */}
+    <line x1="420" y1="225" x2="420" y2="150" stroke="#D4AF37" strokeWidth="1" opacity="0.4" />
+    <circle cx="420" cy="145" r="5" fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.4" />
+    {/* Frame label */}
+    <rect x="80" y="360" width="340" height="20" rx="3" fill="#D4AF37" opacity="0.08" />
+    <text x="250" y="374" fill="white" fontSize="8" textAnchor="middle" opacity="0.3">Metalowy stelaz + termodrewno</text>
+  </svg>
+);
+
+const BlueprintSvg = () => (
+  <svg viewBox="0 0 500 400" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+    {/* Blueprint/technical drawing style */}
+    <rect x="0" y="0" width="500" height="400" fill="#0a1628" />
+    {/* Grid */}
+    {Array.from({length: 25}, (_, i) => <line key={`h${i}`} x1="0" y1={i*16} x2="500" y2={i*16} stroke="#1a3050" strokeWidth="0.5" />)}
+    {Array.from({length: 31}, (_, i) => <line key={`v${i}`} x1={i*16} y1="0" x2={i*16} y2="400" stroke="#1a3050" strokeWidth="0.5" />)}
+    {/* Tub cross-section */}
+    <path d="M80 150 L80 300 Q80 320 100 320 L340 320 Q360 320 360 300 L360 150" fill="none" stroke="#4a9eff" strokeWidth="1.5" />
+    <line x1="80" y1="150" x2="360" y2="150" stroke="#4a9eff" strokeWidth="1.5" strokeDasharray="6 3" />
+    {/* Water level */}
+    <path d="M82 190 L358 190" stroke="#4a9eff" strokeWidth="0.8" strokeDasharray="3 2" />
+    <text x="220" y="185" fill="#4a9eff" fontSize="7" textAnchor="middle" opacity="0.6">poziom wody</text>
+    {/* Dimension arrows */}
+    <line x1="45" y1="150" x2="45" y2="320" stroke="#ff6b35" strokeWidth="0.8" />
+    <polygon points="42,153 48,153 45,145" fill="#ff6b35" />
+    <polygon points="42,317 48,317 45,325" fill="#ff6b35" />
+    <text x="35" y="240" fill="#ff6b35" fontSize="8" textAnchor="middle" transform="rotate(-90 35 240)">1000 mm</text>
+    <line x1="80" y1="345" x2="360" y2="345" stroke="#ff6b35" strokeWidth="0.8" />
+    <polygon points="83,342 83,348 75,345" fill="#ff6b35" />
+    <polygon points="357,342 357,348 365,345" fill="#ff6b35" />
+    <text x="220" y="358" fill="#ff6b35" fontSize="8" textAnchor="middle">2250 mm</text>
+    {/* Frame corners */}
+    {[[78,148],[78,322],[362,148],[362,322]].map(([x,y], i) => (
+      <g key={i}><line x1={x-5} y1={y} x2={x+5} y2={y} stroke="#4a9eff" strokeWidth="0.5" /><line x1={x} y1={y-5} x2={x} y2={y+5} stroke="#4a9eff" strokeWidth="0.5" /></g>
+    ))}
+    {/* Stove box */}
+    <rect x="380" y="180" width="60" height="140" rx="2" fill="none" stroke="#ff6b35" strokeWidth="1.5" />
+    <line x1="380" y1="240" x2="440" y2="240" stroke="#ff6b35" strokeWidth="0.5" strokeDasharray="3 2" />
+    <text x="410" y="210" fill="#ff6b35" fontSize="8" textAnchor="middle">PIEC</text>
+    <text x="410" y="225" fill="#ff6b35" fontSize="7" textAnchor="middle" opacity="0.6">V4A</text>
+    {/* Chimney */}
+    <rect x="402" y="100" width="16" height="80" fill="none" stroke="#ff6b35" strokeWidth="1" strokeDasharray="4 2" />
+    <text x="410" y="95" fill="#ff6b35" fontSize="6" textAnchor="middle">komin</text>
+    {/* Pipes */}
+    <path d="M360 220 L378 220" stroke="#4a9eff" strokeWidth="1.5" />
+    <path d="M360 260 L378 260" stroke="#ff6b35" strokeWidth="1.5" />
+    <text x="368" y="215" fill="#4a9eff" fontSize="5" textAnchor="middle">zimna</text>
+    <text x="368" y="275" fill="#ff6b35" fontSize="5" textAnchor="middle">ciepla</text>
+    {/* Title block */}
+    <rect x="310" y="370" width="180" height="25" fill="none" stroke="#4a9eff" strokeWidth="0.5" />
+    <text x="400" y="386" fill="#4a9eff" fontSize="8" textAnchor="middle" opacity="0.7">WM-BALIA — Przekroj</text>
+  </svg>
+);
+
+const svgComponents = { default: SvgDiagram, minimal: MinimalSvg, blueprint: BlueprintSvg };
 
 export const BalieSchematic = () => {
   const [title, setTitle] = useState('Budowa Balii');
   const [subtitle, setSubtitle] = useState('Kazdy element jest starannie zaprojektowany i wykonany z najwyzszej jakosci materialow');
   const [parts, setParts] = useState(defaultParts);
   const [image, setImage] = useState(null);
+  const [svgStyle, setSvgStyle] = useState('default');
 
   useEffect(() => {
     fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
@@ -65,6 +138,7 @@ export const BalieSchematic = () => {
         if (data.schematic.subtitle) setSubtitle(data.schematic.subtitle);
         if (data.schematic.parts?.length) setParts(data.schematic.parts);
         if (data.schematic.image) setImage(data.schematic.image);
+        if (data.schematic.svg_style) setSvgStyle(data.schematic.svg_style);
       }
     }).catch(() => {});
   }, []);
@@ -84,7 +158,7 @@ export const BalieSchematic = () => {
             {image ? (
               <img src={image} alt={title} className="w-full h-full object-contain" />
             ) : (
-              <SvgDiagram />
+              (() => { const Svg = svgComponents[svgStyle] || SvgDiagram; return <Svg />; })()
             )}
           </div>
 

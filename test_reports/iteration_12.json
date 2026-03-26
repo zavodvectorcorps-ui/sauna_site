@@ -1,0 +1,89 @@
+{
+  "summary": "Completed testing of 3 new features: (1) heaterVariants pricing on product cards - dual prices for models with 2 variants, single price for models with 1 variant; (2) RequestForm with full order summary showing model+price, options, total; (3) Admin SVG style selectors - 3 styles for schematic (default/minimal/blueprint) and 3 styles for stove (default/minimal/detailed). All features verified working.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "passed_tests": [
+    "API: round_225 model has heaterVariants with integrated (10,990 PLN) and external (9,690 PLN) prices",
+    "API: square_170x200 model has only external heater available (11,690 PLN)",
+    "API: Products have api_model_id mapping to calculator models",
+    "API: Content API returns svg_style fields for schematic and stove types",
+    "API: Saving schematic svg_style (default/minimal/blueprint) works",
+    "API: Saving stove svg_style (default/minimal/detailed) per stove type works",
+    "API: Contact API accepts order data with model, options, total",
+    "FRONTEND: Product card 'Okrągła 200cm' shows DUAL prices (z piecem wewn. 10,990 PLN / z piecem zewn. 9,690 PLN)",
+    "FRONTEND: Product card 'Kwadratowa 170x200cm' shows SINGLE price (11,690 PLN)",
+    "FRONTEND: Product modal has heater selector with variant prices from heaterVariants",
+    "FRONTEND: Heater selector shows 'Piec wewnetrzny 10,990 PLN' and 'Piec zewnetrzny 9,690 PLN'",
+    "FRONTEND: Request form (data-testid='balie-request-form') opens from modal",
+    "FRONTEND: Request form shows order summary (data-testid='request-order-summary') with model name and price",
+    "FRONTEND: Request form shows total price (data-testid='request-total-price')",
+    "ADMIN: Схемы tab (data-testid='balia-content-tab-schemes') accessible in КУПЕЛИ > Контент",
+    "ADMIN: Schematic section has 3 SVG style buttons (Классическая/Минимализм/Чертёж)",
+    "ADMIN: Internal stove has 3 SVG style buttons (Классическая/Минимализм/Детальная)",
+    "ADMIN: External stove has 3 SVG style buttons (Классическая/Минимализм/Детальная)",
+    "FRONTEND: BalieSchematic renders SVG based on saved svg_style (blueprint style verified)",
+    "FRONTEND: BalieStoveScheme renders different SVG per stove type (internal/external) based on svg_style"
+  ],
+
+  "test_report_links": [
+    "/app/backend/tests/test_iteration12_features.py",
+    "/app/test_reports/pytest/pytest_iteration12.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "BalieProducts.jsx correctly implements getHeaterVariantPrices() to filter heaterVariants by availableHeaterTypes",
+    "ProductCard shows dual prices when variants.length >= 2, single price when single variant exists",
+    "RequestForm correctly displays order summary with model name, price, options breakdown, and total",
+    "BaliaContentAdmin.jsx has proper data-testid attributes for all SVG style buttons",
+    "BalieSchematic.jsx uses svgComponents map to render correct SVG based on svg_style",
+    "BalieStoveScheme.jsx uses stoveSvgs map with nested structure for stove type + style"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_iteration12_features.py"
+  ],
+
+  "success_rate": {
+    "backend": "100% (9/9 tests passed)",
+    "frontend": "100% (all features verified working)"
+  },
+
+  "seed_data_creation": "Test data created via API: schematic with svg_style='blueprint', stove types with svg_style='detailed'",
+
+  "retest_needed": false,
+
+  "should_main_agent_self_test": false,
+
+  "context_for_next_testing_agent": "Iteration 12 tested 3 new features: (1) heaterVariants pricing - round_225 has 2 variants (integrated 10990, external 9690), square_170x200 has 1 variant (external 11690). Product cards show dual/single prices accordingly. (2) RequestForm order summary - data-testid='balie-request-form' contains data-testid='request-order-summary' with model+price, options, total. (3) Admin SVG styles - data-testid='schematic-style-{default|minimal|blueprint}' and data-testid='stove-style-{internal|external}-{default|minimal|detailed}'. Frontend components BalieSchematic and BalieStoveScheme render correct SVG based on saved svg_style.",
+
+  "features_verified": {
+    "heater_variants_pricing": {
+      "status": "WORKING",
+      "details": "Product cards show dual prices for models with 2 heater variants, single price for models with 1 variant"
+    },
+    "request_form_order_summary": {
+      "status": "WORKING",
+      "details": "RequestForm shows full order summary with model name+price, options breakdown, and total"
+    },
+    "admin_svg_style_selectors": {
+      "status": "WORKING",
+      "details": "Schematic has 3 styles (default/minimal/blueprint), each stove type has 3 styles (default/minimal/detailed)"
+    },
+    "frontend_svg_rendering": {
+      "status": "WORKING",
+      "details": "BalieSchematic and BalieStoveScheme render correct SVG based on saved svg_style"
+    }
+  }
+}
