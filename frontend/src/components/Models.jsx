@@ -39,6 +39,8 @@ export const Models = () => {
   const [hasCatalog, setHasCatalog] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
   const [heaterPrices, setHeaterPrices] = useState({ electric: 2600, wood: 3600 });
+  const [showAll, setShowAll] = useState(false);
+  const INITIAL_COUNT = 3;
 
   const lang = language.toLowerCase();
 
@@ -179,6 +181,7 @@ export const Models = () => {
     priceInclVat: 'Price includes VAT', readySauna: 'Ready-made, fully assembled',
     priceForReady: 'Price for ready sauna with heater',
     all: 'All', barrels: 'Barrels', quadro: 'Quadro', viking: 'Viking',
+    showMore: 'See all models',
   } : {
     compare: 'Porównaj', compareModels: 'Porównanie modeli', addToCompare: 'Porównaj', inCompare: 'W porównaniu',
     price: 'Cena', capacity: 'Pojemność', steamRoom: 'Łaźnia parowa', relaxRoom: 'Pokój wypoczynkowy',
@@ -191,6 +194,7 @@ export const Models = () => {
     priceInclVat: 'Cena zawiera VAT', readySauna: 'Gotowa, zmontowana sauna',
     priceForReady: 'Cena za gotową saunę z piecem',
     all: 'Wszystkie', barrels: 'Beczki', quadro: 'Kwadro', viking: 'Wiking',
+    showMore: 'Zobacz wszystkie modele',
   };
 
   const filters = [
@@ -228,7 +232,7 @@ export const Models = () => {
               {filters.map(f => (
                 <button
                   key={f.key}
-                  onClick={() => setActiveFilter(f.key)}
+                  onClick={() => { setActiveFilter(f.key); setShowAll(false); }}
                   className={`px-5 py-2 text-sm font-medium transition-colors border ${
                     activeFilter === f.key
                       ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
@@ -243,7 +247,7 @@ export const Models = () => {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredModels.map((model) => {
+            {(showAll ? filteredModels : filteredModels.slice(0, INITIAL_COUNT)).map((model) => {
               const desc = getDescription(model);
               return (
                 <motion.div
@@ -308,6 +312,18 @@ export const Models = () => {
               );
             })}
           </div>
+
+          {!showAll && filteredModels.length > INITIAL_COUNT && (
+            <div className="text-center mt-8">
+              <button
+                onClick={() => setShowAll(true)}
+                className="px-8 py-3 border border-[#C6A87C] text-[#C6A87C] font-medium hover:bg-[#C6A87C] hover:text-white transition-colors"
+                data-testid="models-show-more"
+              >
+                {l.showMore || 'Zobacz wszystkie modele'} ({filteredModels.length - INITIAL_COUNT})
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
