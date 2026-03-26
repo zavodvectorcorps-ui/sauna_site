@@ -116,6 +116,9 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, onClose, 
 
   const totalOptionsPrice = Object.values(selectedOpts).reduce((sum, opt) => sum + (opt.price || 0), 0);
 
+  const basePrice = apiModel?.basePrice || 0;
+  const totalPrice = basePrice + totalOptionsPrice;
+
   useEffect(() => {
     const h = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', h);
@@ -213,12 +216,26 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, onClose, 
 
                   {/* Price summary + buttons */}
                   <div className="p-6 border-t border-white/5 bg-[#0F1218]">
-                    {totalOptionsPrice > 0 && (
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-white/40 text-sm">Opcje dodatkowe:</span>
-                        <span className="text-[#D4AF37] font-bold text-lg">+{totalOptionsPrice.toLocaleString()} PLN</span>
-                      </div>
-                    )}
+                    <div className="mb-4 space-y-1.5">
+                      {basePrice > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-white/40 text-sm">Cena bazowa:</span>
+                          <span className="text-white/70 font-medium">{basePrice.toLocaleString()} PLN</span>
+                        </div>
+                      )}
+                      {totalOptionsPrice > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-white/40 text-sm">Opcje dodatkowe:</span>
+                          <span className="text-white/70 font-medium">+{totalOptionsPrice.toLocaleString()} PLN</span>
+                        </div>
+                      )}
+                      {(basePrice > 0 || totalOptionsPrice > 0) && (
+                        <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                          <span className="text-white font-semibold">Razem:</span>
+                          <span className="text-[#D4AF37] font-bold text-xl" data-testid="balie-modal-total">{totalPrice.toLocaleString()} PLN</span>
+                        </div>
+                      )}
+                    </div>
                     <div className="grid grid-cols-1 gap-2">
                       <button
                         onClick={() => setShowRequestForm(true)}
@@ -239,6 +256,12 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, onClose, 
                 </>
               ) : (
                 <div className="p-6 flex flex-col justify-end flex-1">
+                  {basePrice > 0 && (
+                    <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
+                      <span className="text-white font-semibold">Cena:</span>
+                      <span className="text-[#D4AF37] font-bold text-xl" data-testid="balie-modal-total">{basePrice.toLocaleString()} PLN</span>
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 gap-2">
                     <button
                       onClick={() => setShowRequestForm(true)}
