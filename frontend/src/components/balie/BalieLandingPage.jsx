@@ -8,7 +8,6 @@ import { BalieColors } from './BalieColors';
 import { BalieOptionsDetail } from './BalieOptionsDetail';
 import { BalieAbout } from './BalieAbout';
 import { BalieGallery } from './BalieGallery';
-import { BalieConfiguratorCTA } from './BalieConfiguratorCTA';
 import { BalieTestimonials } from './BalieTestimonials';
 import { BalieContact } from './BalieContact';
 import { BalieInstallment } from './BalieInstallment';
@@ -17,7 +16,7 @@ import { BalieStoveScheme } from './BalieStoveScheme';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-const DEFAULT_ORDER = ['hero','features','products','installment','colors','options','schematic','stove','about','gallery','configurator','testimonials','contact'];
+const DEFAULT_ORDER = ['hero','features','products','installment','colors','options','schematic','stove','about','gallery','testimonials','contact'];
 
 const sectionComponents = {
   hero: () => <BalieHero />,
@@ -30,7 +29,6 @@ const sectionComponents = {
   stove: ({ enabled }) => enabled ? <BalieStoveScheme /> : null,
   about: ({ enabled }) => enabled ? <BalieAbout /> : null,
   gallery: () => <BalieGallery />,
-  configurator: () => <BalieConfiguratorCTA />,
   testimonials: () => <BalieTestimonials />,
   contact: () => <BalieContact />,
 };
@@ -68,7 +66,6 @@ export const BalieLandingPage = () => {
             <a href="#kolory" className="text-white/60 hover:text-[#D4AF37] transition-colors">Kolory</a>
             <a href="#opcje" className="text-white/60 hover:text-[#D4AF37] transition-colors">Opcje</a>
             <a href="#budowa" className="text-white/60 hover:text-[#D4AF37] transition-colors">Budowa</a>
-            <a href="#balie-konfigurator" className="text-white/60 hover:text-[#D4AF37] transition-colors">Konfigurator</a>
             <a href="#opinie" className="text-white/60 hover:text-[#D4AF37] transition-colors">Opinie</a>
             <a href="#kontakt-balie" className="text-white/60 hover:text-[#D4AF37] transition-colors">Kontakt</a>
           </div>
@@ -111,7 +108,6 @@ export const BalieLandingPage = () => {
                 <a href="#produkty" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Produkty</a>
                 <a href="#kolory" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Kolory i materiały</a>
                 <a href="#opcje" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Opcje</a>
-                <a href="#balie-konfigurator" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Konfigurator</a>
                 <a href="#opinie" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Opinie</a>
                 <a href="#kontakt-balie" className="block text-white/40 hover:text-[#D4AF37] transition-colors">Kontakt</a>
               </div>

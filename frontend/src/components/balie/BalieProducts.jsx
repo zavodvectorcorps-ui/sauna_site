@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { X, ArrowRight, Loader2, Users, Droplets, Ruler, ChevronLeft, ChevronRight, Check, Send, Sliders, Flame } from 'lucide-react';
 import { BalieInstallment } from './BalieInstallment';
 
@@ -132,7 +131,7 @@ const RequestForm = ({ product, selectedOptions, modelPrice, totalPrice, onClose
   );
 };
 
-const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusions, onClose, onConfigure }) => {
+const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusions, onClose }) => {
   const [imgIdx, setImgIdx] = useState(0);
   const [selectedOpts, setSelectedOpts] = useState({});
   const [selectedHeaterType, setSelectedHeaterType] = useState(null);
@@ -361,9 +360,6 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
                       <button onClick={() => setShowRequestForm(true)} className="py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors flex items-center justify-center gap-2" data-testid="balie-modal-request">
                         <Send size={16} /> Zloz zapytanie
                       </button>
-                      <button onClick={onConfigure} className="py-3 border border-white/10 text-white/70 font-medium hover:bg-white/5 transition-colors flex items-center justify-center gap-2" data-testid="balie-modal-configure">
-                        <Sliders size={16} /> Skonfiguruj wlasny wariant
-                      </button>
                     </div>
                   </div>
                 </>
@@ -378,9 +374,6 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
                   <div className="grid grid-cols-1 gap-2">
                     <button onClick={() => setShowRequestForm(true)} className="py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors flex items-center justify-center gap-2" data-testid="balie-modal-request">
                       <Send size={16} /> Zloz zapytanie
-                    </button>
-                    <button onClick={onConfigure} className="py-3 border border-white/10 text-white/70 font-medium hover:bg-white/5 transition-colors flex items-center justify-center gap-2" data-testid="balie-modal-configure">
-                      <Sliders size={16} /> Skonfiguruj wlasny wariant
                     </button>
                   </div>
                 </div>
@@ -422,7 +415,6 @@ export const BalieProducts = () => {
   const [exclusions, setExclusions] = useState({});
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     Promise.all([
@@ -442,11 +434,6 @@ export const BalieProducts = () => {
 
   const getApiModel = (id) => apiModels.find(m => m.id === id);
 
-  const handleConfigure = (product) => {
-    setSelected(null);
-    navigate(product.api_model_id ? `/balie/konfigurator?model=${product.api_model_id}` : '/balie/konfigurator');
-  };
-
   if (loading) return <div className="py-20 flex justify-center"><Loader2 className="animate-spin text-[#D4AF37]" size={32} /></div>;
   if (products.length === 0) return null;
 
@@ -465,12 +452,6 @@ export const BalieProducts = () => {
             <ProductCard key={p.id} product={p} apiModel={getApiModel(p.api_model_id)} onClick={setSelected} />
           ))}
         </div>
-
-        <div className="text-center mt-10">
-          <button onClick={() => navigate('/balie/konfigurator')} className="px-8 py-3 border border-[#D4AF37] text-[#D4AF37] font-medium hover:bg-[#D4AF37] hover:text-[#0F1218] transition-colors" data-testid="balie-go-configurator">
-            Skonfiguruj wlasna balie
-          </button>
-        </div>
       </div>
 
       {selected && (
@@ -481,7 +462,6 @@ export const BalieProducts = () => {
           cardOptions={cardOptions}
           exclusions={exclusions}
           onClose={() => setSelected(null)}
-          onConfigure={() => handleConfigure(selected)}
         />
       )}
     </section>

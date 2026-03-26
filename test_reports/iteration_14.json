@@ -1,0 +1,109 @@
+{
+  "summary": "Iteration 14 testing complete. All features verified: (1) Bathtub configurator removed from /balie page - no Konfigurator link in navbar, no BalieConfiguratorCTA section, no 'Skonfiguruj wlasny wariant' button in product modal. (2) Balia catalog admin tab working with upload/download/delete functionality. (3) Balia integrations admin tab working with separate Telegram bot settings and AMO CRM funnel (shared API key from sauna settings). All 15 backend API tests passed.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Admin sidebar - КУПЕЛИ group",
+        "issues": ["Group is collapsed by default and requires double-click to expand (first click collapses, second expands). Minor UX issue."]
+      }
+    ]
+  },
+
+  "passed_tests": [
+    "API: GET /api/health returns healthy status",
+    "API: Admin login works with credentials admin/220066",
+    "API: GET /api/balia-catalog/info returns available status",
+    "API: GET /api/balia-catalog/download returns 404 when no catalog (or 200 if exists)",
+    "API: POST /api/admin/balia-catalog/upload requires authentication (401)",
+    "API: DELETE /api/admin/balia-catalog requires authentication (401)",
+    "API: GET /api/admin/settings/balia-integrations requires authentication (401)",
+    "API: GET /api/admin/settings/balia-integrations returns default settings with all required fields",
+    "API: PUT /api/admin/settings/balia-integrations requires authentication (401)",
+    "API: PUT /api/admin/settings/balia-integrations saves and persists settings correctly",
+    "API: POST /api/admin/test-balia-telegram requires authentication (401)",
+    "API: POST /api/admin/test-balia-amocrm-lead requires authentication (401)",
+    "API: POST /api/contact with type='balia_order' routes correctly",
+    "API: GET /api/balia/products returns products list",
+    "API: GET /api/balia/content returns content data",
+    "FRONTEND: Balie page (/balie) loads correctly",
+    "FRONTEND: Navbar does NOT have 'Konfigurator' link (REMOVED)",
+    "FRONTEND: BalieConfiguratorCTA section does NOT exist (REMOVED)",
+    "FRONTEND: 'Skonfiguruj wlasna balie' button does NOT exist (REMOVED)",
+    "FRONTEND: Product modal does NOT have 'Skonfiguruj wlasny wariant' button (REMOVED)",
+    "FRONTEND: Product modal HAS 'Zloz zapytanie' button (working)",
+    "FRONTEND: Product modal shows heater selector and options",
+    "ADMIN: Balia 'Каталог' tab accessible (data-testid='admin-tab-balia_catalog')",
+    "ADMIN: Balia catalog shows upload UI with preview/delete buttons",
+    "ADMIN: Balia 'Интеграции' tab accessible (data-testid='admin-tab-balia_integrations')",
+    "ADMIN: Balia integrations shows Telegram section with separate bot/chatid",
+    "ADMIN: Balia integrations shows AMO CRM section with separate pipeline/fields",
+    "ADMIN: Balia integrations shows note about shared AMO API key from sauna settings",
+    "ADMIN: Balia integrations has test buttons for Telegram and AMO CRM"
+  ],
+
+  "test_report_links": [
+    "/app/backend/tests/test_iteration14_balia_features.py",
+    "/app/test_reports/pytest/pytest_iteration14.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "BalieLandingPage.jsx correctly removed 'configurator' from DEFAULT_ORDER and sectionComponents",
+    "BalieProducts.jsx correctly removed handleConfigure and onConfigure - no configurator button in modal",
+    "BalieHero.jsx CTA correctly scrolls to 'produkty' instead of configurator",
+    "Backend server.py has proper BaliaIntegrationSettings model with all required fields",
+    "Backend correctly routes balia orders (type starting with 'balia') to balia notification functions",
+    "Backend send_balia_amocrm_lead correctly uses sauna API key but balia-specific pipeline/fields",
+    "BaliaCatalogAdmin.jsx properly handles upload/download/delete with authentication",
+    "BaliaIntegrationsAdmin.jsx shows note about shared AMO API key from sauna settings"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_iteration14_balia_features.py"
+  ],
+
+  "success_rate": {
+    "backend": "100% (15/15 tests passed)",
+    "frontend": "100% (all features verified working)"
+  },
+
+  "seed_data_creation": "Test balia order created via POST /api/contact with type='balia_order'. Test balia integration settings saved and restored.",
+
+  "retest_needed": false,
+
+  "should_main_agent_self_test": false,
+
+  "context_for_next_testing_agent": "Iteration 14 tested: (1) Bathtub configurator removal - verified no Konfigurator link in navbar, no BalieConfiguratorCTA section, no configure button in product modal. (2) Balia catalog admin at data-testid='admin-tab-balia_catalog' with upload/preview/delete. (3) Balia integrations admin at data-testid='admin-tab-balia_integrations' with separate Telegram (bot token + chat ID) and AMO CRM (pipeline/status/fields) settings. AMO API key is shared from sauna integration_settings. Contact form with type='balia_order' routes to balia notification functions. Note: КУПЕЛИ group in admin sidebar may need double-click to expand (minor UX issue).",
+
+  "features_verified": {
+    "bathtub_configurator_removed": {
+      "status": "WORKING",
+      "details": "No Konfigurator link in navbar, no BalieConfiguratorCTA section, no 'Skonfiguruj wlasny wariant' button in product modal"
+    },
+    "balia_catalog_admin": {
+      "status": "WORKING",
+      "details": "Upload/preview/delete functionality working. Catalog appears in hero section when available."
+    },
+    "balia_integrations_admin": {
+      "status": "WORKING",
+      "details": "Separate Telegram bot settings and AMO CRM funnel with shared API key from sauna settings"
+    },
+    "balia_order_routing": {
+      "status": "WORKING",
+      "details": "Contact form with type='balia_order' routes to balia notification functions"
+    },
+    "product_modal_request_button": {
+      "status": "WORKING",
+      "details": "'Zloz zapytanie' button works correctly in product modal"
+    }
+  }
+}

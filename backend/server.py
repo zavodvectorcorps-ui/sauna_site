@@ -364,6 +364,22 @@ class IntegrationSettings(BaseModel):
     amocrm_field_price: int = 0
     amocrm_field_message: int = 0
 
+class BaliaIntegrationSettings(BaseModel):
+    id: str = "balia_integration_settings"
+    telegram_enabled: bool = False
+    telegram_bot_token: str = ""
+    telegram_chat_id: str = ""
+    amocrm_enabled: bool = False
+    amocrm_pipeline_id: int = 0
+    amocrm_status_id: int = 0
+    amocrm_responsible_user_id: int = 0
+    amocrm_field_name: int = 0
+    amocrm_field_phone: int = 0
+    amocrm_field_email: int = 0
+    amocrm_field_model: int = 0
+    amocrm_field_price: int = 0
+    amocrm_field_message: int = 0
+
 # ============= Notification Helpers =============
 
 async def send_telegram_notification(data: dict):
@@ -426,7 +442,94 @@ async def send_telegram_notification(data: dict):
     except Exception as e:
         logger.error(f"Telegram notification error: {e}")
 
-async def get_amocrm_token(settings: dict) -> str:
+async def send_balia_telegram_notification(data: dict):
+    """Send notification to Telegram for balia orders."""
+    try:
+        settings = await db.settings.find_one({"id": "balia_integration_settings"}, {"_id": 0})
+        if not settings or not settings.get("telegram_enabled") or not settings.get("telegram_bot_token") or not settings.get("telegram_chat_id"):
+            return
+        msg_type = data.get("type", "balia_order")
+        text = (
+            f"🛁 <b>Заявка WM-Balia</b>\n\n"
+            f"<b>Модель:</b> {data.get('model', '—')}\n"
+            f"<b>Сумма:</b> {data.get('total', '—')} PLN\n\n"
+            f"<b>Имя:</b> {data.get('name', '—')}\n"
+            f"<b>Телефон:</b> {data.get('phone', '—')}\n"
+            f"<b>Email:</b> {data.get('email', '—')}\n"
+        )
+        options = data.get("options")
+        if options and isinstance(options, list) and len(options) > 0:
+            text += f"<b>Опции:</b> {', '.join(str(o) for o in options)}\n"
+        if data.get("message"):
+            text += f"<b>Комментарий:</b> {data['message']}\n"
+        token = settings["telegram_bot_token"]
+        chat_id = settings["telegram_chat_id"]
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            await client.post(f"https://api.telegram.org/bot{token}/sendMessage", json={"chat_id": chat_id, "text": text, "parse_mode": "HTML"})
+            logger.info("Balia Telegram notification sent")
+    except Exception as e:
+        logger.error(f"Balia Telegram notification error: {e}")
+
+async def send_balia_amocrm_lead(data: dict):
+    """Create a lead in AMO CRM for balia orders. Uses sauna API key but balia pipeline/fields."""
+    try:
+        # Get balia-specific settings
+        balia_settings = await db.settings.find_one({"id": "balia_integration_settings"}, {"_id": 0})
+        if not balia_settings or not balia_settings.get("amocrm_enabled"):
+            return
+        # Get AMO API key from sauna integration settings
+        sauna_settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
+        if not sauna_settings or not sauna_settings.get("amocrm_domain") or not sauna_settings.get("amocrm_access_token"):
+            logger.warning("Balia AMO CRM: no AMO domain/token in sauna settings")
+            return
+        token = sauna_settings.get("amocrm_access_token", "")
+        domain = sauna_settings["amocrm_domain"].rstrip("/")
+        if not domain.startswith("http"):
+            domain = f"https://{domain}"
+        lead_name = f"WM-Balia: {data.get('model', 'Запрос')}"
+        lead_custom_fields = []
+        message_parts = []
+        options = data.get("options")
+        if options and isinstance(options, list) and len(options) > 0:
+            message_parts.append(f"Опции: {', '.join(str(o) for o in options)}")
+        if data.get("message"):
+            message_parts.append(data["message"])
+        full_message = "\n".join(message_parts) if message_parts else ""
+        field_map = {
+            "amocrm_field_model": data.get("model", ""),
+            "amocrm_field_price": str(data.get("total", "")),
+            "amocrm_field_message": full_message,
+        }
+        for setting_key, value in field_map.items():
+            field_id = balia_settings.get(setting_key, 0)
+            if field_id and value:
+                lead_custom_fields.append({"field_id": field_id, "values": [{"value": value}]})
+        contact = {"first_name": data.get("name", ""), "custom_fields_values": []}
+        phone_field_id = balia_settings.get("amocrm_field_phone", 0)
+        email_field_id = balia_settings.get("amocrm_field_email", 0)
+        if phone_field_id and data.get("phone"):
+            contact["custom_fields_values"].append({"field_id": phone_field_id, "values": [{"value": data["phone"]}]})
+        elif data.get("phone"):
+            contact["custom_fields_values"].append({"field_code": "PHONE", "values": [{"value": data["phone"], "enum_code": "WORK"}]})
+        if email_field_id and data.get("email"):
+            contact["custom_fields_values"].append({"field_id": email_field_id, "values": [{"value": data["email"]}]})
+        elif data.get("email"):
+            contact["custom_fields_values"].append({"field_code": "EMAIL", "values": [{"value": data["email"], "enum_code": "WORK"}]})
+        lead_data = [{"name": lead_name, "price": int(data.get("total", 0)) if data.get("total") else 0, "_embedded": {"contacts": [contact]}}]
+        if lead_custom_fields:
+            lead_data[0]["custom_fields_values"] = lead_custom_fields
+        if balia_settings.get("amocrm_pipeline_id"):
+            lead_data[0]["pipeline_id"] = balia_settings["amocrm_pipeline_id"]
+        if balia_settings.get("amocrm_status_id"):
+            lead_data[0]["status_id"] = balia_settings["amocrm_status_id"]
+        if balia_settings.get("amocrm_responsible_user_id"):
+            lead_data[0]["responsible_user_id"] = balia_settings["amocrm_responsible_user_id"]
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(f"{domain}/api/v4/leads/complex", json=lead_data, headers=headers)
+            logger.info(f"Balia AMO CRM response: {resp.status_code} {resp.text[:200]}")
+    except Exception as e:
+        logger.error(f"Balia AMO CRM error: {e}")
     """Get AMO CRM API token from settings."""
     return settings.get("amocrm_access_token", "")
 
@@ -546,14 +649,21 @@ async def submit_contact_form(form_data: ContactFormCreate):
         await db.contact_forms.insert_one(doc)
         logger.info(f"New contact form submitted: {contact.name} - {contact.phone}")
         
-        # Send notifications directly (await to ensure delivery)
+        # Send notifications - route balia orders to balia integrations
         notification_data = form_data.model_dump()
+        is_balia = notification_data.get("type", "").startswith("balia")
         try:
-            await send_telegram_notification(notification_data)
+            if is_balia:
+                await send_balia_telegram_notification(notification_data)
+            else:
+                await send_telegram_notification(notification_data)
         except Exception as e:
             logger.error(f"Telegram notification failed: {e}")
         try:
-            await send_amocrm_lead(notification_data)
+            if is_balia:
+                await send_balia_amocrm_lead(notification_data)
+            else:
+                await send_amocrm_lead(notification_data)
         except Exception as e:
             logger.error(f"AMO CRM lead failed: {e}")
         
@@ -1018,6 +1128,50 @@ async def update_social_proof(settings: SocialProofSettings, username: str = Dep
         upsert=True
     )
     return {"status": "success"}
+
+@api_router.get("/admin/settings/balia-integrations")
+async def get_balia_integration_settings(username: str = Depends(verify_admin)):
+    settings = await db.settings.find_one({"id": "balia_integration_settings"}, {"_id": 0})
+    if not settings:
+        return BaliaIntegrationSettings().model_dump()
+    return settings
+
+@api_router.put("/admin/settings/balia-integrations")
+async def update_balia_integration_settings(settings: BaliaIntegrationSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "balia_integration_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.post("/admin/test-balia-telegram")
+async def test_balia_telegram(username: str = Depends(verify_admin)):
+    settings = await db.settings.find_one({"id": "balia_integration_settings"}, {"_id": 0})
+    if not settings or not settings.get("telegram_bot_token") or not settings.get("telegram_chat_id"):
+        raise HTTPException(status_code=400, detail="Telegram не настроен для купелей")
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.post(
+                f"https://api.telegram.org/bot{settings['telegram_bot_token']}/sendMessage",
+                json={"chat_id": settings["telegram_chat_id"], "text": "🛁 Тестовое сообщение WM-Balia\nИнтеграция работает корректно!", "parse_mode": "HTML"}
+            )
+            if resp.status_code == 200:
+                return {"message": "Тестовое сообщение отправлено в Telegram (Balia)"}
+            raise HTTPException(status_code=400, detail=f"Telegram error: {resp.text[:200]}")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/admin/test-balia-amocrm-lead")
+async def test_balia_amocrm_lead(username: str = Depends(verify_admin)):
+    await send_balia_amocrm_lead({
+        "type": "balia_order", "name": "Test Balia", "phone": "+48000000000",
+        "email": "test@wm-balia.pl", "model": "Balia testowa", "total": 15000,
+        "message": "Тестовая сделка WM-Balia"
+    })
+    return {"message": "Тестовая сделка отправлена в AMO CRM (Balia)"}
 
 @api_router.put("/admin/settings/integrations")
 async def update_integration_settings(settings: IntegrationSettings, username: str = Depends(verify_admin)):
@@ -1565,6 +1719,53 @@ async def delete_catalog(username: str = Depends(verify_admin)):
     if catalog_path.exists():
         catalog_path.unlink()
     await db.settings.delete_one({"id": "catalog_settings"})
+    return {"status": "deleted"}
+
+@api_router.post("/admin/balia-catalog/upload")
+async def upload_balia_catalog(file: UploadFile = File(...), username: str = Depends(verify_admin)):
+    if not file.filename.lower().endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Только PDF-файлы")
+    try:
+        contents = await file.read()
+        if len(contents) > 50 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Файл слишком большой (макс 50 МБ)")
+        catalog_path = CATALOG_DIR / "balia-catalog.pdf"
+        catalog_path.write_bytes(contents)
+        await db.settings.update_one(
+            {"id": "balia_catalog_settings"},
+            {"$set": {"id": "balia_catalog_settings", "filename": file.filename, "size": len(contents), "uploaded_at": datetime.now(timezone.utc).isoformat()}},
+            upsert=True,
+        )
+        return {"status": "success", "filename": file.filename, "size": len(contents)}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка загрузки: {str(e)}")
+
+@api_router.get("/balia-catalog/download")
+async def download_balia_catalog():
+    from fastapi.responses import FileResponse
+    catalog_path = CATALOG_DIR / "balia-catalog.pdf"
+    if not catalog_path.exists():
+        raise HTTPException(status_code=404, detail="Каталог купелей не загружен")
+    settings = await db.settings.find_one({"id": "balia_catalog_settings"}, {"_id": 0})
+    filename = settings.get("filename", "WM-Balia-Katalog.pdf") if settings else "WM-Balia-Katalog.pdf"
+    return FileResponse(str(catalog_path), media_type="application/pdf", filename=filename)
+
+@api_router.get("/balia-catalog/info")
+async def balia_catalog_info():
+    catalog_path = CATALOG_DIR / "balia-catalog.pdf"
+    if not catalog_path.exists():
+        return {"available": False}
+    settings = await db.settings.find_one({"id": "balia_catalog_settings"}, {"_id": 0})
+    return {"available": True, "filename": settings.get("filename", ""), "size": settings.get("size", 0)} if settings else {"available": True}
+
+@api_router.delete("/admin/balia-catalog")
+async def delete_balia_catalog(username: str = Depends(verify_admin)):
+    catalog_path = CATALOG_DIR / "balia-catalog.pdf"
+    if catalog_path.exists():
+        catalog_path.unlink()
+    await db.settings.delete_one({"id": "balia_catalog_settings"})
     return {"status": "deleted"}
 
 

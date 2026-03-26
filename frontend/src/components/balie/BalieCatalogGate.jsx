@@ -17,14 +17,14 @@ export const BalieCatalogGate = ({ onClose }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          type: 'catalog_download',
+          type: 'balia_catalog_download',
           message: `Prosi o pobranie katalogu balii. Imie: ${form.name}, Tel: ${form.phone}, Email: ${form.email}`,
         }),
       });
       setDone(true);
       // Trigger download
       const link = document.createElement('a');
-      link.href = `${API}/api/catalog/download`;
+      link.href = `${API}/api/balia-catalog/download`;
       link.download = 'katalog-balie.pdf';
       link.target = '_blank';
       document.body.appendChild(link);
@@ -98,7 +98,7 @@ export const BalieCatalogGate = ({ onClose }) => {
               </p>
               <div className="flex flex-col gap-2">
                 <a
-                  href={`${API}/api/catalog/download`}
+                  href={`${API}/api/balia-catalog/download`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors flex items-center justify-center gap-2"

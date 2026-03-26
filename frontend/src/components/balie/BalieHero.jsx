@@ -34,7 +34,7 @@ export const BalieHero = () => {
         }));
       }
     }).catch(() => {});
-    fetch(`${API}/api/catalog/info`).then(r => r.json()).then(d => setCatalogAvailable(d?.available)).catch(() => {});
+    fetch(`${API}/api/balia-catalog/info`).then(r => r.json()).then(d => setCatalogAvailable(d?.available)).catch(() => {});
   }, []);
 
   const scrollTo = (id) => {
@@ -62,7 +62,7 @@ export const BalieHero = () => {
           </h1>
           <p className="text-white/60 text-base sm:text-lg max-w-2xl mx-auto mb-10">{content.subheadline}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
-            <button onClick={() => scrollTo('balie-konfigurator')} className="px-8 py-4 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors" data-testid="balie-hero-cta">
+            <button onClick={() => scrollTo('produkty')} className="px-8 py-4 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors" data-testid="balie-hero-cta">
               {content.ctaPrimary}
             </button>
             <button onClick={() => scrollTo('produkty')} className="px-8 py-4 border border-white/20 text-white font-medium hover:bg-white/5 transition-colors">
