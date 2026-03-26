@@ -87,21 +87,26 @@ const MainLanding = () => {
   const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [saunaImg, setSaunaImg] = useState(DEFAULT_SAUNA_IMG);
-  const [baliaImg, setBaliaImg] = useState(DEFAULT_BALIA_IMG);
+  const [saunaImg, setSaunaImg] = useState('');
+  const [baliaImg, setBaliaImg] = useState('');
   const [saunaPos, setSaunaPos] = useState('center');
   const [baliaPos, setBaliaPos] = useState('center');
+  const [imagesReady, setImagesReady] = useState(false);
 
   useEffect(() => {
     fetch(`${API}/api/settings/main-landing`)
       .then(r => r.json())
       .then(d => {
-        if (d.sauna_image) setSaunaImg(d.sauna_image);
-        if (d.balia_image) setBaliaImg(d.balia_image);
+        setSaunaImg(d.sauna_image || DEFAULT_SAUNA_IMG);
+        setBaliaImg(d.balia_image || DEFAULT_BALIA_IMG);
         if (d.sauna_image_position) setSaunaPos(d.sauna_image_position);
         if (d.balia_image_position) setBaliaPos(d.balia_image_position);
       })
-      .catch(() => {});
+      .catch(() => {
+        setSaunaImg(DEFAULT_SAUNA_IMG);
+        setBaliaImg(DEFAULT_BALIA_IMG);
+      })
+      .finally(() => setImagesReady(true));
   }, []);
 
   const handleSubmit = async (e) => {
