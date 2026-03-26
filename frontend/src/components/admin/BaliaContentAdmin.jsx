@@ -1,9 +1,31 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Save, Loader2, Eye, EyeOff, Monitor, ChevronUp, ChevronDown, Plus, Trash2, GripVertical } from 'lucide-react';
+import { Save, Loader2, Eye, EyeOff, Monitor, ChevronUp, ChevronDown, Plus, Trash2, GripVertical, Upload, Image, X } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const ICON_LIST = ['ShieldCheck','Hammer','Leaf','Truck','Wrench','Award','Flag','Waves','Wind','Lightbulb','ThermometerSun'];
+
+const DEFAULT_SCHEMATIC = {
+  title: 'Budowa Balii',
+  subtitle: 'Kazdy element jest starannie zaprojektowany i wykonany z najwyzszej jakosci materialow',
+  image: null,
+  parts: [
+    { id: 'bowl', label: 'Gleboka misa — 100 cm', desc: 'Idealny rozmiar dla osob wyzszych.' },
+    { id: 'frame', label: 'Metalowy stelaz', desc: 'Odporny na wilgoc, korozje i odksztalcenia.' },
+    { id: 'cladding', label: 'Termodrewno i ukryte mocowania', desc: 'Odpornosc na pekanie i wysychanie.' },
+    { id: 'stove', label: 'Mocne piece z podwojnym obiegiem', desc: 'Nagrzewanie w 1-2h, nawet przy -20°C.' },
+    { id: 'warranty', label: '10 lat gwarancji + 25 lat trwalosci', desc: 'Budowane na pokolenia.' },
+  ],
+};
+
+const DEFAULT_STOVE = {
+  title: 'Jak dziala piec?',
+  subtitle: 'Oferujemy dwa typy piecow na drewno ze stali nierdzewnej V4A.',
+  types: [
+    { id: 'internal', title: 'Piec wewnetrzny', subtitle: 'Zintegrowany w balii', image: null, features: ['Montaz wewnatrz misy balii','Bezposredni kontakt z woda','Kompaktowa konstrukcja','Idealny dla mniejszych przestrzeni'], pros: ['Szybsze nagrzewanie','Mniej miejsca na zewnatrz'], cons: ['Mniejsza przestrzen kapielowa'] },
+    { id: 'external', title: 'Piec zewnetrzny', subtitle: 'Z podwojnym obiegiem wody', image: null, features: ['Montaz poza misa balii','Podwojny obieg wody','Pelna przestrzen kapielowa','Latwiejszy dostep do palenia'], pros: ['Wieksza przestrzen w balii','Wygodniejsze dolozenie drewna'], cons: ['Wymaga wiecej miejsca na zewnatrz'] },
+  ],
+};
 
 const DEFAULT_FEATURES = [
   { icon: 'ShieldCheck', title: '2 Lata Gwarancji', desc: 'Pelne bezpieczenstwo i wsparcie serwisowe.', active: true },
@@ -53,6 +75,8 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
     promo_options: DEFAULT_OPTIONS,
     promo_badges: DEFAULT_BADGES,
     section_order: DEFAULT_SECTIONS.map(s => s.id),
+    schematic: DEFAULT_SCHEMATIC,
+    stove_scheme: DEFAULT_STOVE,
   });
   const [exclusions, setExclusions] = useState({});
   const [products, setProducts] = useState([]);
@@ -79,6 +103,8 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
           promo_options: data.promo_options?.length ? data.promo_options : prev.promo_options,
           promo_badges: data.promo_badges?.length ? data.promo_badges : prev.promo_badges,
           section_order: data.section_order?.length ? data.section_order : prev.section_order,
+          schematic: data.schematic ? { ...prev.schematic, ...data.schematic } : prev.schematic,
+          stove_scheme: data.stove_scheme ? { ...prev.stove_scheme, ...data.stove_scheme, types: data.stove_scheme.types?.length ? data.stove_scheme.types.map((t,i) => ({...(prev.stove_scheme.types[i] || {}), ...t})) : prev.stove_scheme.types } : prev.stove_scheme,
         }));
       }
       setExclusions(exclData.exclusions || {});
@@ -134,6 +160,83 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
     setContent(p => ({ ...p, [listKey]: [...(p[listKey] || []), template] }));
   };
 
+  // Schematic helpers
+  const updateSchematic = (field, value) => setContent(p => ({ ...p, schematic: { ...p.schematic, [field]: value } }));
+  const updateSchematicPart = (idx, field, value) => {
+    setContent(p => {
+      const parts = [...(p.schematic.parts || [])];
+      parts[idx] = { ...parts[idx], [field]: value };
+      return { ...p, schematic: { ...p.schematic, parts } };
+    });
+  };
+  const addSchematicPart = () => {
+    setContent(p => ({
+      ...p, schematic: { ...p.schematic, parts: [...(p.schematic.parts || []), { id: `part_${Date.now()}`, label: '', desc: '' }] },
+    }));
+  };
+  const removeSchematicPart = (idx) => {
+    setContent(p => ({ ...p, schematic: { ...p.schematic, parts: p.schematic.parts.filter((_, i) => i !== idx) } }));
+  };
+
+  // Stove scheme helpers
+  const updateStoveScheme = (field, value) => setContent(p => ({ ...p, stove_scheme: { ...p.stove_scheme, [field]: value } }));
+  const updateStoveType = (idx, field, value) => {
+    setContent(p => {
+      const types = [...(p.stove_scheme.types || [])];
+      types[idx] = { ...types[idx], [field]: value };
+      return { ...p, stove_scheme: { ...p.stove_scheme, types } };
+    });
+  };
+  const updateStoveFeature = (typeIdx, featureIdx, value) => {
+    setContent(p => {
+      const types = [...(p.stove_scheme.types || [])];
+      const features = [...(types[typeIdx].features || [])];
+      features[featureIdx] = value;
+      types[typeIdx] = { ...types[typeIdx], features };
+      return { ...p, stove_scheme: { ...p.stove_scheme, types } };
+    });
+  };
+  const addStoveFeature = (typeIdx) => {
+    setContent(p => {
+      const types = [...(p.stove_scheme.types || [])];
+      types[typeIdx] = { ...types[typeIdx], features: [...(types[typeIdx].features || []), ''] };
+      return { ...p, stove_scheme: { ...p.stove_scheme, types } };
+    });
+  };
+  const removeStoveFeature = (typeIdx, featureIdx) => {
+    setContent(p => {
+      const types = [...(p.stove_scheme.types || [])];
+      types[typeIdx] = { ...types[typeIdx], features: types[typeIdx].features.filter((_, i) => i !== featureIdx) };
+      return { ...p, stove_scheme: { ...p.stove_scheme, types } };
+    });
+  };
+
+  // Image upload to Cloudinary
+  const [uploading, setUploading] = useState(null);
+  const handleImageUpload = async (file, target) => {
+    setUploading(target);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch(`${API}/api/balia/schematic/upload`, {
+        method: 'POST', headers: { 'Authorization': authHeader }, body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        if (target === 'schematic') {
+          updateSchematic('image', data.url);
+        } else if (target.startsWith('stove_')) {
+          const idx = parseInt(target.split('_')[1]);
+          updateStoveType(idx, 'image', data.url);
+        }
+        showMessage('success', 'Фото загружено');
+      }
+    } catch {
+      showMessage('error', 'Ошибка загрузки');
+    }
+    setUploading(null);
+  };
+
   // Section ordering
   const moveSection = (idx, dir) => {
     setContent(p => {
@@ -171,6 +274,7 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
   const tabs = [
     { id: 'hero', label: 'Hero' },
     { id: 'features_edit', label: 'Карточки «Dlaczego»' },
+    { id: 'schemes', label: 'Схемы (купель + печь)' },
     { id: 'promo_blocks', label: 'Промо-блоки' },
     { id: 'section_order', label: 'Порядок блоков' },
     { id: 'exclusions', label: 'Исключения опций' },
@@ -419,6 +523,158 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+
+      {/* Schemes Tab */}
+      {activeTab === 'schemes' && (
+        <div className="space-y-6">
+          {/* Schematic (Budowa Balii) */}
+          <div className="p-5 border border-gray-100 bg-[#F9F9F7]">
+            <h4 className="font-semibold mb-4">Схема купели (Budowa Balii)</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Заголовок</label>
+                <input value={content.schematic.title} onChange={e => updateSchematic('title', e.target.value)} className="w-full p-2.5 border border-gray-200 text-sm focus:border-[#C6A87C] outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Подзаголовок</label>
+                <input value={content.schematic.subtitle} onChange={e => updateSchematic('subtitle', e.target.value)} className="w-full p-2.5 border border-gray-200 text-sm focus:border-[#C6A87C] outline-none" />
+              </div>
+            </div>
+
+            {/* Image upload */}
+            <div className="mb-4">
+              <label className="block text-xs text-gray-500 mb-2">Фото схемы (заменит SVG-диаграмму)</label>
+              <div className="flex items-center gap-3">
+                {content.schematic.image ? (
+                  <div className="relative w-40 h-28 border border-gray-200 overflow-hidden bg-[#1A1E27]">
+                    <img src={content.schematic.image} alt="schema" className="w-full h-full object-contain" />
+                    <button onClick={() => updateSchematic('image', null)} className="absolute top-1 right-1 bg-red-500 text-white p-0.5 rounded-full" data-testid="schematic-remove-image">
+                      <X size={12} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-40 h-28 border-2 border-dashed border-gray-200 flex items-center justify-center">
+                    <span className="text-xs text-gray-400">SVG по умолчанию</span>
+                  </div>
+                )}
+                <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-[#C6A87C] text-white text-xs font-medium hover:bg-[#B09060]" data-testid="schematic-upload-btn">
+                  {uploading === 'schematic' ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                  Загрузить фото
+                  <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && handleImageUpload(e.target.files[0], 'schematic')} />
+                </label>
+              </div>
+            </div>
+
+            {/* Parts */}
+            <div className="flex items-center justify-between mb-3">
+              <h5 className="font-medium text-sm">Пункты описания</h5>
+              <button onClick={addSchematicPart} className="flex items-center gap-1 text-xs text-[#C6A87C] hover:underline"><Plus size={12} /> Добавить</button>
+            </div>
+            <div className="space-y-2">
+              {(content.schematic.parts || []).map((part, i) => (
+                <div key={part.id || i} className="flex items-start gap-2 p-2.5 bg-white border border-gray-100" data-testid={`schematic-part-${i}`}>
+                  <span className="w-6 h-6 bg-[#C6A87C] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">{i+1}</span>
+                  <div className="flex-1 grid grid-cols-2 gap-2">
+                    <input value={part.label} onChange={e => updateSchematicPart(i, 'label', e.target.value)} placeholder="Заголовок"
+                      className="p-2 border border-gray-200 text-xs focus:border-[#C6A87C] outline-none" />
+                    <input value={part.desc} onChange={e => updateSchematicPart(i, 'desc', e.target.value)} placeholder="Описание"
+                      className="p-2 border border-gray-200 text-xs focus:border-[#C6A87C] outline-none" />
+                  </div>
+                  <button onClick={() => removeSchematicPart(i)} className="text-red-300 hover:text-red-500 mt-1"><Trash2 size={14} /></button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Stove Scheme */}
+          <div className="p-5 border border-gray-100 bg-[#F9F9F7]">
+            <h4 className="font-semibold mb-4">Схема печи (Jak działa piec?)</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Заголовок секции</label>
+                <input value={content.stove_scheme.title} onChange={e => updateStoveScheme('title', e.target.value)} className="w-full p-2.5 border border-gray-200 text-sm focus:border-[#C6A87C] outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Подзаголовок</label>
+                <input value={content.stove_scheme.subtitle} onChange={e => updateStoveScheme('subtitle', e.target.value)} className="w-full p-2.5 border border-gray-200 text-sm focus:border-[#C6A87C] outline-none" />
+              </div>
+            </div>
+
+            {(content.stove_scheme.types || []).map((stove, si) => (
+              <div key={stove.id} className="p-4 mb-4 bg-white border border-gray-100" data-testid={`stove-type-edit-${stove.id}`}>
+                <h5 className="font-medium text-sm mb-3">{stove.id === 'internal' ? 'Внутренний пием' : 'Внешний пием'}</h5>
+
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Заголовок</label>
+                    <input value={stove.title} onChange={e => updateStoveType(si, 'title', e.target.value)} className="w-full p-2 border border-gray-200 text-xs focus:border-[#C6A87C] outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Подзаголовок</label>
+                    <input value={stove.subtitle} onChange={e => updateStoveType(si, 'subtitle', e.target.value)} className="w-full p-2 border border-gray-200 text-xs focus:border-[#C6A87C] outline-none" />
+                  </div>
+                </div>
+
+                {/* Image upload for this stove type */}
+                <div className="mb-3">
+                  <label className="block text-xs text-gray-500 mb-2">Фото (заменит SVG-диаграмму)</label>
+                  <div className="flex items-center gap-3">
+                    {stove.image ? (
+                      <div className="relative w-36 h-24 border border-gray-200 overflow-hidden bg-[#1A1E27]">
+                        <img src={stove.image} alt={stove.title} className="w-full h-full object-contain" />
+                        <button onClick={() => updateStoveType(si, 'image', null)} className="absolute top-1 right-1 bg-red-500 text-white p-0.5 rounded-full">
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="w-36 h-24 border-2 border-dashed border-gray-200 flex items-center justify-center">
+                        <span className="text-[10px] text-gray-400">SVG по умолчанию</span>
+                      </div>
+                    )}
+                    <label className="cursor-pointer flex items-center gap-2 px-3 py-1.5 bg-[#C6A87C] text-white text-xs font-medium hover:bg-[#B09060]" data-testid={`stove-upload-${stove.id}`}>
+                      {uploading === `stove_${si}` ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                      Загрузить
+                      <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && handleImageUpload(e.target.files[0], `stove_${si}`)} />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="mb-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs text-gray-500 font-medium">Характеристики</label>
+                    <button onClick={() => addStoveFeature(si)} className="text-[10px] text-[#C6A87C] hover:underline flex items-center gap-0.5"><Plus size={10} /> Добавить</button>
+                  </div>
+                  <div className="space-y-1.5">
+                    {(stove.features || []).map((f, fi) => (
+                      <div key={fi} className="flex items-center gap-2">
+                        <input value={f} onChange={e => updateStoveFeature(si, fi, e.target.value)}
+                          className="flex-1 p-1.5 border border-gray-200 text-xs focus:border-[#C6A87C] outline-none" />
+                        <button onClick={() => removeStoveFeature(si, fi)} className="text-red-300 hover:text-red-500"><Trash2 size={12} /></button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Pros & Cons */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Преимущества (через запятую)</label>
+                    <textarea value={(stove.pros || []).join(', ')} onChange={e => updateStoveType(si, 'pros', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                      rows={2} className="w-full p-2 border border-gray-200 text-xs focus:border-[#C6A87C] outline-none resize-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Недостатки (через запятую)</label>
+                    <textarea value={(stove.cons || []).join(', ')} onChange={e => updateStoveType(si, 'cons', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                      rows={2} className="w-full p-2 border border-gray-200 text-xs focus:border-[#C6A87C] outline-none resize-none" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

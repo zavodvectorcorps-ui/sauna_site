@@ -1,0 +1,92 @@
+{
+  "summary": "Completed testing of new schemes editing feature (schematic + stove scheme) in КУПЕЛИ > Контент admin section. All features verified working: Admin tab 'Схемы (купель + печь)' with data-testid='balia-content-tab-schemes', schematic section with title/subtitle/upload/parts editing, stove scheme section with 2 stove types (internal/external) each having title/subtitle/image upload/features/pros/cons. Backend: 8/8 tests passed. Frontend: All UI elements and data loading verified.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "passed_tests": [
+    "FEATURE: Admin > КУПЕЛИ > Контент has 'Схемы (купель + печь)' sub-tab with data-testid='balia-content-tab-schemes'",
+    "FEATURE: Schematic section shows title input, subtitle input, upload button (data-testid='schematic-upload-btn')",
+    "FEATURE: Schematic section shows editable description parts with data-testid='schematic-part-{i}'",
+    "FEATURE: Adding schematic parts works (+ Добавить button)",
+    "FEATURE: Removing schematic parts works (Trash button)",
+    "FEATURE: Stove scheme section shows section title and subtitle inputs",
+    "FEATURE: Stove scheme has 2 stove types: internal (data-testid='stove-type-edit-internal') and external (data-testid='stove-type-edit-external')",
+    "FEATURE: Each stove type has title, subtitle, image upload (data-testid='stove-upload-{id}'), features list, pros/cons",
+    "FEATURE: Adding/removing stove features works",
+    "API: POST /api/balia/schematic/upload requires admin auth (returns 401 without)",
+    "API: POST /api/balia/schematic/upload accepts file and returns Cloudinary URL",
+    "API: GET /api/balia/content returns schematic field with title, subtitle, parts, image",
+    "API: GET /api/balia/content returns stove_scheme field with title, subtitle, types[]",
+    "API: POST /api/balia/content saves schematic and stove_scheme fields",
+    "FRONTEND: BalieSchematic component loads title, subtitle, parts from /api/balia/content (schematic field)",
+    "FRONTEND: BalieStoveScheme component loads title, subtitle, stove types from /api/balia/content (stove_scheme field)",
+    "FRONTEND: SVG fallback diagrams render when no custom image is uploaded"
+  ],
+
+  "test_report_links": [
+    "/app/backend/tests/test_iteration11_schemes.py",
+    "/app/test_reports/pytest/pytest_iteration11.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "BaliaContentAdmin.jsx correctly implements schemes tab with data-testid attributes for all interactive elements",
+    "Cloudinary upload endpoint at /api/balia/schematic/upload uses folder='wm-balia/schematic'",
+    "BalieSchematic.jsx and BalieStoveScheme.jsx correctly fetch data from /api/balia/content and fall back to SVG diagrams when no custom image",
+    "State management for schematic parts and stove features uses proper React patterns with spread operators"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_iteration11_schemes.py"
+  ],
+
+  "success_rate": {
+    "backend": "100% (8/8 tests passed)",
+    "frontend": "100% (all features verified working)"
+  },
+
+  "seed_data_creation": "Test data created via API: schematic with 'Test Budowa Balii' title and 2 parts, stove_scheme with 'Test Jak dziala piec?' title and 2 stove types",
+
+  "retest_needed": false,
+
+  "should_main_agent_self_test": false,
+
+  "context_for_next_testing_agent": "Iteration 11 tested new schemes editing feature in КУПЕЛИ > Контент admin section. Key data-testids: balia-content-tab-schemes (sub-tab), schematic-upload-btn (upload button), schematic-part-{i} (parts), stove-type-edit-internal/external (stove sections), stove-upload-internal/external (stove upload buttons). API endpoints: POST /api/balia/schematic/upload (Cloudinary), GET/POST /api/balia/content (schematic and stove_scheme fields). Frontend components: BalieSchematic and BalieStoveScheme load data from API and fall back to SVG diagrams when no custom image.",
+
+  "features_verified": {
+    "admin_schemes_tab": {
+      "status": "WORKING",
+      "details": "Sub-tab 'Схемы (купель + печь)' with data-testid='balia-content-tab-schemes'"
+    },
+    "schematic_section": {
+      "status": "WORKING",
+      "details": "Title, subtitle inputs, upload button (data-testid='schematic-upload-btn'), editable parts with add/remove"
+    },
+    "stove_scheme_section": {
+      "status": "WORKING",
+      "details": "Section title/subtitle, 2 stove types (internal/external) with title, subtitle, image upload, features, pros/cons"
+    },
+    "cloudinary_upload": {
+      "status": "WORKING",
+      "details": "POST /api/balia/schematic/upload returns Cloudinary URL"
+    },
+    "frontend_data_loading": {
+      "status": "WORKING",
+      "details": "BalieSchematic and BalieStoveScheme load data from /api/balia/content"
+    },
+    "svg_fallback": {
+      "status": "WORKING",
+      "details": "SVG diagrams render when no custom image is uploaded"
+    }
+  }
+}

@@ -1786,6 +1786,20 @@ async def save_balia_option_exclusions(request: Request, username: str = Depends
     await db.settings.update_one({"id": "balia_option_exclusions"}, {"$set": data}, upsert=True)
     return {"status": "ok"}
 
+@api_router.post("/balia/schematic/upload")
+async def upload_balia_schematic_image(file: UploadFile = File(...), username: str = Depends(verify_admin)):
+    try:
+        contents = await file.read()
+        result = cloudinary.uploader.upload(
+            contents,
+            folder="wm-balia/schematic",
+            resource_type="image",
+        )
+        return {"status": "ok", "url": result["secure_url"]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 # Include the router
 app.include_router(api_router)
