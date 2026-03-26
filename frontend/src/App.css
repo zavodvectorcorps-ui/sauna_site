@@ -6,6 +6,20 @@ html, body {
   max-width: 100vw;
 }
 
+/* Card hover light streak */
+@keyframes streakMove {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+.card-streak {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.group:hover .card-streak {
+  opacity: 1;
+  animation: streakMove 1.2s ease-out forwards;
+}
+
 /* Container */
 .container-main {
   max-width: 1400px;

@@ -62,14 +62,25 @@ const MainLanding = () => {
             className="group relative overflow-hidden cursor-pointer min-h-[400px] md:min-h-[480px] flex flex-col justify-end"
             data-testid="card-sauny"
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10" />
-            <img src={saunaImg} alt="Sauny" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={{ objectPosition: saunaPos }} />
-            <div className="relative z-20 p-8">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10 group-hover:to-black/80 transition-all duration-700" />
+            <img src={saunaImg} alt="Sauny" className="absolute inset-0 w-full h-full object-cover transition-all duration-[1.2s] ease-out group-hover:scale-110" style={{ objectPosition: saunaPos }} />
+            {/* Golden glow border */}
+            <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ boxShadow: 'inset 0 0 40px rgba(198,168,124,0.15), inset 0 0 80px rgba(198,168,124,0.05)' }} />
+            {/* Light streak */}
+            <div className="absolute inset-0 z-[12] pointer-events-none overflow-hidden">
+              <div className="card-streak absolute -top-full -left-1/2 w-[200%] h-[200%]" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 55%, transparent 60%)' }} />
+            </div>
+            {/* Vignette on hover */}
+            <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)' }} />
+            {/* Content — slides up on hover */}
+            <div className="relative z-20 p-8 transition-transform duration-500 ease-out group-hover:-translate-y-2">
               <div className="flex items-center gap-2 mb-3"><Flame size={18} className="text-[#C6A87C]" /><span className="text-[#C6A87C] text-xs font-semibold tracking-[0.2em] uppercase">WM-Sauna</span></div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Sauny ogrodowe</h2>
-              <p className="text-white/60 text-sm mb-6 max-w-sm">Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5–10 dni.</p>
-              <div className="flex items-center gap-2 text-white font-medium group-hover:text-[#C6A87C] transition-colors">Zobacz sauny <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" /></div>
+              <p className="text-white/60 text-sm mb-6 max-w-sm transition-opacity duration-500 group-hover:text-white/80">Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5–10 dni.</p>
+              <div className="flex items-center gap-2 text-white font-medium group-hover:text-[#C6A87C] transition-all duration-300">Zobacz sauny <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-2" /></div>
             </div>
+            {/* Bottom golden accent line */}
+            <div className="absolute bottom-0 left-0 right-0 h-[2px] z-20 bg-[#C6A87C] scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left" />
           </motion.div>
 
           {/* Balie */}
@@ -79,14 +90,25 @@ const MainLanding = () => {
             className="group relative overflow-hidden cursor-pointer min-h-[400px] md:min-h-[480px] flex flex-col justify-end"
             data-testid="card-balie"
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10" />
-            <img src={baliaImg} alt="Balie" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={{ objectPosition: baliaPos }} />
-            <div className="relative z-20 p-8">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10 group-hover:to-black/80 transition-all duration-700" />
+            <img src={baliaImg} alt="Balie" className="absolute inset-0 w-full h-full object-cover transition-all duration-[1.2s] ease-out group-hover:scale-110" style={{ objectPosition: baliaPos }} />
+            {/* Golden glow border */}
+            <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ boxShadow: 'inset 0 0 40px rgba(212,175,55,0.15), inset 0 0 80px rgba(212,175,55,0.05)' }} />
+            {/* Light streak */}
+            <div className="absolute inset-0 z-[12] pointer-events-none overflow-hidden">
+              <div className="card-streak absolute -top-full -left-1/2 w-[200%] h-[200%]" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 55%, transparent 60%)' }} />
+            </div>
+            {/* Vignette on hover */}
+            <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)' }} />
+            {/* Content — slides up on hover */}
+            <div className="relative z-20 p-8 transition-transform duration-500 ease-out group-hover:-translate-y-2">
               <div className="flex items-center gap-2 mb-3"><Droplets size={18} className="text-[#D4AF37]" /><span className="text-[#D4AF37] text-xs font-semibold tracking-[0.2em] uppercase">WM-Balia</span></div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Balie i jacuzzi</h2>
-              <p className="text-white/60 text-sm mb-6 max-w-sm">Ręcznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyższa jakość.</p>
-              <div className="flex items-center gap-2 text-white font-medium group-hover:text-[#D4AF37] transition-colors">Zobacz balie <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" /></div>
+              <p className="text-white/60 text-sm mb-6 max-w-sm transition-opacity duration-500 group-hover:text-white/80">Ręcznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyższa jakość.</p>
+              <div className="flex items-center gap-2 text-white font-medium group-hover:text-[#D4AF37] transition-all duration-300">Zobacz balie <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-2" /></div>
             </div>
+            {/* Bottom golden accent line */}
+            <div className="absolute bottom-0 left-0 right-0 h-[2px] z-20 bg-[#D4AF37] scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left" />
           </motion.div>
         </div>
       </section>
