@@ -64,7 +64,10 @@ export const MainLandingAdmin = ({ authHeader, showMessage }) => {
       const res = await fetchWithAuth(`${API}/api/admin/upload-video`, { method: 'POST', body: formData });
       const data = await res.json();
       setSettings(prev => ({ ...prev, [field]: `${API}${data.url}` }));
-      showMessage('success', 'Видео загружено');
+      const msg = data.original_kb && data.compressed_kb
+        ? `Видео загружено и сжато: ${data.original_kb} КБ → ${data.compressed_kb} КБ`
+        : 'Видео загружено';
+      showMessage('success', msg);
     } catch { showMessage('error', 'Ошибка загрузки видео'); }
     setVideoUploading(null);
   };
