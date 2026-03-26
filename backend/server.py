@@ -530,6 +530,8 @@ async def send_balia_amocrm_lead(data: dict):
             logger.info(f"Balia AMO CRM response: {resp.status_code} {resp.text[:200]}")
     except Exception as e:
         logger.error(f"Balia AMO CRM error: {e}")
+
+async def get_amocrm_token(settings: dict) -> str:
     """Get AMO CRM API token from settings."""
     return settings.get("amocrm_access_token", "")
 
