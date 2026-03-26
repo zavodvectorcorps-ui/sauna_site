@@ -9,8 +9,9 @@ const DEFAULT_SAUNA_IMG = 'https://images.unsplash.com/photo-1759302354886-f2c37
 const DEFAULT_BALIA_IMG = 'https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=80';
 
 /* Parallax card with all effects */
-const ProductCard = ({ img, imgPos, accentColor, icon: Icon, brand, title, desc, cta, onClick, direction, testId }) => {
+const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title, desc, cta, onClick, direction, testId }) => {
   const cardRef = useRef(null);
+  const videoRef = useRef(null);
   const [transform, setTransform] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
 
@@ -22,9 +23,21 @@ const ProductCard = ({ img, imgPos, accentColor, icon: Icon, brand, title, desc,
     setTransform({ x: x * -12, y: y * -8 });
   }, []);
 
+  const handleMouseEnter = useCallback(() => {
+    setHovered(true);
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
+
   const handleMouseLeave = useCallback(() => {
     setHovered(false);
     setTransform({ x: 0, y: 0 });
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
   }, []);
 
   const isSauna = testId === 'card-sauny';
@@ -37,7 +50,7 @@ const ProductCard = ({ img, imgPos, accentColor, icon: Icon, brand, title, desc,
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: direction === 'left' ? 0.2 : 0.35 }}
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className="group relative overflow-hidden cursor-pointer min-h-[400px] md:min-h-[480px] flex flex-col justify-end"
@@ -49,12 +62,28 @@ const ProductCard = ({ img, imgPos, accentColor, icon: Icon, brand, title, desc,
       <img
         src={img}
         alt={title}
-        className="absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-110"
+        className={`absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-all duration-[1.2s] ease-out ${video ? (hovered ? 'opacity-0' : 'opacity-100') : 'group-hover:scale-110'}`}
         style={{
           objectPosition: imgPos,
-          transform: hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.1)` : 'translate(0,0) scale(1)',
+          transform: !video && hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.1)` : 'translate(0,0) scale(1)',
         }}
       />
+      {/* Video overlay */}
+      {video && (
+        <video
+          ref={videoRef}
+          src={video}
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className={`absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-opacity duration-700 ${hovered ? 'opacity-100' : 'opacity-0'}`}
+          style={{
+            transform: hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.05)` : 'translate(0,0) scale(1)',
+            transition: 'transform 1.2s ease-out, opacity 0.7s ease',
+          }}
+        />
+      )}
       {/* Golden glow */}
       <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ boxShadow: `inset 0 0 40px ${glowColor},0.15), inset 0 0 80px ${glowColor},0.05)` }} />
       {/* Light streak */}
@@ -91,6 +120,8 @@ const MainLanding = () => {
   const [baliaImg, setBaliaImg] = useState('');
   const [saunaPos, setSaunaPos] = useState('center');
   const [baliaPos, setBaliaPos] = useState('center');
+  const [saunaVideo, setSaunaVideo] = useState('');
+  const [baliaVideo, setBaliaVideo] = useState('');
   const [imagesReady, setImagesReady] = useState(false);
 
   useEffect(() => {
@@ -101,6 +132,8 @@ const MainLanding = () => {
         setBaliaImg(d.balia_image || DEFAULT_BALIA_IMG);
         if (d.sauna_image_position) setSaunaPos(d.sauna_image_position);
         if (d.balia_image_position) setBaliaPos(d.balia_image_position);
+        if (d.sauna_video) setSaunaVideo(d.sauna_video);
+        if (d.balia_video) setBaliaVideo(d.balia_video);
       })
       .catch(() => {
         setSaunaImg(DEFAULT_SAUNA_IMG);
@@ -137,14 +170,14 @@ const MainLanding = () => {
           {imagesReady && (
             <>
               <ProductCard
-                img={saunaImg} imgPos={saunaPos} accentColor="#C6A87C"
+                img={saunaImg} imgPos={saunaPos} video={saunaVideo} accentColor="#C6A87C"
                 icon={Flame} brand="WM-Sauna" title="Sauny ogrodowe"
                 desc="Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5-10 dni."
                 cta="Zobacz sauny" onClick={() => navigate('/sauny')}
                 direction="left" testId="card-sauny"
               />
               <ProductCard
-                img={baliaImg} imgPos={baliaPos} accentColor="#D4AF37"
+                img={baliaImg} imgPos={baliaPos} video={baliaVideo} accentColor="#D4AF37"
                 icon={Droplets} brand="WM-Balia" title="Balie i jacuzzi"
                 desc="Recznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyzsza jakosc."
                 cta="Zobacz balie" onClick={() => navigate('/balie')}

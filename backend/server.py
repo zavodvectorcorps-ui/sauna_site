@@ -339,6 +339,8 @@ class MainLandingSettings(BaseModel):
     balia_image: str = ""
     sauna_image_position: str = "center"
     balia_image_position: str = "center"
+    sauna_video: str = ""
+    balia_video: str = ""
 
 class InstallmentSettings(BaseModel):
     id: str = "installment_settings"
@@ -1686,6 +1688,36 @@ async def get_uploaded_image(image_id: str):
     
     image_data = base64.b64decode(image["data"])
     return Response(content=image_data, media_type=image["content_type"])
+
+
+# Video upload
+VIDEO_DIR = Path("/app/backend/uploads/videos")
+VIDEO_DIR.mkdir(parents=True, exist_ok=True)
+
+@api_router.post("/admin/upload-video")
+async def upload_video(file: UploadFile = File(...), username: str = Depends(verify_admin)):
+    if not file.content_type or not file.content_type.startswith("video/"):
+        raise HTTPException(status_code=400, detail="Only video files are allowed")
+    try:
+        video_id = str(uuid.uuid4())
+        ext = Path(file.filename or "video.mp4").suffix or ".mp4"
+        filename = f"{video_id}{ext}"
+        filepath = VIDEO_DIR / filename
+        contents = await file.read()
+        with open(filepath, "wb") as f:
+            f.write(contents)
+        return {"status": "success", "url": f"/api/videos/{filename}"}
+    except Exception as e:
+        logger.error(f"Error uploading video: {e}")
+        raise HTTPException(status_code=500, detail="Error uploading video")
+
+@api_router.get("/videos/{filename}")
+async def get_video(filename: str):
+    from fastapi.responses import FileResponse
+    filepath = VIDEO_DIR / filename
+    if not filepath.exists():
+        raise HTTPException(status_code=404, detail="Video not found")
+    return FileResponse(filepath, media_type="video/mp4")
 
 
 CATALOG_DIR = Path("/app/backend/uploads")
