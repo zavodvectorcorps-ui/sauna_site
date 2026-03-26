@@ -23,6 +23,7 @@ import { SaunaIntegrationsAdmin } from '../components/admin/SaunaIntegrationsAdm
 import { SaunaCatalogSectionsAdmin } from '../components/admin/SaunaCatalogSectionsAdmin';
 import { InstallmentAdmin } from '../components/admin/InstallmentAdmin';
 import { SpecialOfferAdmin } from '../components/admin/SpecialOfferAdmin';
+import { MainLandingAdmin } from '../components/admin/MainLandingAdmin';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -119,6 +120,7 @@ const AdminPanel = () => {
       color: '#595959',
       tabs: [
         { id: 'contacts', label: 'Сообщения', icon: MessageSquare },
+        { id: 'main_landing', label: 'Главная', icon: Image },
         { id: 'integrations', label: 'Интеграции', icon: Settings },
       ],
     },
@@ -198,6 +200,8 @@ const AdminPanel = () => {
         return <SaunaSeoAdmin {...props} />;
       case 'integrations':
         return <SaunaIntegrationsAdmin {...props} />;
+      case 'main_landing':
+        return <MainLandingAdmin {...props} />;
       case 'catalog':
       case 'sections':
         return <SaunaCatalogSectionsAdmin {...props} activeSubTab={activeTab} />;

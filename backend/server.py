@@ -333,6 +333,11 @@ class SeoSettings(BaseModel):
     og_image: str = ""
     canonical_url: str = ""
 
+class MainLandingSettings(BaseModel):
+    id: str = "main_landing_settings"
+    sauna_image: str = ""
+    balia_image: str = ""
+
 class InstallmentSettings(BaseModel):
     id: str = "installment_settings"
     sauna_logo_url: str = ""
@@ -900,6 +905,13 @@ async def get_social_proof_public():
         return SocialProofSettings().model_dump()
     return settings
 
+@api_router.get("/settings/main-landing")
+async def get_main_landing_settings_public():
+    settings = await db.settings.find_one({"id": "main_landing_settings"}, {"_id": 0})
+    if not settings:
+        return MainLandingSettings().model_dump()
+    return settings
+
 @api_router.get("/settings/installment")
 async def get_installment_settings_public():
     settings = await db.settings.find_one({"id": "installment_settings"}, {"_id": 0})
@@ -1179,6 +1191,15 @@ async def test_balia_amocrm_lead(username: str = Depends(verify_admin)):
 async def update_integration_settings(settings: IntegrationSettings, username: str = Depends(verify_admin)):
     await db.settings.update_one(
         {"id": "integration_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/main-landing")
+async def update_main_landing_settings(settings: MainLandingSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "main_landing_settings"},
         {"$set": settings.model_dump()},
         upsert=True
     )

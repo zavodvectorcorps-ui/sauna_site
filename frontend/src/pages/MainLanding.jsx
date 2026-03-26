@@ -1,15 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Flame, Droplets, MapPin, ShieldCheck, Leaf, Heart, Phone, Mail, Send, CheckCircle } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
+const DEFAULT_SAUNA_IMG = 'https://images.unsplash.com/photo-1759302354886-f2c37dd3dd8c?auto=format&fit=crop&w=800&q=80';
+const DEFAULT_BALIA_IMG = 'https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=80';
+
 const MainLanding = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [saunaImg, setSaunaImg] = useState(DEFAULT_SAUNA_IMG);
+  const [baliaImg, setBaliaImg] = useState(DEFAULT_BALIA_IMG);
+
+  useEffect(() => {
+    fetch(`${API}/api/settings/main-landing`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.sauna_image) setSaunaImg(d.sauna_image);
+        if (d.balia_image) setBaliaImg(d.balia_image);
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,7 +59,7 @@ const MainLanding = () => {
             data-testid="card-sauny"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10" />
-            <img src="https://images.unsplash.com/photo-1759302354886-f2c37dd3dd8c?auto=format&fit=crop&w=800&q=80" alt="Sauny" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img src={saunaImg} alt="Sauny" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             <div className="relative z-20 p-8">
               <div className="flex items-center gap-2 mb-3"><Flame size={18} className="text-[#C6A87C]" /><span className="text-[#C6A87C] text-xs font-semibold tracking-[0.2em] uppercase">WM-Sauna</span></div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Sauny ogrodowe</h2>
@@ -61,7 +76,7 @@ const MainLanding = () => {
             data-testid="card-balie"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10" />
-            <img src="https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=80" alt="Balie" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img src={baliaImg} alt="Balie" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             <div className="relative z-20 p-8">
               <div className="flex items-center gap-2 mb-3"><Droplets size={18} className="text-[#D4AF37]" /><span className="text-[#D4AF37] text-xs font-semibold tracking-[0.2em] uppercase">WM-Balia</span></div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Balie i jacuzzi</h2>
