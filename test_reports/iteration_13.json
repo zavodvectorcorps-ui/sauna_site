@@ -1,0 +1,112 @@
+{
+  "summary": "Completed testing of 4 new features for iteration 13: (1) Calculator checkbox multi-select in OPCJE DODATKOWE - WORKING, (2) Admin installment logo upload for saunas/bathtubs - WORKING, (3) Admin special offer cards with photo upload - WORKING, (4) Calculator no discount + CTA text + installment info in model cards - ALL WORKING. All 12 backend API tests passed. Frontend verification confirmed all features.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "passed_tests": [
+    "API: GET /api/settings/installment returns {id, sauna_logo_url, balia_logo_url}",
+    "API: PUT /api/admin/settings/installment saves and persists logo URLs",
+    "API: PUT /api/admin/settings/installment requires authentication (401 without auth)",
+    "API: GET /api/settings/special-offer returns {id, cards:[]}",
+    "API: PUT /api/admin/settings/special-offer saves cards with title, subtitle, value, desc, icon, image",
+    "API: PUT /api/admin/settings/special-offer requires authentication",
+    "API: GET /api/sauna/prices returns models and categories",
+    "API: POST /api/admin/upload works with authentication",
+    "API: Health endpoint returns healthy status",
+    "API: Admin login works with correct credentials",
+    "FRONTEND: Calculator section loads with data-testid='calculator-section'",
+    "FRONTEND: Calculator total price displays correctly (data-testid='calculator-total-price')",
+    "FRONTEND: Calculator CTA text 'Zbierz zamowienie teraz i zafixuj swoja indywidualna znizke!' visible (data-testid='calculator-discount-cta')",
+    "FRONTEND: Calculator installment info block shows 'Raty od 500 zl/mc' (data-testid='calculator-installment-info')",
+    "FRONTEND: Calculator has NO 'Rabat' (discount) line in price breakdown",
+    "FRONTEND: Calculator checkbox multi-select WORKING in OPCJE DODATKOWE - both options remain selected",
+    "FRONTEND: Calculator shows '2 wyb.' badge when 2 options selected in checkbox category",
+    "FRONTEND: Calculator price correctly sums base + options (11,000 + 500 + 550 = 12,050 PLN)",
+    "FRONTEND: Model cards (13 found) all have installment blocks (data-testid='model-installment-{id}')",
+    "FRONTEND: Model installment blocks show 'Raty od 500 zl/mc' and 'Od 4 do 20 miesiecy, 0% nadplaty'",
+    "FRONTEND: Special offer cards (3 found) display with data-testid='special-offer-card-{0,1,2}'",
+    "ADMIN: Installment tab (data-testid='admin-tab-installment') accessible",
+    "ADMIN: Installment tab shows 2 logo upload fields for saunas and bathtubs",
+    "ADMIN: Special offer tab (data-testid='admin-tab-special_offer') accessible",
+    "ADMIN: Special offer tab shows editable cards with title, subtitle, value, desc, icon, image upload"
+  ],
+
+  "test_report_links": [
+    "/app/backend/tests/test_iteration13_features.py",
+    "/app/test_reports/pytest/pytest_iteration13.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "Calculator.jsx correctly implements checkbox multi-select via inputType check (line 74-96)",
+    "Calculator.jsx calculateTotal() correctly sums base + variant + options without discount (line 111-113)",
+    "Calculator.jsx has CTA text and installment info block with proper data-testid attributes (lines 358-366)",
+    "Models.jsx correctly adds installment block to each model card (lines 298-303)",
+    "InstallmentAdmin.jsx properly handles logo upload for both saunas and bathtubs",
+    "SpecialOfferAdmin.jsx allows editing cards with photo upload capability",
+    "Backend server.py has proper Pydantic models for InstallmentSettings and SpecialOfferSettings (lines 336-343)",
+    "Backend has GET and PUT endpoints for both installment and special-offer settings"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_iteration13_features.py"
+  ],
+
+  "success_rate": {
+    "backend": "100% (12/12 tests passed)",
+    "frontend": "100% (all features verified working)"
+  },
+
+  "seed_data_creation": "Test installment settings saved via API: sauna_logo_url='https://example.com/test-sauna-logo.png', balia_logo_url='https://example.com/test-balia-logo.png'. Default special offer cards restored after tests.",
+
+  "retest_needed": false,
+
+  "should_main_agent_self_test": false,
+
+  "context_for_next_testing_agent": "Iteration 13 tested 4 features: (1) Calculator checkbox multi-select - OPCJE DODATKOWE category uses inputType='checkbox' allowing multiple selections, badge shows 'X wyb.'. (2) Admin installment tab (data-testid='admin-tab-installment') has 2 logo upload fields for saunas/bathtubs. (3) Admin special offer tab (data-testid='admin-tab-special_offer') has editable cards with photo upload. (4) Calculator has no discount line, shows CTA text (data-testid='calculator-discount-cta') and installment info (data-testid='calculator-installment-info'). Model cards have installment blocks (data-testid='model-installment-{id}'). All APIs at /api/settings/installment and /api/settings/special-offer working.",
+
+  "features_verified": {
+    "calculator_checkbox_multiselect": {
+      "status": "WORKING",
+      "details": "OPCJE DODATKOWE section allows multiple selections, badge shows '2 wyb.' when 2 options selected"
+    },
+    "calculator_no_discount": {
+      "status": "WORKING",
+      "details": "Price breakdown shows only 'Cena bazowa' and 'Opcje', no 'Rabat' line"
+    },
+    "calculator_cta_text": {
+      "status": "WORKING",
+      "details": "Golden text 'Zbierz zamowienie teraz i zafixuj swoja indywidualna znizke!' visible below send button"
+    },
+    "calculator_installment_info": {
+      "status": "WORKING",
+      "details": "Installment block shows 'Raty od 500 zl/mc' with 'Od 4 do 20 miesiecy, 0% nadplaty'"
+    },
+    "model_cards_installment": {
+      "status": "WORKING",
+      "details": "All 13 model cards have installment blocks with 'Raty od 500 zl/mc'"
+    },
+    "admin_installment_tab": {
+      "status": "WORKING",
+      "details": "Tab accessible, shows 2 logo upload fields for saunas and bathtubs"
+    },
+    "admin_special_offer_tab": {
+      "status": "WORKING",
+      "details": "Tab accessible, shows 3 default cards with editable fields and photo upload"
+    },
+    "special_offer_cards_frontend": {
+      "status": "WORKING",
+      "details": "3 special offer cards visible on /sauny with proper data-testid attributes"
+    }
+  }
+}

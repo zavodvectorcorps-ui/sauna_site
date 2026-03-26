@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Settings, Users, Image, MessageSquare, LayoutGrid, LogOut, 
-  Eye, GripVertical, Phone, FileText, Star, ChevronDown, Droplets, Flame
+  Eye, GripVertical, Phone, FileText, Star, ChevronDown, Droplets, Flame, CreditCard, Gift
 } from 'lucide-react';
 import { BaliaProductsAdmin } from '../components/admin/BaliaProductsAdmin';
 import { BaliaTestimonialsAdmin } from '../components/admin/BaliaTestimonialsAdmin';
@@ -20,6 +20,8 @@ import { SaunaFaqAdmin } from '../components/admin/SaunaFaqAdmin';
 import { SaunaSeoAdmin } from '../components/admin/SaunaSeoAdmin';
 import { SaunaIntegrationsAdmin } from '../components/admin/SaunaIntegrationsAdmin';
 import { SaunaCatalogSectionsAdmin } from '../components/admin/SaunaCatalogSectionsAdmin';
+import { InstallmentAdmin } from '../components/admin/InstallmentAdmin';
+import { SpecialOfferAdmin } from '../components/admin/SpecialOfferAdmin';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -140,6 +142,8 @@ const AdminPanel = () => {
         { id: 'buttons', label: 'Кнопки', icon: Settings },
         { id: 'site', label: 'Контакты', icon: Phone },
         { id: 'seo', label: 'SEO', icon: FileText },
+        { id: 'installment', label: 'Рассрочка', icon: CreditCard },
+        { id: 'special_offer', label: 'Спецпредложение', icon: Gift },
         { id: 'catalog', label: 'Каталог', icon: FileText },
         { id: 'sections', label: 'Порядок', icon: GripVertical },
       ],
@@ -195,6 +199,10 @@ const AdminPanel = () => {
       case 'catalog':
       case 'sections':
         return <SaunaCatalogSectionsAdmin {...props} activeSubTab={activeTab} />;
+      case 'installment':
+        return <InstallmentAdmin {...props} />;
+      case 'special_offer':
+        return <SpecialOfferAdmin {...props} />;
       case 'balia_products':
         return <BaliaProductsAdmin {...props} />;
       case 'balia_colors':

@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react';
 import { CreditCard, Calendar, Percent, Truck } from 'lucide-react';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const items = [
   { icon: Calendar, title: 'Okres od 4 do 20 miesiecy', desc: 'Elastyczny czas splaty' },
@@ -8,14 +11,28 @@ const items = [
 ];
 
 export const BalieInstallment = ({ variant = 'full' }) => {
+  const [logoUrl, setLogoUrl] = useState('');
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/api/settings/installment`)
+      .then(r => r.json())
+      .then(d => { if (d.balia_logo_url) setLogoUrl(d.balia_logo_url); })
+      .catch(() => {});
+  }, []);
+
   if (variant === 'compact') {
     return (
       <div className="bg-[#1A1E27] border border-[#D4AF37]/20 p-4" data-testid="balie-installment-compact">
-        <div className="flex items-center gap-2 mb-2">
-          <CreditCard size={16} className="text-[#D4AF37]" />
-          <span className="text-[#D4AF37] text-sm font-semibold">Raty od 300 zl/mc</span>
+        <div className="flex items-center gap-3">
+          {logoUrl && <img src={logoUrl} alt="Partner" className="h-6 object-contain" data-testid="balie-installment-compact-logo" />}
+          <div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <CreditCard size={16} className="text-[#D4AF37]" />
+              <span className="text-[#D4AF37] text-sm font-semibold">Raty od 300 zl/mc</span>
+            </div>
+            <p className="text-white/40 text-xs">Okres od 4 do 20 miesiecy, 0% nadplaty, darmowa dostawa</p>
+          </div>
         </div>
-        <p className="text-white/40 text-xs">Okres od 4 do 20 miesiecy, 0% nadplaty, darmowa dostawa</p>
       </div>
     );
   }
@@ -24,6 +41,11 @@ export const BalieInstallment = ({ variant = 'full' }) => {
     <section className="py-16 bg-[#0A0D12]" data-testid="balie-installment">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
+          {logoUrl && (
+            <div className="mb-4" data-testid="balie-installment-logo">
+              <img src={logoUrl} alt="Partner finansowy" className="h-12 mx-auto object-contain" />
+            </div>
+          )}
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
             Komfort dostepny <span className="text-[#D4AF37]">od razu!</span>
           </h2>

@@ -333,6 +333,15 @@ class SeoSettings(BaseModel):
     og_image: str = ""
     canonical_url: str = ""
 
+class InstallmentSettings(BaseModel):
+    id: str = "installment_settings"
+    sauna_logo_url: str = ""
+    balia_logo_url: str = ""
+
+class SpecialOfferSettings(BaseModel):
+    id: str = "special_offer_settings"
+    cards: List[Dict[str, Any]] = []
+
 class IntegrationSettings(BaseModel):
     id: str = "integration_settings"
     # Telegram
@@ -779,6 +788,20 @@ async def get_social_proof_public():
         return SocialProofSettings().model_dump()
     return settings
 
+@api_router.get("/settings/installment")
+async def get_installment_settings_public():
+    settings = await db.settings.find_one({"id": "installment_settings"}, {"_id": 0})
+    if not settings:
+        return InstallmentSettings().model_dump()
+    return settings
+
+@api_router.get("/settings/special-offer")
+async def get_special_offer_settings_public():
+    settings = await db.settings.find_one({"id": "special_offer_settings"}, {"_id": 0})
+    if not settings:
+        return SpecialOfferSettings().model_dump()
+    return settings
+
 @api_router.get("/admin/settings/integrations")
 async def get_integration_settings(username: str = Depends(verify_admin)):
     settings = await db.settings.find_one({"id": "integration_settings"}, {"_id": 0})
@@ -1000,6 +1023,24 @@ async def update_social_proof(settings: SocialProofSettings, username: str = Dep
 async def update_integration_settings(settings: IntegrationSettings, username: str = Depends(verify_admin)):
     await db.settings.update_one(
         {"id": "integration_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/installment")
+async def update_installment_settings(settings: InstallmentSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "installment_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/special-offer")
+async def update_special_offer_settings(settings: SpecialOfferSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "special_offer_settings"},
         {"$set": settings.model_dump()},
         upsert=True
     )

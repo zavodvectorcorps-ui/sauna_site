@@ -110,9 +110,7 @@ export const Calculator = () => {
 
   const calculateTotal = () => {
     if (!selectedModel) return 0;
-    let total = selectedModel.basePrice + (selectedVariant?.price || 0) + calculateOptionsTotal();
-    if (selectedModel.discount > 0) total = Math.round(total * (1 - selectedModel.discount / 100));
-    return total;
+    return selectedModel.basePrice + (selectedVariant?.price || 0) + calculateOptionsTotal();
   };
 
   const getFilteredModels = () => {
@@ -184,7 +182,7 @@ export const Calculator = () => {
           variantName: selectedVariant?.namePl || selectedVariant?.name || '',
           basePrice: selectedModel?.basePrice || 0,
           variantPrice: selectedVariant?.price || 0,
-          discountPercent: selectedModel?.discount || 0,
+          discountPercent: 0,
           options: optionsPayload,
           totalPrice: calculateTotal(),
         }),
@@ -266,7 +264,7 @@ export const Calculator = () => {
                   )}
                   <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium text-[#1A1A1A] truncate block">{selectedModel?.name || '—'}</span>
-                    <span className="text-xs text-[#C6A87C] font-semibold">{selectedModel?.basePrice?.toLocaleString()} PLN{selectedModel?.discount > 0 ? ` (-${selectedModel.discount}%)` : ''}</span>
+                    <span className="text-xs text-[#C6A87C] font-semibold">{selectedModel?.basePrice?.toLocaleString()} PLN</span>
                   </div>
                   <ChevronDown size={16} className={`text-[#8C8C8C] flex-shrink-0 transition-transform ${modelDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -289,7 +287,6 @@ export const Calculator = () => {
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-medium text-[#1A1A1A] truncate">{model.name}</h4>
                           <span className="text-xs font-semibold text-[#C6A87C]">{model.basePrice.toLocaleString()} PLN</span>
-                          {model.discount > 0 && <span className="ml-2 text-[9px] bg-red-600 text-white px-1 py-0.5 font-bold">-{model.discount}%</span>}
                         </div>
                         {selectedModel?.id === model.id && <Check size={14} className="text-[#C6A87C] flex-shrink-0" />}
                       </button>
@@ -343,12 +340,6 @@ export const Calculator = () => {
                             <span className="text-[#1A1A1A]">+{calculateOptionsTotal().toLocaleString()} PLN</span>
                           </div>
                         )}
-                        {selectedModel.discount > 0 && (
-                          <div className="flex justify-between text-[#4A6741]">
-                            <span>{t('calculator.discount')} ({selectedModel.discount}%)</span>
-                            <span>-{Math.round((selectedModel.basePrice + (selectedVariant?.price || 0) + calculateOptionsTotal()) * (selectedModel.discount / 100)).toLocaleString()} PLN</span>
-                          </div>
-                        )}
                       </div>
                       <div className="flex justify-between items-center mt-2 pt-2 border-t border-black/5">
                         <span className="text-sm font-semibold text-[#1A1A1A]">{t('calculator.total')}</span>
@@ -364,6 +355,15 @@ export const Calculator = () => {
                         <Send size={14} />
                         {t('calculator.send_inquiry')}
                       </button>
+                      <p className="text-xs text-center text-[#C6A87C] font-medium mt-2" data-testid="calculator-discount-cta">
+                        Zbierz zamowienie teraz i zafixuj swoja indywidualna znizke!
+                      </p>
+                      <div className="mt-3 bg-[#F5F0EB] border border-[#C6A87C]/20 p-3" data-testid="calculator-installment-info">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-[#C6A87C] text-xs font-semibold">Raty od 500 zl/mc</span>
+                        </div>
+                        <p className="text-gray-500 text-[10px]">Od 4 do 20 miesiecy, 0% nadplaty</p>
+                      </div>
                     </div>
                   </motion.div>
                 </AnimatePresence>
