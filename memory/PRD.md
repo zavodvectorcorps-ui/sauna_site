@@ -8,8 +8,8 @@
 - **Backend:** FastAPI, Pydantic
 - **Database:** MongoDB
 - **Uploads:** Cloudinary + локальный upload (каталоги)
-- **CRM:** AmoCRM
-- **Notifications:** Telegram
+- **CRM:** AmoCRM (отдельные воронки для саун и купелей)
+- **Notifications:** Telegram (отдельные боты для саун и купелей)
 
 ## Реализовано
 
@@ -36,15 +36,19 @@
 
 ### Фаза 4 — Улучшения (2026-03-26)
 - Фикс чекбоксов конфигуратора саун (множественный выбор OPCJE DODATKOWE)
-- Удаление скидок из расчёта калькулятора, CTA "Zbierz zamowienie teraz i zafixuj swoja indywidualna znizke!"
+- Удаление скидок из расчёта калькулятора, CTA текст
 - Блок рассрочки в карточках моделей саун и калькуляторе
 - Загрузка логотипа партнёра по рассрочке (админка)
 - Загрузка фотографий для карточек спецпредложения (админка)
 
-### Фаза 5 — Купели: Конфигуратор и интеграции (2026-03-26)
-- **Убран отдельный конфигуратор купелей** — кнопки "Skonfiguruj wlasna balie" и "Skonfiguruj wlasny wariant" удалены, BalieConfiguratorCTA убран. Калькулятор остался только в карточках продуктов.
-- **Отдельный каталог купелей (PDF)** — загрузка/удаление через админку, кнопка "Pobierz katalog" в Hero использует отдельный файл.
-- **Интеграции купелей (AMO + Telegram)** — отдельный Telegram-бот и воронка AMO CRM для заявок с купелей. API-ключ AMO берётся из настроек саун. Все заявки с type "balia_*" маршрутизируются на balia-настройки.
+### Фаза 5 — Купели: рефакторинг и интеграции (2026-03-26)
+- Убран отдельный конфигуратор купелей (удалены CTA, кнопки, ссылки)
+- Отдельный каталог купелей (PDF) — загрузка через админку
+- Интеграции купелей (AMO + Telegram) — отдельный бот и воронка
+- API-ключ AMO общий (из настроек саун), остальные поля индивидуальные
+
+### Фаза 5.1 — Багфикс (2026-03-26)
+- Исправлен горизонтальный скролл на мобильных устройствах (overflow-x: hidden на html/body)
 
 ## Бэклог
 ### P1 — Мультиязычность
@@ -56,14 +60,13 @@
 ### P3 — A/B тестирование CTA
 
 ## Ключевые API
-- GET/PUT /api/settings/installment — Настройки рассрочки (логотипы)
-- GET/PUT /api/settings/special-offer — Карточки спецпредложения
 - GET/PUT /api/admin/settings/balia-integrations — Интеграции купелей
 - POST /api/admin/test-balia-telegram — Тест Telegram купелей
 - POST /api/admin/test-balia-amocrm-lead — Тест AMO CRM купелей
 - POST/GET/DELETE /api/admin/balia-catalog — Каталог купелей
-- GET /api/balia-catalog/info — Информация о каталоге
-- GET /api/balia-catalog/download — Скачивание каталога
+- GET /api/balia-catalog/info, /download — Каталог публичный
+- GET/PUT /api/settings/installment — Настройки рассрочки
+- GET/PUT /api/settings/special-offer — Карточки спецпредложения
 - PUT /api/admin/settings/calculator — Настройки калькулятора
 - POST /api/admin/upload — Загрузка файлов (Cloudinary)
 - GET/POST /api/balia/content — Контент купелей

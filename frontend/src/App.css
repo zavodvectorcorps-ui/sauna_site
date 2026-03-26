@@ -1,5 +1,11 @@
 /* WM-Sauna Global Styles */
 
+/* Prevent horizontal overflow on mobile */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 /* Container */
 .container-main {
   max-width: 1400px;
