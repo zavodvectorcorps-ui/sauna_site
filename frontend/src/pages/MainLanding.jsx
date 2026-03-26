@@ -134,20 +134,24 @@ const MainLanding = () => {
       {/* Product cards */}
       <section className="px-4 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          <ProductCard
-            img={saunaImg} imgPos={saunaPos} accentColor="#C6A87C"
-            icon={Flame} brand="WM-Sauna" title="Sauny ogrodowe"
-            desc="Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5-10 dni."
-            cta="Zobacz sauny" onClick={() => navigate('/sauny')}
-            direction="left" testId="card-sauny"
-          />
-          <ProductCard
-            img={baliaImg} imgPos={baliaPos} accentColor="#D4AF37"
-            icon={Droplets} brand="WM-Balia" title="Balie i jacuzzi"
-            desc="Recznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyzsza jakosc."
-            cta="Zobacz balie" onClick={() => navigate('/balie')}
-            direction="right" testId="card-balie"
-          />
+          {imagesReady && (
+            <>
+              <ProductCard
+                img={saunaImg} imgPos={saunaPos} accentColor="#C6A87C"
+                icon={Flame} brand="WM-Sauna" title="Sauny ogrodowe"
+                desc="Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5-10 dni."
+                cta="Zobacz sauny" onClick={() => navigate('/sauny')}
+                direction="left" testId="card-sauny"
+              />
+              <ProductCard
+                img={baliaImg} imgPos={baliaPos} accentColor="#D4AF37"
+                icon={Droplets} brand="WM-Balia" title="Balie i jacuzzi"
+                desc="Recznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyzsza jakosc."
+                cta="Zobacz balie" onClick={() => navigate('/balie')}
+                direction="right" testId="card-balie"
+              />
+            </>
+          )}
         </div>
       </section>
 
