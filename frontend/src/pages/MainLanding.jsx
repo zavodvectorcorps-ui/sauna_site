@@ -1,66 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowRight, Flame, Droplets, MapPin, ShieldCheck, Leaf, Heart, Phone, Mail, Send, CheckCircle } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const DEFAULT_SAUNA_IMG = 'https://images.unsplash.com/photo-1759302354886-f2c37dd3dd8c?auto=format&fit=crop&w=800&q=80';
 const DEFAULT_BALIA_IMG = 'https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=80';
-
-/* Warm sparks for sauna */
-const SaunaParticles = () => (
-  <div className="absolute inset-0 z-[13] pointer-events-none overflow-hidden">
-    {Array.from({ length: 8 }).map((_, i) => (
-      <motion.div
-        key={i}
-        className="absolute rounded-full"
-        style={{
-          left: `${15 + Math.random() * 70}%`,
-          bottom: `${5 + Math.random() * 20}%`,
-          width: 2 + Math.random() * 3,
-          height: 2 + Math.random() * 3,
-          background: `rgba(${220 + Math.random() * 35}, ${150 + Math.random() * 60}, ${50 + Math.random() * 40}, 0.8)`,
-          boxShadow: `0 0 ${4 + Math.random() * 6}px rgba(220,160,60,0.4)`,
-        }}
-        initial={{ opacity: 0, y: 0 }}
-        animate={{
-          opacity: [0, 0.9, 0.6, 0],
-          y: [0, -80 - Math.random() * 120],
-          x: [-5 + Math.random() * 10, -10 + Math.random() * 20],
-        }}
-        transition={{ duration: 2 + Math.random() * 1.5, delay: i * 0.35, repeat: Infinity, ease: 'easeOut' }}
-      />
-    ))}
-  </div>
-);
-
-/* Water droplets for balia */
-const BaliaParticles = () => (
-  <div className="absolute inset-0 z-[13] pointer-events-none overflow-hidden">
-    {Array.from({ length: 8 }).map((_, i) => (
-      <motion.div
-        key={i}
-        className="absolute rounded-full"
-        style={{
-          left: `${10 + Math.random() * 80}%`,
-          bottom: `${5 + Math.random() * 15}%`,
-          width: 2 + Math.random() * 2.5,
-          height: 2 + Math.random() * 2.5,
-          background: `rgba(${160 + Math.random() * 40}, ${210 + Math.random() * 40}, 255, 0.7)`,
-          boxShadow: `0 0 ${3 + Math.random() * 5}px rgba(160,220,255,0.3)`,
-        }}
-        initial={{ opacity: 0, y: 0 }}
-        animate={{
-          opacity: [0, 0.8, 0.4, 0],
-          y: [0, -70 - Math.random() * 100],
-          x: [-3 + Math.random() * 6, -8 + Math.random() * 16],
-        }}
-        transition={{ duration: 2.5 + Math.random() * 1.5, delay: i * 0.4, repeat: Infinity, ease: 'easeOut' }}
-      />
-    ))}
-  </div>
-);
 
 /* Parallax card with all effects */
 const ProductCard = ({ img, imgPos, accentColor, icon: Icon, brand, title, desc, cta, onClick, direction, testId }) => {
@@ -117,10 +63,6 @@ const ProductCard = ({ img, imgPos, accentColor, icon: Icon, brand, title, desc,
       </div>
       {/* Vignette */}
       <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)' }} />
-      {/* Particles */}
-      <AnimatePresence>
-        {hovered && (isSauna ? <SaunaParticles /> : <BaliaParticles />)}
-      </AnimatePresence>
       {/* Content */}
       <div className="relative z-20 p-8 transition-transform duration-500 ease-out group-hover:-translate-y-2">
         <div className="flex items-center gap-2 mb-3">
