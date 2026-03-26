@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Send, CheckCircle, MapPin, Phone, Mail } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Send, CheckCircle, MapPin, Phone, Mail, FileDown } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -7,6 +7,11 @@ export const BalieContact = () => {
   const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [catalogAvailable, setCatalogAvailable] = useState(false);
+
+  useEffect(() => {
+    fetch(`${API}/api/catalog/info`).then(r => r.json()).then(d => setCatalogAvailable(d?.available)).catch(() => {});
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,9 +32,9 @@ export const BalieContact = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            Skontaktuj się z <span className="text-[#D4AF37]">nami</span>
+            Skontaktuj sie z <span className="text-[#D4AF37]">nami</span>
           </h2>
-          <p className="text-white/50 text-sm">Chętnie odpowiemy na każde pytanie</p>
+          <p className="text-white/50 text-sm">Chetnie odpowiemy na kazde pytanie</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -53,21 +58,32 @@ export const BalieContact = () => {
           {submitted ? (
             <div className="text-center py-8">
               <CheckCircle size={48} className="mx-auto text-green-400 mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Dziękujemy!</h3>
-              <p className="text-white/50">Skontaktujemy się z Tobą wkrótce.</p>
+              <h3 className="text-xl font-semibold text-white mb-2">Dziekujemy!</h3>
+              <p className="text-white/50 mb-4">Skontaktujemy sie z Toba wkrotce.</p>
+              {catalogAvailable && (
+                <a
+                  href={`${API}/api/catalog/download`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors"
+                  data-testid="balie-contact-download-catalog"
+                >
+                  <FileDown size={16} /> Pobierz katalog PDF
+                </a>
+              )}
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input type="text" placeholder="Imię i nazwisko *" required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+              <input type="text" placeholder="Imie i nazwisko *" required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
                 className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30" data-testid="balie-contact-name" />
               <input type="tel" placeholder="Telefon *" required value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
                 className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30" data-testid="balie-contact-phone" />
               <input type="email" placeholder="Email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
                 className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30" />
-              <textarea placeholder="Wiadomość" rows={3} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+              <textarea placeholder="Wiadomosc" rows={3} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
                 className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30 resize-none" />
               <button type="submit" disabled={submitting} className="w-full py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors disabled:opacity-50 flex items-center justify-center gap-2" data-testid="balie-contact-submit">
-                <Send size={16} /> {submitting ? 'Wysyłanie...' : 'Wyślij wiadomość'}
+                <Send size={16} /> {submitting ? 'Wysylanie...' : 'Wyslij wiadomosc'}
               </button>
             </form>
           )}

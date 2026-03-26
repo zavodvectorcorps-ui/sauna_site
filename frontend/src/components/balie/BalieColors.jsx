@@ -1,165 +1,72 @@
-import { useState } from 'react';
-import { Palette, ChevronDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Palette } from 'lucide-react';
 
-const fiberglassColors = [
-  { name: 'Black+Red', gradient: 'linear-gradient(135deg, #1a1a1a 50%, #8B0000 50%)' },
-  { name: 'Multi', gradient: 'linear-gradient(135deg, #2d1b4e, #1a3a5c, #1a4a3a)' },
-  { name: 'Galaxy', gradient: 'linear-gradient(135deg, #0a0a2e 0%, #1a1a4e 50%, #2d1b4e 100%)' },
-  { name: 'Grey Pearl', gradient: 'linear-gradient(135deg, #8a8a8a, #b0b0b0, #9a9a9a)' },
-  { name: 'White Pearl', gradient: 'linear-gradient(135deg, #e8e8e8, #f5f5f5, #dcdcdc)' },
-  { name: 'Blue Pearl', gradient: 'linear-gradient(135deg, #1a3a6c, #2a5a9c, #1a4a8c)' },
-  { name: 'Dark Sky', gradient: 'linear-gradient(135deg, #0d1b2a, #1b2838, #0a1520)' },
-  { name: 'Cream+Silver', gradient: 'linear-gradient(135deg, #d4c5a0 50%, #c0c0c0 50%)' },
-  { name: 'Emerald', gradient: 'linear-gradient(135deg, #004d40, #00695c, #00796b)' },
-  { name: 'Black+Gold', gradient: 'linear-gradient(135deg, #1a1a1a 50%, #D4AF37 50%)' },
-  { name: 'Black+Pink', gradient: 'linear-gradient(135deg, #1a1a1a 50%, #c2185b 50%)' },
-  { name: 'Black+Silver', gradient: 'linear-gradient(135deg, #1a1a1a 50%, #b0b0b0 50%)' },
-  { name: 'Black+Gold+Pink', gradient: 'linear-gradient(135deg, #1a1a1a 33%, #D4AF37 33%, #D4AF37 66%, #c2185b 66%)' },
-  { name: 'Snowflake', gradient: 'linear-gradient(135deg, #e8e8e8, #f0f0f0, #dde4e8)' },
-];
+const API = process.env.REACT_APP_BACKEND_URL;
 
-const acrylicColors = [
-  { name: 'Green marble', color: '#2d5a3a', pattern: true },
-  { name: 'Brown marble', color: '#5a3a2d', pattern: true },
-  { name: 'Gray', color: '#6a6a6a', pattern: false },
-  { name: 'Blue marble', color: '#2d3a5a', pattern: true },
-  { name: 'Coffee marble', color: '#3d2a1a', pattern: true },
-  { name: 'Black marble', color: '#1a1a2a', pattern: true },
-  { name: 'White marble', color: '#d0d0d0', pattern: true },
-  { name: 'White', color: '#e8e8e8', pattern: false },
-];
-
-const spruceColors = [
-  { code: 'E0013', color: '#d4b896' },
-  { code: 'E0021', color: '#c8a882' },
-  { code: 'E1000', color: '#f0e6d0' },
-  { code: 'E2000', color: '#e8d8b8' },
-  { code: 'E5000', color: '#c0a878' },
-  { code: 'E6015', color: '#8a7050' },
-  { code: 'E6710', color: '#6a5030' },
-  { code: 'E6720', color: '#5a4020' },
-  { code: 'E6730', color: '#4a3018' },
-  { code: 'E7000', color: '#3a2810' },
-  { code: 'E7712', color: '#2a1808' },
-  { code: 'E BLACK', color: '#1a1a1a' },
-  { code: 'EDS', color: '#8a8a7a' },
-];
-
-const thermoColors = [
-  { code: 'TERMO0012', color: '#b89878' },
-  { code: 'TERMO0013', color: '#a88868' },
-  { code: 'TERMO0021', color: '#987858' },
-  { code: 'TERMO1000', color: '#d8c8a8' },
-  { code: 'TERMO2000', color: '#c8b898' },
-  { code: 'TERMO5000', color: '#a89070' },
-  { code: 'TERMO6015', color: '#786040' },
-  { code: 'TERMO6710', color: '#685030' },
-  { code: 'TERMO6720', color: '#584020' },
-  { code: 'TERMO6730', color: '#483018' },
-  { code: 'TERMO7000', color: '#382810' },
-  { code: 'TERMO7712', color: '#281808' },
-  { code: 'TERMO ANTRACIT', color: '#3a3a3a' },
-  { code: 'TERMO BLACK', color: '#1a1a1a' },
-  { code: 'TERMO DS', color: '#6a6a5a' },
-];
+// Fallback color data (CSS gradients) used when no photos uploaded
+const fallbackSwatches = {
+  fiberglass: [
+    { name: 'Black+Red', gradient: 'linear-gradient(135deg, #1a1a1a 50%, #8B0000 50%)' },
+    { name: 'Galaxy', gradient: 'linear-gradient(135deg, #0a0a2e 0%, #1a1a4e 50%, #2d1b4e 100%)' },
+    { name: 'Grey Pearl', gradient: 'linear-gradient(135deg, #8a8a8a, #b0b0b0, #9a9a9a)' },
+    { name: 'White Pearl', gradient: 'linear-gradient(135deg, #e8e8e8, #f5f5f5, #dcdcdc)' },
+    { name: 'Blue Pearl', gradient: 'linear-gradient(135deg, #1a3a6c, #2a5a9c, #1a4a8c)' },
+    { name: 'Emerald', gradient: 'linear-gradient(135deg, #004d40, #00695c, #00796b)' },
+    { name: 'Black+Gold', gradient: 'linear-gradient(135deg, #1a1a1a 50%, #D4AF37 50%)' },
+    { name: 'Black+Silver', gradient: 'linear-gradient(135deg, #1a1a1a 50%, #b0b0b0 50%)' },
+  ],
+  acrylic: [
+    { name: 'Green marble', gradient: 'radial-gradient(circle at 30% 40%, #2d5a3aaa, #2d5a3a)' },
+    { name: 'Brown marble', gradient: 'radial-gradient(circle at 30% 40%, #5a3a2daa, #5a3a2d)' },
+    { name: 'Blue marble', gradient: 'radial-gradient(circle at 30% 40%, #2d3a5aaa, #2d3a5a)' },
+    { name: 'Coffee marble', gradient: 'radial-gradient(circle at 30% 40%, #3d2a1aaa, #3d2a1a)' },
+    { name: 'Black marble', gradient: 'radial-gradient(circle at 30% 40%, #1a1a2aaa, #1a1a2a)' },
+    { name: 'White marble', gradient: 'radial-gradient(circle at 30% 40%, #d0d0d0aa, #d0d0d0)' },
+    { name: 'White', gradient: '#e8e8e8' },
+  ],
+  spruce: [
+    { name: 'E0013', gradient: '#d4b896' }, { name: 'E0021', gradient: '#c8a882' },
+    { name: 'E1000', gradient: '#f0e6d0' }, { name: 'E5000', gradient: '#c0a878' },
+    { name: 'E6015', gradient: '#8a7050' }, { name: 'E6710', gradient: '#6a5030' },
+    { name: 'E6730', gradient: '#4a3018' }, { name: 'E7000', gradient: '#3a2810' },
+    { name: 'E BLACK', gradient: '#1a1a1a' },
+  ],
+  thermo: [
+    { name: 'TERMO0012', gradient: '#b89878' }, { name: 'TERMO0013', gradient: '#a88868' },
+    { name: 'TERMO1000', gradient: '#d8c8a8' }, { name: 'TERMO5000', gradient: '#a89070' },
+    { name: 'TERMO6015', gradient: '#786040' }, { name: 'TERMO6710', gradient: '#685030' },
+    { name: 'TERMO6730', gradient: '#483018' }, { name: 'TERMO7000', gradient: '#382810' },
+    { name: 'TERMO BLACK', gradient: '#1a1a1a' }, { name: 'TERMO DS', gradient: '#6a6a5a' },
+  ],
+  wpc: [
+    { name: 'WPC Black', gradient: '#1a1a1a' },
+  ],
+};
 
 const categories = [
-  {
-    id: 'fiberglass',
-    title: 'Kolory Fiberglass',
-    subtitle: 'Wanna z tworzywa szklano-poliestrowego: trwała, ekologiczna, gładka powierzchnia łatwa w czyszczeniu',
-  },
-  {
-    id: 'acrylic',
-    title: 'Kolory Akrylowe',
-    subtitle: 'Najwyższej jakości tworzywo z Włoch i Austrii, wzmocnione włóknem szklanym, odporne na UV',
-  },
-  {
-    id: 'spruce',
-    title: 'Drewno Świerkowe',
-    subtitle: 'Naturalne drewno świerkowe z szeroką gamą kolorów bejcy i olejów ochronnych',
-  },
-  {
-    id: 'thermo',
-    title: 'Drewno Termiczne',
-    subtitle: 'Modyfikowane termicznie drewno o zwiększonej trwałości i odporności na warunki atmosferyczne',
-  },
-  {
-    id: 'wpc',
-    title: 'Kompozyt WPC',
-    subtitle: 'Kompozyt drewno-plastik: nowoczesny wygląd, nie wymaga konserwacji, odporny na wilgoć',
-  },
+  { id: 'fiberglass', title: 'Kolory Fiberglass', subtitle: 'Wanna z tworzywa szklano-poliestrowego: trwala, ekologiczna, gladka powierzchnia latwa w czyszczeniu' },
+  { id: 'acrylic', title: 'Kolory Akrylowe', subtitle: 'Najwyzszej jakosci tworzywo z Wloch i Austrii, wzmocnione wloknem szklanym, odporne na UV' },
+  { id: 'spruce', title: 'Drewno Swierkowe', subtitle: 'Naturalne drewno swierkowe z szeroka gama kolorow bejcy i olejow ochronnych' },
+  { id: 'thermo', title: 'Drewno Termiczne', subtitle: 'Modyfikowane termicznie drewno o zwiekszonej trwalosci i odpornosci na warunki atmosferyczne' },
+  { id: 'wpc', title: 'Kompozyt WPC', subtitle: 'Kompozyt drewno-plastik: nowoczesny wyglad, nie wymaga konserwacji, odporny na wilgoc' },
 ];
 
 export const BalieColors = () => {
   const [activeCategory, setActiveCategory] = useState('fiberglass');
+  const [apiColors, setApiColors] = useState([]);
 
-  const renderSwatches = () => {
-    switch (activeCategory) {
-      case 'fiberglass':
-        return (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3">
-            {fiberglassColors.map((c) => (
-              <div key={c.name} className="group text-center">
-                <div className="aspect-square border-2 border-white/10 group-hover:border-[#D4AF37]/50 transition-colors overflow-hidden" style={{ background: c.gradient }} />
-                <p className="text-white/50 text-[10px] mt-1.5 group-hover:text-white/80 transition-colors">{c.name}</p>
-              </div>
-            ))}
-          </div>
-        );
-      case 'acrylic':
-        return (
-          <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-3">
-            {acrylicColors.map((c) => (
-              <div key={c.name} className="group text-center">
-                <div className="aspect-square border-2 border-white/10 group-hover:border-[#D4AF37]/50 transition-colors" style={{ background: c.pattern ? `radial-gradient(circle at 30% 40%, ${c.color}aa, ${c.color})` : c.color }} />
-                <p className="text-white/50 text-[10px] mt-1.5 group-hover:text-white/80 transition-colors">{c.name}</p>
-              </div>
-            ))}
-          </div>
-        );
-      case 'spruce':
-        return (
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 gap-3">
-            {spruceColors.map((c) => (
-              <div key={c.code} className="group text-center">
-                <div className="aspect-square border-2 border-white/10 group-hover:border-[#D4AF37]/50 transition-colors" style={{ background: c.color }} />
-                <p className="text-white/50 text-[10px] mt-1.5 group-hover:text-white/80 transition-colors">{c.code}</p>
-              </div>
-            ))}
-          </div>
-        );
-      case 'thermo':
-        return (
-          <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 gap-3">
-            {thermoColors.map((c) => (
-              <div key={c.code} className="group text-center">
-                <div className="aspect-square border-2 border-white/10 group-hover:border-[#D4AF37]/50 transition-colors" style={{ background: c.color }} />
-                <p className="text-white/50 text-[10px] mt-1.5 group-hover:text-white/80 transition-colors">{c.code}</p>
-              </div>
-            ))}
-          </div>
-        );
-      case 'wpc':
-        return (
-          <div className="flex gap-4">
-            <div className="group text-center">
-              <div className="w-20 h-20 border-2 border-white/10 group-hover:border-[#D4AF37]/50 transition-colors" style={{ background: '#1a1a1a' }} />
-              <p className="text-white/50 text-[10px] mt-1.5">WPC Black</p>
-            </div>
-            <div className="flex-1 p-4 bg-[#1A1E27]/50 border border-white/5">
-              <p className="text-white/50 text-sm leading-relaxed">
-                Panele WPC (Wood-Plastic Composite) to nowoczesna alternatywa dla drewna naturalnego. Nie wymagają malowania ani olejowania, są odporne na wilgoć, pleśń i promieniowanie UV. Idealny wybór dla osób ceniących bezobsługowość.
-              </p>
-            </div>
-          </div>
-        );
-      default:
-        return null;
-    }
+  useEffect(() => {
+    fetch(`${API}/api/balia/colors`).then(r => r.json()).then(setApiColors).catch(() => {});
+  }, []);
+
+  const getSwatches = (catId) => {
+    const fromApi = apiColors.filter(c => c.category === catId && c.image);
+    if (fromApi.length > 0) return { type: 'api', items: fromApi };
+    return { type: 'fallback', items: fallbackSwatches[catId] || [] };
   };
 
   const currentCategory = categories.find(c => c.id === activeCategory);
+  const swatches = getSwatches(activeCategory);
 
   return (
     <section id="kolory" className="py-20 bg-[#0A0D12]" data-testid="balie-colors">
@@ -170,10 +77,10 @@ export const BalieColors = () => {
             Personalizacja
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            Kolory i <span className="text-[#D4AF37]">Materiały</span>
+            Kolory i <span className="text-[#D4AF37]">Materialy</span>
           </h2>
           <p className="text-white/40 text-sm max-w-2xl mx-auto">
-            Każda balia jest wykonywana na zamówienie. Wybierz kolor wanny, rodzaj drewna zewnętrznego i wykończenie, które idealnie pasuje do Twojego ogrodu.
+            Kazda balia jest wykonywana na zamowienie. Wybierz kolor wanny, rodzaj drewna zewnetrznego i wykonczenie, ktore idealnie pasuje do Twojego ogrodu.
           </p>
         </div>
 
@@ -195,18 +102,37 @@ export const BalieColors = () => {
           ))}
         </div>
 
-        {/* Description */}
         {currentCategory && (
           <p className="text-center text-white/40 text-sm mb-6 max-w-xl mx-auto">{currentCategory.subtitle}</p>
         )}
 
         {/* Swatches */}
         <div className="bg-[#1A1E27]/50 border border-white/5 p-6 sm:p-8">
-          {renderSwatches()}
+          {swatches.type === 'api' ? (
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+              {swatches.items.map((c) => (
+                <div key={c.id} className="group text-center">
+                  <div className="aspect-square border-2 border-white/10 group-hover:border-[#D4AF37]/50 transition-colors overflow-hidden">
+                    <img src={c.image} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
+                  </div>
+                  <p className="text-white/50 text-[10px] mt-1.5 group-hover:text-white/80 transition-colors">{c.name}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+              {swatches.items.map((c) => (
+                <div key={c.name} className="group text-center">
+                  <div className="aspect-square border-2 border-white/10 group-hover:border-[#D4AF37]/50 transition-colors" style={{ background: c.gradient }} />
+                  <p className="text-white/50 text-[10px] mt-1.5 group-hover:text-white/80 transition-colors">{c.name}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <p className="text-center text-white/20 text-xs mt-4">
-          * Kolory na monitorze mogą różnić się od rzeczywistych. Skontaktuj się z nami, aby otrzymać próbki materiałów.
+          * Kolory na monitorze moga roznic sie od rzeczywistych. Skontaktuj sie z nami, aby otrzymac probki materialow.
         </p>
       </div>
     </section>

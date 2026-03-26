@@ -1724,6 +1724,55 @@ async def delete_balia_gallery_image(image_id: str, username: str = Depends(veri
     await db.balia_gallery.delete_one({"id": image_id})
     return {"status": "deleted"}
 
+# Balia color swatches (Cloudinary)
+@api_router.get("/balia/colors")
+async def get_balia_colors():
+    colors = await db.balia_colors.find({}, {"_id": 0}).sort("order", 1).to_list(500)
+    return colors
+
+@api_router.post("/balia/colors")
+async def save_balia_color(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    await db.balia_colors.update_one({"id": data["id"]}, {"$set": data}, upsert=True)
+    return {"status": "ok"}
+
+@api_router.post("/balia/colors/upload")
+async def upload_balia_color_image(file: UploadFile = File(...), category: str = "fiberglass", username: str = Depends(verify_admin)):
+    try:
+        contents = await file.read()
+        result = cloudinary.uploader.upload(
+            contents,
+            folder=f"wm-balia/colors/{category}",
+            resource_type="image",
+        )
+        return {"url": result["secure_url"], "public_id": result["public_id"]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/balia/colors/{color_id}")
+async def delete_balia_color(color_id: str, username: str = Depends(verify_admin)):
+    color = await db.balia_colors.find_one({"id": color_id})
+    if color and color.get("public_id"):
+        try:
+            cloudinary.uploader.destroy(color["public_id"])
+        except Exception:
+            pass
+    await db.balia_colors.delete_one({"id": color_id})
+    return {"status": "deleted"}
+
+# Balia product card options settings
+@api_router.get("/balia/card-options-settings")
+async def get_balia_card_options():
+    settings = await db.settings.find_one({"id": "balia_card_options"}, {"_id": 0})
+    return settings or {"id": "balia_card_options", "enabled_categories": []}
+
+@api_router.post("/balia/card-options-settings")
+async def save_balia_card_options(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["id"] = "balia_card_options"
+    await db.settings.update_one({"id": "balia_card_options"}, {"$set": data}, upsert=True)
+    return {"status": "ok"}
+
 # Include the router
 app.include_router(api_router)
 

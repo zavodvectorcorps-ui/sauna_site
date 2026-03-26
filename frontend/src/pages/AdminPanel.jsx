@@ -7,6 +7,8 @@ import { BaliaProductsAdmin } from '../components/admin/BaliaProductsAdmin';
 import { BaliaTestimonialsAdmin } from '../components/admin/BaliaTestimonialsAdmin';
 import { BaliaContentAdmin } from '../components/admin/BaliaContentAdmin';
 import { BaliaConfiguratorAdmin } from '../components/admin/BaliaConfiguratorAdmin';
+import { BaliaColorsAdmin } from '../components/admin/BaliaColorsAdmin';
+import { BaliaCardOptionsAdmin } from '../components/admin/BaliaCardOptionsAdmin';
 import { SaunaMessagesAdmin } from '../components/admin/SaunaMessagesAdmin';
 import { SaunaDesignAdmin } from '../components/admin/SaunaDesignAdmin';
 import { SaunaContentAdmin } from '../components/admin/SaunaContentAdmin';
@@ -149,6 +151,8 @@ const AdminPanel = () => {
       color: '#339DC7',
       tabs: [
         { id: 'balia_products', label: 'Продукты', icon: LayoutGrid },
+        { id: 'balia_colors', label: 'Цвета', icon: Image },
+        { id: 'balia_card_options', label: 'Опции карточки', icon: Settings },
         { id: 'balia_testimonials', label: 'Отзывы', icon: Star },
         { id: 'balia_content', label: 'Контент', icon: FileText },
         { id: 'balia_configurator', label: 'Конфигуратор', icon: Settings },
@@ -193,6 +197,10 @@ const AdminPanel = () => {
         return <SaunaCatalogSectionsAdmin {...props} activeSubTab={activeTab} />;
       case 'balia_products':
         return <BaliaProductsAdmin {...props} />;
+      case 'balia_colors':
+        return <BaliaColorsAdmin {...props} />;
+      case 'balia_card_options':
+        return <BaliaCardOptionsAdmin {...props} />;
       case 'balia_testimonials':
         return <BaliaTestimonialsAdmin {...props} />;
       case 'balia_content':
