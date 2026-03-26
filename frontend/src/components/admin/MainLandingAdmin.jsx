@@ -1,10 +1,26 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Save, Upload, X, Image } from 'lucide-react';
+import { Save, Upload, X, Image, Move } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
+const POSITION_OPTIONS = [
+  { value: 'center', label: 'Центр' },
+  { value: 'top', label: 'Верх' },
+  { value: 'bottom', label: 'Низ' },
+  { value: 'left', label: 'Лево' },
+  { value: 'right', label: 'Право' },
+  { value: 'top left', label: 'Верх-лево' },
+  { value: 'top right', label: 'Верх-право' },
+  { value: 'bottom left', label: 'Низ-лево' },
+  { value: 'bottom right', label: 'Низ-право' },
+  { value: '50% 30%', label: 'Верхняя треть' },
+  { value: '50% 70%', label: 'Нижняя треть' },
+  { value: '30% 50%', label: 'Левая треть' },
+  { value: '70% 50%', label: 'Правая треть' },
+];
+
 export const MainLandingAdmin = ({ authHeader, showMessage }) => {
-  const [settings, setSettings] = useState({ sauna_image: '', balia_image: '' });
+  const [settings, setSettings] = useState({ sauna_image: '', balia_image: '', sauna_image_position: 'center', balia_image_position: 'center' });
   const [loading, setLoading] = useState(true);
 
   const fetchWithAuth = useCallback(async (url, options = {}) => {
@@ -16,7 +32,12 @@ export const MainLandingAdmin = ({ authHeader, showMessage }) => {
   useEffect(() => {
     fetch(`${API}/api/settings/main-landing`)
       .then(r => r.json())
-      .then(d => setSettings({ sauna_image: d.sauna_image || '', balia_image: d.balia_image || '' }))
+      .then(d => setSettings({
+        sauna_image: d.sauna_image || '',
+        balia_image: d.balia_image || '',
+        sauna_image_position: d.sauna_image_position || 'center',
+        balia_image_position: d.balia_image_position || 'center',
+      }))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -39,59 +60,85 @@ export const MainLandingAdmin = ({ authHeader, showMessage }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: 'main_landing_settings', ...settings }),
       });
-      showMessage('success', 'Фоны главной страницы сохранены');
+      showMessage('success', 'Настройки главной страницы сохранены');
     } catch { showMessage('error', 'Ошибка сохранения'); }
   };
 
   if (loading) return <div className="flex justify-center py-12"><div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" /></div>;
 
-  const renderField = (label, field, hint) => (
-    <div className="border border-black/5 p-6" data-testid={`main-landing-${field}`}>
-      <h3 className="font-semibold text-lg mb-1">{label}</h3>
-      <p className="text-sm text-[#8C8C8C] mb-4">{hint}</p>
-      <div className="flex gap-3 items-start">
-        <input
-          type="url"
-          placeholder="URL фото"
-          value={settings[field]}
-          onChange={e => setSettings(prev => ({ ...prev, [field]: e.target.value }))}
-          className="flex-1 p-2 border border-black/10 text-sm"
-          data-testid={`main-landing-${field}-url`}
-        />
-        <label className="flex items-center gap-2 px-4 py-2 bg-[#1A1A1A] text-white text-sm cursor-pointer hover:bg-black flex-shrink-0">
-          <Upload size={14} /> Загрузить
-          <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0], field)} />
-        </label>
-        {settings[field] && (
-          <button onClick={() => setSettings(prev => ({ ...prev, [field]: '' }))} className="p-2 text-red-400 hover:text-red-600"><X size={16} /></button>
+  const renderField = (label, imageField, posField, hint) => {
+    const imgSrc = settings[imageField];
+    const pos = settings[posField];
+    return (
+      <div className="border border-black/5 p-6" data-testid={`main-landing-${imageField}`}>
+        <h3 className="font-semibold text-lg mb-1">{label}</h3>
+        <p className="text-sm text-[#8C8C8C] mb-4">{hint}</p>
+        <div className="flex gap-3 items-start mb-3">
+          <input
+            type="url"
+            placeholder="URL фото"
+            value={imgSrc}
+            onChange={e => setSettings(prev => ({ ...prev, [imageField]: e.target.value }))}
+            className="flex-1 p-2 border border-black/10 text-sm"
+            data-testid={`main-landing-${imageField}-url`}
+          />
+          <label className="flex items-center gap-2 px-4 py-2 bg-[#1A1A1A] text-white text-sm cursor-pointer hover:bg-black flex-shrink-0">
+            <Upload size={14} /> Загрузить
+            <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0], imageField)} />
+          </label>
+          {imgSrc && (
+            <button onClick={() => setSettings(prev => ({ ...prev, [imageField]: '' }))} className="p-2 text-red-400 hover:text-red-600"><X size={16} /></button>
+          )}
+        </div>
+        {/* Position selector */}
+        <div className="flex items-center gap-3 mb-4">
+          <Move size={14} className="text-[#8C8C8C]" />
+          <span className="text-xs text-[#8C8C8C]">Позиция:</span>
+          <select
+            value={pos}
+            onChange={e => setSettings(prev => ({ ...prev, [posField]: e.target.value }))}
+            className="p-1.5 border border-black/10 text-sm bg-white"
+            data-testid={`main-landing-${posField}`}
+          >
+            {POSITION_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+          <input
+            type="text"
+            placeholder="или своё: 50% 40%"
+            value={POSITION_OPTIONS.find(o => o.value === pos) ? '' : pos}
+            onChange={e => { if (e.target.value) setSettings(prev => ({ ...prev, [posField]: e.target.value })); }}
+            className="p-1.5 border border-black/10 text-sm w-32"
+          />
+        </div>
+        {/* Preview */}
+        {imgSrc ? (
+          <div className="aspect-[16/9] max-w-md bg-[#0C0C0C] border border-black/5 overflow-hidden relative">
+            <img src={imgSrc} alt="Preview" className="w-full h-full object-cover" style={{ objectPosition: pos }} />
+            <div className="absolute bottom-2 right-2 bg-black/60 text-white/60 text-[10px] px-2 py-0.5">{pos}</div>
+          </div>
+        ) : (
+          <div className="aspect-[16/9] max-w-md bg-[#F9F9F7] border border-black/5 flex items-center justify-center">
+            <div className="text-center"><Image size={32} className="mx-auto text-[#8C8C8C] mb-2" /><p className="text-xs text-[#8C8C8C]">Используется фото по умолчанию</p></div>
+          </div>
         )}
       </div>
-      {settings[field] ? (
-        <div className="mt-4 aspect-[16/9] max-w-md bg-[#F9F9F7] border border-black/5 overflow-hidden">
-          <img src={settings[field]} alt="Preview" className="w-full h-full object-cover" />
-        </div>
-      ) : (
-        <div className="mt-4 aspect-[16/9] max-w-md bg-[#F9F9F7] border border-black/5 flex items-center justify-center">
-          <div className="text-center"><Image size={32} className="mx-auto text-[#8C8C8C] mb-2" /><p className="text-xs text-[#8C8C8C]">Используется фото по умолчанию</p></div>
-        </div>
-      )}
-    </div>
-  );
+    );
+  };
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-bold text-[#1A1A1A]">Главная страница — Фоновые фото</h2>
-          <p className="text-sm text-[#8C8C8C] mt-1">Фоны карточек саун и купелей на главной странице (wm-group.pl)</p>
+          <p className="text-sm text-[#8C8C8C] mt-1">Фоны карточек саун и купелей. При наведении показывается анимация (пар / пузырьки).</p>
         </div>
         <button onClick={saveSettings} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060]" data-testid="main-landing-save-btn">
           <Save size={16} /> Сохранить
         </button>
       </div>
       <div className="space-y-6">
-        {renderField('Фон карточки саун', 'sauna_image', 'Рекомендуемый размер: 800x600 или больше. Отображается на карточке "Sauny ogrodowe".')}
-        {renderField('Фон карточки купелей', 'balia_image', 'Рекомендуемый размер: 800x600 или больше. Отображается на карточке "Balie i jacuzzi".')}
+        {renderField('Фон карточки саун', 'sauna_image', 'sauna_image_position', 'Рекомендуемый размер: 800x600+. Отображается на карточке "Sauny ogrodowe".')}
+        {renderField('Фон карточки купелей', 'balia_image', 'balia_image_position', 'Рекомендуемый размер: 800x600+. Отображается на карточке "Balie i jacuzzi".')}
       </div>
     </div>
   );

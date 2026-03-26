@@ -1,12 +1,159 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Flame, Droplets, MapPin, ShieldCheck, Leaf, Heart, Phone, Mail, Send, CheckCircle } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const DEFAULT_SAUNA_IMG = 'https://images.unsplash.com/photo-1759302354886-f2c37dd3dd8c?auto=format&fit=crop&w=800&q=80';
 const DEFAULT_BALIA_IMG = 'https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=80';
+
+/* ── Steam particles (sauna hover) ── */
+const SteamEffect = () => (
+  <div className="absolute inset-0 z-[15] pointer-events-none overflow-hidden">
+    {/* Stones at bottom-left */}
+    <div className="absolute bottom-0 left-0 w-48 h-32">
+      {[
+        { x: 20, y: 95, r: 22 },
+        { x: 55, y: 100, r: 18 },
+        { x: 40, y: 80, r: 20 },
+        { x: 75, y: 90, r: 16 },
+        { x: 15, y: 75, r: 14 },
+        { x: 60, y: 72, r: 15 },
+        { x: 90, y: 85, r: 17 },
+        { x: 35, y: 60, r: 12 },
+        { x: 100, y: 75, r: 13 },
+        { x: 80, y: 65, r: 11 },
+      ].map((s, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 0.7, y: 0 }}
+          transition={{ delay: i * 0.04, duration: 0.3 }}
+          className="absolute rounded-full"
+          style={{
+            left: s.x,
+            bottom: 130 - s.y,
+            width: s.r * 2,
+            height: s.r * 1.6,
+            background: `radial-gradient(ellipse at 35% 30%, #8B7355, #5C4A32)`,
+            borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%',
+            boxShadow: 'inset -2px -2px 4px rgba(0,0,0,0.4), inset 2px 2px 4px rgba(180,160,120,0.2)',
+          }}
+        />
+      ))}
+      {/* Glow under stones */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.6 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        className="absolute bottom-0 left-4 w-32 h-8 rounded-full"
+        style={{ background: 'radial-gradient(ellipse, rgba(255,120,30,0.35), transparent)', filter: 'blur(8px)' }}
+      />
+    </div>
+    {/* Steam particles rising from stones */}
+    {Array.from({ length: 12 }).map((_, i) => (
+      <motion.div
+        key={`steam-${i}`}
+        className="absolute rounded-full"
+        style={{
+          left: 20 + Math.random() * 100,
+          bottom: 100 + Math.random() * 30,
+          width: 6 + Math.random() * 10,
+          height: 6 + Math.random() * 10,
+          background: 'rgba(255,255,255,0.15)',
+          filter: 'blur(4px)',
+        }}
+        initial={{ opacity: 0, y: 0, scale: 0.5 }}
+        animate={{
+          opacity: [0, 0.4, 0.2, 0],
+          y: [0, -120 - Math.random() * 200],
+          x: [0, -15 + Math.random() * 30],
+          scale: [0.5, 1.5, 2.5],
+        }}
+        transition={{
+          duration: 2.5 + Math.random() * 2,
+          delay: i * 0.2,
+          repeat: Infinity,
+          ease: 'easeOut',
+        }}
+      />
+    ))}
+  </div>
+);
+
+/* ── Bubble/water effect (balia hover) ── */
+const BubbleEffect = () => (
+  <div className="absolute inset-0 z-[15] pointer-events-none overflow-hidden">
+    {/* Water surface wave at bottom */}
+    <motion.div
+      className="absolute bottom-0 left-0 right-0 h-24"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <svg viewBox="0 0 400 80" className="absolute bottom-0 w-full h-full" preserveAspectRatio="none">
+        <motion.path
+          d="M0,50 C50,35 100,55 150,40 C200,25 250,55 300,40 C350,25 400,45 400,50 L400,80 L0,80 Z"
+          fill="rgba(100,180,220,0.12)"
+          animate={{
+            d: [
+              "M0,50 C50,35 100,55 150,40 C200,25 250,55 300,40 C350,25 400,45 400,50 L400,80 L0,80 Z",
+              "M0,45 C50,55 100,35 150,50 C200,35 250,45 300,55 C350,40 400,50 400,45 L400,80 L0,80 Z",
+              "M0,50 C50,35 100,55 150,40 C200,25 250,55 300,40 C350,25 400,45 400,50 L400,80 L0,80 Z",
+            ],
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </svg>
+    </motion.div>
+    {/* Bubbles rising */}
+    {Array.from({ length: 14 }).map((_, i) => {
+      const size = 4 + Math.random() * 8;
+      return (
+        <motion.div
+          key={`bubble-${i}`}
+          className="absolute rounded-full border"
+          style={{
+            right: 10 + Math.random() * 140,
+            bottom: -10,
+            width: size,
+            height: size,
+            borderColor: 'rgba(180,220,255,0.3)',
+            background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent)',
+          }}
+          initial={{ opacity: 0, y: 0 }}
+          animate={{
+            opacity: [0, 0.6, 0.3, 0],
+            y: [0, -180 - Math.random() * 250],
+            x: [0, -8 + Math.random() * 16],
+          }}
+          transition={{
+            duration: 2.5 + Math.random() * 2,
+            delay: i * 0.25,
+            repeat: Infinity,
+            ease: 'easeOut',
+          }}
+        />
+      );
+    })}
+    {/* Ripple circles at bottom-right */}
+    {[0, 1, 2].map(i => (
+      <motion.div
+        key={`ripple-${i}`}
+        className="absolute rounded-full border"
+        style={{
+          right: 40,
+          bottom: 30,
+          borderColor: 'rgba(180,220,255,0.15)',
+        }}
+        initial={{ width: 10, height: 6, opacity: 0.5 }}
+        animate={{ width: 80 + i * 30, height: 40 + i * 15, opacity: 0 }}
+        transition={{ duration: 2.5, delay: i * 0.8, repeat: Infinity, ease: 'easeOut' }}
+      />
+    ))}
+  </div>
+);
 
 const MainLanding = () => {
   const navigate = useNavigate();
@@ -15,6 +162,9 @@ const MainLanding = () => {
   const [submitted, setSubmitted] = useState(false);
   const [saunaImg, setSaunaImg] = useState(DEFAULT_SAUNA_IMG);
   const [baliaImg, setBaliaImg] = useState(DEFAULT_BALIA_IMG);
+  const [saunaPos, setSaunaPos] = useState('center');
+  const [baliaPos, setBaliaPos] = useState('center');
+  const [hoveredCard, setHoveredCard] = useState(null);
 
   useEffect(() => {
     fetch(`${API}/api/settings/main-landing`)
@@ -22,6 +172,8 @@ const MainLanding = () => {
       .then(d => {
         if (d.sauna_image) setSaunaImg(d.sauna_image);
         if (d.balia_image) setBaliaImg(d.balia_image);
+        if (d.sauna_image_position) setSaunaPos(d.sauna_image_position);
+        if (d.balia_image_position) setBaliaPos(d.balia_image_position);
       })
       .catch(() => {});
   }, []);
@@ -55,11 +207,14 @@ const MainLanding = () => {
           <motion.div
             initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
             onClick={() => navigate('/sauny')}
+            onMouseEnter={() => setHoveredCard('sauna')}
+            onMouseLeave={() => setHoveredCard(null)}
             className="group relative overflow-hidden cursor-pointer min-h-[400px] md:min-h-[480px] flex flex-col justify-end"
             data-testid="card-sauny"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10" />
-            <img src={saunaImg} alt="Sauny" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img src={saunaImg} alt="Sauny" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={{ objectPosition: saunaPos }} />
+            <AnimatePresence>{hoveredCard === 'sauna' && <SteamEffect />}</AnimatePresence>
             <div className="relative z-20 p-8">
               <div className="flex items-center gap-2 mb-3"><Flame size={18} className="text-[#C6A87C]" /><span className="text-[#C6A87C] text-xs font-semibold tracking-[0.2em] uppercase">WM-Sauna</span></div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Sauny ogrodowe</h2>
@@ -72,11 +227,14 @@ const MainLanding = () => {
           <motion.div
             initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }}
             onClick={() => navigate('/balie')}
+            onMouseEnter={() => setHoveredCard('balia')}
+            onMouseLeave={() => setHoveredCard(null)}
             className="group relative overflow-hidden cursor-pointer min-h-[400px] md:min-h-[480px] flex flex-col justify-end"
             data-testid="card-balie"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10" />
-            <img src={baliaImg} alt="Balie" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img src={baliaImg} alt="Balie" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={{ objectPosition: baliaPos }} />
+            <AnimatePresence>{hoveredCard === 'balia' && <BubbleEffect />}</AnimatePresence>
             <div className="relative z-20 p-8">
               <div className="flex items-center gap-2 mb-3"><Droplets size={18} className="text-[#D4AF37]" /><span className="text-[#D4AF37] text-xs font-semibold tracking-[0.2em] uppercase">WM-Balia</span></div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Balie i jacuzzi</h2>
@@ -91,7 +249,6 @@ const MainLanding = () => {
       <section className="relative py-20 border-t border-white/5" data-testid="about-section">
         <div className="max-w-5xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-            {/* Text */}
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
               <div className="flex items-center gap-2 mb-4">
                 <MapPin size={16} className="text-[#C6A87C]" />
@@ -102,35 +259,20 @@ const MainLanding = () => {
                 <span className="text-[#C6A87C]">od 2015 roku</span>
               </h2>
               <div className="space-y-4 text-white/50 text-sm leading-relaxed">
-                <p>
-                  WM Group to polska firma z siedzibą w Warszawie, specjalizująca się w produkcji premium saun ogrodowych i drewnianych balii. Tworzymy produkty, które zmieniają Twój ogród w prywatną strefę relaksu i zdrowia.
-                </p>
-                <p>
-                  Każdy nasz produkt powstaje z najlepszych, naturalnych materiałów — skandynawskiego drewna iglastego klasy A+, suszonego komorowo. Dbamy o każdy detal, bo wierzymy, że Twój odpoczynek zasługuje na najwyższą jakość.
-                </p>
-                <p>
-                  Wszystkie nasze sauny i balie spełniają rygorystyczne normy bezpasieczeństwa i komfortu. Przed wysyłką każdy produkt przechodzi kontrolę w ponad 30 punktach — dostajesz gotowe, w pełni zmontowane rozwiązanie, gotowe do użycia od pierwszego dnia.
-                </p>
+                <p>WM Group to polska firma z siedzibą w Warszawie, specjalizująca się w produkcji premium saun ogrodowych i drewnianych balii. Tworzymy produkty, które zmieniają Twój ogród w prywatną strefę relaksu i zdrowia.</p>
+                <p>Każdy nasz produkt powstaje z najlepszych, naturalnych materiałów — skandynawskiego drewna iglastego klasy A+, suszonego komorowo. Dbamy o każdy detal, bo wierzymy, że Twój odpoczynek zasługuje na najwyższą jakość.</p>
+                <p>Wszystkie nasze sauny i balie spełniają rygorystyczne normy bezpasieczeństwa i komfortu. Przed wysyłką każdy produkt przechodzi kontrolę w ponad 30 punktach — dostajesz gotowe, w pełni zmontowane rozwiązanie, gotowe do użycia od pierwszego dnia.</p>
               </div>
             </motion.div>
-
-            {/* Values */}
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }}
-              className="space-y-5 md:pt-12"
-            >
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }} className="space-y-5 md:pt-12">
               {[
                 { icon: Heart, title: 'Z troską o zdrowie i odpoczynek', desc: 'Sauna i balia to nie tylko luksus — to zdrowie, regeneracja i chwile spokoju dla całej rodziny.' },
                 { icon: Leaf, title: 'Naturalne, ekologiczne materiały', desc: 'Używamy wyłącznie drewna z certyfikowanych, zrównoważonych źródeł. Bez plastiku, bez kompromisów.' },
                 { icon: ShieldCheck, title: 'Bezpieczeństwo i komfort klienta', desc: 'Każdy produkt spełnia normy bezpieczeństwa. 12 miesięcy gwarancji i dedykowany serwis posprzedażowy.' },
               ].map((v, i) => (
                 <div key={i} className="flex gap-4 p-5 border border-white/5 hover:border-[#C6A87C]/20 transition-colors">
-                  <div className="w-10 h-10 flex items-center justify-center border border-[#C6A87C]/30 flex-shrink-0">
-                    <v.icon size={20} className="text-[#C6A87C]" />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold text-sm mb-1">{v.title}</h4>
-                    <p className="text-white/40 text-xs leading-relaxed">{v.desc}</p>
-                  </div>
+                  <div className="w-10 h-10 flex items-center justify-center border border-[#C6A87C]/30 flex-shrink-0"><v.icon size={20} className="text-[#C6A87C]" /></div>
+                  <div><h4 className="text-white font-semibold text-sm mb-1">{v.title}</h4><p className="text-white/40 text-xs leading-relaxed">{v.desc}</p></div>
                 </div>
               ))}
             </motion.div>
@@ -142,39 +284,15 @@ const MainLanding = () => {
       <section className="py-20 border-t border-white/5" data-testid="contact-section">
         <div className="max-w-5xl mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-              Masz pytania? <span className="text-[#C6A87C]">Napisz do nas</span>
-            </h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">Masz pytania? <span className="text-[#C6A87C]">Napisz do nas</span></h2>
             <p className="text-white/40 text-sm max-w-md mx-auto">Nasz doradca odpowie na każde pytanie dotyczące saun, balii lub konfiguracji zamówienia.</p>
           </motion.div>
-
           <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
-            {/* Contact info */}
             <div className="md:col-span-2 space-y-6">
-              <div className="flex items-start gap-4">
-                <Phone size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" />
-                <div>
-                  <div className="text-white font-medium text-sm">Telefon</div>
-                  <a href="tel:+48732099201" className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">+48 732 099 201</a>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <Mail size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" />
-                <div>
-                  <div className="text-white font-medium text-sm">Email</div>
-                  <a href="mailto:kontakt@wm-sauna.pl" className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">kontakt@wm-sauna.pl</a>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <MapPin size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" />
-                <div>
-                  <div className="text-white font-medium text-sm">Adres</div>
-                  <p className="text-white/50 text-sm">Warszawa, Polska</p>
-                </div>
-              </div>
+              <div className="flex items-start gap-4"><Phone size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">Telefon</div><a href="tel:+48732099201" className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">+48 732 099 201</a></div></div>
+              <div className="flex items-start gap-4"><Mail size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">Email</div><a href="mailto:kontakt@wm-sauna.pl" className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">kontakt@wm-sauna.pl</a></div></div>
+              <div className="flex items-start gap-4"><MapPin size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">Adres</div><p className="text-white/50 text-sm">Warszawa, Polska</p></div></div>
             </div>
-
-            {/* Form */}
             <div className="md:col-span-3">
               {submitted ? (
                 <div className="text-center py-10 border border-white/5">
@@ -185,17 +303,12 @@ const MainLanding = () => {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <input type="text" placeholder="Imię *" required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                      className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" data-testid="landing-contact-name" />
-                    <input type="tel" placeholder="Telefon *" required value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-                      className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" data-testid="landing-contact-phone" />
+                    <input type="text" placeholder="Imię *" required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" data-testid="landing-contact-name" />
+                    <input type="tel" placeholder="Telefon *" required value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" data-testid="landing-contact-phone" />
                   </div>
-                  <input type="email" placeholder="Email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                    className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" />
-                  <textarea placeholder="Ваше сообщение / Twoja wiadomość" rows={4} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
-                    className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25 resize-none" />
-                  <button type="submit" disabled={submitting}
-                    className="w-full py-3 bg-[#C6A87C] text-white font-semibold hover:bg-[#B09060] transition-colors disabled:opacity-50 flex items-center justify-center gap-2" data-testid="landing-contact-submit">
+                  <input type="email" placeholder="Email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" />
+                  <textarea placeholder="Twoja wiadomość" rows={4} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25 resize-none" />
+                  <button type="submit" disabled={submitting} className="w-full py-3 bg-[#C6A87C] text-white font-semibold hover:bg-[#B09060] transition-colors disabled:opacity-50 flex items-center justify-center gap-2" data-testid="landing-contact-submit">
                     <Send size={16} /> {submitting ? 'Wysyłanie...' : 'Wyślij wiadomość'}
                   </button>
                 </form>

@@ -337,6 +337,8 @@ class MainLandingSettings(BaseModel):
     id: str = "main_landing_settings"
     sauna_image: str = ""
     balia_image: str = ""
+    sauna_image_position: str = "center"
+    balia_image_position: str = "center"
 
 class InstallmentSettings(BaseModel):
     id: str = "installment_settings"
