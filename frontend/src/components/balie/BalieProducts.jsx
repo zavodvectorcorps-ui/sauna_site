@@ -4,6 +4,14 @@ import { BalieInstallment } from './BalieInstallment';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
+const HEATER_LABELS = {
+  integrated: { short: 'z piecem wewn.', full: 'Piec wewnetrzny' },
+  external: { short: 'z piecem zewn.', full: 'Piec zewnetrzny' },
+  none: { short: 'bez pieca', full: 'Bez pieca' },
+  electric: { short: 'z piecem elektr.', full: 'Piec elektryczny' },
+};
+const heaterLabel = (type, variant = 'short') => (HEATER_LABELS[type] || HEATER_LABELS.external)[variant];
+
 const getHeaterVariantPrices = (apiModel) => {
   if (!apiModel) return { variants: [], single: null };
   const hvs = apiModel.heaterVariants || [];
@@ -37,7 +45,7 @@ const ProductCard = ({ product, apiModel, onClick, isCompare, onToggleCompare })
             <div className="mb-2 space-y-0.5">
               {variants.map(v => (
                 <p key={v.type} className="text-[#D4AF37] text-sm font-medium">
-                  <span className="text-white/40 text-xs">{v.type === 'integrated' ? 'z piecem wewn.' : 'z piecem zewn.'}</span>{' '}
+                  <span className="text-white/40 text-xs">{heaterLabel(v.type)}</span>{' '}
                   {formatPrice(v.price)}
                 </p>
               ))}
@@ -208,7 +216,7 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
   const totalPrice = modelPrice + totalOptionsPrice;
 
   // Display price labels in product card header
-  const heaterLabel = effectiveHeater?.type === 'integrated' ? 'z piecem wewnetrznym' : effectiveHeater?.type === 'external' ? 'z piecem zewnetrznym' : '';
+  const heaterLabelText = effectiveHeater?.type ? heaterLabel(effectiveHeater.type, 'full') : '';
 
   useEffect(() => {
     const h = (e) => { if (e.key === 'Escape') onClose(); };
@@ -246,7 +254,7 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
                   <div className="mb-3 space-y-0.5">
                     {heaterVariants.map(v => (
                       <p key={v.type} className="text-[#D4AF37] text-sm">
-                        <span className="text-white/40 text-xs">{v.type === 'integrated' ? 'z piecem wewn.' : 'z piecem zewn.'}</span>{' '}
+                        <span className="text-white/40 text-xs">{heaterLabel(v.type)}</span>{' '}
                         <span className="font-bold">{formatPrice(v.price)}</span>
                       </p>
                     ))}
@@ -291,7 +299,7 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
                                   <span className={`w-4 h-4 border rounded-full flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-[#D4AF37] bg-[#D4AF37]' : 'border-white/20'}`}>
                                     {isSelected && <Check size={10} className="text-[#0F1218]" />}
                                   </span>
-                                  <span>{v.type === 'integrated' ? 'Piec wewnetrzny' : 'Piec zewnetrzny'}</span>
+                                  <span>{heaterLabel(v.type, 'full')}</span>
                                 </span>
                                 <span className={`text-sm font-bold whitespace-nowrap ${isSelected ? 'text-[#D4AF37]' : 'text-white/50'}`}>
                                   {formatPrice(v.price)}
@@ -307,7 +315,7 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
                       <div className="mb-5 p-3 bg-[#0F1218] border border-white/5" data-testid="balie-heater-single">
                         <div className="flex items-center gap-2 text-white/60 text-sm">
                           <Flame size={14} className="text-[#D4AF37]" />
-                          <span>{heaterVariants[0].type === 'integrated' ? 'Piec wewnetrzny' : 'Piec zewnetrzny'}</span>
+                          <span>{heaterLabel(heaterVariants[0].type, 'full')}</span>
                           <span className="ml-auto text-[#D4AF37] font-bold">{formatPrice(heaterVariants[0].price)}</span>
                         </div>
                       </div>
@@ -370,7 +378,7 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
                       {modelPrice > 0 && (
                         <div className="flex items-center justify-between">
                           <span className="text-white/40 text-sm">
-                            {product.name} {heaterLabel && <span className="text-white/25">({heaterLabel})</span>}
+                            {product.name} {heaterLabelText && <span className="text-white/25">({heaterLabelText})</span>}
                           </span>
                           <span className="text-white/70 font-medium">{formatPrice(modelPrice)}</span>
                         </div>
@@ -454,6 +462,17 @@ const CompareModal = ({ products, apiModels, onClose, onRemove }) => {
     return { product: p, specs, heaterVariants: hvs };
   });
 
+  const priceRows = ['integrated', 'external', 'none', 'electric']
+    .filter(type => items.some(it => it.heaterVariants.find(h => h.type === type)))
+    .map(type => ({
+      label: HEATER_LABELS[type].full,
+      icon: Flame,
+      render: (it) => {
+        const v = it.heaterVariants.find(h => h.type === type);
+        return v ? formatPrice(v.price) : '—';
+      }
+    }));
+
   const rows = [
     { label: 'Srednica / wymiary', icon: Ruler, render: (it) => it.specs.outerDiameter ? `${it.specs.outerDiameter} cm` : it.specs.dimensions || '—' },
     { label: 'Glebokosc', icon: Droplets, render: (it) => it.specs.depth ? `${it.specs.depth} cm` : '—' },
@@ -461,14 +480,7 @@ const CompareModal = ({ products, apiModels, onClose, onRemove }) => {
     { label: 'Wysokosc calkowita', icon: Box, render: (it) => it.specs.totalHeight ? `${it.specs.totalHeight} cm` : '—' },
     { label: 'Liczba miejsc', icon: Users, render: (it) => it.specs.seats > 0 ? `${it.specs.seats} os.` : '—' },
     { label: 'Moc pieca', icon: Thermometer, render: (it) => it.specs.heaterPower ? `${it.specs.heaterPower} kW` : '—' },
-    { label: 'Piec wewnetrzny', icon: Flame, render: (it) => {
-      const v = it.heaterVariants.find(h => h.type === 'integrated');
-      return v ? formatPrice(v.price) : '—';
-    }},
-    { label: 'Piec zewnetrzny', icon: Flame, render: (it) => {
-      const v = it.heaterVariants.find(h => h.type === 'external');
-      return v ? formatPrice(v.price) : '—';
-    }},
+    ...priceRows,
   ];
 
   return (
