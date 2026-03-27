@@ -19,6 +19,7 @@ import { SaunaGalleryAdmin } from '../components/admin/SaunaGalleryAdmin';
 import { SaunaModelsStockAdmin } from '../components/admin/SaunaModelsStockAdmin';
 import { SaunaFaqAdmin } from '../components/admin/SaunaFaqAdmin';
 import { SaunaPromoFeaturesAdmin } from '../components/admin/SaunaPromoFeaturesAdmin';
+import { SaunaAdvantagesAdmin } from '../components/admin/SaunaAdvantagesAdmin';
 import { SaunaSeoAdmin } from '../components/admin/SaunaSeoAdmin';
 import { SaunaIntegrationsAdmin } from '../components/admin/SaunaIntegrationsAdmin';
 import { SaunaCatalogSectionsAdmin } from '../components/admin/SaunaCatalogSectionsAdmin';
@@ -143,6 +144,7 @@ const AdminPanel = () => {
         { id: 'reviews', label: 'Отзывы', icon: Star },
         { id: 'faq', label: 'FAQ', icon: FileText },
         { id: 'promo_features', label: 'Преимущества', icon: Star },
+        { id: 'advantages', label: '7 фактов', icon: Star },
         { id: 'layout', label: 'Оформление', icon: LayoutGrid },
         { id: 'buttons', label: 'Кнопки', icon: Settings },
         { id: 'site', label: 'Контакты', icon: Phone },
@@ -200,6 +202,8 @@ const AdminPanel = () => {
         return <SaunaFaqAdmin {...props} />;
       case 'promo_features':
         return <SaunaPromoFeaturesAdmin {...props} />;
+      case 'advantages':
+        return <SaunaAdvantagesAdmin {...props} />;
       case 'seo':
         return <SaunaSeoAdmin {...props} />;
       case 'integrations':
@@ -259,7 +263,7 @@ const AdminPanel = () => {
       <div className="max-w-7xl mx-auto p-4 flex gap-6">
         {/* Sidebar */}
         <nav className="w-56 flex-shrink-0">
-          <div className="bg-white border border-black/5 sticky top-4 overflow-hidden">
+          <div className="bg-white border border-black/5 sticky top-4 overflow-y-auto max-h-[calc(100vh-5rem)]">
             {tabGroups.map((group) => {
               const isCollapsed = collapsedGroups[group.id];
               const hasActiveTab = group.tabs.some(t => t.id === activeTab);

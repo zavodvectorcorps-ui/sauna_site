@@ -318,6 +318,22 @@ class PromoFeaturesSettings(BaseModel):
         {"id": "pf4", "icon": "Headphones", "title_pl": "Doradca pomoze dobrac", "title_en": "Advisor helps choose", "desc_pl": "Pomagamy dobrac model do przestrzeni i stylu domu. Wycena bezplatna.", "desc_en": "We help choose the model for your space and style. Free estimate."},
     ]
 
+class SaunaAdvantagesSettings(BaseModel):
+    id: str = "sauna_advantages_settings"
+    subtitle: str = "Pokazujemy na schemacie, abyś dokładnie widział, za co płacisz"
+    title: str = "Siedem faktów, dzięki którym nasze sauny służą znacznie dłużej"
+    description: str = "Suche skandynawskie drewno klasy A+, montaż w naszej pracowni, precyzyjne łączenia na wkręty, bezpieczny piec, trzy poziomy ochrony przed wilgocią i wygodne dopracowane wnętrze"
+    image_url: str = "/api/images/sauna-cutaway-7facts"
+    items: List[Dict[str, Any]] = [
+        {"id": "adv_1", "num": 1, "title": "Skandynawskie drewno suszone w komorach, najwyższej jakości", "desc": "Drewno bez kieszeni żywicznych utrzymuje stabilny kształt i nie wysycha z czasem", "badge": "", "side": "left"},
+        {"id": "adv_2", "num": 2, "title": "Profilowane drewno i stalowe obręcze z nierdzewki", "desc": "Montaż na mocnych wkrętach sprawia, że łączenia trzymają kształt bez przewiewów i szczelin", "badge": "", "side": "left"},
+        {"id": "adv_3", "num": 3, "title": "Piec o dobranej mocy z ochroną przed przegrzaniem drewna", "desc": "Sauna nagrzewa się szybko, a rodzina ma pełne bezpieczeństwo", "badge": "Kamienie gratis", "side": "right"},
+        {"id": "adv_4", "num": 4, "title": "Wybór wyposażenia i wygodna ergonomia wnętrza", "desc": "Możesz wybrać układ pomieszczeń, a wewnątrz masz równą podłogę, wygodne półki i praktyczne kratki", "badge": "", "side": "right"},
+        {"id": "adv_5", "num": 5, "title": "Przemyślana wentylacja nawiewna i wywiewna", "desc": "Sprawia, że para w saunie jest świeża bez duszności i zbędnego kondensatu", "badge": "", "side": "right"},
+        {"id": "adv_6", "num": 6, "title": "Montujemy saunę w naszej pracowni i sprawdzamy ją w ponad 30 punktach", "desc": "Przed wysyłką robimy pełną kontrolę. Gwarancja to 12 miesięcy i zapewniamy serwis", "badge": "", "side": "left"},
+        {"id": "adv_7", "num": 7, "title": "Dwie warstwy impregnatu na zewnątrz chronią przed wilgocią i szkodnikami", "desc": "Silikonowe uszczelnienie zabezpiecza fronty ścian. Malujemy saunę na produkcji", "badge": "Malowanie w wybranym kolorze", "side": "left"},
+    ]
+
 class SocialProofSettings(BaseModel):
     id: str = "social_proof_settings"
     show_section: bool = True
@@ -916,6 +932,14 @@ async def get_promo_features_public():
     return settings
 
 
+@api_router.get("/settings/sauna-advantages")
+async def get_sauna_advantages_public():
+    settings = await db.settings.find_one({"id": "sauna_advantages_settings"}, {"_id": 0})
+    if not settings:
+        return SaunaAdvantagesSettings().model_dump()
+    return settings
+
+
 @api_router.get("/settings/social-proof")
 async def get_social_proof_public():
     settings = await db.settings.find_one({"id": "social_proof_settings"}, {"_id": 0})
@@ -1156,6 +1180,16 @@ async def update_faq_settings(settings: FaqSettings, username: str = Depends(ver
 async def update_promo_features(settings: PromoFeaturesSettings, username: str = Depends(verify_admin)):
     await db.settings.update_one(
         {"id": "promo_features_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+
+@api_router.put("/admin/settings/sauna-advantages")
+async def update_sauna_advantages(settings: SaunaAdvantagesSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "sauna_advantages_settings"},
         {"$set": settings.model_dump()},
         upsert=True
     )

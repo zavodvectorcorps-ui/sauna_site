@@ -63,6 +63,9 @@
 - Привязаны api_model_id для Kwadratowa 220, 245 и Balia do schłodzenia
 - Миграция всех URL медиа в БД со старого preview домена на новый (settings, balia_content)
 - Блок "7 фактов" на странице саун (SaunaAdvantages.jsx) — фото сауны в разрезе по центру, 7 пронумерованных преимуществ по бокам с бейджами, анимации при скролле
+- Админка "7 фактов" (SaunaAdvantagesAdmin.jsx) — редактирование заголовков, описаний, бейджей, загрузка фото схемы, сортировка пунктов, выбор стороны (лево/право)
+- API: GET/PUT /api/settings/sauna-advantages, /api/admin/settings/sauna-advantages
+- Исправлен overflow сайдбара админки (overflow-y-auto вместо overflow-hidden)
 
 ## Бэклог
 ### P1 — Мультиязычность
