@@ -1701,41 +1701,50 @@ async def upload_video(file: UploadFile = File(...), username: str = Depends(ver
     if not file.content_type or not file.content_type.startswith("video/"):
         raise HTTPException(status_code=400, detail="Only video files are allowed")
     try:
-        import shutil, subprocess
+        import shutil, subprocess, threading
         video_id = str(uuid.uuid4())
-        raw_path = VIDEO_DIR / f"{video_id}_raw.mp4"
         out_path = VIDEO_DIR / f"{video_id}.mp4"
         contents = await file.read()
         original_size = len(contents)
-        with open(raw_path, "wb") as f:
+        # Save original immediately so URL works right away
+        with open(out_path, "wb") as f:
             f.write(contents)
-        # Ensure ffmpeg is available via static-ffmpeg
-        ffmpeg_path = shutil.which("ffmpeg")
-        if not ffmpeg_path:
+
+        # Compress in background thread
+        def compress_video():
+            ffmpeg_path = shutil.which("ffmpeg")
+            if not ffmpeg_path:
+                try:
+                    import static_ffmpeg
+                    static_ffmpeg.add_paths()
+                    ffmpeg_path = shutil.which("ffmpeg")
+                except ImportError:
+                    return
+            if not ffmpeg_path:
+                return
+            tmp_path = VIDEO_DIR / f"{video_id}_compressed.mp4"
             try:
-                import static_ffmpeg
-                static_ffmpeg.add_paths()
-                ffmpeg_path = shutil.which("ffmpeg")
-            except ImportError:
-                pass
-        if ffmpeg_path:
-            result = subprocess.run([
-                ffmpeg_path, "-y", "-i", str(raw_path),
-                "-vf", "scale='min(1280,iw)':-2",
-                "-c:v", "libx264", "-crf", "28", "-preset", "fast",
-                "-an", "-movflags", "+faststart",
-                str(out_path)
-            ], capture_output=True, timeout=120)
-            raw_path.unlink(missing_ok=True)
-            if result.returncode != 0 or not out_path.exists():
-                logger.warning(f"ffmpeg failed, saving original")
-                with open(out_path, "wb") as f:
-                    f.write(contents)
-        else:
-            raw_path.rename(out_path)
-        compressed_size = out_path.stat().st_size
-        logger.info(f"Video: {original_size//1024}KB -> {compressed_size//1024}KB")
-        return {"status": "success", "url": f"/api/videos/{video_id}.mp4", "original_kb": original_size // 1024, "compressed_kb": compressed_size // 1024}
+                result = subprocess.run([
+                    ffmpeg_path, "-y", "-i", str(out_path),
+                    "-vf", "scale='min(1280,iw)':-2",
+                    "-c:v", "libx264", "-crf", "28", "-preset", "fast",
+                    "-an", "-movflags", "+faststart",
+                    str(tmp_path)
+                ], capture_output=True, timeout=300)
+                if result.returncode == 0 and tmp_path.exists():
+                    tmp_path.replace(out_path)
+                    compressed_size = out_path.stat().st_size
+                    logger.info(f"Video compressed: {original_size//1024}KB -> {compressed_size//1024}KB")
+                else:
+                    tmp_path.unlink(missing_ok=True)
+                    logger.warning("ffmpeg compression failed, keeping original")
+            except Exception as e:
+                tmp_path.unlink(missing_ok=True)
+                logger.warning(f"Video compression error: {e}")
+
+        threading.Thread(target=compress_video, daemon=True).start()
+
+        return {"status": "success", "url": f"/api/videos/{video_id}.mp4", "original_kb": original_size // 1024, "compressed_kb": original_size // 1024}
     except Exception as e:
         logger.error(f"Error uploading video: {e}")
         raise HTTPException(status_code=500, detail="Error uploading video")
