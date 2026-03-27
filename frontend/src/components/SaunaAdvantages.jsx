@@ -5,7 +5,7 @@ const API = process.env.REACT_APP_BACKEND_URL;
 
 const AdvantageItem = ({ item, index, isRight }) => {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-40px' });
+  const inView = useInView(ref, { once: true, margin: '-30px' });
 
   return (
     <motion.div
@@ -32,9 +32,26 @@ const AdvantageItem = ({ item, index, isRight }) => {
   );
 };
 
+const AnimatedImage = ({ src, alt, className }) => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-20px' });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, scale: 0.92 }}
+      animate={inView ? { opacity: 1, scale: 1 } : {}}
+      transition={{ duration: 0.7, delay: 0.1 }}
+      className={className}
+    >
+      <img src={src} alt={alt} className="w-full h-auto object-contain drop-shadow-xl" loading="lazy" />
+    </motion.div>
+  );
+};
+
 export const SaunaAdvantages = () => {
-  const sectionRef = useRef(null);
-  const inView = useInView(sectionRef, { once: true, margin: '-60px' });
+  const headerRef = useRef(null);
+  const headerInView = useInView(headerRef, { once: true, margin: '-40px' });
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -51,16 +68,13 @@ export const SaunaAdvantages = () => {
   const imageUrl = data.image_url?.startsWith('/') ? `${API}${data.image_url}` : data.image_url;
 
   return (
-    <section
-      ref={sectionRef}
-      className="py-16 sm:py-20 bg-[#F9F9F7] overflow-hidden"
-      data-testid="sauna-advantages"
-    >
+    <section className="py-16 sm:py-20 bg-[#F9F9F7] overflow-hidden" data-testid="sauna-advantages">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <motion.div
+          ref={headerRef}
           initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          animate={headerInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
           className="text-center mb-10 sm:mb-14"
         >
@@ -85,19 +99,11 @@ export const SaunaAdvantages = () => {
             ))}
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={inView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.7, delay: 0.2 }}
+          <AnimatedImage
+            src={imageUrl}
+            alt="Sauna w przekroju — schemat budowy"
             className="w-[380px] xl:w-[440px] flex-shrink-0"
-          >
-            <img
-              src={imageUrl}
-              alt="Sauna w przekroju — schemat budowy"
-              className="w-full h-auto object-contain drop-shadow-xl"
-              loading="lazy"
-            />
-          </motion.div>
+          />
 
           <div className="space-y-8">
             {rightItems.map((item, i) => (
@@ -108,26 +114,19 @@ export const SaunaAdvantages = () => {
 
         {/* Mobile/Tablet */}
         <div className="lg:hidden">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={inView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.6 }}
+          <AnimatedImage
+            src={imageUrl}
+            alt="Sauna w przekroju — schemat budowy"
             className="max-w-sm mx-auto mb-10"
-          >
-            <img
-              src={imageUrl}
-              alt="Sauna w przekroju — schemat budowy"
-              className="w-full h-auto object-contain drop-shadow-lg"
-              loading="lazy"
-            />
-          </motion.div>
+          />
 
           <div className="space-y-6 max-w-lg mx-auto">
             {data.items.map((item, i) => (
               <motion.div
                 key={item.id || item.num}
                 initial={{ opacity: 0, y: 16 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-20px' }}
                 transition={{ duration: 0.4, delay: i * 0.07 }}
                 className="flex gap-3 items-start"
                 data-testid={`sauna-advantage-mobile-${item.num}`}
