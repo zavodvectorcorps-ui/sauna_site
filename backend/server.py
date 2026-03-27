@@ -1701,7 +1701,7 @@ async def upload_video(file: UploadFile = File(...), username: str = Depends(ver
     if not file.content_type or not file.content_type.startswith("video/"):
         raise HTTPException(status_code=400, detail="Only video files are allowed")
     try:
-        import shutil
+        import shutil, subprocess
         video_id = str(uuid.uuid4())
         raw_path = VIDEO_DIR / f"{video_id}_raw.mp4"
         out_path = VIDEO_DIR / f"{video_id}.mp4"
@@ -1709,10 +1709,16 @@ async def upload_video(file: UploadFile = File(...), username: str = Depends(ver
         original_size = len(contents)
         with open(raw_path, "wb") as f:
             f.write(contents)
-        # Try compress with ffmpeg if available
+        # Ensure ffmpeg is available via static-ffmpeg
         ffmpeg_path = shutil.which("ffmpeg")
+        if not ffmpeg_path:
+            try:
+                import static_ffmpeg
+                static_ffmpeg.add_paths()
+                ffmpeg_path = shutil.which("ffmpeg")
+            except ImportError:
+                pass
         if ffmpeg_path:
-            import subprocess
             result = subprocess.run([
                 ffmpeg_path, "-y", "-i", str(raw_path),
                 "-vf", "scale='min(1280,iw)':-2",
@@ -1726,7 +1732,6 @@ async def upload_video(file: UploadFile = File(...), username: str = Depends(ver
                 with open(out_path, "wb") as f:
                     f.write(contents)
         else:
-            # No ffmpeg — save as-is
             raw_path.rename(out_path)
         compressed_size = out_path.stat().st_size
         logger.info(f"Video: {original_size//1024}KB -> {compressed_size//1024}KB")
