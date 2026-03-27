@@ -23,6 +23,7 @@ import { PromoFeatures } from "./components/PromoFeatures";
 import { PromoBanner } from "./components/PromoBanner";
 import { SpecialOffer } from "./components/SpecialOffer";
 import { SaunaInstallment } from "./components/SaunaInstallment";
+import { SaunaAdvantages } from "./components/SaunaAdvantages";
 import AdminPanel from "./pages/AdminPanel";
 import PipelineView from "./pages/PipelineView";
 import MainLanding from "./pages/MainLanding";
@@ -86,6 +87,7 @@ const MainContent = () => {
             </>}
             {sectionKey === 'models' && <>
               <PromoFeatures />
+              <SaunaAdvantages />
               <PromoBanner />
               <SaunaInstallment />
             </>}
