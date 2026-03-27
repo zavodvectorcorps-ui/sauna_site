@@ -4,33 +4,48 @@ import { useLanguage } from '../context/LanguageContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-const AnimatedCounter = ({ value, suffix = '' }) => {
+const AnimatedCounter = ({ value }) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-  const numericValue = parseInt(value.replace(/[^0-9]/g, ''));
-  const hasPlus = value.includes('+');
+
+  // Parse value: extract prefix, number, suffix
+  const s = String(value).trim();
+  let prefix = '', num = 0, suffix = '';
+
+  const rangeMatch = s.match(/^(\d+)\s*[-–]\s*(\d+)(.*)$/);
+  const stdMatch = s.match(/^([^\d]*)(\d+)(.*)$/);
+
+  if (rangeMatch) {
+    prefix = rangeMatch[1] + ' - ';
+    num = parseInt(rangeMatch[2]);
+    suffix = rangeMatch[3].trim();
+  } else if (stdMatch) {
+    prefix = stdMatch[1];
+    num = parseInt(stdMatch[2]);
+    suffix = stdMatch[3];
+  }
 
   useEffect(() => {
-    if (!isInView || isNaN(numericValue)) return;
+    if (!isInView || !num) return;
     const duration = 2000;
     const steps = 60;
-    const increment = numericValue / steps;
+    const increment = num / steps;
     let current = 0;
     const timer = setInterval(() => {
       current += increment;
-      if (current >= numericValue) {
-        setCount(numericValue);
+      if (current >= num) {
+        setCount(num);
         clearInterval(timer);
       } else {
         setCount(Math.floor(current));
       }
     }, duration / steps);
     return () => clearInterval(timer);
-  }, [isInView, numericValue]);
+  }, [isInView, num]);
 
-  if (isNaN(numericValue)) return <span>{value}</span>;
-  return <span ref={ref}>{count}{hasPlus ? '+' : ''}{suffix}</span>;
+  if (!num) return <span ref={ref}>{value}</span>;
+  return <span ref={ref}>{prefix}{count}{suffix}</span>;
 };
 
 export const SocialProof = () => {
