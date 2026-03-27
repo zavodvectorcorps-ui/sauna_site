@@ -18,6 +18,7 @@ import { SaunaReviewsAdmin } from '../components/admin/SaunaReviewsAdmin';
 import { SaunaGalleryAdmin } from '../components/admin/SaunaGalleryAdmin';
 import { SaunaModelsStockAdmin } from '../components/admin/SaunaModelsStockAdmin';
 import { SaunaFaqAdmin } from '../components/admin/SaunaFaqAdmin';
+import { SaunaPromoFeaturesAdmin } from '../components/admin/SaunaPromoFeaturesAdmin';
 import { SaunaSeoAdmin } from '../components/admin/SaunaSeoAdmin';
 import { SaunaIntegrationsAdmin } from '../components/admin/SaunaIntegrationsAdmin';
 import { SaunaCatalogSectionsAdmin } from '../components/admin/SaunaCatalogSectionsAdmin';
@@ -141,6 +142,7 @@ const AdminPanel = () => {
         { id: 'calculator', label: 'Калькулятор', icon: LayoutGrid },
         { id: 'reviews', label: 'Отзывы', icon: Star },
         { id: 'faq', label: 'FAQ', icon: FileText },
+        { id: 'promo_features', label: 'Преимущества', icon: Star },
         { id: 'layout', label: 'Оформление', icon: LayoutGrid },
         { id: 'buttons', label: 'Кнопки', icon: Settings },
         { id: 'site', label: 'Контакты', icon: Phone },
@@ -196,6 +198,8 @@ const AdminPanel = () => {
         return <SaunaModelsStockAdmin {...props} activeSubTab={activeTab} />;
       case 'faq':
         return <SaunaFaqAdmin {...props} />;
+      case 'promo_features':
+        return <SaunaPromoFeaturesAdmin {...props} />;
       case 'seo':
         return <SaunaSeoAdmin {...props} />;
       case 'integrations':

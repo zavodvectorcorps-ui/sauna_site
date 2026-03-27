@@ -297,6 +297,7 @@ class FaqItem(BaseModel):
     question_en: str = ""
     answer_pl: str = ""
     answer_en: str = ""
+    image_url: str = ""
     sort_order: int = 0
     active: bool = True
 
@@ -306,12 +307,15 @@ class FaqSettings(BaseModel):
     title_en: str = "Frequently Asked Questions"
     subtitle_pl: str = "Odpowiedzi na najważniejsze pytania dotyczące naszych saun."
     subtitle_en: str = "Answers to the most important questions about our saunas."
-    items: List[FaqItem] = [
-        FaqItem(id="faq1", question_pl="Jaki jest czas realizacji zamówienia?", question_en="What is the order fulfillment time?", answer_pl="Standardowy czas realizacji to 5-10 dni roboczych od momentu złożenia zamówienia. W przypadku saun z niestandardowymi opcjami czas może wynosić do 3 tygodni.", answer_en="Standard fulfillment time is 5-10 business days from placing the order. For saunas with custom options, it may take up to 3 weeks.", sort_order=0),
-        FaqItem(id="faq2", question_pl="Czy oferujecie dostawę i montaż?", question_en="Do you offer delivery and installation?", answer_pl="Tak, oferujemy dostawę na terenie całej Polski. Montaż jest możliwy za dodatkową opłatą. Nasz zespół profesjonalnie zainstaluje saunę w wybranym miejscu.", answer_en="Yes, we offer delivery throughout Poland. Installation is available for an additional fee. Our team will professionally install the sauna at your chosen location.", sort_order=1),
-        FaqItem(id="faq3", question_pl="Jaka jest gwarancja na sauny?", question_en="What is the warranty on saunas?", answer_pl="Udzielamy 12-miesięcznej gwarancji na wszystkie nasze produkty. Gwarancja obejmuje wady materiałowe i produkcyjne.", answer_en="We provide a 12-month warranty on all our products. The warranty covers material and manufacturing defects.", sort_order=2),
-        FaqItem(id="faq4", question_pl="Z jakiego drewna produkowane są sauny?", question_en="What wood are the saunas made from?", answer_pl="Używamy najwyższej jakości drewna skandynawskiego — świerku i sosny. Drewno jest suszone komorowo, co zapewnia trwałość i odporność na warunki atmosferyczne.", answer_en="We use the highest quality Scandinavian wood — spruce and pine. The wood is kiln-dried, which ensures durability and weather resistance.", sort_order=3),
-        FaqItem(id="faq5", question_pl="Czy mogę skonfigurować saunę według własnych potrzeb?", question_en="Can I configure the sauna to my own needs?", answer_pl="Oczywiście! Nasz konfigurator online pozwala wybrać model, rozmiar, rodzaj pieca, opcje dodatkowe i wiele więcej. Możesz również skontaktować się z nami, aby omówić indywidualny projekt.", answer_en="Of course! Our online configurator lets you choose the model, size, type of heater, additional options and much more. You can also contact us to discuss a custom project.", sort_order=4),
+    items: List[FaqItem] = []
+
+class PromoFeaturesSettings(BaseModel):
+    id: str = "promo_features_settings"
+    items: List[Dict[str, Any]] = [
+        {"id": "pf1", "icon": "Truck", "title_pl": "Gotowa sauna w 5-10 dni", "title_en": "Ready sauna in 5-10 days", "desc_pl": "Nie musisz nic montowac. Sauna przyjezdza w pelni zmontowana i gotowa do uzytku.", "desc_en": "No assembly required. The sauna arrives fully assembled and ready to use."},
+        {"id": "pf2", "icon": "TreePine", "title_pl": "Skandynawskie drewno klasy A+", "title_en": "Class A+ Scandinavian wood", "desc_pl": "Suszone komorowo drewno bez kieszeni zywicznych. Stabilne i trwale przez lata.", "desc_en": "Kiln-dried wood without resin pockets. Stable and durable for years."},
+        {"id": "pf3", "icon": "ShieldCheck", "title_pl": "Gwarancja i serwis", "title_en": "Warranty and service", "desc_pl": "Kontrola w ponad 30 punktach przed wysylka. 12 miesiecy gwarancji i serwis posprzedazowy.", "desc_en": "Inspection at over 30 points before shipment. 12-month warranty and after-sales service."},
+        {"id": "pf4", "icon": "Headphones", "title_pl": "Doradca pomoze dobrac", "title_en": "Advisor helps choose", "desc_pl": "Pomagamy dobrac model do przestrzeni i stylu domu. Wycena bezplatna.", "desc_en": "We help choose the model for your space and style. Free estimate."},
     ]
 
 class SocialProofSettings(BaseModel):
@@ -904,6 +908,14 @@ async def get_faq_settings_public():
         return FaqSettings().model_dump()
     return settings
 
+@api_router.get("/settings/promo-features")
+async def get_promo_features_public():
+    settings = await db.settings.find_one({"id": "promo_features_settings"}, {"_id": 0})
+    if not settings:
+        return PromoFeaturesSettings().model_dump()
+    return settings
+
+
 @api_router.get("/settings/social-proof")
 async def get_social_proof_public():
     settings = await db.settings.find_one({"id": "social_proof_settings"}, {"_id": 0})
@@ -1139,6 +1151,16 @@ async def update_faq_settings(settings: FaqSettings, username: str = Depends(ver
         upsert=True
     )
     return {"status": "success"}
+
+@api_router.put("/admin/settings/promo-features")
+async def update_promo_features(settings: PromoFeaturesSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "promo_features_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
 
 @api_router.put("/admin/settings/social-proof")
 async def update_social_proof(settings: SocialProofSettings, username: str = Depends(verify_admin)):

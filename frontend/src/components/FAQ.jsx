@@ -89,6 +89,9 @@ export const FAQ = () => {
                     >
                       <div className="px-5 md:px-6 pb-5 md:pb-6 text-[#595959] leading-relaxed">
                         {answer}
+                        {item.image_url && (
+                          <img src={item.image_url} alt="" className="mt-4 max-w-md w-full h-auto object-cover border border-black/5" loading="lazy" />
+                        )}
                       </div>
                     </motion.div>
                   )}
