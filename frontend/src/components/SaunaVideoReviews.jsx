@@ -86,21 +86,15 @@ export const SaunaVideoReviews = () => {
   return (
     <section className="py-6 sm:py-8 bg-white overflow-hidden" data-testid="sauna-video-reviews">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <motion.div
-          ref={headerRef}
-          initial={{ opacity: 0, y: 20 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-6 sm:mb-8"
-        >
-          <p className="text-[#C6A87C] text-xs sm:text-sm tracking-widest uppercase mb-3">Wideo</p>
-          <h2 className="text-[#1A1A1A] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-3">
+        <div className="text-center mb-5">
+          <p className="text-[#C6A87C] text-xs sm:text-sm tracking-widest uppercase mb-2">Wideo</p>
+          <h2 className="text-[#1A1A1A] text-2xl sm:text-3xl font-bold leading-tight mb-2">
             {data.title}
           </h2>
           {data.subtitle && (
-            <p className="text-[#8C8C8C] text-sm sm:text-base max-w-2xl mx-auto">{data.subtitle}</p>
+            <p className="text-[#8C8C8C] text-sm max-w-2xl mx-auto">{data.subtitle}</p>
           )}
-        </motion.div>
+        </div>
 
         <div className={`grid gap-6 sm:gap-8 ${
           sortedItems.length === 1 ? 'max-w-2xl mx-auto' :

@@ -71,21 +71,15 @@ export const OrderProcess = ({ type = 'sauna' }) => {
     <section className={`py-6 sm:py-8 overflow-hidden ${dark ? 'bg-[#0F1218]' : 'bg-[#FAFAF8]'}`} data-testid={`order-process-${type}`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Header */}
-        <motion.div
-          ref={headerRef}
-          initial={{ opacity: 0, y: 20 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8 sm:mb-10"
-        >
-          <p className={`text-xs sm:text-sm tracking-widest uppercase mb-3 font-semibold`} style={{ color: accent }}>Proces zamówienia</p>
-          <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-3 ${dark ? 'text-white' : 'text-[#1A1A1A]'}`}>
+        <div className="text-center mb-6">
+          <p className={`text-xs sm:text-sm tracking-widest uppercase mb-2 font-semibold`} style={{ color: accent }}>Proces zamówienia</p>
+          <h2 className={`text-2xl sm:text-3xl font-bold leading-tight mb-2 ${dark ? 'text-white' : 'text-[#1A1A1A]'}`}>
             {data.title}
           </h2>
           {data.subtitle && (
-            <p className={`text-sm sm:text-base max-w-2xl mx-auto ${dark ? 'text-white/40' : 'text-[#8C8C8C]'}`}>{data.subtitle}</p>
+            <p className={`text-sm max-w-2xl mx-auto ${dark ? 'text-white/40' : 'text-[#8C8C8C]'}`}>{data.subtitle}</p>
           )}
-        </motion.div>
+        </div>
 
         {/* Steps Grid */}
         <div className={`grid gap-8 sm:gap-6 ${
