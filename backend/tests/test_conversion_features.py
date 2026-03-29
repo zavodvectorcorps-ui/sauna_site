@@ -11,7 +11,7 @@ import requests
 import os
 import base64
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://premium-wellness-hub-3.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://wm-sauna-balia.preview.emergentagent.com')
 
 # Admin credentials
 ADMIN_USER = "admin"
