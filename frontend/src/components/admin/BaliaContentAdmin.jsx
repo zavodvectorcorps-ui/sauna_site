@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Save, Loader2, Eye, EyeOff, Monitor, ChevronUp, ChevronDown, Plus, Trash2, GripVertical, Upload, Image, X, Video } from 'lucide-react';
+import { Save, Loader2, Eye, EyeOff, Monitor, Smartphone, ChevronUp, ChevronDown, Plus, Trash2, GripVertical, Upload, Image, X, Video } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -89,6 +89,7 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
   const [activeExclModel, setActiveExclModel] = useState('');
   const [showPreview, setShowPreview] = useState(false);
   const [activeTab, setActiveTab] = useState('hero');
+  const [baliaVisibility, setBaliaVisibility] = useState({});
 
   useEffect(() => {
     Promise.all([
@@ -96,7 +97,8 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
       fetch(`${API}/api/balia/option-exclusions`).then(r => r.json()).catch(() => ({ exclusions: {} })),
       fetch(`${API}/api/balia/products`).then(r => r.json()).catch(() => []),
       fetch(`${API}/api/balia/calculator/prices`).then(r => r.json()).catch(() => ({ categories: [] })),
-    ]).then(([data, exclData, prods, api]) => {
+      fetch(`${API}/api/settings/visibility`).then(r => r.json()).catch(() => ({ balia: {} })),
+    ]).then(([data, exclData, prods, api, visData]) => {
       if (data && Object.keys(data).length > 0) {
         setContent(prev => ({
           hero: { ...prev.hero, ...data.hero },
@@ -117,6 +119,7 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
       setExclusions(exclData.exclusions || {});
       setProducts(prods);
       setApiCategories((api.categories || []).filter(c => !['fiberglass_color', 'acrylic_color', 'bowl_material'].includes(c.id)));
+      setBaliaVisibility(visData.balia || {});
       setLoading(false);
     });
   }, []);
@@ -292,6 +295,26 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
     });
   };
 
+  const toggleBaliaVis = (section, device) => {
+    setBaliaVisibility(prev => {
+      const current = prev[section] || { desktop: true, mobile: true };
+      return { ...prev, [section]: { ...current, [device]: !current[device] } };
+    });
+  };
+
+  const saveBaliaVisibility = async () => {
+    try {
+      const visRes = await fetch(`${API}/api/settings/visibility`);
+      const visData = await visRes.json();
+      await fetch(`${API}/api/admin/settings/visibility`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
+        body: JSON.stringify({ ...visData, balia: baliaVisibility }),
+      });
+      showMessage('success', 'Видимость секций купелей сохранена');
+    } catch { showMessage('error', 'Ошибка сохранения видимости'); }
+  };
+
   if (loading) return <div className="flex justify-center py-10"><Loader2 className="animate-spin text-[#C6A87C]" /></div>;
 
   const promoBlocks = [
@@ -311,6 +334,7 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
     { id: 'schemes', label: 'Схемы (купель + печь)' },
     { id: 'promo_blocks', label: 'Промо-блоки' },
     { id: 'section_order', label: 'Порядок блоков' },
+    { id: 'visibility', label: 'Видимость' },
     { id: 'exclusions', label: 'Исключения опций' },
   ];
 
@@ -777,6 +801,54 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Visibility Tab */}
+      {activeTab === 'visibility' && (
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h4 className="font-semibold">Видимость секций (Купели)</h4>
+              <p className="text-xs text-[#8C8C8C] mt-1">Управляйте видимостью каждого блока на десктопе и мобильных</p>
+            </div>
+            <button onClick={saveBaliaVisibility} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 text-sm hover:bg-[#B09060]" data-testid="save-balia-visibility"><Save size={16} /> Сохранить</button>
+          </div>
+          <div className="bg-white border border-black/5 overflow-hidden">
+            <div className="grid grid-cols-[1fr_80px_80px] gap-0 p-4 border-b border-black/5 bg-[#F9F9F7] text-xs font-semibold text-[#8C8C8C] uppercase tracking-wider">
+              <span>Секция</span>
+              <span className="text-center flex items-center justify-center gap-1"><Monitor size={14} /> ПК</span>
+              <span className="text-center flex items-center justify-center gap-1"><Smartphone size={14} /> Моб.</span>
+            </div>
+            {DEFAULT_SECTIONS.map(s => {
+              const v = baliaVisibility[s.id] || { desktop: true, mobile: true };
+              const dOn = v.desktop !== false;
+              const mOn = v.mobile !== false;
+              return (
+                <div key={s.id} className="grid grid-cols-[1fr_80px_80px] gap-0 p-4 border-b border-black/5 last:border-b-0 items-center" data-testid={`vis-balia-${s.id}`}>
+                  <span className="text-sm font-medium text-[#1A1A1A]">{s.label}</span>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => toggleBaliaVis(s.id, 'desktop')}
+                      className={`w-10 h-6 rounded-full relative transition-colors ${dOn ? 'bg-[#C6A87C]' : 'bg-[#D4D4D4]'}`}
+                      data-testid={`vis-balia-${s.id}-desktop`}
+                    >
+                      <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${dOn ? 'left-[18px]' : 'left-0.5'}`} />
+                    </button>
+                  </div>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => toggleBaliaVis(s.id, 'mobile')}
+                      className={`w-10 h-6 rounded-full relative transition-colors ${mOn ? 'bg-[#C6A87C]' : 'bg-[#D4D4D4]'}`}
+                      data-testid={`vis-balia-${s.id}-mobile`}
+                    >
+                      <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${mOn ? 'left-[18px]' : 'left-0.5'}`} />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

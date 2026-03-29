@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CreditCard, Calendar, Percent, Truck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { resolveMediaUrl } from '../lib/utils';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -17,7 +18,7 @@ export const SaunaInstallment = ({ variant = 'full' }) => {
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/settings/installment`)
       .then(r => r.json())
-      .then(d => { if (d.sauna_logo_url) setLogoUrl(d.sauna_logo_url); })
+      .then(d => { if (d.sauna_logo_url) setLogoUrl(resolveMediaUrl(d.sauna_logo_url)); })
       .catch(() => {});
   }, []);
 

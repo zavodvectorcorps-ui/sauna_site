@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Gift, Lightbulb, DoorOpen, Bath, ArrowRight, X } from 'lucide-react';
+import { Gift, Lightbulb, DoorOpen, Bath, ArrowRight, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -40,6 +40,8 @@ export const SpecialOffer = () => {
   const [submitted, setSubmitted] = useState(false);
   const [gifts, setGifts] = useState(defaultGifts);
 
+  const scrollRef = useRef(null);
+
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/settings/special-offer`)
       .then(r => r.json())
@@ -72,6 +74,12 @@ export const SpecialOffer = () => {
     document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const scrollCards = (dir) => {
+    if (!scrollRef.current) return;
+    const w = scrollRef.current.offsetWidth * 0.87;
+    scrollRef.current.scrollBy({ left: dir === 'left' ? -w : w, behavior: 'smooth' });
+  };
+
   return (
     <section className="relative overflow-hidden bg-[#F9F9F7] py-16 sm:py-20" data-testid="special-offer">
       <div className="absolute top-0 left-0 right-0 h-1 bg-[#C6A87C]" />
@@ -96,7 +104,62 @@ export const SpecialOffer = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        {/* Mobile: horizontal scroll */}
+        <div className="md:hidden relative mb-12" data-testid="special-offer-mobile-scroll">
+          <div
+            ref={scrollRef}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+          >
+            {gifts.map((gift, i) => {
+              const IconComp = iconMap[gift.icon] || Gift;
+              return (
+                <div
+                  key={i}
+                  className="min-w-[80%] snap-center flex-shrink-0 bg-white border border-black/5 overflow-hidden"
+                  data-testid={`special-offer-card-${i}`}
+                >
+                  {gift.image && (
+                    <div className="aspect-[16/10] overflow-hidden bg-[#F2F2F0]">
+                      <img src={gift.image} alt={gift.title} className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      {!gift.image && (
+                        <div className="w-12 h-12 bg-[#C6A87C]/10 flex items-center justify-center flex-shrink-0">
+                          <IconComp size={24} className="text-[#C6A87C]" />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-[#1A1A1A] text-sm sm:text-base mb-0.5">{gift.title}</h3>
+                        <span className="text-xs text-[#C6A87C] font-medium">{gift.subtitle}</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-[#595959] mb-4 leading-relaxed">{gift.desc}</p>
+                    <div className="pt-3 border-t border-black/5">
+                      <span className="text-[10px] text-[#8C8C8C] uppercase tracking-wider">Wartość katalogowa</span>
+                      <p className="text-lg font-bold text-[#1A1A1A]">{gift.value} <span className="text-sm font-normal text-[#8C8C8C]">PLN</span></p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {gifts.length > 1 && (
+            <div className="flex justify-center gap-3 mt-3">
+              <button onClick={() => scrollCards('left')} className="w-9 h-9 flex items-center justify-center bg-white border border-black/5 hover:bg-[#C6A87C]/10 transition-colors" data-testid="special-scroll-left">
+                <ChevronLeft size={18} className="text-[#595959]" />
+              </button>
+              <button onClick={() => scrollCards('right')} className="w-9 h-9 flex items-center justify-center bg-white border border-black/5 hover:bg-[#C6A87C]/10 transition-colors" data-testid="special-scroll-right">
+                <ChevronRight size={18} className="text-[#595959]" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Desktop: grid */}
+        <div className="hidden md:grid grid-cols-3 gap-6 mb-12">
           {gifts.map((gift, i) => {
             const IconComp = iconMap[gift.icon] || Gift;
             return (

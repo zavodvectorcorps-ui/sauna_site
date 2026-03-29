@@ -52,7 +52,7 @@ const sectionComponents = {
 };
 
 const MainContent = () => {
-  const { sectionOrder, loading } = useSettings();
+  const { sectionOrder, sectionVisibility, loading } = useSettings();
   const [layoutSettings, setLayoutSettings] = React.useState(null);
 
   React.useEffect(() => {
@@ -81,25 +81,40 @@ const MainContent = () => {
   }
 
   const sections = sectionOrder?.sections || ['hero', 'models', 'calculator', 'gallery', 'stock', 'reviews', 'faq', 'orderprocess', 'about', 'contact'];
+  const vis = sectionVisibility?.sauna || {};
+
+  const getVisClass = (key) => {
+    const v = vis[key];
+    if (!v) return '';
+    const desktop = v.desktop !== false;
+    const mobile = v.mobile !== false;
+    if (!desktop && !mobile) return 'hidden';
+    if (!desktop && mobile) return 'block md:hidden';
+    if (desktop && !mobile) return 'hidden md:block';
+    return '';
+  };
 
   return (
     <>
       {sections.map((sectionKey) => {
         const Component = sectionComponents[sectionKey];
         if (!Component) return null;
+        const visClass = getVisClass(sectionKey);
         return (
           <React.Fragment key={sectionKey}>
-            <Component />
+            <div className={visClass}>
+              <Component />
+            </div>
             {sectionKey === 'hero' && <>
-              <SocialProof />
-              <SpecialOffer />
+              <div className={getVisClass('specialoffer')}><SpecialOffer /></div>
+              <div className={getVisClass('socialproof')}><SocialProof /></div>
             </>}
             {sectionKey === 'models' && <>
-              <PromoFeatures />
-              <SaunaAdvantages />
-              <SaunaVideoReviews />
-              <PromoBanner />
-              <SaunaInstallment />
+              <div className={getVisClass('promofeatures')}><PromoFeatures /></div>
+              <div className={getVisClass('advantages')}><SaunaAdvantages /></div>
+              <div className={getVisClass('videoreviews')}><SaunaVideoReviews /></div>
+              <div className={getVisClass('promobanner')}><PromoBanner /></div>
+              <div className={getVisClass('installment')}><SaunaInstallment /></div>
             </>}
           </React.Fragment>
         );

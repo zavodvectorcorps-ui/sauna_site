@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Star, Quote } from 'lucide-react';
+import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
 
@@ -10,6 +10,7 @@ export const Reviews = () => {
   const { language, t } = useLanguage();
   const { reviews } = useSettings();
   const [sectionContent, setSectionContent] = useState(null);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     fetchContent();
@@ -30,6 +31,41 @@ export const Reviews = () => {
     return review[key] || review.text_pl || '';
   };
 
+  const scrollCards = (dir) => {
+    if (!scrollRef.current) return;
+    const w = scrollRef.current.offsetWidth * 0.87;
+    scrollRef.current.scrollBy({ left: dir === 'left' ? -w : w, behavior: 'smooth' });
+  };
+
+  const ReviewCard = ({ review, index, isMobile }) => (
+    <motion.div
+      key={review.id}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: isMobile ? 0 : index * 0.1 }}
+      className={`review-card ${isMobile ? 'min-w-[85%] snap-center flex-shrink-0' : ''}`}
+      data-testid={`review-card-${review.id}`}
+    >
+      <Quote size={32} className="text-[#C6A87C]/30 mb-4" fill="currentColor" />
+      <div className="flex gap-1 mb-4">
+        {[...Array(5)].map((_, i) => (
+          <Star key={i} size={16} className={i < review.rating ? 'text-[#D4AF37] fill-current' : 'text-[#E5E5E5]'} />
+        ))}
+      </div>
+      <p className="text-[#595959] text-lg leading-relaxed mb-6 font-accent italic">
+        "{getReviewText(review)}"
+      </p>
+      <div className="flex items-center gap-4">
+        <img src={review.image} alt={review.name} className="w-12 h-12 object-cover" />
+        <div>
+          <p className="font-semibold text-[#1A1A1A]">{review.name}</p>
+          <p className="text-sm text-[#8C8C8C]">{review.location} • {review.sauna}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <section
       id="reviews"
@@ -48,60 +84,33 @@ export const Reviews = () => {
           </p>
         </div>
 
-        {/* Reviews Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Mobile: horizontal scroll */}
+        <div className="md:hidden relative" data-testid="reviews-mobile-scroll">
+          <div
+            ref={scrollRef}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+          >
+            {reviews.map((review, index) => (
+              <ReviewCard key={review.id} review={review} index={index} isMobile />
+            ))}
+          </div>
+          {reviews.length > 1 && (
+            <div className="flex justify-center gap-3 mt-3">
+              <button onClick={() => scrollCards('left')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="reviews-scroll-left">
+                <ChevronLeft size={18} className="text-[#595959]" />
+              </button>
+              <button onClick={() => scrollCards('right')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="reviews-scroll-right">
+                <ChevronRight size={18} className="text-[#595959]" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Desktop: grid */}
+        <div className="hidden md:grid grid-cols-2 gap-6">
           {reviews.map((review, index) => (
-            <motion.div
-              key={review.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="review-card"
-              data-testid={`review-card-${review.id}`}
-            >
-              {/* Quote icon */}
-              <Quote
-                size={32}
-                className="text-[#C6A87C]/30 mb-4"
-                fill="currentColor"
-              />
-
-              {/* Rating */}
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    size={16}
-                    className={
-                      i < review.rating
-                        ? 'text-[#D4AF37] fill-current'
-                        : 'text-[#E5E5E5]'
-                    }
-                  />
-                ))}
-              </div>
-
-              {/* Text */}
-              <p className="text-[#595959] text-lg leading-relaxed mb-6 font-accent italic">
-                "{getReviewText(review)}"
-              </p>
-
-              {/* Author */}
-              <div className="flex items-center gap-4">
-                <img
-                  src={review.image}
-                  alt={review.name}
-                  className="w-12 h-12 object-cover"
-                />
-                <div>
-                  <p className="font-semibold text-[#1A1A1A]">{review.name}</p>
-                  <p className="text-sm text-[#8C8C8C]">
-                    {review.location} • {review.sauna}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
+            <ReviewCard key={review.id} review={review} index={index} />
           ))}
         </div>
 

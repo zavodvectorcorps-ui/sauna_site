@@ -183,6 +183,11 @@ class SectionOrder(BaseModel):
     id: str = "section_order"
     sections: List[str] = ["hero", "models", "calculator", "gallery", "stock", "reviews", "faq", "about", "contact"]
 
+class SectionVisibility(BaseModel):
+    id: str = "section_visibility"
+    sauna: dict = {}
+    balia: dict = {}
+
 class LayoutSettings(BaseModel):
     id: str = "layout_settings"
     section_spacing: str = "large"  # small, medium, large
@@ -1197,6 +1202,25 @@ async def update_section_order(order: SectionOrder, username: str = Depends(veri
     await db.settings.update_one(
         {"id": "section_order"},
         {"$set": order.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+# Section visibility
+@api_router.get("/settings/visibility")
+async def get_section_visibility_public():
+    vis = await db.settings.find_one({"id": "section_visibility"}, {"_id": 0})
+    if not vis:
+        return SectionVisibility().model_dump()
+    return vis
+
+@api_router.put("/admin/settings/visibility")
+async def update_section_visibility(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["id"] = "section_visibility"
+    await db.settings.update_one(
+        {"id": "section_visibility"},
+        {"$set": data},
         upsert=True
     )
     return {"status": "success"}

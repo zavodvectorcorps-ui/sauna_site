@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Flame, Droplets, MapPin, ShieldCheck, Leaf, Heart, Phone, Mail, Send, CheckCircle } from 'lucide-react';
+import { resolveMediaUrl } from '../lib/utils';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -168,12 +169,12 @@ const MainLanding = () => {
     fetch(`${API}/api/settings/main-landing`)
       .then(r => r.json())
       .then(d => {
-        setSaunaImg(d.sauna_image || DEFAULT_SAUNA_IMG);
-        setBaliaImg(d.balia_image || DEFAULT_BALIA_IMG);
+        setSaunaImg(resolveMediaUrl(d.sauna_image) || DEFAULT_SAUNA_IMG);
+        setBaliaImg(resolveMediaUrl(d.balia_image) || DEFAULT_BALIA_IMG);
         if (d.sauna_image_position) setSaunaPos(d.sauna_image_position);
         if (d.balia_image_position) setBaliaPos(d.balia_image_position);
-        if (d.sauna_video) setSaunaVideo(d.sauna_video);
-        if (d.balia_video) setBaliaVideo(d.balia_video);
+        if (d.sauna_video) setSaunaVideo(resolveMediaUrl(d.sauna_video));
+        if (d.balia_video) setBaliaVideo(resolveMediaUrl(d.balia_video));
       })
       .catch(() => {
         setSaunaImg(DEFAULT_SAUNA_IMG);

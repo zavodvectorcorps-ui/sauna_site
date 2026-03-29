@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, FileDown } from 'lucide-react';
 import { BalieCatalogGate } from './BalieCatalogGate';
 import { useSettings } from '../../context/SettingsContext';
+import { resolveMediaUrl } from '../../lib/utils';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=1920&q=80";
@@ -48,8 +49,9 @@ export const BalieHero = () => {
     fetch(`${API}/api/balia-catalog/info`).then(r => r.json()).then(d => setCatalogAvailable(d?.available)).catch(() => {});
   }, []);
 
-  const bgImage = content.background_image || DEFAULT_IMAGE;
-  const useVideo = content.bg_mode === 'video' && content.background_video;
+  const bgImage = resolveMediaUrl(content.background_image) || DEFAULT_IMAGE;
+  const bgVideo = resolveMediaUrl(content.background_video);
+  const useVideo = content.bg_mode === 'video' && bgVideo;
 
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -67,7 +69,7 @@ export const BalieHero = () => {
           {useVideo && (
             <video
               ref={videoRef}
-              src={content.background_video}
+              src={bgVideo}
               autoPlay muted loop playsInline preload="auto"
               onCanPlay={() => setVideoReady(true)}
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}

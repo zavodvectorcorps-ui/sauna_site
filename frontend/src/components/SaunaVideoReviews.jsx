@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Play } from 'lucide-react';
+import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -10,7 +10,7 @@ const extractYouTubeId = (url) => {
   return match ? match[1] : null;
 };
 
-const VideoCard = ({ item, index }) => {
+const VideoCard = ({ item, index, isMobile }) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-40px' });
   const [playing, setPlaying] = useState(false);
@@ -23,8 +23,8 @@ const VideoCard = ({ item, index }) => {
       ref={ref}
       initial={{ opacity: 0, y: 24 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group"
+      transition={{ duration: 0.5, delay: isMobile ? 0 : index * 0.1 }}
+      className={`group ${isMobile ? 'min-w-[85%] snap-center flex-shrink-0' : ''}`}
       data-testid={`video-review-${index}`}
     >
       <div className="relative aspect-video bg-[#1A1A1A] overflow-hidden">
@@ -69,8 +69,7 @@ const VideoCard = ({ item, index }) => {
 
 export const SaunaVideoReviews = () => {
   const [data, setData] = useState(null);
-  const headerRef = useRef(null);
-  const headerInView = useInView(headerRef, { once: true, margin: '-40px' });
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     fetch(`${API}/api/settings/video-reviews`)
@@ -82,6 +81,12 @@ export const SaunaVideoReviews = () => {
   if (!data) return null;
 
   const sortedItems = [...data.items].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+  const scroll = (dir) => {
+    if (!scrollRef.current) return;
+    const w = scrollRef.current.offsetWidth * 0.87;
+    scrollRef.current.scrollBy({ left: dir === 'left' ? -w : w, behavior: 'smooth' });
+  };
 
   return (
     <section className="py-6 sm:py-8 bg-white overflow-hidden" data-testid="sauna-video-reviews">
@@ -96,10 +101,34 @@ export const SaunaVideoReviews = () => {
           )}
         </div>
 
-        <div className={`grid gap-6 sm:gap-8 ${
+        {/* Mobile: horizontal scroll */}
+        <div className="md:hidden relative" data-testid="video-reviews-mobile-scroll">
+          <div
+            ref={scrollRef}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-4 px-4"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+          >
+            {sortedItems.map((item, i) => (
+              <VideoCard key={item.id || i} item={item} index={i} isMobile />
+            ))}
+          </div>
+          {sortedItems.length > 1 && (
+            <div className="flex justify-center gap-3 mt-3">
+              <button onClick={() => scroll('left')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="video-scroll-left">
+                <ChevronLeft size={18} className="text-[#595959]" />
+              </button>
+              <button onClick={() => scroll('right')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="video-scroll-right">
+                <ChevronRight size={18} className="text-[#595959]" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Desktop: grid */}
+        <div className={`hidden md:grid gap-6 sm:gap-8 ${
           sortedItems.length === 1 ? 'max-w-2xl mx-auto' :
-          sortedItems.length === 2 ? 'grid-cols-1 sm:grid-cols-2' :
-          'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+          sortedItems.length === 2 ? 'grid-cols-2' :
+          'grid-cols-3'
         }`}>
           {sortedItems.map((item, i) => (
             <VideoCard key={item.id || i} item={item} index={i} />

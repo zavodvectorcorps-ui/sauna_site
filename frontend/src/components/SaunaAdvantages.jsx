@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -53,6 +54,7 @@ export const SaunaAdvantages = () => {
   const headerRef = useRef(null);
   const headerInView = useInView(headerRef, { once: true, margin: '-40px' });
   const [data, setData] = useState(null);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     fetch(`${API}/api/settings/sauna-advantages`)
@@ -66,6 +68,12 @@ export const SaunaAdvantages = () => {
   const leftItems = data.items.filter(a => a.side === 'left');
   const rightItems = data.items.filter(a => a.side === 'right');
   const imageUrl = data.image_url?.startsWith('/') ? `${API}${data.image_url}` : data.image_url;
+
+  const scrollCards = (dir) => {
+    if (!scrollRef.current) return;
+    const w = scrollRef.current.offsetWidth * 0.87;
+    scrollRef.current.scrollBy({ left: dir === 'left' ? -w : w, behavior: 'smooth' });
+  };
 
   return (
     <section className="py-6 sm:py-8 bg-[#F9F9F7] overflow-hidden" data-testid="sauna-advantages">
@@ -106,39 +114,52 @@ export const SaunaAdvantages = () => {
           </div>
         </div>
 
-        {/* Mobile/Tablet */}
-        <div className="lg:hidden">
+        {/* Mobile/Tablet: horizontal scroll cards */}
+        <div className="lg:hidden" data-testid="advantages-mobile-scroll">
           <AnimatedImage
             src={imageUrl}
             alt="Sauna w przekroju — schemat budowy"
-            className="max-w-sm mx-auto mb-10"
+            className="max-w-sm mx-auto mb-6"
           />
 
-          <div className="space-y-6 max-w-lg mx-auto">
-            {data.items.map((item, i) => (
-              <motion.div
-                key={item.id || item.num}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-20px' }}
-                transition={{ duration: 0.4, delay: i * 0.07 }}
-                className="flex gap-3 items-start"
-                data-testid={`sauna-advantage-mobile-${item.num}`}
-              >
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#C6A87C] flex items-center justify-center mt-0.5">
-                  <span className="text-white font-bold text-xs">{item.num}</span>
+          <div className="relative">
+            <div
+              ref={scrollRef}
+              className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+            >
+              {data.items.map((item, i) => (
+                <div
+                  key={item.id || item.num}
+                  className="min-w-[75%] snap-center flex-shrink-0 bg-white border border-black/5 p-5"
+                >
+                  <div className="flex gap-3 items-start">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#C6A87C] flex items-center justify-center mt-0.5">
+                      <span className="text-white font-bold text-xs">{item.num}</span>
+                    </div>
+                    <div>
+                      <h4 className="text-[#1A1A1A] font-semibold text-sm leading-snug mb-0.5">{item.title}</h4>
+                      <p className="text-[#8C8C8C] text-xs leading-relaxed">{item.desc}</p>
+                      {item.badge && (
+                        <span className="inline-block mt-1.5 px-2.5 py-0.5 bg-[#C6A87C]/10 text-[#C6A87C] text-xs font-semibold rounded-full">
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-[#1A1A1A] font-semibold text-sm leading-snug mb-0.5">{item.title}</h4>
-                  <p className="text-[#8C8C8C] text-xs leading-relaxed">{item.desc}</p>
-                  {item.badge && (
-                    <span className="inline-block mt-1.5 px-2.5 py-0.5 bg-[#C6A87C]/10 text-[#C6A87C] text-xs font-semibold rounded-full">
-                      {item.badge}
-                    </span>
-                  )}
-                </div>
-              </motion.div>
-            ))}
+              ))}
+            </div>
+            {data.items.length > 2 && (
+              <div className="flex justify-center gap-3 mt-3">
+                <button onClick={() => scrollCards('left')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="advantages-scroll-left">
+                  <ChevronLeft size={18} className="text-[#595959]" />
+                </button>
+                <button onClick={() => scrollCards('right')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="advantages-scroll-right">
+                  <ChevronRight size={18} className="text-[#595959]" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

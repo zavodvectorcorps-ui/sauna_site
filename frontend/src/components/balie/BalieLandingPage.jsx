@@ -16,6 +16,7 @@ import { BalieStoveScheme } from './BalieStoveScheme';
 
 import { BalieFaq } from './BalieFaq';
 import { OrderProcess } from '../OrderProcess';
+import { useSettings } from '../../context/SettingsContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -40,6 +41,7 @@ const sectionComponents = {
 
 export const BalieLandingPage = () => {
   const navigate = useNavigate();
+  const { sectionVisibility } = useSettings();
   const [promoBlocks, setPromoBlocks] = useState(null);
   const [sectionOrder, setSectionOrder] = useState(DEFAULT_ORDER);
 
@@ -59,6 +61,18 @@ export const BalieLandingPage = () => {
   }, []);
 
   const isEnabled = (blockId) => promoBlocks?.[blockId]?.enabled !== false;
+
+  const vis = sectionVisibility?.balia || {};
+  const getVisClass = (key) => {
+    const v = vis[key];
+    if (!v) return '';
+    const desktop = v.desktop !== false;
+    const mobile = v.mobile !== false;
+    if (!desktop && !mobile) return 'hidden';
+    if (!desktop && mobile) return 'block md:hidden';
+    if (desktop && !mobile) return 'hidden md:block';
+    return '';
+  };
 
   return (
     <div className="min-h-screen bg-[#0F1218]" data-testid="balie-page">
@@ -94,7 +108,12 @@ export const BalieLandingPage = () => {
       {sectionOrder.map(sectionId => {
         const Render = sectionComponents[sectionId];
         if (!Render) return null;
-        return <Render key={sectionId} enabled={isEnabled(sectionId)} />;
+        const visClass = getVisClass(sectionId);
+        return (
+          <div key={sectionId} className={visClass}>
+            <Render enabled={isEnabled(sectionId)} />
+          </div>
+        );
       })}
 
       {/* Footer */}

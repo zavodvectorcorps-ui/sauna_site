@@ -160,6 +160,7 @@ const AdminPanel = () => {
         { id: 'special_offer', label: 'Спецпредложение', icon: Gift },
         { id: 'catalog', label: 'Каталог', icon: FileText },
         { id: 'sections', label: 'Порядок', icon: GripVertical },
+        { id: 'visibility', label: 'Видимость', icon: Eye },
       ],
     },
     {
@@ -249,6 +250,7 @@ const AdminPanel = () => {
         return <MainLandingAdmin {...props} />;
       case 'catalog':
       case 'sections':
+      case 'visibility':
         return <SaunaCatalogSectionsAdmin {...props} activeSubTab={activeTab} />;
       case 'installment':
         return <InstallmentAdmin {...props} />;

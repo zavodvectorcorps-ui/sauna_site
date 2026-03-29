@@ -4,6 +4,7 @@ import { ArrowRight, Check, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
 import { CatalogFormGate } from './CatalogFormGate';
+import { resolveMediaUrl } from '../lib/utils';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -43,7 +44,7 @@ export const Hero = () => {
     return heroSettings[key] || heroSettings.subtitle_pl || t('hero.subtitle');
   };
 
-  const backgroundImage = heroSettings?.background_image || 
+  const backgroundImage = resolveMediaUrl(heroSettings?.background_image) || 
     'https://images.unsplash.com/photo-1759302353458-3c617bfd428b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGludGVyaW9yJTIwcGFub3JhbWljJTIwd2luZG93JTIwbmF0dXJlJTIwdmlld3xlbnwwfHx8fDE3NzA4NDMyODh8MA&ixlib=rb-4.1.0&q=85';
 
   const overlayOpacity = heroSettings?.overlay_opacity ?? 80;
@@ -54,7 +55,7 @@ export const Hero = () => {
   const textColor = heroSettings?.text_color || '#1A1A1A';
 
   const bgMode = heroSettings?.bg_mode || 'photo';
-  const backgroundVideo = heroSettings?.background_video || '';
+  const backgroundVideo = resolveMediaUrl(heroSettings?.background_video);
   const useVideo = bgMode === 'video' && backgroundVideo;
 
   return (

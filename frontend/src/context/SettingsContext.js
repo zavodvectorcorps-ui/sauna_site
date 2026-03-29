@@ -10,6 +10,7 @@ export const SettingsProvider = ({ children }) => {
   const [aboutSettings, setAboutSettings] = useState(null);
   const [calculatorConfig, setCalculatorConfig] = useState(null);
   const [sectionOrder, setSectionOrder] = useState(null);
+  const [sectionVisibility, setSectionVisibility] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [baliaHero, setBaliaHero] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,12 +21,13 @@ export const SettingsProvider = ({ children }) => {
 
   const fetchAllSettings = async () => {
     try {
-      const [siteRes, heroRes, aboutRes, calcRes, sectionsRes, reviewsRes, baliaRes] = await Promise.all([
+      const [siteRes, heroRes, aboutRes, calcRes, sectionsRes, visRes, reviewsRes, baliaRes] = await Promise.all([
         fetch(`${API_URL}/api/settings/site`),
         fetch(`${API_URL}/api/settings/hero`),
         fetch(`${API_URL}/api/settings/about`),
         fetch(`${API_URL}/api/settings/calculator`),
         fetch(`${API_URL}/api/settings/sections`),
+        fetch(`${API_URL}/api/settings/visibility`),
         fetch(`${API_URL}/api/reviews`),
         fetch(`${API_URL}/api/balia/content`),
       ]);
@@ -35,6 +37,7 @@ export const SettingsProvider = ({ children }) => {
       setAboutSettings(await aboutRes.json());
       setCalculatorConfig(await calcRes.json());
       setSectionOrder(await sectionsRes.json());
+      setSectionVisibility(await visRes.json());
       setReviews(await reviewsRes.json());
       const baliaData = await baliaRes.json();
       setBaliaHero(baliaData?.hero || null);
@@ -51,6 +54,7 @@ export const SettingsProvider = ({ children }) => {
       aboutSettings,
       calculatorConfig,
       sectionOrder,
+      sectionVisibility,
       reviews,
       baliaHero,
       loading,
