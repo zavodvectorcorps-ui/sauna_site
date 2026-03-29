@@ -26,7 +26,7 @@ export const Header = () => {
     { href: '#contact', label: t('nav.contact') },
   ];
 
-  const languages = ['PL', 'EN'];
+  const languages = ['PL', 'EN', 'DE', 'CS'];
 
   const scrollToSection = (href) => {
     const element = document.querySelector(href);
@@ -203,14 +203,18 @@ export const Header = () => {
 
                 <div className="p-6 border-t border-black/5">
                   {/* Language Switcher Mobile */}
-                  <div className="flex items-center gap-2 mb-6">
+                  <div className="flex items-center gap-1.5 mb-6">
                     {languages.map((lang) => (
                       <button
                         key={lang}
-                        onClick={() => changeLanguage(lang.toLowerCase())}
-                        className={`px-4 py-2 text-sm font-medium border transition-colors duration-200 ${
+                        data-testid={`mobile-lang-btn-${lang.toLowerCase()}`}
+                        onClick={() => {
+                          changeLanguage(lang.toLowerCase());
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`flex-1 py-2 text-sm font-medium border rounded transition-colors duration-200 ${
                           language === lang.toLowerCase()
-                            ? 'border-[#C6A87C] text-[#C6A87C]'
+                            ? 'border-[#C6A87C] text-[#C6A87C] bg-[#C6A87C]/5'
                             : 'border-black/10 text-[#595959]'
                         }`}
                       >

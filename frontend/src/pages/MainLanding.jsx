@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Flame, Droplets, MapPin, ShieldCheck, Leaf, Heart, Phone, Mail, Send, CheckCircle } from 'lucide-react';
 import { resolveMediaUrl } from '../lib/utils';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -200,10 +201,16 @@ const MainLanding = () => {
   return (
     <div className="min-h-screen bg-[#0C0C0C]" data-testid="main-landing">
       {/* Header */}
-      <header className="py-8 px-6 text-center">
-        <h1 className="text-xl font-bold tracking-[0.3em] text-white uppercase">WM Group</h1>
-        <p className="text-white/30 text-xs tracking-widest mt-1">SAUNY &bull; BALIE &bull; SPA</p>
-        <nav className="mt-4 flex justify-center gap-6">
+      <header className="py-8 px-6" data-testid="main-landing-header">
+        <div className="flex items-center justify-between max-w-5xl mx-auto mb-4">
+          <div />
+          <div className="text-center">
+            <h1 className="text-xl font-bold tracking-[0.3em] text-white uppercase">WM Group</h1>
+            <p className="text-white/30 text-xs tracking-widest mt-1">SAUNY &bull; BALIE &bull; SPA</p>
+          </div>
+          <LanguageSwitcher variant="dark" />
+        </div>
+        <nav className="flex justify-center gap-6">
           <button onClick={() => navigate('/sauny')} className="text-white/50 hover:text-[#C6A87C] text-sm transition-colors">Sauny</button>
           <button onClick={() => navigate('/balie')} className="text-white/50 hover:text-[#D4AF37] text-sm transition-colors">Balie</button>
           <button onClick={() => navigate('/blog')} className="text-white/50 hover:text-white text-sm transition-colors">Blog</button>

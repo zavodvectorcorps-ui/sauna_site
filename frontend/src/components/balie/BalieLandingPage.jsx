@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Droplets, Phone, ArrowLeft } from 'lucide-react';
+import { LanguageSwitcher } from '../LanguageSwitcher';
 import { BalieHero } from './BalieHero';
 import { BalieProducts } from './BalieProducts';
 import { BalieFeatures } from './BalieFeatures';
@@ -97,10 +98,13 @@ export const BalieLandingPage = () => {
             <a href="#balie-faq" className="text-white/60 hover:text-[#D4AF37] transition-colors">FAQ</a>
             <a href="#kontakt-balie" className="text-white/60 hover:text-[#D4AF37] transition-colors">Kontakt</a>
           </div>
-          <a href="tel:+48515995190" className="flex items-center gap-2 text-[#D4AF37] text-sm font-medium">
-            <Phone size={16} />
-            <span className="hidden sm:inline">+48 515 995 190</span>
-          </a>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher variant="dark" />
+            <a href="tel:+48515995190" className="flex items-center gap-2 text-[#D4AF37] text-sm font-medium">
+              <Phone size={16} />
+              <span className="hidden sm:inline">+48 515 995 190</span>
+            </a>
+          </div>
         </div>
       </nav>
 

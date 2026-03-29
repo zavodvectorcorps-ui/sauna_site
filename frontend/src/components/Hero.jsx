@@ -35,13 +35,15 @@ export const Hero = () => {
   const getTitle = () => {
     if (!heroSettings) return t('hero.title');
     const key = `title_${language}`;
-    return heroSettings[key] || heroSettings.title_pl || t('hero.title');
+    // Use language-specific title from settings, or fall back to translation
+    return heroSettings[key] || t('hero.title');
   };
 
   const getSubtitle = () => {
     if (!heroSettings) return t('hero.subtitle');
     const key = `subtitle_${language}`;
-    return heroSettings[key] || heroSettings.subtitle_pl || t('hero.subtitle');
+    // Use language-specific subtitle from settings, or fall back to translation
+    return heroSettings[key] || t('hero.subtitle');
   };
 
   const backgroundImage = resolveMediaUrl(heroSettings?.background_image) || 
