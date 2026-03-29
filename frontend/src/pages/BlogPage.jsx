@@ -116,12 +116,12 @@ export default function BlogPage() {
                 className="bg-white border border-black/5 cursor-pointer group hover:shadow-lg transition-shadow"
                 data-testid={`blog-card-${article.slug}`}
               >
-                {article.cover_image && (
+                {(article.cover_image || article.image_url) && (
                   <div className="aspect-[16/10] overflow-hidden bg-[#F2F2F0]">
-                    <img src={article.cover_image} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                    <img src={article.cover_image || article.image_url} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                   </div>
                 )}
-                {!article.cover_image && (
+                {!article.cover_image && !article.image_url && (
                   <div className="aspect-[16/10] bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] flex items-center justify-center">
                     <span className="text-[#C6A87C] text-4xl font-bold opacity-20">WM</span>
                   </div>

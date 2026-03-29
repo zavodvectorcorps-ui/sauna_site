@@ -62,9 +62,9 @@ export default function BlogArticlePage() {
       </div>
 
       {/* Cover image */}
-      {article.cover_image && (
+      {(article.cover_image || article.image_url) && (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-8">
-          <img src={article.cover_image} alt={article.title} className="w-full aspect-[2/1] object-cover shadow-xl" />
+          <img src={article.cover_image || article.image_url} alt={article.title} className="w-full aspect-[2/1] object-cover shadow-xl" />
         </div>
       )}
 
