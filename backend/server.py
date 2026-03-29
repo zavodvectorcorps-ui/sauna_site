@@ -417,6 +417,9 @@ class B2BSettings(BaseModel):
     cta_description: str = "Skontaktuj się z naszym działem B2B, aby omówić warunki współpracy."
     cta_phone: str = "+48 732 099 201"
     cta_email: str = "b2b@wm-sauna.pl"
+    gallery_title: str = "Nasze realizacje"
+    gallery_subtitle: str = "Zobacz, jak nasze sauny wyglądają w hotelach i ośrodkach wypoczynkowych"
+    gallery: List[Dict[str, Any]] = []
 
 class WhatsAppSettings(BaseModel):
     id: str = "whatsapp_settings"

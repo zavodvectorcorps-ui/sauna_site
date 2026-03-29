@@ -1,12 +1,139 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { TrendingUp, Truck, Users, ShieldCheck, Star, Phone, Mail, Send, CheckCircle, Building2, DollarSign, CalendarRange, BarChart3, Sparkles, Wrench, Leaf, Film, Package } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TrendingUp, Truck, Users, ShieldCheck, Star, Phone, Mail, Send, CheckCircle, Building2, DollarSign, CalendarRange, BarChart3, Sparkles, Wrench, Leaf, Film, Package, Play, X, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
 import { GlobalHeader } from '../components/GlobalHeader';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const ICON_MAP = { TrendingUp, Truck, Users, ShieldCheck, Star, Phone, Mail, Building2, DollarSign, CalendarRange, BarChart3, Sparkles, Wrench, Leaf, Film, Package };
+
+const extractYouTubeId = (url) => {
+  if (!url) return null;
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+  return m ? m[1] : null;
+};
+
+const GallerySection = ({ gallery, title, subtitle }) => {
+  const [lightbox, setLightbox] = useState(null);
+  const [playingVideo, setPlayingVideo] = useState(null);
+
+  const items = gallery.filter(g => g.url);
+
+  const openLightbox = (idx) => setLightbox(idx);
+  const closeLightbox = () => { setLightbox(null); setPlayingVideo(null); };
+  const prev = () => setLightbox(i => (i - 1 + items.length) % items.length);
+  const next = () => setLightbox(i => (i + 1) % items.length);
+
+  if (!items.length) return null;
+
+  return (
+    <section className="py-16 sm:py-20 border-t border-white/5" data-testid="b2b-gallery">
+      <div className="max-w-6xl mx-auto px-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <ImageIcon size={16} className="text-[#C6A87C]" />
+            <span className="text-[#C6A87C] text-xs tracking-[0.15em] uppercase font-semibold">Portfolio</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">{title || 'Nasze realizacje'}</h2>
+          {subtitle && <p className="text-white/40 text-sm max-w-xl mx-auto">{subtitle}</p>}
+        </motion.div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          {items.map((item, i) => {
+            const isVideo = item.type === 'video';
+            const ytId = isVideo ? extractYouTubeId(item.url) : null;
+            const thumb = isVideo && ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : item.url;
+
+            return (
+              <motion.div
+                key={item.id || i}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="group relative aspect-[4/3] overflow-hidden cursor-pointer bg-[#1A1A1A]"
+                onClick={() => openLightbox(i)}
+                data-testid={`b2b-gallery-item-${i}`}
+              >
+                <img
+                  src={thumb}
+                  alt={item.title || ''}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {isVideo && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-12 h-12 bg-[#C6A87C]/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Play size={20} className="text-white ml-0.5" fill="white" />
+                    </div>
+                  </div>
+                )}
+                <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  {item.title && <p className="text-white text-xs font-medium truncate">{item.title}</p>}
+                  {item.desc && <p className="text-white/50 text-[10px] truncate">{item.desc}</p>}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightbox !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+            onClick={closeLightbox}
+            data-testid="b2b-lightbox"
+          >
+            <button onClick={closeLightbox} className="absolute top-4 right-4 text-white/60 hover:text-white z-10 p-2" data-testid="lightbox-close">
+              <X size={24} />
+            </button>
+            {items.length > 1 && (
+              <>
+                <button onClick={(e) => { e.stopPropagation(); prev(); }} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white z-10 p-2">
+                  <ChevronLeft size={32} />
+                </button>
+                <button onClick={(e) => { e.stopPropagation(); next(); }} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white z-10 p-2">
+                  <ChevronRight size={32} />
+                </button>
+              </>
+            )}
+            <div className="max-w-4xl w-full mx-4" onClick={(e) => e.stopPropagation()}>
+              {items[lightbox]?.type === 'video' ? (
+                <div className="aspect-video">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${extractYouTubeId(items[lightbox].url)}?autoplay=1&rel=0`}
+                    className="w-full h-full"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                  />
+                </div>
+              ) : (
+                <img
+                  src={items[lightbox]?.url}
+                  alt={items[lightbox]?.title || ''}
+                  className="w-full max-h-[80vh] object-contain"
+                />
+              )}
+              {items[lightbox]?.title && (
+                <div className="text-center mt-4">
+                  <p className="text-white text-sm font-medium">{items[lightbox].title}</p>
+                  {items[lightbox].desc && <p className="text-white/40 text-xs mt-1">{items[lightbox].desc}</p>}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  );
+};
 
 export default function B2BPage() {
   const [data, setData] = useState(null);
@@ -113,6 +240,11 @@ export default function B2BPage() {
           </div>
         </div>
       </section>
+
+      {/* Gallery / Realizacje */}
+      {(data.gallery || []).length > 0 && (
+        <GallerySection gallery={data.gallery} title={data.gallery_title} subtitle={data.gallery_subtitle} />
+      )}
 
       {/* Financial Benefits */}
       <section className="py-16 sm:py-20 border-t border-white/5" data-testid="b2b-financial">
