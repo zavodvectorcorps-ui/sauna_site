@@ -68,16 +68,10 @@ export const SaunaAdvantages = () => {
   const imageUrl = data.image_url?.startsWith('/') ? `${API}${data.image_url}` : data.image_url;
 
   return (
-    <section className="py-10 sm:py-14 bg-[#F9F9F7] overflow-hidden" data-testid="sauna-advantages">
+    <section className="py-6 sm:py-8 bg-[#F9F9F7] overflow-hidden" data-testid="sauna-advantages">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header */}
-        <motion.div
-          ref={headerRef}
-          initial={{ opacity: 0, y: 20 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-6 sm:mb-10"
-        >
+        <div className="text-center mb-4 sm:mb-6">
           {data.subtitle && (
             <p className="text-[#8C8C8C] text-sm mb-3 tracking-wide">{data.subtitle}</p>
           )}
@@ -89,7 +83,7 @@ export const SaunaAdvantages = () => {
               {data.description}
             </p>
           )}
-        </motion.div>
+        </div>
 
         {/* Desktop: 3-column layout */}
         <div className="hidden lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-8 lg:items-center">

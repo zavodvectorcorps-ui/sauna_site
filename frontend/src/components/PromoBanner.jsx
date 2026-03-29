@@ -8,7 +8,7 @@ export const PromoBanner = () => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] via-[#2A2520] to-[#1A1A1A] py-16" data-testid="promo-banner">
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] via-[#2A2520] to-[#1A1A1A] py-10 sm:py-12" data-testid="promo-banner">
       {/* Subtle pattern */}
       <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
 

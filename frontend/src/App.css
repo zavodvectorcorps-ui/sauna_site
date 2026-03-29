@@ -44,8 +44,8 @@ html, body {
 
 /* Section spacing - using CSS variables from admin settings */
 :root {
-  --section-padding-top: 80px;
-  --section-padding-bottom: 80px;
+  --section-padding-top: 48px;
+  --section-padding-bottom: 48px;
 }
 
 .section-spacing {

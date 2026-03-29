@@ -39,7 +39,7 @@ export const SaunaInstallment = ({ variant = 'full' }) => {
   }
 
   return (
-    <section className="py-16 bg-[#F9F9F7]" data-testid="sauna-installment">
+    <section className="py-10 sm:py-12 bg-[#F9F9F7]" data-testid="sauna-installment">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -18,7 +18,7 @@ export const PromoFeatures = () => {
   if (!features.length) return null;
 
   return (
-    <section className="py-16 bg-[#FAFAF7]" data-testid="promo-features">
+    <section className="py-8 sm:py-10 bg-[#FAFAF7]" data-testid="promo-features">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((f, i) => {
