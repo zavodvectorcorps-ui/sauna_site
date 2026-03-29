@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { useAutoTranslate } from '../../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
 export const BalieFaq = () => {
   const [settings, setSettings] = useState(null);
   const [openId, setOpenId] = useState(null);
+  const { tr } = useAutoTranslate();
 
   useEffect(() => {
     fetch(`${API}/api/settings/balia-faq`)
@@ -38,10 +40,10 @@ export const BalieFaq = () => {
         <div className="text-center mb-12">
           <div className="w-12 h-0.5 bg-[#D4AF37] mx-auto mb-6" />
           <h2 className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] mb-3" data-testid="balie-faq-title">
-            {settings.title_pl}
+            {tr(settings.title_pl)}
           </h2>
           <p className="text-sm sm:text-base text-[#8C8C8C] max-w-xl mx-auto">
-            {settings.subtitle_pl}
+            {tr(settings.subtitle_pl)}
           </p>
         </div>
 
@@ -58,7 +60,7 @@ export const BalieFaq = () => {
                   onClick={() => setOpenId(isOpen ? null : item.id)}
                   className="w-full flex items-center justify-between p-5 md:p-6 text-left"
                 >
-                  <span className="font-medium text-[#1A1A1A] pr-4">{item.question_pl}</span>
+                  <span className="font-medium text-[#1A1A1A] pr-4">{tr(item.question_pl)}</span>
                   <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="flex-shrink-0">
                     <ChevronDown size={20} className="text-[#D4AF37]" />
                   </motion.div>
@@ -73,7 +75,7 @@ export const BalieFaq = () => {
                       className="overflow-hidden"
                     >
                       <div className="px-5 md:px-6 pb-5 md:pb-6 text-[#595959] leading-relaxed text-sm">
-                        {item.answer_pl}
+                        {tr(item.answer_pl)}
                         {item.image_url && (
                           <img src={item.image_url} alt="" className="mt-4 max-w-md w-full h-auto object-cover border border-black/5" loading="lazy" />
                         )}

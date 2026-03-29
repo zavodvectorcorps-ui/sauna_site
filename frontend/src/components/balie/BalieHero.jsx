@@ -3,12 +3,14 @@ import { ChevronDown, FileDown } from 'lucide-react';
 import { BalieCatalogGate } from './BalieCatalogGate';
 import { useSettings } from '../../context/SettingsContext';
 import { resolveMediaUrl } from '../../lib/utils';
+import { useAutoTranslate } from '../../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=1920&q=80";
 
 export const BalieHero = () => {
   const { baliaHero } = useSettings();
+  const { tr } = useAutoTranslate();
   const [content, setContent] = useState({
     badge: 'Ręcznie robione w Polsce',
     headline: 'Luksus w Twoim Ogrodzie',
@@ -81,18 +83,18 @@ export const BalieHero = () => {
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 text-center py-20">
           <div className="inline-block bg-[#D4AF37]/10 border border-[#D4AF37]/30 px-4 py-1.5 mb-6">
-            <span className="text-[#D4AF37] text-xs font-semibold tracking-[0.2em] uppercase">{content.badge}</span>
+            <span className="text-[#D4AF37] text-xs font-semibold tracking-[0.2em] uppercase">{tr(content.badge)}</span>
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-            {mainWords}{' '}<span className="text-[#D4AF37]">{goldWord}</span>
+            {tr(mainWords)}{' '}<span className="text-[#D4AF37]">{tr(goldWord)}</span>
           </h1>
-          <p className="text-white/60 text-base sm:text-lg max-w-2xl mx-auto mb-10">{content.subheadline}</p>
+          <p className="text-white/60 text-base sm:text-lg max-w-2xl mx-auto mb-10">{tr(content.subheadline)}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
             <button onClick={() => scrollTo('produkty')} className="px-8 py-4 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors" data-testid="balie-hero-cta">
-              {content.ctaPrimary}
+              {tr(content.ctaPrimary)}
             </button>
             <button onClick={() => scrollTo('produkty')} className="px-8 py-4 border border-white/20 text-white font-medium hover:bg-white/5 transition-colors">
-              {content.ctaSecondary}
+              {tr(content.ctaSecondary)}
             </button>
           </div>
 
@@ -102,7 +104,7 @@ export const BalieHero = () => {
               className="inline-flex items-center gap-2 px-6 py-2.5 bg-white/5 border border-white/10 text-white/70 text-sm font-medium hover:bg-white/10 hover:text-white transition-colors mb-16"
               data-testid="balie-hero-catalog-btn"
             >
-              <FileDown size={16} /> Pobierz katalog PDF
+              <FileDown size={16} /> {tr('Pobierz katalog PDF')}
             </button>
           )}
 
@@ -112,7 +114,7 @@ export const BalieHero = () => {
             {content.stats.map((stat, i) => (
               <div key={i} className="text-center">
                 <div className="text-2xl sm:text-3xl font-bold text-[#D4AF37]">{stat.value}</div>
-                <div className="text-white/40 text-xs mt-1">{stat.label}</div>
+                <div className="text-white/40 text-xs mt-1">{tr(stat.label)}</div>
               </div>
             ))}
           </div>

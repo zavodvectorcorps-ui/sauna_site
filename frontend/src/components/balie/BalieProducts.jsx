@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, ArrowRight, Loader2, Users, Droplets, Ruler, ChevronLeft, ChevronRight, Check, Send, Sliders, Flame, GitCompareArrows, Thermometer, Box } from 'lucide-react';
 import { BalieInstallment } from './BalieInstallment';
+import { useAutoTranslate } from '../../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -25,6 +26,7 @@ const formatPrice = (price) => price > 0 ? `${price.toLocaleString()} PLN` : nul
 
 const ProductCard = ({ product, apiModel, onClick, isCompare, onToggleCompare }) => {
   const { variants, single } = getHeaterVariantPrices(apiModel);
+  const { tr } = useAutoTranslate();
 
   return (
     <div className="relative bg-[#1A1E27] border border-white/5 overflow-hidden group hover:border-[#D4AF37]/30 transition-all" data-testid={`balie-product-${product.id}`}>
@@ -34,13 +36,13 @@ const ProductCard = ({ product, apiModel, onClick, isCompare, onToggleCompare })
           {product.tags?.length > 0 && (
             <div className="absolute top-3 left-3 flex gap-1.5">
               {product.tags.slice(0, 2).map((tag, i) => (
-                <span key={i} className="bg-[#D4AF37] text-[#0F1218] text-[10px] font-semibold px-2 py-0.5 uppercase tracking-wider">{tag}</span>
+                <span key={i} className="bg-[#D4AF37] text-[#0F1218] text-[10px] font-semibold px-2 py-0.5 uppercase tracking-wider">{tr(tag)}</span>
               ))}
             </div>
           )}
         </div>
         <div className="p-5">
-          <h3 className="text-white font-semibold text-lg mb-1">{product.name}</h3>
+          <h3 className="text-white font-semibold text-lg mb-1">{tr(product.name)}</h3>
           {variants.length >= 2 ? (
             <div className="mb-2 space-y-0.5">
               {variants.map(v => (
@@ -55,9 +57,9 @@ const ProductCard = ({ product, apiModel, onClick, isCompare, onToggleCompare })
           ) : (
             <p className="text-[#D4AF37] font-bold mb-2">{product.price}</p>
           )}
-          {product.description && <p className="text-white/40 text-sm line-clamp-2 mb-4">{product.description}</p>}
+          {product.description && <p className="text-white/40 text-sm line-clamp-2 mb-4">{tr(product.description)}</p>}
           <div className="flex items-center gap-2 text-white/60 text-sm group-hover:text-[#D4AF37] transition-colors">
-            Szczegoly <ArrowRight size={14} />
+            {tr('Szczegóły')} <ArrowRight size={14} />
           </div>
         </div>
       </div>
@@ -71,7 +73,7 @@ const ProductCard = ({ product, apiModel, onClick, isCompare, onToggleCompare })
         data-testid={`balie-compare-toggle-${product.id}`}
       >
         <GitCompareArrows size={13} />
-        {isCompare ? 'Dodano' : 'Porownaj'}
+        {isCompare ? tr('Dodano') : tr('Porównaj')}
       </button>
     </div>
   );
@@ -80,6 +82,7 @@ const ProductCard = ({ product, apiModel, onClick, isCompare, onToggleCompare })
 const RequestForm = ({ product, selectedOptions, modelPrice, totalPrice, onClose, onSuccess }) => {
   const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
   const [sending, setSending] = useState(false);
+  const { tr } = useAutoTranslate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,7 +112,7 @@ const RequestForm = ({ product, selectedOptions, modelPrice, totalPrice, onClose
     <div className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-[#1A1E27] max-w-md w-full p-6" onClick={e => e.stopPropagation()} data-testid="balie-request-form">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-white">Zloz zapytanie</h3>
+          <h3 className="text-lg font-bold text-white">{tr('Złóż zapytanie')}</h3>
           <button onClick={onClose} className="text-white/40 hover:text-white"><X size={20} /></button>
         </div>
 
@@ -132,19 +135,19 @@ const RequestForm = ({ product, selectedOptions, modelPrice, totalPrice, onClose
             </>
           )}
           <div className="border-t border-white/10 pt-2 flex items-center justify-between">
-            <span className="text-white font-semibold text-sm">Razem:</span>
+            <span className="text-white font-semibold text-sm">{tr('Razem')}:</span>
             <span className="text-[#D4AF37] font-bold text-lg" data-testid="request-total-price">{formatPrice(totalPrice)}</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
-          <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Imie i nazwisko *" required className="w-full p-3 bg-[#0F1218] border border-white/10 text-white text-sm placeholder:text-white/20 focus:border-[#D4AF37] outline-none" data-testid="request-form-name" />
-          <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="Telefon *" required className="w-full p-3 bg-[#0F1218] border border-white/10 text-white text-sm placeholder:text-white/20 focus:border-[#D4AF37] outline-none" data-testid="request-form-phone" />
+          <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={tr("Imię i nazwisko *")} required className="w-full p-3 bg-[#0F1218] border border-white/10 text-white text-sm placeholder:text-white/20 focus:border-[#D4AF37] outline-none" data-testid="request-form-name" />
+          <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={tr("Telefon *")} required className="w-full p-3 bg-[#0F1218] border border-white/10 text-white text-sm placeholder:text-white/20 focus:border-[#D4AF37] outline-none" data-testid="request-form-phone" />
           <input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} type="email" placeholder="E-mail" className="w-full p-3 bg-[#0F1218] border border-white/10 text-white text-sm placeholder:text-white/20 focus:border-[#D4AF37] outline-none" data-testid="request-form-email" />
-          <textarea value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} placeholder="Dodatkowe uwagi..." rows={3} className="w-full p-3 bg-[#0F1218] border border-white/10 text-white text-sm placeholder:text-white/20 focus:border-[#D4AF37] outline-none resize-none" />
+          <textarea value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} placeholder={tr("Dodatkowe uwagi...")} rows={3} className="w-full p-3 bg-[#0F1218] border border-white/10 text-white text-sm placeholder:text-white/20 focus:border-[#D4AF37] outline-none resize-none" />
           <button type="submit" disabled={sending} className="w-full py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors disabled:opacity-50 flex items-center justify-center gap-2" data-testid="request-form-submit">
             {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-            Wyslij zapytanie
+            {tr('Wyślij zapytanie')}
           </button>
         </form>
       </div>

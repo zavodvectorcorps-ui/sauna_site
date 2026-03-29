@@ -19,6 +19,8 @@ import { BalieFaq } from './BalieFaq';
 import { OrderProcess } from '../OrderProcess';
 import { useSettings } from '../../context/SettingsContext';
 
+import { useAutoTranslate } from '../../context/AutoTranslateContext';
+
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const DEFAULT_ORDER = ['hero','features','products','installment','colors','options','schematic','stove','about','gallery','faq','orderprocess','testimonials','contact'];
@@ -43,6 +45,7 @@ const sectionComponents = {
 export const BalieLandingPage = () => {
   const navigate = useNavigate();
   const { sectionVisibility } = useSettings();
+  const { tr } = useAutoTranslate();
   const [promoBlocks, setPromoBlocks] = useState(null);
   const [sectionOrder, setSectionOrder] = useState(DEFAULT_ORDER);
 
@@ -90,13 +93,13 @@ export const BalieLandingPage = () => {
             </div>
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm">
-            <a href="#produkty" className="text-white/60 hover:text-[#D4AF37] transition-colors">Produkty</a>
-            <a href="#kolory" className="text-white/60 hover:text-[#D4AF37] transition-colors">Kolory</a>
-            <a href="#opcje" className="text-white/60 hover:text-[#D4AF37] transition-colors">Opcje</a>
-            <a href="#budowa" className="text-white/60 hover:text-[#D4AF37] transition-colors">Budowa</a>
-            <a href="#opinie" className="text-white/60 hover:text-[#D4AF37] transition-colors">Opinie</a>
+            <a href="#produkty" className="text-white/60 hover:text-[#D4AF37] transition-colors">{tr('Produkty')}</a>
+            <a href="#kolory" className="text-white/60 hover:text-[#D4AF37] transition-colors">{tr('Kolory')}</a>
+            <a href="#opcje" className="text-white/60 hover:text-[#D4AF37] transition-colors">{tr('Opcje')}</a>
+            <a href="#budowa" className="text-white/60 hover:text-[#D4AF37] transition-colors">{tr('Budowa')}</a>
+            <a href="#opinie" className="text-white/60 hover:text-[#D4AF37] transition-colors">{tr('Opinie')}</a>
             <a href="#balie-faq" className="text-white/60 hover:text-[#D4AF37] transition-colors">FAQ</a>
-            <a href="#kontakt-balie" className="text-white/60 hover:text-[#D4AF37] transition-colors">Kontakt</a>
+            <a href="#kontakt-balie" className="text-white/60 hover:text-[#D4AF37] transition-colors">{tr('Kontakt')}</a>
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher variant="dark" />
@@ -152,7 +155,7 @@ export const BalieLandingPage = () => {
           </div>
           <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-white/20 text-xs">&copy; 2025 WM-Balia. Wszystkie prawa zastrzeżone.</p>
-            <button onClick={() => navigate('/')} className="text-[#D4AF37] text-xs hover:underline">Powrót na stronę główną WM Group</button>
+            <button onClick={() => navigate('/')} className="text-[#D4AF37] text-xs hover:underline">{tr('Powrót na stronę główną WM Group')}</button>
           </div>
         </div>
       </footer>

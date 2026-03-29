@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Phone, ArrowRight } from 'lucide-react';
+import { useAutoTranslate } from '../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const StepCard = ({ step, index, total, dark = false, accent = '#C6A87C' }) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-30px' });
+  const { tr } = useAutoTranslate();
 
   return (
     <motion.div
@@ -34,10 +36,10 @@ const StepCard = ({ step, index, total, dark = false, accent = '#C6A87C' }) => {
 
       {/* Content */}
       <h3 className={`font-semibold text-sm sm:text-base mb-2 leading-snug ${dark ? 'text-white' : 'text-[#1A1A1A]'}`}>
-        {step.title}
+        {tr(step.title)}
       </h3>
       <p className={`text-xs sm:text-sm leading-relaxed max-w-[220px] ${dark ? 'text-white/40' : 'text-[#8C8C8C]'}`}>
-        {step.desc}
+        {tr(step.desc)}
       </p>
     </motion.div>
   );
@@ -48,6 +50,7 @@ export const OrderProcess = ({ type = 'sauna' }) => {
   const headerRef = useRef(null);
   const headerInView = useInView(headerRef, { once: true, margin: '-40px' });
   const dark = type === 'balia';
+  const { tr } = useAutoTranslate();
 
   const endpoint = type === 'balia' ? 'balia-order-process' : 'order-process';
 
@@ -72,12 +75,12 @@ export const OrderProcess = ({ type = 'sauna' }) => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center mb-6">
-          <p className={`text-xs sm:text-sm tracking-widest uppercase mb-2 font-semibold`} style={{ color: accent }}>Proces zamówienia</p>
+          <p className={`text-xs sm:text-sm tracking-widest uppercase mb-2 font-semibold`} style={{ color: accent }}>{tr('Proces zamówienia')}</p>
           <h2 className={`text-2xl sm:text-3xl font-bold leading-tight mb-2 ${dark ? 'text-white' : 'text-[#1A1A1A]'}`}>
-            {data.title}
+            {tr(data.title)}
           </h2>
           {data.subtitle && (
-            <p className={`text-sm max-w-2xl mx-auto ${dark ? 'text-white/40' : 'text-[#8C8C8C]'}`}>{data.subtitle}</p>
+            <p className={`text-sm max-w-2xl mx-auto ${dark ? 'text-white/40' : 'text-[#8C8C8C]'}`}>{tr(data.subtitle)}</p>
           )}
         </div>
 
@@ -106,9 +109,9 @@ export const OrderProcess = ({ type = 'sauna' }) => {
             data-testid={`order-process-cta-${type}`}
           >
             <Phone size={18} />
-            Zadzwoń i zamów: +48 732 099 201
+            {tr('Zadzwoń i zamów')}: +48 732 099 201
           </a>
-          <p className={`text-xs mt-3 ${dark ? 'text-white/30' : 'text-[#8C8C8C]'}`}>Lub wypełnij formularz kontaktowy poniżej</p>
+          <p className={`text-xs mt-3 ${dark ? 'text-white/30' : 'text-[#8C8C8C]'}`}>{tr('Lub wypełnij formularz kontaktowy poniżej')}</p>
         </motion.div>
       </div>
     </section>

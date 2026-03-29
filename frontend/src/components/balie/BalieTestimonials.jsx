@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import { useAutoTranslate } from '../../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -7,6 +8,7 @@ export const BalieTestimonials = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [idx, setIdx] = useState(0);
   const timerRef = useRef(null);
+  const { tr } = useAutoTranslate();
 
   useEffect(() => {
     fetch(`${API}/api/balia/testimonials`).then(r => r.json()).then(setTestimonials).catch(() => {});
@@ -29,7 +31,7 @@ export const BalieTestimonials = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            Co Mówią Nasi <span className="text-[#D4AF37]">Klienci</span>
+            {tr('Co Mówią Nasi')} <span className="text-[#D4AF37]">{tr('Klienci')}</span>
           </h2>
         </div>
 
@@ -39,7 +41,7 @@ export const BalieTestimonials = () => {
             <div className="flex items-center gap-1 mb-4">
               {[...Array(5)].map((_, i) => <Star key={i} size={16} className={i < t.rating ? 'fill-[#D4AF37] text-[#D4AF37]' : 'text-white/10'} />)}
             </div>
-            <p className="text-white/80 text-lg leading-relaxed mb-6 italic">"{t.text}"</p>
+            <p className="text-white/80 text-lg leading-relaxed mb-6 italic">"{tr(t.text)}"</p>
             <div className="flex items-center gap-3">
               {t.author_image ? (
                 <img src={t.author_image} alt={t.author_name} className="w-10 h-10 rounded-full object-cover" />

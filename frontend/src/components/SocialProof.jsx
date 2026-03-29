@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 
+import { useAutoTranslate } from '../context/AutoTranslateContext';
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AnimatedCounter = ({ value }) => {
@@ -50,6 +52,7 @@ const AnimatedCounter = ({ value }) => {
 
 export const SocialProof = () => {
   const { language } = useLanguage();
+  const { tr } = useAutoTranslate();
   const [settings, setSettings] = useState(null);
 
   useEffect(() => {
@@ -80,7 +83,7 @@ export const SocialProof = () => {
                 <AnimatedCounter value={item.value} />
               </div>
               <div className="text-sm md:text-base text-white/70">
-                {item[`label_${lang}`] || item.label_pl}
+                {item[`label_${lang}`] || tr(item.label_pl)}
               </div>
             </motion.div>
           ))}

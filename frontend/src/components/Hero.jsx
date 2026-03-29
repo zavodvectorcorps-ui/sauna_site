@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Check, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAutoTranslate } from '../context/AutoTranslateContext';
 import { useSettings } from '../context/SettingsContext';
 import { CatalogFormGate } from './CatalogFormGate';
 import { resolveMediaUrl } from '../lib/utils';
@@ -10,6 +11,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const Hero = () => {
   const { language, t } = useLanguage();
+  const { tr } = useAutoTranslate();
   const { heroSettings } = useSettings();
   const [hasCatalog, setHasCatalog] = useState(false);
   const videoRef = useRef(null);
@@ -27,9 +29,9 @@ export const Hero = () => {
   };
 
   const features = [
-    'Polska produkcja',
-    'Gotowe w 5-10 dni',
-    'Gwarancja 24 miesiące',
+    tr('Polska produkcja'),
+    tr('Gotowe w 5-10 dni'),
+    tr('Gwarancja 24 miesiące'),
   ];
 
   const getTitle = () => {

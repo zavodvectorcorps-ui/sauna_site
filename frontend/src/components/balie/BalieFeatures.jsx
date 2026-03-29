@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ShieldCheck, Hammer, Leaf, Truck, Wrench, Award, Flag, Waves, Wind, Lightbulb, ThermometerSun } from 'lucide-react';
+import { useAutoTranslate } from '../../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -29,6 +30,7 @@ export const BalieFeatures = () => {
   const [features, setFeatures] = useState(defaultFeatures);
   const [options, setOptions] = useState(defaultOptions);
   const [badges, setBadges] = useState(defaultBadges);
+  const { tr } = useAutoTranslate();
 
   useEffect(() => {
     fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
@@ -49,10 +51,10 @@ export const BalieFeatures = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            Dlaczego <span className="text-[#D4AF37]">WM-Balia?</span>
+            {tr('Dlaczego')} <span className="text-[#D4AF37]">WM-Balia?</span>
           </h2>
           <p className="text-white/50 text-sm max-w-xl mx-auto">
-            Łączymy tradycyjne rzemiosło z nowoczesnym designem, tworząc produkty najwyższej jakości.
+            {tr('Łączymy tradycyjne rzemiosło z nowoczesnym designem, tworząc produkty najwyższej jakości.')}
           </p>
         </div>
 
@@ -63,8 +65,8 @@ export const BalieFeatures = () => {
               return (
                 <div key={i} className="bg-[#1A1E27] border border-white/5 p-6 hover:border-[#D4AF37]/30 transition-colors">
                   <Icon size={28} className="text-[#D4AF37] mb-4" />
-                  <h3 className="text-white font-semibold mb-2">{f.title}</h3>
-                  <p className="text-white/40 text-sm leading-relaxed">{f.desc}</p>
+                  <h3 className="text-white font-semibold mb-2">{tr(f.title)}</h3>
+                  <p className="text-white/40 text-sm leading-relaxed">{tr(f.desc)}</p>
                 </div>
               );
             })}
@@ -73,15 +75,15 @@ export const BalieFeatures = () => {
 
         {activeOptions.length > 0 && (
           <div className="mb-10">
-            <h3 className="text-center text-white/60 text-sm font-medium tracking-wider uppercase mb-6">Dostepne opcje dodatkowe</h3>
+            <h3 className="text-center text-white/60 text-sm font-medium tracking-wider uppercase mb-6">{tr('Dostępne opcje dodatkowe')}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {activeOptions.map((o, i) => {
                 const Icon = iconMap[o.icon] || Waves;
                 return (
                   <div key={i} className="bg-[#1A1E27]/50 border border-white/5 p-4 text-center hover:border-[#D4AF37]/20 transition-colors">
                     <Icon size={24} className="text-[#D4AF37] mx-auto mb-2" />
-                    <h4 className="text-white font-medium text-sm mb-1">{o.title}</h4>
-                    <p className="text-white/30 text-xs">{o.desc}</p>
+                    <h4 className="text-white font-medium text-sm mb-1">{tr(o.title)}</h4>
+                    <p className="text-white/30 text-xs">{tr(o.desc)}</p>
                   </div>
                 );
               })}
@@ -96,7 +98,7 @@ export const BalieFeatures = () => {
               return (
                 <div key={i} className="flex items-center gap-3 bg-[#1A1E27]/50 border border-white/5 px-4 py-3">
                   <Icon size={18} className="text-[#D4AF37] flex-shrink-0" />
-                  <span className="text-white/70 text-sm">{b.title}</span>
+                  <span className="text-white/70 text-sm">{tr(b.title)}</span>
                 </div>
               );
             })}

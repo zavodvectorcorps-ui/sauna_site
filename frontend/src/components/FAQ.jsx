@@ -3,11 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../context/LanguageContext';
+import { useAutoTranslate } from '../context/AutoTranslateContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const FAQ = () => {
   const { language } = useLanguage();
+  const { tr } = useAutoTranslate();
   const [settings, setSettings] = useState(null);
   const [openId, setOpenId] = useState(null);
 
@@ -46,18 +48,18 @@ export const FAQ = () => {
         <div className="text-center mb-12">
           <div className="gold-line mx-auto mb-6" />
           <h2 className="section-title" data-testid="faq-title">
-            {settings[`title_${lang}`] || settings.title_pl}
+            {settings[`title_${lang}`] || tr(settings.title_pl)}
           </h2>
           <p className="section-subtitle mx-auto">
-            {settings[`subtitle_${lang}`] || settings.subtitle_pl}
+            {settings[`subtitle_${lang}`] || tr(settings.subtitle_pl)}
           </p>
         </div>
 
         <div className="max-w-3xl mx-auto space-y-3">
           {items.map((item) => {
             const isOpen = openId === item.id;
-            const question = item[`question_${lang}`] || item.question_pl;
-            const answer = item[`answer_${lang}`] || item.answer_pl;
+            const question = item[`question_${lang}`] || tr(item.question_pl);
+            const answer = item[`answer_${lang}`] || tr(item.answer_pl);
 
             return (
               <div

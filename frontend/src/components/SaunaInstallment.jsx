@@ -2,18 +2,20 @@ import { useState, useEffect } from 'react';
 import { CreditCard, Calendar, Percent, Truck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { resolveMediaUrl } from '../lib/utils';
+import { useAutoTranslate } from '../context/AutoTranslateContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-const defaultItems = [
-  { icon: Calendar, title: 'Od 4 do 20 miesięcy', desc: 'Elastyczny okres spłaty' },
-  { icon: Percent, title: '0% nadpłaty', desc: 'Bez ukrytych kosztów' },
-  { icon: CreditCard, title: 'Rata od 500 zl/mc', desc: 'Przystepna miesieczna rata' },
-  { icon: Truck, title: 'Darmowa dostawa', desc: 'Na terenie całej Polski' },
-];
-
 export const SaunaInstallment = ({ variant = 'full' }) => {
   const [logoUrl, setLogoUrl] = useState('');
+  const { tr } = useAutoTranslate();
+
+  const defaultItems = [
+    { icon: Calendar, title: tr('Od 4 do 20 miesięcy'), desc: tr('Elastyczny okres spłaty') },
+    { icon: Percent, title: tr('0% nadpłaty'), desc: tr('Bez ukrytych kosztów') },
+    { icon: CreditCard, title: tr('Rata od 500 zl/mc'), desc: tr('Przystępna miesięczna rata') },
+    { icon: Truck, title: tr('Darmowa dostawa'), desc: tr('Na terenie całej Polski') },
+  ];
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/settings/installment`)
@@ -30,9 +32,9 @@ export const SaunaInstallment = ({ variant = 'full' }) => {
           <div>
             <div className="flex items-center gap-2 mb-0.5">
               <CreditCard size={14} className="text-[#C6A87C]" />
-              <span className="text-[#C6A87C] text-sm font-semibold">Raty od 500 zl/mc</span>
+              <span className="text-[#C6A87C] text-sm font-semibold">{tr('Raty od 500 zl/mc')}</span>
             </div>
-            <p className="text-gray-500 text-xs">Od 4 do 20 miesięcy, 0% nadpłaty, darmowa dostawa</p>
+            <p className="text-gray-500 text-xs">{tr('Od 4 do 20 miesięcy, 0% nadpłaty, darmowa dostawa')}</p>
           </div>
         </div>
       </div>
@@ -54,9 +56,9 @@ export const SaunaInstallment = ({ variant = 'full' }) => {
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-[#2C2C2C] mb-2">
-            Komfort dostępny <span className="text-[#C6A87C]">od razu!</span>
+            {tr('Komfort dostępny')} <span className="text-[#C6A87C]">{tr('od razu!')}</span>
           </h2>
-          <p className="text-gray-500 text-sm">Kupuj na raty — wygodnie i bez dodatkowych kosztow</p>
+          <p className="text-gray-500 text-sm">{tr('Kupuj na raty — wygodnie i bez dodatkowych kosztów')}</p>
         </motion.div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {defaultItems.map((item, i) => (
@@ -76,7 +78,7 @@ export const SaunaInstallment = ({ variant = 'full' }) => {
         </div>
         <div className="text-center">
           <a href="#contact" className="inline-block px-8 py-3 bg-[#C6A87C] text-white font-semibold hover:bg-[#B09060] transition-colors" data-testid="sauna-installment-cta">
-            Zapytaj o raty
+            {tr('Zapytaj o raty')}
           </a>
         </div>
       </div>

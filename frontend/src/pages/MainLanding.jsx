@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Flame, Droplets, MapPin, ShieldCheck, Leaf, Heart, Phone, Mail, Send, CheckCircle } from 'lucide-react';
 import { resolveMediaUrl } from '../lib/utils';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { useAutoTranslate } from '../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -155,6 +156,7 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
 
 const MainLanding = () => {
   const navigate = useNavigate();
+  const { tr } = useAutoTranslate();
   const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -211,10 +213,10 @@ const MainLanding = () => {
           <LanguageSwitcher variant="dark" />
         </div>
         <nav className="flex justify-center gap-6">
-          <button onClick={() => navigate('/sauny')} className="text-white/50 hover:text-[#C6A87C] text-sm transition-colors">Sauny</button>
-          <button onClick={() => navigate('/balie')} className="text-white/50 hover:text-[#D4AF37] text-sm transition-colors">Balie</button>
+          <button onClick={() => navigate('/sauny')} className="text-white/50 hover:text-[#C6A87C] text-sm transition-colors">{tr('Sauny')}</button>
+          <button onClick={() => navigate('/balie')} className="text-white/50 hover:text-[#D4AF37] text-sm transition-colors">{tr('Balie')}</button>
           <button onClick={() => navigate('/blog')} className="text-white/50 hover:text-white text-sm transition-colors">Blog</button>
-          <button onClick={() => navigate('/b2b')} className="text-[#34D399] hover:text-[#6EE7B7] text-sm font-semibold transition-colors" data-testid="nav-b2b">B2B <span className="text-[#34D399]/60">(Dla hoteli i pensjonatów)</span></button>
+          <button onClick={() => navigate('/b2b')} className="text-[#34D399] hover:text-[#6EE7B7] text-sm font-semibold transition-colors" data-testid="nav-b2b">B2B <span className="text-[#34D399]/60">({tr('Dla hoteli i pensjonatów')})</span></button>
         </nav>
       </header>
 
@@ -225,16 +227,16 @@ const MainLanding = () => {
             <>
               <ProductCard
                 img={saunaImg} imgPos={saunaPos} video={saunaVideo} accentColor="#C6A87C"
-                icon={Flame} brand="WM-Sauna" title="Sauny ogrodowe"
-                desc="Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5-10 dni."
-                cta="Zobacz sauny" onClick={() => navigate('/sauny')}
+                icon={Flame} brand="WM-Sauna" title={tr("Sauny ogrodowe")}
+                desc={tr("Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5-10 dni.")}
+                cta={tr("Zobacz sauny")} onClick={() => navigate('/sauny')}
                 direction="left" testId="card-sauny"
               />
               <ProductCard
                 img={baliaImg} imgPos={baliaPos} video={baliaVideo} accentColor="#D4AF37"
-                icon={Droplets} brand="WM-Balia" title="Balie i jacuzzi"
-                desc="Ręcznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyższa jakość."
-                cta="Zobacz balie" onClick={() => navigate('/balie')}
+                icon={Droplets} brand="WM-Balia" title={tr("Balie i jacuzzi")}
+                desc={tr("Ręcznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyższa jakość.")}
+                cta={tr("Zobacz balie")} onClick={() => navigate('/balie')}
                 direction="right" testId="card-balie"
               />
             </>
@@ -252,20 +254,20 @@ const MainLanding = () => {
                 <span className="text-[#C6A87C] text-xs font-semibold tracking-[0.15em] uppercase">Warszawa, Polska</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 leading-tight">
-                Polski producent saun i balii<br />
-                <span className="text-[#C6A87C]">od 2015 roku</span>
+                {tr('Polski producent saun i balii')}<br />
+                <span className="text-[#C6A87C]">{tr('od 2015 roku')}</span>
               </h2>
               <div className="space-y-4 text-white/50 text-sm leading-relaxed">
-                <p>WM Group to polska firma z siedzibą w Warszawie, specjalizująca się w produkcji premium saun ogrodowych i drewnianych balii. Tworzymy produkty, które zmieniają Twój ogród w prywatną strefę relaksu i zdrowia.</p>
-                <p>Każdy nasz produkt powstaje z najlepszych, naturalnych materiałów — skandynawskiego drewna iglastego klasy A+, suszonego komorowo. Dbamy o każdy detal, bo wierzymy, że Twój odpoczynek zasługuje na najwyższą jakość.</p>
-                <p>Wszystkie nasze sauny i balie spełniają rygorystyczne normy bezpasieczeństwa i komfortu. Przed wysyłką każdy produkt przechodzi kontrolę w ponad 30 punktach — dostajesz gotowe, w pełni zmontowane rozwiązanie, gotowe do użycia od pierwszego dnia.</p>
+                <p>{tr('WM Group to polska firma z siedzibą w Warszawie, specjalizująca się w produkcji premium saun ogrodowych i drewnianych balii. Tworzymy produkty, które zmieniają Twój ogród w prywatną strefę relaksu i zdrowia.')}</p>
+                <p>{tr('Każdy nasz produkt powstaje z najlepszych, naturalnych materiałów — skandynawskiego drewna iglastego klasy A+, suszonego komorowo. Dbamy o każdy detal, bo wierzymy, że Twój odpoczynek zasługuje na najwyższą jakość.')}</p>
+                <p>{tr('Wszystkie nasze sauny i balie spełniają rygorystyczne normy bezpasieczeństwa i komfortu. Przed wysyłką każdy produkt przechodzi kontrolę w ponad 30 punktach — dostajesz gotowe, w pełni zmontowane rozwiązanie, gotowe do użycia od pierwszego dnia.')}</p>
               </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }} className="space-y-5 md:pt-12">
               {[
-                { icon: Heart, title: 'Z troską o zdrowie i odpoczynek', desc: 'Sauna i balia to nie tylko luksus — to zdrowie, regeneracja i chwile spokoju dla całej rodziny.' },
-                { icon: Leaf, title: 'Naturalne, ekologiczne materiały', desc: 'Używamy wyłącznie drewna z certyfikowanych, zrównoważonych źródeł. Bez plastiku, bez kompromisów.' },
-                { icon: ShieldCheck, title: 'Bezpieczeństwo i komfort klienta', desc: 'Każdy produkt spełnia normy bezpieczeństwa. 24 miesiące gwarancji i dedykowany serwis posprzedażowy.' },
+                { icon: Heart, title: tr('Z troską o zdrowie i odpoczynek'), desc: tr('Sauna i balia to nie tylko luksus — to zdrowie, regeneracja i chwile spokoju dla całej rodziny.') },
+                { icon: Leaf, title: tr('Naturalne, ekologiczne materiały'), desc: tr('Używamy wyłącznie drewna z certyfikowanych, zrównoważonych źródeł. Bez plastiku, bez kompromisów.') },
+                { icon: ShieldCheck, title: tr('Bezpieczeństwo i komfort klienta'), desc: tr('Każdy produkt spełnia normy bezpieczeństwa. 24 miesiące gwarancji i dedykowany serwis posprzedażowy.') },
               ].map((v, i) => (
                 <div key={i} className="flex gap-4 p-5 border border-white/5 hover:border-[#C6A87C]/20 transition-colors">
                   <div className="w-10 h-10 flex items-center justify-center border border-[#C6A87C]/30 flex-shrink-0"><v.icon size={20} className="text-[#C6A87C]" /></div>
@@ -281,32 +283,32 @@ const MainLanding = () => {
       <section className="py-20 border-t border-white/5" data-testid="contact-section">
         <div className="max-w-5xl mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">Masz pytania? <span className="text-[#C6A87C]">Napisz do nas</span></h2>
-            <p className="text-white/40 text-sm max-w-md mx-auto">Nasz doradca odpowie na każde pytanie dotyczące saun, balii lub konfiguracji zamówienia.</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">{tr('Masz pytania?')} <span className="text-[#C6A87C]">{tr('Napisz do nas')}</span></h2>
+            <p className="text-white/40 text-sm max-w-md mx-auto">{tr('Nasz doradca odpowie na każde pytanie dotyczące saun, balii lub konfiguracji zamówienia.')}</p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
             <div className="md:col-span-2 space-y-6">
-              <div className="flex items-start gap-4"><Phone size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">Telefon</div><a href="tel:+48732099201" className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">+48 732 099 201</a></div></div>
+              <div className="flex items-start gap-4"><Phone size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">{tr('Telefon')}</div><a href="tel:+48732099201" className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">+48 732 099 201</a></div></div>
               <div className="flex items-start gap-4"><Mail size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">Email</div><a href="mailto:kontakt@wm-sauna.pl" className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">kontakt@wm-sauna.pl</a></div></div>
-              <div className="flex items-start gap-4"><MapPin size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">Adres</div><p className="text-white/50 text-sm">Warszawa, Polska</p></div></div>
+              <div className="flex items-start gap-4"><MapPin size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">{tr('Adres')}</div><p className="text-white/50 text-sm">{tr('Warszawa, Polska')}</p></div></div>
             </div>
             <div className="md:col-span-3">
               {submitted ? (
                 <div className="text-center py-10 border border-white/5">
                   <CheckCircle size={40} className="mx-auto text-green-400 mb-3" />
-                  <h3 className="text-white text-lg font-semibold mb-2">Dziękujemy!</h3>
-                  <p className="text-white/50 text-sm">Nasz doradca skontaktuje się z Tobą wkrótce.</p>
+                  <h3 className="text-white text-lg font-semibold mb-2">{tr('Dziękujemy!')}</h3>
+                  <p className="text-white/50 text-sm">{tr('Nasz doradca skontaktuje się z Tobą wkrótce.')}</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <input type="text" placeholder="Imię *" required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" data-testid="landing-contact-name" />
-                    <input type="tel" placeholder="Telefon *" required value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" data-testid="landing-contact-phone" />
+                    <input type="text" placeholder={tr("Imię *")} required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" data-testid="landing-contact-name" />
+                    <input type="tel" placeholder={tr("Telefon *")} required value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" data-testid="landing-contact-phone" />
                   </div>
                   <input type="email" placeholder="Email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" />
-                  <textarea placeholder="Twoja wiadomość" rows={4} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25 resize-none" />
+                  <textarea placeholder={tr("Twoja wiadomość")} rows={4} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25 resize-none" />
                   <button type="submit" disabled={submitting} className="w-full py-3 bg-[#C6A87C] text-white font-semibold hover:bg-[#B09060] transition-colors disabled:opacity-50 flex items-center justify-center gap-2" data-testid="landing-contact-submit">
-                    <Send size={16} /> {submitting ? 'Wysyłanie...' : 'Wyślij wiadomość'}
+                    <Send size={16} /> {submitting ? tr('Wysyłanie...') : tr('Wyślij wiadomość')}
                   </button>
                 </form>
               )}
@@ -317,7 +319,7 @@ const MainLanding = () => {
 
       {/* Footer */}
       <footer className="py-8 text-center border-t border-white/5">
-        <p className="text-white/20 text-xs">© 2025 WM Group. Polski producent saun i balii premium. Warszawa.</p>
+        <p className="text-white/20 text-xs">{tr('© 2025 WM Group. Polski producent saun i balii premium. Warszawa.')}</p>
       </footer>
     </div>
   );

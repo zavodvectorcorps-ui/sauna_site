@@ -3,6 +3,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider } from "./context/LanguageContext";
+import { AutoTranslateProvider } from "./context/AutoTranslateContext";
 import { SettingsProvider, useSettings } from "./context/SettingsContext";
 import BlogPage from "./pages/BlogPage";
 import BlogArticlePage from "./pages/BlogArticlePage";
@@ -142,6 +143,7 @@ function App() {
   return (
     <HelmetProvider>
       <LanguageProvider>
+        <AutoTranslateProvider>
         <SettingsProvider>
           <BrowserRouter>
             <Routes>
@@ -165,6 +167,7 @@ function App() {
             <WhatsAppButton />
           </BrowserRouter>
         </SettingsProvider>
+        </AutoTranslateProvider>
       </LanguageProvider>
     </HelmetProvider>
   );

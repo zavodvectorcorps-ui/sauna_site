@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Award, Users, MapPin } from 'lucide-react';
+import { useAutoTranslate } from '../../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 const STAT_ICONS = { Users, Award, Heart, MapPin };
 
 export const BalieAbout = () => {
   const [data, setData] = useState(null);
+  const { tr } = useAutoTranslate();
 
   useEffect(() => {
     fetch(`${API}/api/settings/balie-about`)
@@ -24,18 +26,14 @@ export const BalieAbout = () => {
           <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
             <div className="flex items-center gap-2 mb-4">
               <Heart size={16} className="text-[#D4AF37]" />
-              <span className="text-[#D4AF37] text-xs font-semibold tracking-[0.15em] uppercase">O nas</span>
+              <span className="text-[#D4AF37] text-xs font-semibold tracking-[0.15em] uppercase">{tr('O nas')}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 leading-tight">
-              {data.title?.includes('—') ? (
-                <>{data.title.split('—')[0]}— <span className="text-[#D4AF37]">{data.title.split('—')[1]}</span></>
-              ) : (
-                <span className="text-[#D4AF37]">{data.title}</span>
-              )}
+              <span className="text-[#D4AF37]">{tr(data.title)}</span>
             </h2>
             <div className="space-y-4 text-white/50 text-sm leading-relaxed">
               {data.description?.split('\n').filter(Boolean).map((p, i) => (
-                <p key={i}>{p}</p>
+                <p key={i}>{tr(p)}</p>
               ))}
             </div>
           </motion.div>
@@ -49,7 +47,7 @@ export const BalieAbout = () => {
                 <div key={i} className="bg-[#1A1E27] border border-white/5 p-5 text-center hover:border-[#D4AF37]/20 transition-colors">
                   <Icon size={24} className="text-[#D4AF37] mx-auto mb-3" />
                   <div className="text-xl font-bold text-white mb-1">{s.value}</div>
-                  <div className="text-white/40 text-xs">{s.label}</div>
+                  <div className="text-white/40 text-xs">{tr(s.label)}</div>
                 </div>
               );
             })}

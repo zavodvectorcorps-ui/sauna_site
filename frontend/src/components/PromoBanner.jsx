@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calculator, Percent } from 'lucide-react';
+import { useAutoTranslate } from '../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
 export const PromoBanner = () => {
   const [data, setData] = useState(null);
+  const { tr } = useAutoTranslate();
 
   useEffect(() => {
     fetch(`${API}/api/settings/promo-banner`)
@@ -33,14 +35,14 @@ export const PromoBanner = () => {
         >
           <div className="inline-flex items-center gap-2 bg-[#C6A87C]/15 border border-[#C6A87C]/30 px-4 py-1.5 mb-6">
             <Percent size={14} className="text-[#C6A87C]" />
-            <span className="text-[#C6A87C] text-xs font-semibold tracking-wider uppercase">{data.badge}</span>
+            <span className="text-[#C6A87C] text-xs font-semibold tracking-wider uppercase">{tr(data.badge)}</span>
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">
-            {data.title_line1}<br />
-            <span className="text-[#C6A87C]">{data.title_line2}</span>
+            {tr(data.title_line1)}<br />
+            <span className="text-[#C6A87C]">{tr(data.title_line2)}</span>
           </h2>
           <p className="text-white/60 mb-8 max-w-lg mx-auto text-sm sm:text-base">
-            {data.description}
+            {tr(data.description)}
           </p>
           <button
             onClick={scrollToCalc}
@@ -48,7 +50,7 @@ export const PromoBanner = () => {
             data-testid="promo-banner-cta"
           >
             <Calculator size={20} />
-            {data.button_text}
+            {tr(data.button_text)}
           </button>
         </motion.div>
       </div>

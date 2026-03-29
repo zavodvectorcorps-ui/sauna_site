@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAutoScroll } from '../hooks/useAutoScroll';
+import { useAutoTranslate } from '../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -16,6 +17,7 @@ const VideoCard = ({ item, index, isMobile }) => {
   const inView = useInView(ref, { once: true, margin: '-40px' });
   const [playing, setPlaying] = useState(false);
   const videoId = extractYouTubeId(item.youtube_url);
+  const { tr } = useAutoTranslate();
 
   if (!videoId) return null;
 
@@ -60,8 +62,8 @@ const VideoCard = ({ item, index, isMobile }) => {
       </div>
       {(item.title || item.description) && (
         <div className="pt-4">
-          {item.title && <h3 className="text-[#1A1A1A] font-semibold text-sm sm:text-base mb-1">{item.title}</h3>}
-          {item.description && <p className="text-[#8C8C8C] text-xs sm:text-sm leading-relaxed">{item.description}</p>}
+          {item.title && <h3 className="text-[#1A1A1A] font-semibold text-sm sm:text-base mb-1">{tr(item.title)}</h3>}
+          {item.description && <p className="text-[#8C8C8C] text-xs sm:text-sm leading-relaxed">{tr(item.description)}</p>}
         </div>
       )}
     </motion.div>
@@ -70,6 +72,7 @@ const VideoCard = ({ item, index, isMobile }) => {
 
 export const SaunaVideoReviews = () => {
   const [data, setData] = useState(null);
+  const { tr } = useAutoTranslate();
 
   useEffect(() => {
     fetch(`${API}/api/settings/video-reviews`)
@@ -87,12 +90,12 @@ export const SaunaVideoReviews = () => {
     <section className="py-6 sm:py-8 bg-white overflow-hidden" data-testid="sauna-video-reviews">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-5">
-          <p className="text-[#C6A87C] text-xs sm:text-sm tracking-widest uppercase mb-2">Wideo</p>
+          <p className="text-[#C6A87C] text-xs sm:text-sm tracking-widest uppercase mb-2">{tr('Wideo')}</p>
           <h2 className="text-[#1A1A1A] text-2xl sm:text-3xl font-bold leading-tight mb-2">
-            {data.title}
+            {tr(data.title)}
           </h2>
           {data.subtitle && (
-            <p className="text-[#8C8C8C] text-sm max-w-2xl mx-auto">{data.subtitle}</p>
+            <p className="text-[#8C8C8C] text-sm max-w-2xl mx-auto">{tr(data.subtitle)}</p>
           )}
         </div>
 

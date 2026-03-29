@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Truck, TreePine, ShieldCheck, Headphones, Flame, Droplets, Wrench, Clock, Award, Star, Heart, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAutoScroll } from '../hooks/useAutoScroll';
+import { useAutoTranslate } from '../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -8,6 +9,7 @@ const ICONS = { Truck, TreePine, ShieldCheck, Headphones, Flame, Droplets, Wrenc
 
 export const PromoFeatures = () => {
   const [features, setFeatures] = useState([]);
+  const { tr } = useAutoTranslate();
 
   useEffect(() => {
     fetch(`${API}/api/settings/promo-features`)
@@ -40,8 +42,8 @@ export const PromoFeatures = () => {
                   <div className="inline-flex items-center justify-center w-12 h-12 bg-[#C6A87C]/10 mb-3">
                     <Icon size={22} className="text-[#C6A87C]" />
                   </div>
-                  <h3 className="text-[#1A1A1A] font-semibold text-sm mb-1.5">{f.title_pl}</h3>
-                  <p className="text-[#8C8C8C] text-xs leading-relaxed">{f.desc_pl}</p>
+                  <h3 className="text-[#1A1A1A] font-semibold text-sm mb-1.5">{tr(f.title_pl)}</h3>
+                  <p className="text-[#8C8C8C] text-xs leading-relaxed">{tr(f.desc_pl)}</p>
                 </div>
               );
             })}
@@ -70,8 +72,8 @@ export const PromoFeatures = () => {
                 <div className="inline-flex items-center justify-center w-14 h-14 bg-[#C6A87C]/10 mb-4">
                   <Icon size={24} className="text-[#C6A87C]" />
                 </div>
-                <h3 className="text-[#1A1A1A] font-semibold text-sm mb-2">{f.title_pl}</h3>
-                <p className="text-[#8C8C8C] text-xs leading-relaxed">{f.desc_pl}</p>
+                <h3 className="text-[#1A1A1A] font-semibold text-sm mb-2">{tr(f.title_pl)}</h3>
+                <p className="text-[#8C8C8C] text-xs leading-relaxed">{tr(f.desc_pl)}</p>
               </div>
             );
           })}

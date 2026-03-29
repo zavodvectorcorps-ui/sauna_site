@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { useAutoTranslate } from '../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const AdvantageItem = ({ item, index, isRight }) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-30px' });
+  const { tr } = useAutoTranslate();
 
   return (
     <motion.div
@@ -20,11 +22,11 @@ const AdvantageItem = ({ item, index, isRight }) => {
         <span className="text-white font-bold text-sm">{item.num}</span>
       </div>
       <div className="flex-1 min-w-0">
-        <h4 className="text-[#1A1A1A] font-semibold text-sm leading-snug mb-1">{item.title}</h4>
-        <p className="text-[#8C8C8C] text-xs leading-relaxed">{item.desc}</p>
+        <h4 className="text-[#1A1A1A] font-semibold text-sm leading-snug mb-1">{tr(item.title)}</h4>
+        <p className="text-[#8C8C8C] text-xs leading-relaxed">{tr(item.desc)}</p>
         {item.badge && (
           <span className="inline-block mt-2 px-3 py-1 bg-[#C6A87C]/10 text-[#C6A87C] text-xs font-semibold rounded-full">
-            {item.badge}
+            {tr(item.badge)}
           </span>
         )}
       </div>
@@ -53,6 +55,7 @@ export const SaunaAdvantages = () => {
   const headerRef = useRef(null);
   const headerInView = useInView(headerRef, { once: true, margin: '-40px' });
   const [data, setData] = useState(null);
+  const { tr } = useAutoTranslate();
 
   useEffect(() => {
     fetch(`${API}/api/settings/sauna-advantages`)
@@ -73,14 +76,14 @@ export const SaunaAdvantages = () => {
         {/* Header */}
         <div className="text-center mb-4 sm:mb-6">
           {data.subtitle && (
-            <p className="text-[#8C8C8C] text-sm mb-3 tracking-wide">{data.subtitle}</p>
+            <p className="text-[#8C8C8C] text-sm mb-3 tracking-wide">{tr(data.subtitle)}</p>
           )}
           <h2 className="text-[#1A1A1A] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-4 max-w-3xl mx-auto">
-            {data.title}
+            {tr(data.title)}
           </h2>
           {data.description && (
             <p className="text-[#8C8C8C] text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-              {data.description}
+              {tr(data.description)}
             </p>
           )}
         </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CreditCard, Calendar, Percent, Truck } from 'lucide-react';
 import { resolveMediaUrl } from '../../lib/utils';
+import { useAutoTranslate } from '../../context/AutoTranslateContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const ICONS = { CreditCard, Calendar, Percent, Truck };
@@ -15,6 +16,7 @@ const DEFAULT_ITEMS = [
 export const BalieInstallment = ({ variant = 'full' }) => {
   const [logoUrl, setLogoUrl] = useState('');
   const [data, setData] = useState(null);
+  const { tr } = useAutoTranslate();
 
   useEffect(() => {
     Promise.all([
@@ -59,7 +61,7 @@ export const BalieInstallment = ({ variant = 'full' }) => {
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
             {title.includes(' ') ? <>{title.split(' ').slice(0, -1).join(' ')} <span className="text-[#D4AF37]">{title.split(' ').slice(-1)}</span></> : <span className="text-[#D4AF37]">{title}</span>}
           </h2>
-          <p className="text-white/40 text-sm">{subtitle}</p>
+          <p className="text-white/40 text-sm">{tr(subtitle)}</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {items.map((item, i) => {
@@ -67,15 +69,15 @@ export const BalieInstallment = ({ variant = 'full' }) => {
             return (
               <div key={i} className="bg-[#1A1E27] border border-[#D4AF37]/20 p-4 text-center hover:border-[#D4AF37]/50 transition-colors">
                 <Icon size={24} className="text-[#D4AF37] mx-auto mb-2" />
-                <h3 className="text-white font-semibold text-sm mb-1">{item.title}</h3>
-                <p className="text-white/30 text-xs">{item.desc}</p>
+                <h3 className="text-white font-semibold text-sm mb-1">{tr(item.title)}</h3>
+                <p className="text-white/30 text-xs">{tr(item.desc)}</p>
               </div>
             );
           })}
         </div>
         <div className="text-center">
           <a href="#kontakt-balie" className="inline-block px-8 py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors" data-testid="balie-installment-cta">
-            Zapytaj o raty
+            {tr('Zapytaj o raty')}
           </a>
         </div>
       </div>

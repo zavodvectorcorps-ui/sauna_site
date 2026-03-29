@@ -1,0 +1,78 @@
+{
+  "summary": "Iteration 21: Tested multilingual auto-translation feature (PL/EN/DE/CS). Fixed critical bug in BalieLandingPage where tr() function was not destructured from useAutoTranslate hook. Backend /api/translate endpoint works correctly with GPT-4.1-nano and MongoDB caching. All language switchers work on /sauny, /, /balie, /blog pages.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration21_translation.py",
+    "/app/test_reports/pytest/pytest_iteration21.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/frontend/src/components/balie/BalieLandingPage.jsx"
+  ],
+  "success_rate": {
+    "backend": "100% (9/9 tests passed)",
+    "frontend": "100%"
+  },
+  "test_credentials": "Admin: username=admin, password=220066, URL=/admin",
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Multilingual auto-translation feature fully working. Fixed BalieLandingPage.jsx bug where tr() was not destructured from useAutoTranslate(). Translation API uses GPT-4.1-nano with MongoDB caching in 'translations_cache' collection. Frontend uses localStorage caching. Language switcher implementations: 1) /sauny uses inline PL|EN|DE|CS bar with data-testid='lang-btn-{code}'. 2) /, /blog, /b2b, /balie use dropdown LanguageSwitcher with data-testid='lang-switcher-btn' and 'lang-option-{code}'. Static UI text uses dictionary in LanguageContext.js. Dynamic DB content uses tr() from AutoTranslateContext.js which batches texts and sends to /api/translate.",
+  "features_tested": {
+    "translate_api_endpoint": {
+      "status": "PASS",
+      "details": "POST /api/translate works for en/de/cs languages, returns translations object, handles empty texts, rejects unsupported languages"
+    },
+    "translation_caching": {
+      "status": "PASS",
+      "details": "MongoDB caching works - same request returns cached results"
+    },
+    "brand_name_preservation": {
+      "status": "PASS",
+      "details": "WM-Sauna brand name preserved in translations"
+    },
+    "language_switcher_sauny": {
+      "status": "PASS",
+      "details": "Inline PL|EN|DE|CS bar works, nav translates correctly for all 4 languages"
+    },
+    "language_switcher_main_landing": {
+      "status": "PASS",
+      "details": "Dropdown LanguageSwitcher works, card titles translate via auto-translate"
+    },
+    "language_switcher_balie": {
+      "status": "PASS",
+      "details": "Fixed bug - tr() now destructured from useAutoTranslate(), page loads without error"
+    },
+    "language_switcher_blog": {
+      "status": "PASS",
+      "details": "Dropdown LanguageSwitcher works via GlobalHeader"
+    },
+    "hero_badges_translation": {
+      "status": "PASS",
+      "details": "Hero badges on /sauny translate: 'Polish production', 'Ready in 5-10 days', 'Warranty 24 months'"
+    },
+    "footer_translation": {
+      "status": "PASS",
+      "details": "Footer on /sauny translates: 'Quick Links', 'Legal Information', 'Privacy Policy', etc."
+    },
+    "default_language_polish": {
+      "status": "PASS",
+      "details": "Default language is PL when localStorage is cleared"
+    }
+  },
+  "bug_fixed": {
+    "file": "/app/frontend/src/components/balie/BalieLandingPage.jsx",
+    "issue": "ReferenceError: tr is not defined",
+    "root_cause": "useAutoTranslate hook was imported but tr() function was never destructured from it",
+    "fix": "Added 'const { tr } = useAutoTranslate();' inside BalieLandingPage component"
+  }
+}

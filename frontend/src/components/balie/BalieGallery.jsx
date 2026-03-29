@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Loader2, Image } from 'lucide-react';
+import { useAutoTranslate } from '../../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -7,6 +8,7 @@ export const BalieGallery = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState(null);
+  const { tr } = useAutoTranslate();
 
   useEffect(() => {
     fetch(`${API}/api/balia/gallery`).then(r => r.json()).then(data => {
@@ -35,9 +37,9 @@ export const BalieGallery = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            <span className="text-[#D4AF37]">Galeria</span> Realizacji
+            <span className="text-[#D4AF37]">{tr('Galeria')}</span> {tr('Realizacji')}
           </h2>
-          <p className="text-white/50 text-sm">Nasze balie w domach naszych klientów</p>
+          <p className="text-white/50 text-sm">{tr('Nasze balie w domach naszych klientów')}</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">

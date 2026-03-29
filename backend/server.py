@@ -2646,6 +2646,93 @@ async def admin_get_blog_articles(username: str = Depends(verify_admin)):
     return articles
 
 
+# ==================== TRANSLATION ====================
+
+class TranslateRequest(BaseModel):
+    texts: List[str]
+    target_lang: str  # 'en', 'de', 'cs'
+
+@api_router.post("/translate")
+async def translate_texts(req: TranslateRequest):
+    if req.target_lang not in ('en', 'de', 'cs'):
+        raise HTTPException(400, "Unsupported language")
+    if not req.texts or len(req.texts) == 0:
+        return {"translations": {}}
+    # Limit batch size
+    texts = req.texts[:50]
+
+    lang_names = {'en': 'English', 'de': 'German', 'cs': 'Czech'}
+    target_name = lang_names[req.target_lang]
+
+    # Check cache
+    result = {}
+    uncached = []
+    for text in texts:
+        if not text or not text.strip():
+            result[text] = text
+            continue
+        cached = await db.translations_cache.find_one(
+            {"original": text, "lang": req.target_lang},
+            {"_id": 0}
+        )
+        if cached:
+            result[text] = cached["translation"]
+        else:
+            uncached.append(text)
+
+    if not uncached:
+        return {"translations": result}
+
+    # Translate via GPT
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        api_key = os.environ.get("EMERGENT_LLM_KEY", "")
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"translate-{req.target_lang}-{uuid.uuid4().hex[:8]}",
+            system_message=f"You are a professional translator. Translate Polish text to {target_name}. Keep HTML tags, brand names (WM-Sauna, WM-Balia, WM Group), and numbers unchanged. Return ONLY the JSON object with translations, no extra text."
+        ).with_model("openai", "gpt-4.1-nano")
+
+        # Build prompt with numbered texts
+        numbered = "\n".join([f'{i+1}. """{t}"""' for i, t in enumerate(uncached)])
+        prompt = f"Translate these Polish texts to {target_name}. Return a JSON object where keys are the numbers (as strings) and values are translations.\n\n{numbered}"
+
+        response = await chat.send_message(UserMessage(text=prompt))
+
+        # Parse JSON response
+        import json
+        # Try to extract JSON from response
+        resp_text = response.strip()
+        if resp_text.startswith("```"):
+            resp_text = resp_text.split("\n", 1)[1] if "\n" in resp_text else resp_text
+            resp_text = resp_text.rsplit("```", 1)[0]
+        if resp_text.startswith("json"):
+            resp_text = resp_text[4:].strip()
+        translated = json.loads(resp_text)
+
+        # Store in cache and build result
+        for i, original in enumerate(uncached):
+            translation = translated.get(str(i+1), original)
+            result[original] = translation
+            await db.translations_cache.update_one(
+                {"original": original, "lang": req.target_lang},
+                {"$set": {
+                    "original": original,
+                    "lang": req.target_lang,
+                    "translation": translation,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }},
+                upsert=True
+            )
+    except Exception as e:
+        logger.error(f"Translation error: {e}")
+        # Return originals for uncached
+        for text in uncached:
+            result[text] = text
+
+    return {"translations": result}
+
+
 # Include the router
 app.include_router(api_router)
 

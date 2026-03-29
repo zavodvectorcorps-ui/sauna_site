@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Send, CheckCircle, MapPin, Phone, Mail, FileDown } from 'lucide-react';
+import { useAutoTranslate } from '../../context/AutoTranslateContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -8,6 +9,7 @@ export const BalieContact = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [catalogAvailable, setCatalogAvailable] = useState(false);
+  const { tr } = useAutoTranslate();
   const [contactData, setContactData] = useState(null);
 
   useEffect(() => {
@@ -34,9 +36,9 @@ export const BalieContact = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            {contactData?.title || 'Skontaktuj sie z'} <span className="text-[#D4AF37]">{contactData?.title ? '' : 'nami'}</span>
+            {tr(contactData?.title || 'Skontaktuj się z')} <span className="text-[#D4AF37]">{contactData?.title ? '' : tr('nami')}</span>
           </h2>
-          <p className="text-white/50 text-sm">{contactData?.subtitle || 'Chetnie odpowiemy na kazde pytanie'}</p>
+          <p className="text-white/50 text-sm">{tr(contactData?.subtitle || 'Chętnie odpowiemy na każde pytanie')}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -44,7 +46,7 @@ export const BalieContact = () => {
           <div className="space-y-6">
             <div className="flex items-start gap-4">
               <Phone size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
-              <div><div className="text-white font-medium">Telefon</div><div className="text-white/40 text-sm">{contactData?.phone || '+48 515 995 190'}</div></div>
+              <div><div className="text-white font-medium">{tr('Telefon')}</div><div className="text-white/40 text-sm">{contactData?.phone || '+48 515 995 190'}</div></div>
             </div>
             <div className="flex items-start gap-4">
               <Mail size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
@@ -52,7 +54,7 @@ export const BalieContact = () => {
             </div>
             <div className="flex items-start gap-4">
               <MapPin size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
-              <div><div className="text-white font-medium">Adres</div><div className="text-white/40 text-sm">{contactData?.address || 'ul. Boryny 3, Warszawa, Polska'}</div></div>
+              <div><div className="text-white font-medium">{tr('Adres')}</div><div className="text-white/40 text-sm">{contactData?.address || tr('ul. Boryny 3, Warszawa, Polska')}</div></div>
             </div>
           </div>
 
@@ -60,8 +62,8 @@ export const BalieContact = () => {
           {submitted ? (
             <div className="text-center py-8">
               <CheckCircle size={48} className="mx-auto text-green-400 mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Dziekujemy!</h3>
-              <p className="text-white/50 mb-4">Skontaktujemy się z Tobą wkrótce.</p>
+              <h3 className="text-xl font-semibold text-white mb-2">{tr('Dziękujemy!')}</h3>
+              <p className="text-white/50 mb-4">{tr('Skontaktujemy się z Tobą wkrótce.')}</p>
               {catalogAvailable && (
                 <a
                   href={`${API}/api/catalog/download`}
@@ -70,22 +72,22 @@ export const BalieContact = () => {
                   className="inline-flex items-center gap-2 px-6 py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors"
                   data-testid="balie-contact-download-catalog"
                 >
-                  <FileDown size={16} /> Pobierz katalog PDF
+                  <FileDown size={16} /> {tr('Pobierz katalog PDF')}
                 </a>
               )}
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input type="text" placeholder="Imie i nazwisko *" required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+              <input type="text" placeholder={tr("Imię i nazwisko *")} required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
                 className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30" data-testid="balie-contact-name" />
-              <input type="tel" placeholder="Telefon *" required value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
+              <input type="tel" placeholder={tr("Telefon *")} required value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
                 className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30" data-testid="balie-contact-phone" />
               <input type="email" placeholder="Email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
                 className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30" />
-              <textarea placeholder="Wiadomosc" rows={3} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+              <textarea placeholder={tr("Wiadomość")} rows={3} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
                 className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30 resize-none" />
               <button type="submit" disabled={submitting} className="w-full py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors disabled:opacity-50 flex items-center justify-center gap-2" data-testid="balie-contact-submit">
-                <Send size={16} /> {submitting ? 'Wysyłanie...' : 'Wyślij wiadomość'}
+                <Send size={16} /> {submitting ? tr('Wysyłanie...') : tr('Wyślij wiadomość')}
               </button>
             </form>
           )}
