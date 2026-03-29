@@ -1,13 +1,7 @@
 # WM Group — PRD (Product Requirements Document)
 
 ## Problem Statement
-Объединённая платформа WM Group (WM-Sauna + WM-Balia) — премиум-сайт для продажи саун и купелей. Необходим генератор органического трафика (блог), контент-маркетинг, B2B-раздел, WhatsApp-интеграция и видео-обзоры. Весь контент управляется через админку.
-
-## Core Requirements
-- Премиум-дизайн без AI-шаблонов
-- Польский язык с диакритиками (ą, ć, ę, ł, ń, ó, ś, ź, ż)
-- Все блоки редактируются через админку
-- SEO-оптимизация
+Объединённая платформа WM Group (WM-Sauna + WM-Balia) — премиум-сайт для продажи саун и купелей. Генератор органического трафика (блог), контент-маркетинг, B2B-раздел, WhatsApp-интеграция и видео-обзоры.
 
 ## Architecture
 - Frontend: React + TailwindCSS + Framer Motion + Shadcn UI
@@ -21,41 +15,39 @@
 - Каталог купелей с конфигуратором
 - Главная страница WM Group с навигацией
 - Блок "7 фактов" (SaunaAdvantages) с анимацией
-- Полная админ-панель (~30 вкладок)
+- Админ-панель (~30+ вкладок)
 
 ### Content Marketing (Done — Feb 2026)
-- **Блог**: 6 SEO-статей, фронтенд (react-markdown + remark-gfm), полная админка (CRUD)
-- **B2B раздел**: отдельная страница /b2b с hero, преимуществами и формой для партнёров + админка
-- **WhatsApp кнопка**: глобальная плавающая кнопка на всех страницах + настройки в админке (номер, сообщение, вкл/выкл)
-- **Видео-обзоры**: секция на странице саун для YouTube-видео + админка для управления
-- **FAQ расширен**: Сауны — 13 вопросов, Купели — 11 вопросов
+- **Блог**: 14 SEO-статей (7 Sauny, 4 B2B, 3 Balie), react-markdown, полная админка CRUD
+- **B2B раздел**: /b2b — hero, 8 преимуществ, финансовая секция, лизинг, "Почему WM Group", форма + админка
+- **WhatsApp кнопка**: глобальная на всех страницах + админка настроек
+- **Видео-обзоры**: секция YouTube на /sauny + админка
+- **FAQ**: Сауны 13 вопросов, Купели 11 вопросов
+- **GlobalHeader**: единый хедер на Blog, B2B, Article страницах (навигация + телефон + стрелка назад)
+- **B2B ссылка**: выделена зелёным (#34D399) на главной "(Dla hoteli i pensjonatów)"
 
 ### Bug Fixes (Done)
-- Исправлены прозрачные PNG в "7 фактах"
-- Исправлена галерея (внешние ссылки)
-- Исправлены польские диакритики
-- Унификация гарантии 24 мес
-- Hero переход фото→видео (1000ms)
+- PNG в "7 фактах", Галерея, Диакритики, Гарантия 24 мес, Hero переход
 
-## API Endpoints (New)
-- GET/PUT /api/settings/video-reviews — видео-обзоры
-- GET/PUT /api/settings/b2b — B2B настройки
-- GET/PUT /api/settings/whatsapp — WhatsApp настройки
-- GET /api/blog/articles — статьи блога
-- POST /api/contact (type='b2b') — B2B форма
+## Key Components
+- `/app/frontend/src/components/GlobalHeader.jsx` — общий хедер
+- `/app/frontend/src/components/WhatsAppButton.jsx` — WhatsApp
+- `/app/frontend/src/components/SaunaVideoReviews.jsx` — видео
+- `/app/frontend/src/pages/B2BPage.jsx` — B2B страница
+- `/app/frontend/src/pages/BlogPage.jsx` — блог
+- `/app/frontend/src/components/admin/` — все админ-компоненты
 
 ## Prioritized Backlog
 
 ### P1
 - Интеграция i18next для мультиязычности (PL/RU/EN)
-- Расширение FAQ из базы конкурента (dreamofwood.pl/faq/)
 
 ### P2
-- Улучшение обработки ошибок (toast вместо console.error)
+- Улучшение обработки ошибок API (toast)
 
 ### P3
 - A/B тестирование CTA-кнопок
 
 ### P4
-- Рефакторинг server.py (вынесение роутов в отдельные файлы)
+- Рефакторинг server.py (>2400 строк)
 - Разбиение Calculator.jsx
