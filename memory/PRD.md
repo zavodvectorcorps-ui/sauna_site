@@ -9,11 +9,11 @@
 
 ### Core
 - Каталог саун с калькулятором, каталог купелей с конфигуратором
-- Главная WM Group, "7 фактов", админ-панель (35+ вкладок)
+- Главная WM Group, "7 фактов", админ-панель (40+ вкладок)
 
 ### Content Marketing
 - Блог: 14 SEO-статей, react-markdown, CRUD админка
-- B2B: /b2b — hero, 8 преимуществ, финансы, лизинг, "Почему WM Group", галерея фото/видео, форма + админка
+- B2B: /b2b — hero, 8 преимуществ, финансы, лизинг, галерея фото/видео, форма + админка
 - WhatsApp: глобальная кнопка + админка
 - Видео-обзоры: YouTube секция на /sauny + админка
 - FAQ: Сауны 13, Купели 11 вопросов
@@ -21,45 +21,43 @@
 - Процесс заказа: 5 шагов на /sauny и /balie + админка
 
 ### Mobile UX (Mar 2026)
-- **Горизонтальный скролл на мобильных** для 4 блоков: Спецпредложение, Преимущества, Видео-обзоры, Отзывы
-- **Peek-эффект**: видны краешки соседних карточек (min-w-[72%])
-- **Автоскролл**: карточки переключаются автоматически каждые 3.5-5 сек, пауза при касании
-- **Точечные индикаторы** (dots) текущей позиции
-- Хук `useAutoScroll` для переиспользования логики
+- **Горизонтальный скролл** для: Спецпредложение (w-72vw), Видео-обзоры (w-68vw), Отзывы (w-72vw), Преимущества/PromoFeatures (w-55vw)
+- **Peek-эффект**: видны краешки соседних карточек (snap-start + vw-единицы)
+- **Автоскролл**: карточки переключаются каждые 3.5-5 сек, пауза при касании
+- **Точечные индикаторы** + рабочие кнопки навигации (< >)
+- **7 фактов (SaunaAdvantages)** — вертикальный список на мобильных (НЕ карусель)
+- Хук `useAutoScroll` с querySelectorAll для надёжного скролла
 
 ### Section Visibility System (Mar 2026)
-- **Видимость секций Desktop/Mobile** — тумблеры в админке для саун (17 блоков) и купелей (15 блоков)
+- Тумблеры Desktop/Mobile в админке для саун (17 блоков) и купелей (15 блоков)
 - API: GET/PUT /api/settings/visibility
-- Применение CSS-классов `hidden md:block` / `block md:hidden` / `hidden` на фронтенде
 
 ### Object Storage (Mar 2026)
-- **Emergent Object Storage** интеграция для персистентного хранения медиа
-- Все изображения (36) и видео (46) мигрированы в облако
-- Загрузка через `/api/admin/upload-image` и `/api/admin/upload-video` — автоматически в object storage
-- Отдача через `/api/images/{id}` и `/api/videos/{filename}` — из object storage с fallback
+- Emergent Object Storage для персистентного хранения медиа
+- 36 изображений + 46 видео мигрированы в облако
 - Медиа переживают деплой на любой домен
 
+### Full Admin Coverage (Mar 2026)
+- **PromoBanner** — заголовок, описание, текст кнопки (GET/PUT /api/settings/promo-banner)
+- **BalieAbout** — заголовок, описание, счётчики (/api/settings/balie-about)
+- **BalieContact** — телефон, email, адрес (/api/settings/balie-contact)
+- **BalieInstallment** — карточки рассрочки (/api/settings/balie-installment)
+- **BalieGallery** — загрузка/удаление фото (/api/balia/gallery)
+- Теперь ВСЕ блоки на сайте полностью редактируются через админку
+
 ### Media URL Portability
-- **resolveMediaUrl** хелпер — относительные пути `/api/images/xxx` → полные URL
-- Все URL в БД — относительные, не привязаны к конкретному домену
+- resolveMediaUrl хелпер — относительные пути /api/images/xxx → полные URL
+- Все URL в БД — относительные
 
-## Key Components
-- `/app/frontend/src/hooks/useAutoScroll.js` — хук автоскролла каруселей
-- `/app/frontend/src/lib/utils.js` — resolveMediaUrl helper
-- `/app/backend/object_storage.py` — модуль объектного хранилища
-- `/app/backend/migrate_to_storage.py` — скрипт миграции файлов в хранилище
-
-## Key API Endpoints
-- GET/PUT `/api/settings/visibility` — видимость секций
-- GET/PUT `/api/admin/settings/visibility` — обновление видимости (admin)
-- POST `/api/admin/upload-image` — загрузка изображения в object storage
-- POST `/api/admin/upload-video` — загрузка видео в object storage
-- GET `/api/images/{id}` — отдача изображения из object storage
-- GET `/api/videos/{filename}` — отдача видео из object storage
+## Key API Endpoints (новые)
+- GET/PUT `/api/settings/promo-banner`
+- GET/PUT `/api/settings/balie-about`
+- GET/PUT `/api/settings/balie-contact`
+- GET/PUT `/api/settings/balie-installment`
 
 ## Backlog
 - P1: i18next мультиязычность (PL/RU/EN)
 - P2: Toast обработка ошибок (глобальная)
 - P3: A/B тестирование CTA
-- P4: Рефакторинг server.py (>2500 строк) — вынесение в отдельные роуты
+- P4: Рефакторинг server.py (>2600 строк) → отдельные роуты
 - P4: Разбиение Calculator.jsx
