@@ -2,7 +2,7 @@
 
 ## Architecture
 - Frontend: React + TailwindCSS + Framer Motion + Shadcn UI
-- Backend: FastAPI + MongoDB + Emergent Object Storage
+- Backend: FastAPI + MongoDB + Emergent Object Storage + GPT-4.1-nano (translation)
 - Admin: Basic Auth (admin / 220066)
 
 ## Implemented Features
@@ -21,51 +21,44 @@
 - Процесс заказа: 5 шагов на /sauny и /balie + админка
 
 ### Mobile UX (Mar 2026)
-- **Горизонтальный скролл** для: Спецпредложение (w-72vw), Видео-обзоры (w-68vw), Отзывы (w-72vw), Преимущества/PromoFeatures (w-55vw)
-- **Peek-эффект**: видны краешки соседних карточек (snap-start + vw-единицы)
-- **Автоскролл**: карточки переключаются каждые 3.5-5 сек, пауза при касании
-- **Точечные индикаторы** + рабочие кнопки навигации (< >)
-- **7 фактов (SaunaAdvantages)** — вертикальный список на мобильных (НЕ карусель)
-- Хук `useAutoScroll` с querySelectorAll для надёжного скролла
+- Горизонтальный скролл для: Спецпредложение, Видео-обзоры, Отзывы, Преимущества/PromoFeatures
+- Peek-эффект: видны краешки соседних карточек
+- Автоскролл: карточки переключаются каждые 3.5-5 сек
+- Хук `useAutoScroll` с querySelectorAll
 
 ### Section Visibility System (Mar 2026)
 - Тумблеры Desktop/Mobile в админке для саун (17 блоков) и купелей (15 блоков)
-- API: GET/PUT /api/settings/visibility
 
 ### Object Storage (Mar 2026)
 - Emergent Object Storage для персистентного хранения медиа
 - 36 изображений + 46 видео мигрированы в облако
-- Медиа переживают деплой на любой домен
 
 ### Full Admin Coverage (Mar 2026)
-- **PromoBanner** — заголовок, описание, текст кнопки (GET/PUT /api/settings/promo-banner)
-- **BalieAbout** — заголовок, описание, счётчики (/api/settings/balie-about)
-- **BalieContact** — телефон, email, адрес (/api/settings/balie-contact)
-- **BalieInstallment** — карточки рассрочки (/api/settings/balie-installment)
-- **BalieGallery** — загрузка/удаление фото (/api/balia/gallery)
-- Теперь ВСЕ блоки на сайте полностью редактируются через админку
+- PromoBanner, BalieAbout, BalieContact, BalieInstallment, BalieGallery — все редактируются через админку
 
-### Media URL Portability
-- resolveMediaUrl хелпер — относительные пути /api/images/xxx → полные URL
-- Все URL в БД — относительные
-
-### Multilingual UI (Mar 2026)
+### Multilingual UI (Mar 2026) — COMPLETE
 - **4 языка**: Польский (PL, по умолчанию), Английский (EN), Немецкий (DE), Чешский (CS)
+- **Статический UI**: навигация, герой, калькулятор, галерея, склад, отзывы, о компании, контакт, футер — переводы из словаря `LanguageContext.js`
 - **Переключатель языков** на всех страницах: MainLanding, Sauny, Balie, Blog, B2B
-- **Переведённые секции**: навигация, герой, калькулятор, галерея, склад, отзывы, о компании, контакт, футер
-- **Общий компонент** `LanguageSwitcher.jsx` (dropdown с иконкой Globe)
-- **Хранение**: localStorage ключ `wm-sauna-lang`
-- Статьи блога и динамический контент из БД остаются на польском
+- **Общий компонент** `LanguageSwitcher.jsx` (dropdown с Globe иконкой)
+
+### Auto-Translation of All Content (Mar 2026) — COMPLETE
+- **GPT-4.1-nano** для автоматического перевода ВСЕГО контента на страницах
+- **Бэкенд API**: `POST /api/translate` — принимает массив текстов + target_lang, возвращает переводы
+- **MongoDB кэш**: коллекция `translations_cache` — повторные запросы мгновенные
+- **Frontend кэш**: `localStorage` ключ `wm-translations-cache`
+- **tr() функция** из `AutoTranslateContext.js` — оборачивает любой текст, автоматически отправляет на перевод при переключении языка
+- **Покрытие**: MainLanding, Hero, PromoBanner, PromoFeatures, SpecialOffer, SaunaAdvantages, SaunaVideoReviews, OrderProcess, SaunaInstallment, SocialProof, FAQ, BalieHero, BalieProducts, BalieFeatures, BalieAbout, BalieContact, BalieGallery, BalieTestimonials, BalieInstallment, BalieFaq, BalieLandingPage nav
 
 ## Key API Endpoints
-- GET/PUT `/api/settings/promo-banner`
-- GET/PUT `/api/settings/balie-about`
-- GET/PUT `/api/settings/balie-contact`
-- GET/PUT `/api/settings/balie-installment`
-- GET/PUT `/api/settings/section_visibility`
+- `POST /api/translate` — Auto-translation via GPT с MongoDB кэшированием
+- `GET/PUT /api/settings/promo-banner`
+- `GET/PUT /api/settings/balie-about`
+- `GET/PUT /api/settings/balie-contact`
+- `GET/PUT /api/settings/section_visibility`
 
 ## Backlog
 - P2: Toast обработка ошибок (глобальная)
 - P3: A/B тестирование CTA
-- P4: Рефакторинг server.py (>2600 строк) → отдельные роуты
+- P4: Рефакторинг server.py (>2700 строк) → отдельные роуты
 - P4: Разбиение Calculator.jsx
