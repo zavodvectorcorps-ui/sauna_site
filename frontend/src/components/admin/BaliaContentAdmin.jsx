@@ -7,14 +7,14 @@ const ICON_LIST = ['ShieldCheck','Hammer','Leaf','Truck','Wrench','Award','Flag'
 
 const DEFAULT_SCHEMATIC = {
   title: 'Budowa Balii',
-  subtitle: 'Kazdy element jest starannie zaprojektowany i wykonany z najwyzszej jakosci materialow',
+  subtitle: 'Każdy element jest starannie zaprojektowany i wykonany z najwyższej jakości materiałów',
   image: null,
   parts: [
     { id: 'bowl', label: 'Gleboka misa — 100 cm', desc: 'Idealny rozmiar dla osob wyzszych.' },
     { id: 'frame', label: 'Metalowy stelaz', desc: 'Odporny na wilgoc, korozje i odksztalcenia.' },
     { id: 'cladding', label: 'Termodrewno i ukryte mocowania', desc: 'Odpornosc na pekanie i wysychanie.' },
     { id: 'stove', label: 'Mocne piece z podwojnym obiegiem', desc: 'Nagrzewanie w 1-2h, nawet przy -20°C.' },
-    { id: 'warranty', label: '10 lat gwarancji + 25 lat trwalosci', desc: 'Budowane na pokolenia.' },
+    { id: 'warranty', label: '10 lat gwarancji + 25 lat trwałości', desc: 'Budowane na pokolenia.' },
   ],
 };
 
@@ -23,23 +23,23 @@ const DEFAULT_STOVE = {
   subtitle: 'Oferujemy dwa typy piecow na drewno ze stali nierdzewnej V4A.',
   types: [
     { id: 'internal', title: 'Piec wewnetrzny', subtitle: 'Zintegrowany w balii', image: null, features: ['Montaz wewnatrz misy balii','Bezposredni kontakt z woda','Kompaktowa konstrukcja','Idealny dla mniejszych przestrzeni'], pros: ['Szybsze nagrzewanie','Mniej miejsca na zewnatrz'], cons: ['Mniejsza przestrzen kapielowa'] },
-    { id: 'external', title: 'Piec zewnetrzny', subtitle: 'Z podwojnym obiegiem wody', image: null, features: ['Montaz poza misa balii','Podwojny obieg wody','Pelna przestrzen kapielowa','Latwiejszy dostep do palenia'], pros: ['Wieksza przestrzen w balii','Wygodniejsze dolozenie drewna'], cons: ['Wymaga wiecej miejsca na zewnatrz'] },
+    { id: 'external', title: 'Piec zewnętrzny', subtitle: 'Z podwójnym obiegiem wody', image: null, features: ['Montaż poza misą balii','Podwójny obieg wody','Pełna przestrzeń kąpielowa','Łatwiejszy dostęp do palenia'], pros: ['Większa przestrzeń w balii','Wygodniejsze dołożenie drewna'], cons: ['Wymaga więcej miejsca na zewnątrz'] },
   ],
 };
 
 const DEFAULT_FEATURES = [
-  { icon: 'ShieldCheck', title: '2 Lata Gwarancji', desc: 'Pelne bezpieczenstwo i wsparcie serwisowe.', active: true },
+  { icon: 'ShieldCheck', title: '2 Lata Gwarancji', desc: 'Pełne bezpieczeństwo i wsparcie serwisowe.', active: true },
   { icon: 'Hammer', title: 'Reczna Produkcja', desc: 'Kazdy detal dopracowany przez rzemieslnikow.', active: true },
   { icon: 'Leaf', title: 'Eko Materialy', desc: 'Modrzew syberyjski z certyfikowanych zrodel.', active: true },
 ];
 const DEFAULT_OPTIONS = [
   { icon: 'Waves', title: 'Hydromasaz', desc: 'System dysz masujacych', active: true },
   { icon: 'Wind', title: 'Aeromasaz', desc: 'Delikatne babelki powietrza', active: true },
-  { icon: 'Lightbulb', title: 'Oswietlenie LED', desc: 'Nastrojowe swiatla', active: true },
+  { icon: 'Lightbulb', title: 'Oświetlenie LED', desc: 'Nastrojowe światła', active: true },
   { icon: 'ThermometerSun', title: 'Pokrywa termiczna', desc: 'Utrzymuje temperature', active: true },
 ];
 const DEFAULT_BADGES = [
-  { icon: 'Truck', title: 'Dostawa w calej Polsce', active: true },
+  { icon: 'Truck', title: 'Dostawa w całej Polsce', active: true },
   { icon: 'Wrench', title: 'Montaz w cenie', active: true },
   { icon: 'Award', title: 'Certyfikat FSC', active: true },
   { icon: 'Flag', title: 'Made in Poland', active: true },

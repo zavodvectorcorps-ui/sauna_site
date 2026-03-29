@@ -5,10 +5,10 @@ import { motion } from 'framer-motion';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const defaultItems = [
-  { icon: Calendar, title: 'Od 4 do 20 miesiecy', desc: 'Elastyczny okres splaty' },
+  { icon: Calendar, title: 'Od 4 do 20 miesięcy', desc: 'Elastyczny okres spłaty' },
   { icon: Percent, title: '0% nadplaty', desc: 'Bez ukrytych kosztow' },
   { icon: CreditCard, title: 'Rata od 500 zl/mc', desc: 'Przystepna miesieczna rata' },
-  { icon: Truck, title: 'Darmowa dostawa', desc: 'Na terenie calej Polski' },
+  { icon: Truck, title: 'Darmowa dostawa', desc: 'Na terenie całej Polski' },
 ];
 
 export const SaunaInstallment = ({ variant = 'full' }) => {
@@ -31,7 +31,7 @@ export const SaunaInstallment = ({ variant = 'full' }) => {
               <CreditCard size={14} className="text-[#C6A87C]" />
               <span className="text-[#C6A87C] text-sm font-semibold">Raty od 500 zl/mc</span>
             </div>
-            <p className="text-gray-500 text-xs">Od 4 do 20 miesiecy, 0% nadplaty, darmowa dostawa</p>
+            <p className="text-gray-500 text-xs">Od 4 do 20 miesięcy, 0% nadpłaty, darmowa dostawa</p>
           </div>
         </div>
       </div>
@@ -53,7 +53,7 @@ export const SaunaInstallment = ({ variant = 'full' }) => {
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-[#2C2C2C] mb-2">
-            Komfort dostepny <span className="text-[#C6A87C]">od razu!</span>
+            Komfort dostępny <span className="text-[#C6A87C]">od razu!</span>
           </h2>
           <p className="text-gray-500 text-sm">Kupuj na raty — wygodnie i bez dodatkowych kosztow</p>
         </motion.div>

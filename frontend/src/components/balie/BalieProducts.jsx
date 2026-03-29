@@ -5,8 +5,8 @@ import { BalieInstallment } from './BalieInstallment';
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const HEATER_LABELS = {
-  integrated: { short: 'z piecem wewn.', full: 'Piec wewnetrzny' },
-  external: { short: 'z piecem zewn.', full: 'Piec zewnetrzny' },
+  integrated: { short: 'z piecem wewn.', full: 'Piec wewnętrzny' },
+  external: { short: 'z piecem zewn.', full: 'Piec zewnętrzny' },
   none: { short: 'bez pieca', full: 'Bez pieca' },
   electric: { short: 'z piecem elektr.', full: 'Piec elektryczny' },
 };
@@ -606,7 +606,7 @@ export const BalieProducts = () => {
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
             Nasza <span className="text-[#D4AF37]">Kolekcja</span>
           </h2>
-          <p className="text-white/50 text-sm">Wybierz idealna balie dla swojego ogrodu</p>
+          <p className="text-white/50 text-sm">Wybierz idealną balię dla swojego ogrodu</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

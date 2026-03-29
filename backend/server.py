@@ -309,6 +309,21 @@ class FaqSettings(BaseModel):
     subtitle_en: str = "Answers to the most important questions about our saunas."
     items: List[FaqItem] = []
 
+class BaliaFaqSettings(BaseModel):
+    id: str = "balia_faq_settings"
+    title_pl: str = "Najczęściej zadawane pytania"
+    title_en: str = "Frequently Asked Questions"
+    subtitle_pl: str = "Odpowiedzi na najważniejsze pytania dotyczące naszych balii."
+    subtitle_en: str = "Answers to the most important questions about our hot tubs."
+    items: List[FaqItem] = [
+        FaqItem(question_pl="Jak długo nagrzewa się balia?", question_en="How long does it take to heat a hot tub?", answer_pl="Czas nagrzewania zależy od modelu i pojemności. Standardowa balia z piecem zewnętrznym nagrzewa się w 1,5–3 godziny do temperatury 38–40°C. W zimie czas może się wydłużyć o 30–60 minut.", answer_en="Heating time depends on the model and capacity. A standard hot tub with an external heater heats up in 1.5–3 hours to 38–40°C. In winter, the time may increase by 30–60 minutes.", sort_order=0),
+        FaqItem(question_pl="Jak dbać o drewno balii?", question_en="How to care for the wood of a hot tub?", answer_pl="Zalecamy co roku nakładać impregnat ochronny na zewnętrzną powierzchnię. Wewnątrz balia nie wymaga impregnacji — naturalne drewno jest bezpieczne w kontakcie z wodą. Po każdym użyciu warto spuścić wodę i pozostawić balię otwartą do wyschnięcia.", answer_en="We recommend applying a protective impregnant to the exterior surface once a year. The inside doesn't need impregnation — natural wood is safe in contact with water. After each use, drain the water and leave the tub open to dry.", sort_order=1),
+        FaqItem(question_pl="Czy potrzebne jest pozwolenie na budowę?", question_en="Is a building permit required?", answer_pl="Nie, balia drewniana jest traktowana jako element wyposażenia ogrodu i nie wymaga pozwolenia na budowę ani zgłoszenia. Wystarczy płaskie, stabilne podłoże — kostka brukowa, płyta betonowa lub utwardzona ziemia.", answer_en="No, a wooden hot tub is considered garden equipment and doesn't require a building permit. You just need a flat, stable surface — paving stones, concrete slab, or compacted earth.", sort_order=2),
+        FaqItem(question_pl="Jaki fundament jest potrzebny pod balię?", question_en="What foundation is needed for a hot tub?", answer_pl="Wystarczy równa, utwardzona powierzchnia. Może to być kostka brukowa, płyta betonowa lub dobrze ubita ziemia. Podłoże musi wytrzymać ciężar balii napełnionej wodą (ok. 1–2 tony w zależności od modelu).", answer_en="A flat, hardened surface is sufficient. It can be paving stones, concrete slab, or well-compacted earth. The surface must support the weight of the tub filled with water (about 1–2 tonnes depending on the model).", sort_order=3),
+        FaqItem(question_pl="Czy mogę korzystać z balii zimą?", question_en="Can I use the hot tub in winter?", answer_pl="Tak! Korzystanie z balii zimą to jedno z największych przyjemności. Nasze balie są zaprojektowane do użytku przez cały rok. Zimą zalecamy używanie pokrywy termicznej, która utrzymuje ciepło i przyspiesza nagrzewanie.", answer_en="Yes! Using a hot tub in winter is one of the greatest pleasures. Our tubs are designed for year-round use. In winter, we recommend using a thermal cover to retain heat and speed up heating.", sort_order=4),
+        FaqItem(question_pl="Jak często trzeba zmieniać wodę?", question_en="How often should the water be changed?", answer_pl="Przy korzystaniu bez środków chemicznych — po każdym użyciu lub co 2–3 dni. Jeśli stosujesz środki do uzdatniania wody, wymiana co 1–2 tygodnie. Zawsze zależy to od częstotliwości użytkowania i liczby osób.", answer_en="Without chemical treatment — after each use or every 2–3 days. With water treatment products, every 1–2 weeks. It always depends on frequency of use and number of users.", sort_order=5),
+    ]
+
 class PromoFeaturesSettings(BaseModel):
     id: str = "promo_features_settings"
     items: List[Dict[str, Any]] = [
@@ -924,6 +939,13 @@ async def get_faq_settings_public():
         return FaqSettings().model_dump()
     return settings
 
+@api_router.get("/settings/balia-faq")
+async def get_balia_faq_settings_public():
+    settings = await db.settings.find_one({"id": "balia_faq_settings"}, {"_id": 0})
+    if not settings:
+        return BaliaFaqSettings().model_dump()
+    return settings
+
 @api_router.get("/settings/promo-features")
 async def get_promo_features_public():
     settings = await db.settings.find_one({"id": "promo_features_settings"}, {"_id": 0})
@@ -1171,6 +1193,15 @@ async def update_seo_settings(settings: SeoSettings, username: str = Depends(ver
 async def update_faq_settings(settings: FaqSettings, username: str = Depends(verify_admin)):
     await db.settings.update_one(
         {"id": "faq_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/balia-faq")
+async def update_balia_faq_settings(settings: BaliaFaqSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "balia_faq_settings"},
         {"$set": settings.model_dump()},
         upsert=True
     )

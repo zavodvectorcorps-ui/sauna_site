@@ -10,6 +10,7 @@ import { BaliaIntegrationsAdmin } from '../components/admin/BaliaIntegrationsAdm
 import { BaliaCatalogAdmin } from '../components/admin/BaliaCatalogAdmin';
 import { BaliaColorsAdmin } from '../components/admin/BaliaColorsAdmin';
 import { BaliaCardOptionsAdmin } from '../components/admin/BaliaCardOptionsAdmin';
+import { BaliaFaqAdmin } from '../components/admin/BaliaFaqAdmin';
 import { SaunaMessagesAdmin } from '../components/admin/SaunaMessagesAdmin';
 import { SaunaDesignAdmin } from '../components/admin/SaunaDesignAdmin';
 import { SaunaContentAdmin } from '../components/admin/SaunaContentAdmin';
@@ -166,6 +167,7 @@ const AdminPanel = () => {
         { id: 'balia_card_options', label: 'Опции карточки', icon: Settings },
         { id: 'balia_testimonials', label: 'Отзывы', icon: Star },
         { id: 'balia_content', label: 'Контент', icon: FileText },
+        { id: 'balia_faq', label: 'FAQ', icon: FileText },
         { id: 'balia_catalog', label: 'Каталог', icon: FileText },
         { id: 'balia_integrations', label: 'Интеграции', icon: Settings },
       ],
@@ -227,6 +229,8 @@ const AdminPanel = () => {
         return <BaliaTestimonialsAdmin {...props} />;
       case 'balia_content':
         return <BaliaContentAdmin {...props} />;
+      case 'balia_faq':
+        return <BaliaFaqAdmin {...props} />;
       case 'balia_catalog':
         return <BaliaCatalogAdmin {...props} />;
       case 'balia_integrations':

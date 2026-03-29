@@ -6,21 +6,21 @@ const API = process.env.REACT_APP_BACKEND_URL;
 const iconMap = { ShieldCheck, Hammer, Leaf, Truck, Wrench, Award, Flag, Waves, Wind, Lightbulb, ThermometerSun };
 
 const defaultFeatures = [
-  { icon: 'ShieldCheck', title: '2 Lata Gwarancji', desc: 'Pelne bezpieczenstwo i wsparcie serwisowe na wszystkie nasze produkty.', active: true },
-  { icon: 'Hammer', title: 'Reczna Produkcja', desc: 'Kazdy detal dopracowany przez polskich rzemieslnikow z wieloletnim doswiadczeniem.', active: true },
-  { icon: 'Leaf', title: 'Eko Materialy', desc: 'Modrzew syberyjski i swierk skandynawski z certyfikowanych, zrownowazonych zrodel.', active: true },
+  { icon: 'ShieldCheck', title: '2 Lata Gwarancji', desc: 'Pełne bezpieczeństwo i wsparcie serwisowe na wszystkie nasze produkty.', active: true },
+  { icon: 'Hammer', title: 'Ręczna Produkcja', desc: 'Każdy detal dopracowany przez polskich rzemieślników z wieloletnim doświadczeniem.', active: true },
+  { icon: 'Leaf', title: 'Eko Materiały', desc: 'Modrzew syberyjski i świerk skandynawski z certyfikowanych, zrównoważonych źródeł.', active: true },
 ];
 
 const defaultOptions = [
-  { icon: 'Waves', title: 'Hydromasaz', desc: 'System dysz masujacych dla glebokiego relaksu', active: true },
-  { icon: 'Wind', title: 'Aeromasaz', desc: 'Delikatne babelki powietrza dla odprezenia', active: true },
-  { icon: 'Lightbulb', title: 'Oswietlenie LED', desc: 'Nastrojowe swiatla w roznych kolorach', active: true },
-  { icon: 'ThermometerSun', title: 'Pokrywa termiczna', desc: 'Utrzymuje temperature i chroni przed zanieczyszczeniami', active: true },
+  { icon: 'Waves', title: 'Hydromasaż', desc: 'System dysz masujących dla głębokiego relaksu', active: true },
+  { icon: 'Wind', title: 'Aeromasaż', desc: 'Delikatne bąbelki powietrza dla odprężenia', active: true },
+  { icon: 'Lightbulb', title: 'Oświetlenie LED', desc: 'Nastrojowe światła w różnych kolorach', active: true },
+  { icon: 'ThermometerSun', title: 'Pokrywa termiczna', desc: 'Utrzymuje temperaturę i chroni przed zanieczyszczeniami', active: true },
 ];
 
 const defaultBadges = [
-  { icon: 'Truck', title: 'Dostawa w calej Polsce', active: true },
-  { icon: 'Wrench', title: 'Montaz w cenie', active: true },
+  { icon: 'Truck', title: 'Dostawa w całej Polsce', active: true },
+  { icon: 'Wrench', title: 'Montaż w cenie', active: true },
   { icon: 'Award', title: 'Certyfikat FSC', active: true },
   { icon: 'Flag', title: 'Made in Poland', active: true },
 ];
@@ -52,7 +52,7 @@ export const BalieFeatures = () => {
             Dlaczego <span className="text-[#D4AF37]">WM-Balia?</span>
           </h2>
           <p className="text-white/50 text-sm max-w-xl mx-auto">
-            Laczymy tradycyjne rzemioslo z nowoczesnym designem, tworzac produkty najwyzszej jakosci.
+            Łączymy tradycyjne rzemiosło z nowoczesnym designem, tworząc produkty najwyższej jakości.
           </p>
         </div>
 

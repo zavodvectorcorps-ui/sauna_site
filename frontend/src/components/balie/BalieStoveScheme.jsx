@@ -9,18 +9,18 @@ const defaultStoveTypes = [
     title: 'Piec wewnetrzny',
     subtitle: 'Zintegrowany w balii',
     image: null,
-    features: ['Montaz wewnatrz misy balii','Bezposredni kontakt z woda — szybsze nagrzewanie','Kompaktowa konstrukcja','Idealny dla mniejszych przestrzeni'],
+    features: ['Montaż wewnątrz misy balii','Bezpośredni kontakt z wodą — szybsze nagrzewanie','Kompaktowa konstrukcja','Idealny dla mniejszych przestrzeni'],
     pros: ['Szybsze nagrzewanie','Mniej miejsca na zewnatrz'],
     cons: ['Mniejsza przestrzen kapielowa'],
   },
   {
     id: 'external',
-    title: 'Piec zewnetrzny',
-    subtitle: 'Z podwojnym obiegiem wody',
+    title: 'Piec zewnętrzny',
+    subtitle: 'Z podwójnym obiegiem wody',
     image: null,
-    features: ['Montaz poza misa balii','Podwojny obieg: zimna woda do pieca, ciepla z powrotem','Pelna przestrzen kapielowa','Latwiejszy dostep do palenia'],
+    features: ['Montaż poza misą balii','Podwójny obieg: zimna woda do pieca, ciepła z powrotem','Pełna przestrzeń kąpielowa','Łatwiejszy dostęp do palenia'],
     pros: ['Wieksza przestrzen w balii','Wygodniejsze dolozenie drewna'],
-    cons: ['Wymaga wiecej miejsca na zewnatrz'],
+    cons: ['Wymaga więcej miejsca na zewnątrz'],
   },
 ];
 
@@ -46,7 +46,7 @@ const ExternalSvg = () => (
     <text x="325" y="215" fill="#5ba8d5" fontSize="9" fontWeight="bold">zimna woda</text>
     <path d="M350 130 L340 130 Q325 130 325 140 L325 150 Q325 160 315 160 L300 160" fill="none" stroke="#e85050" strokeWidth="3" />
     <polygon points="303,155 297,160 303,165" fill="#e85050" />
-    <text x="325" y="120" fill="#e85050" fontSize="9" fontWeight="bold">ciepla woda</text>
+    <text x="325" y="120" fill="#e85050" fontSize="9" fontWeight="bold">ciepła woda</text>
     <text x="180" y="290" fill="white" fontSize="10" textAnchor="middle" opacity="0.5">Podwojny obieg wody</text>
     <text x="180" y="305" fill="white" fontSize="8" textAnchor="middle" opacity="0.3">Nagrzewanie 1-2h nawet przy -20°C</text>
   </svg>
@@ -96,14 +96,14 @@ const ExternalMinimalSvg = () => (
     <circle cx="390" cy="180" r="40" fill="none" stroke="#D4AF37" strokeWidth="1.5" />
     <circle cx="390" cy="180" r="15" fill="#D4AF37" opacity="0.2" />
     <text x="390" y="184" fill="#D4AF37" fontSize="9" textAnchor="middle" fontWeight="bold">P</text>
-    <text x="390" y="235" fill="white" fontSize="8" textAnchor="middle" opacity="0.4">piec zewnetrzny</text>
+    <text x="390" y="235" fill="white" fontSize="8" textAnchor="middle" opacity="0.4">piec zewnętrzny</text>
     {/* Connection pipes */}
     <path d="M320 165 L350 165" stroke="#5ba8d5" strokeWidth="2" />
     <path d="M320 195 L350 195" stroke="#e85050" strokeWidth="2" />
     <circle cx="335" cy="165" r="2" fill="#5ba8d5" />
     <circle cx="335" cy="195" r="2" fill="#e85050" />
     <text x="335" y="158" fill="#5ba8d5" fontSize="7" textAnchor="middle">zimna</text>
-    <text x="335" y="212" fill="#e85050" fontSize="7" textAnchor="middle">ciepla</text>
+    <text x="335" y="212" fill="#e85050" fontSize="7" textAnchor="middle">ciepła</text>
     {/* Chimney line */}
     <line x1="390" y1="140" x2="390" y2="90" stroke="#D4AF37" strokeWidth="1" opacity="0.5" />
     <circle cx="390" cy="85" r="5" fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.5" />
@@ -161,7 +161,7 @@ const ExternalDetailedSvg = () => (
     {/* Dimension */}
     <line x1="40" y1="100" x2="40" y2="260" stroke="#ff6b35" strokeWidth="0.8" />
     <text x="30" y="185" fill="#ff6b35" fontSize="7" textAnchor="middle" transform="rotate(-90 30 185)">1000mm</text>
-    <text x="250" y="300" fill="#4a9eff" fontSize="9" textAnchor="middle" opacity="0.5">System podwojnego obiegu</text>
+    <text x="250" y="300" fill="#4a9eff" fontSize="9" textAnchor="middle" opacity="0.5">System podwójnego obiegu</text>
   </svg>
 );
 

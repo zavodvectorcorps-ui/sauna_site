@@ -28,7 +28,7 @@ export const Hero = () => {
   const features = [
     'Polska produkcja',
     'Gotowe w 5-10 dni',
-    'Gwarancja 12 miesięcy',
+    'Gwarancja 24 miesiące',
   ];
 
   const getTitle = () => {
@@ -68,7 +68,7 @@ export const Hero = () => {
         <img
           src={backgroundImage}
           alt="Luxury wooden sauna"
-          className={`w-full h-full object-cover transition-opacity duration-500 ${useVideo && videoReady ? 'opacity-0 absolute inset-0' : ''}`}
+          className={`w-full h-full object-cover transition-opacity duration-1000 ${useVideo && videoReady ? 'opacity-0 absolute inset-0' : ''}`}
           style={{ objectPosition: bgPosition }}
         />
         {/* Video overlay */}
@@ -82,7 +82,7 @@ export const Hero = () => {
             playsInline
             preload="auto"
             onCanPlay={() => setVideoReady(true)}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
             style={{ objectPosition: bgPosition }}
             data-testid="hero-bg-video"
           />

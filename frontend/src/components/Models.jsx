@@ -359,7 +359,7 @@ export const Models = () => {
                         <div className="flex items-center gap-1.5">
                           <span className="text-[#C6A87C] text-xs font-semibold">Raty od 500 zl/mc</span>
                         </div>
-                        <p className="text-gray-500 text-[10px]">Od 4 do 20 miesiecy, 0% nadplaty</p>
+                        <p className="text-gray-500 text-[10px]">Od 4 do 20 miesięcy, 0% nadpłaty</p>
                       </div>
                       <button className="w-full py-3 bg-[#1A1A1A] text-white font-medium hover:bg-[#C6A87C] transition-colors">{l.details}</button>
                     </div>

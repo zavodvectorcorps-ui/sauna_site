@@ -4,10 +4,10 @@ import { CreditCard, Calendar, Percent, Truck } from 'lucide-react';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const items = [
-  { icon: Calendar, title: 'Okres od 4 do 20 miesiecy', desc: 'Elastyczny czas splaty' },
+  { icon: Calendar, title: 'Okres od 4 do 20 miesięcy', desc: 'Elastyczny czas spłaty' },
   { icon: Percent, title: '0% nadplaty', desc: 'Bez ukrytych kosztow' },
   { icon: CreditCard, title: 'Rata od 300 zl/mc', desc: 'Przystepna rata' },
-  { icon: Truck, title: 'Darmowa dostawa', desc: 'Na terenie calej Polski' },
+  { icon: Truck, title: 'Darmowa dostawa', desc: 'Na terenie całej Polski' },
 ];
 
 export const BalieInstallment = ({ variant = 'full' }) => {
@@ -30,7 +30,7 @@ export const BalieInstallment = ({ variant = 'full' }) => {
               <CreditCard size={16} className="text-[#D4AF37]" />
               <span className="text-[#D4AF37] text-sm font-semibold">Raty od 300 zl/mc</span>
             </div>
-            <p className="text-white/40 text-xs">Okres od 4 do 20 miesiecy, 0% nadplaty, darmowa dostawa</p>
+            <p className="text-white/40 text-xs">Okres od 4 do 20 miesięcy, 0% nadpłaty, darmowa dostawa</p>
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@ export const BalieInstallment = ({ variant = 'full' }) => {
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-            Komfort dostepny <span className="text-[#D4AF37]">od razu!</span>
+            Komfort dostępny <span className="text-[#D4AF37]">od razu!</span>
           </h2>
           <p className="text-white/40 text-sm">Kupuj na raty — wygodnie i bez dodatkowych kosztow</p>
         </div>

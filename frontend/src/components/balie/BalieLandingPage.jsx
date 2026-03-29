@@ -14,9 +14,11 @@ import { BalieInstallment } from './BalieInstallment';
 import { BalieSchematic } from './BalieSchematic';
 import { BalieStoveScheme } from './BalieStoveScheme';
 
+import { BalieFaq } from './BalieFaq';
+
 const API = process.env.REACT_APP_BACKEND_URL;
 
-const DEFAULT_ORDER = ['hero','features','products','installment','colors','options','schematic','stove','about','gallery','testimonials','contact'];
+const DEFAULT_ORDER = ['hero','features','products','installment','colors','options','schematic','stove','about','gallery','faq','testimonials','contact'];
 
 const sectionComponents = {
   hero: () => <BalieHero />,
@@ -29,6 +31,7 @@ const sectionComponents = {
   stove: ({ enabled }) => enabled ? <BalieStoveScheme /> : null,
   about: ({ enabled }) => enabled ? <BalieAbout /> : null,
   gallery: () => <BalieGallery />,
+  faq: () => <BalieFaq />,
   testimonials: () => <BalieTestimonials />,
   contact: () => <BalieContact />,
 };
@@ -67,6 +70,7 @@ export const BalieLandingPage = () => {
             <a href="#opcje" className="text-white/60 hover:text-[#D4AF37] transition-colors">Opcje</a>
             <a href="#budowa" className="text-white/60 hover:text-[#D4AF37] transition-colors">Budowa</a>
             <a href="#opinie" className="text-white/60 hover:text-[#D4AF37] transition-colors">Opinie</a>
+            <a href="#balie-faq" className="text-white/60 hover:text-[#D4AF37] transition-colors">FAQ</a>
             <a href="#kontakt-balie" className="text-white/60 hover:text-[#D4AF37] transition-colors">Kontakt</a>
           </div>
           <a href="tel:+48515995190" className="flex items-center gap-2 text-[#D4AF37] text-sm font-medium">

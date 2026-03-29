@@ -9,15 +9,15 @@ const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1668461363398-1fd41bf2c
 export const BalieHero = () => {
   const { baliaHero } = useSettings();
   const [content, setContent] = useState({
-    badge: 'Recznie robione w Polsce',
+    badge: 'Ręcznie robione w Polsce',
     headline: 'Luksus w Twoim Ogrodzie',
-    subheadline: 'Odkryj recznie robione balie i jacuzzi, ktore zmienia Twoj ogrod w prywatne SPA. Naturalne drewno, najwyzsza jakosc.',
-    ctaPrimary: 'Zaprojektuj swoja balie',
+    subheadline: 'Odkryj ręcznie robione balie i jacuzzi, które zmieniają Twój ogród w prywatne SPA. Naturalne drewno, najwyższa jakość.',
+    ctaPrimary: 'Zaprojektuj swoją balię',
     ctaSecondary: 'Zobacz produkty',
     stats: [
-      { value: '500+', label: 'Zadowolonych klientow' },
+      { value: '500+', label: 'Zadowolonych klientów' },
       { value: '2', label: 'Lata gwarancji' },
-      { value: '100%', label: 'Eko materialy' }
+      { value: '100%', label: 'Eko materiały' }
     ],
     background_image: '',
     background_video: '',
@@ -63,14 +63,14 @@ export const BalieHero = () => {
     <>
       <section className="relative min-h-screen flex items-center justify-center pt-16" data-testid="balie-hero">
         <div className="absolute inset-0">
-          <img src={bgImage} alt="Balia" className={`w-full h-full object-cover transition-opacity duration-500 ${useVideo && videoReady ? 'opacity-0' : 'opacity-100'}`} />
+          <img src={bgImage} alt="Balia" className={`w-full h-full object-cover transition-opacity duration-1000 ${useVideo && videoReady ? 'opacity-0' : 'opacity-100'}`} />
           {useVideo && (
             <video
               ref={videoRef}
               src={content.background_video}
               autoPlay muted loop playsInline preload="auto"
               onCanPlay={() => setVideoReady(true)}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
               data-testid="balie-hero-bg-video"
             />
           )}

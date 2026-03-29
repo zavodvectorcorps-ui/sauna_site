@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const defaultParts = [
-  { id: 'bowl', label: 'Gleboka misa — 100 cm', desc: 'Idealny rozmiar dla osob wyzszych. Swobodne ruchy i pelne zanurzenie.' },
-  { id: 'frame', label: 'Metalowy stelaz', desc: 'Zamiast drewna — odporny na wilgoc, korozje i odksztalcenia. Dekady uzytkowania bez konserwacji.' },
-  { id: 'cladding', label: 'Termodrewno i ukryte mocowania', desc: 'Odpornosc na pekanie i wysychanie. Wystarczy przetrzec lub spluknac.' },
-  { id: 'stove', label: 'Mocne piece z podwojnym obiegiem', desc: 'Nagrzewanie w 1-2h, nawet przy -20°C. Szybkie i efektywne.' },
-  { id: 'warranty', label: '10 lat gwarancji + 25 lat trwalosci', desc: 'Nasze balie sa budowane na pokolenia.' },
+  { id: 'bowl', label: 'Głęboka misa — 100 cm', desc: 'Idealny rozmiar dla osób wyższych. Swobodne ruchy i pełne zanurzenie.' },
+  { id: 'frame', label: 'Metalowy stelaż', desc: 'Zamiast drewna — odporny na wilgoć, korozję i odkształcenia. Dekady użytkowania bez konserwacji.' },
+  { id: 'cladding', label: 'Termodrewno i ukryte mocowania', desc: 'Odporność na pękanie i wysychanie. Wystarczy przetrzeć lub spłukać.' },
+  { id: 'stove', label: 'Mocne piece z podwójnym obiegiem', desc: 'Nagrzewanie w 1-2h, nawet przy -20°C. Szybkie i efektywne.' },
+  { id: 'warranty', label: '10 lat gwarancji + 25 lat trwałości', desc: 'Nasze balie są budowane na pokolenia.' },
 ];
 
 const SvgDiagram = () => (
@@ -115,7 +115,7 @@ const BlueprintSvg = () => (
     <path d="M360 220 L378 220" stroke="#4a9eff" strokeWidth="1.5" />
     <path d="M360 260 L378 260" stroke="#ff6b35" strokeWidth="1.5" />
     <text x="368" y="215" fill="#4a9eff" fontSize="5" textAnchor="middle">zimna</text>
-    <text x="368" y="275" fill="#ff6b35" fontSize="5" textAnchor="middle">ciepla</text>
+    <text x="368" y="275" fill="#ff6b35" fontSize="5" textAnchor="middle">ciepła</text>
     {/* Title block */}
     <rect x="310" y="370" width="180" height="25" fill="none" stroke="#4a9eff" strokeWidth="0.5" />
     <text x="400" y="386" fill="#4a9eff" fontSize="8" textAnchor="middle" opacity="0.7">WM-BALIA — Przekroj</text>
@@ -126,7 +126,7 @@ const svgComponents = { default: SvgDiagram, minimal: MinimalSvg, blueprint: Blu
 
 export const BalieSchematic = () => {
   const [title, setTitle] = useState('Budowa Balii');
-  const [subtitle, setSubtitle] = useState('Kazdy element jest starannie zaprojektowany i wykonany z najwyzszej jakosci materialow');
+  const [subtitle, setSubtitle] = useState('Każdy element jest starannie zaprojektowany i wykonany z najwyższej jakości materiałów');
   const [parts, setParts] = useState(defaultParts);
   const [image, setImage] = useState(null);
   const [svgStyle, setSvgStyle] = useState('default');

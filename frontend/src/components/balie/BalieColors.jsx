@@ -45,10 +45,10 @@ const fallbackSwatches = {
 
 const categories = [
   { id: 'fiberglass', title: 'Kolory Fiberglass', subtitle: 'Wanna z tworzywa szklano-poliestrowego: trwala, ekologiczna, gladka powierzchnia latwa w czyszczeniu' },
-  { id: 'acrylic', title: 'Kolory Akrylowe', subtitle: 'Najwyzszej jakosci tworzywo z Wloch i Austrii, wzmocnione wloknem szklanym, odporne na UV' },
+  { id: 'acrylic', title: 'Kolory Akrylowe', subtitle: 'Najwyższej jakości tworzywo z Włoch i Austrii, wzmocnione włóknem szklanym, odporne na UV' },
   { id: 'spruce', title: 'Drewno Swierkowe', subtitle: 'Naturalne drewno swierkowe z szeroka gama kolorow bejcy i olejow ochronnych' },
   { id: 'thermo', title: 'Drewno Termiczne', subtitle: 'Modyfikowane termicznie drewno o zwiekszonej trwalosci i odpornosci na warunki atmosferyczne' },
-  { id: 'wpc', title: 'Kompozyt WPC', subtitle: 'Kompozyt drewno-plastik: nowoczesny wyglad, nie wymaga konserwacji, odporny na wilgoc' },
+  { id: 'wpc', title: 'Kompozyt WPC', subtitle: 'Kompozyt drewno-plastik: nowoczesny wygląd, nie wymaga konserwacji, odporny na wilgoć' },
 ];
 
 export const BalieColors = () => {
@@ -80,7 +80,7 @@ export const BalieColors = () => {
             Kolory i <span className="text-[#D4AF37]">Materialy</span>
           </h2>
           <p className="text-white/40 text-sm max-w-2xl mx-auto">
-            Kazda balia jest wykonywana na zamowienie. Wybierz kolor wanny, rodzaj drewna zewnetrznego i wykonczenie, ktore idealnie pasuje do Twojego ogrodu.
+            Każda balia jest wykonywana na zamówienie. Wybierz kolor wanny, rodzaj drewna zewnętrznego i wykończenie, które idealnie pasuje do Twojego ogrodu.
           </p>
         </div>
 
@@ -132,7 +132,7 @@ export const BalieColors = () => {
         </div>
 
         <p className="text-center text-white/20 text-xs mt-4">
-          * Kolory na monitorze moga roznic sie od rzeczywistych. Skontaktuj sie z nami, aby otrzymac probki materialow.
+          * Kolory na monitorze mogą różnić się od rzeczywistych. Skontaktuj się z nami, aby otrzymać próbki materiałów.
         </p>
       </div>
     </section>

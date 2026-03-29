@@ -219,7 +219,7 @@ const MainLanding = () => {
               <ProductCard
                 img={baliaImg} imgPos={baliaPos} video={baliaVideo} accentColor="#D4AF37"
                 icon={Droplets} brand="WM-Balia" title="Balie i jacuzzi"
-                desc="Recznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyzsza jakosc."
+                desc="Ręcznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyższa jakość."
                 cta="Zobacz balie" onClick={() => navigate('/balie')}
                 direction="right" testId="card-balie"
               />
@@ -251,7 +251,7 @@ const MainLanding = () => {
               {[
                 { icon: Heart, title: 'Z troską o zdrowie i odpoczynek', desc: 'Sauna i balia to nie tylko luksus — to zdrowie, regeneracja i chwile spokoju dla całej rodziny.' },
                 { icon: Leaf, title: 'Naturalne, ekologiczne materiały', desc: 'Używamy wyłącznie drewna z certyfikowanych, zrównoważonych źródeł. Bez plastiku, bez kompromisów.' },
-                { icon: ShieldCheck, title: 'Bezpieczeństwo i komfort klienta', desc: 'Każdy produkt spełnia normy bezpieczeństwa. 12 miesięcy gwarancji i dedykowany serwis posprzedażowy.' },
+                { icon: ShieldCheck, title: 'Bezpieczeństwo i komfort klienta', desc: 'Każdy produkt spełnia normy bezpieczeństwa. 24 miesiące gwarancji i dedykowany serwis posprzedażowy.' },
               ].map((v, i) => (
                 <div key={i} className="flex gap-4 p-5 border border-white/5 hover:border-[#C6A87C]/20 transition-colors">
                   <div className="w-10 h-10 flex items-center justify-center border border-[#C6A87C]/30 flex-shrink-0"><v.icon size={20} className="text-[#C6A87C]" /></div>

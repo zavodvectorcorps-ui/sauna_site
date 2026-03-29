@@ -69,10 +69,10 @@ const translations = {
       subtitle: 'Polska jakość i rzemiosło od 2015 roku',
       text1: 'Jesteśmy polskim producentem saun drewnianych z siedzibą w Warszawie. Od 2015 roku tworzymy sauny premium, łącząc tradycyjne rzemiosło z nowoczesnym designem.',
       text2: 'Używamy tylko najwyższej jakości drewna skandynawskiego, suszonego w komorach. Każda sauna przechodzi ponad 30 punktów kontroli jakości przed wysyłką.',
-      text3: 'Oferujemy pełny serwis — od projektu, przez produkcję, po dostawę i montaż. Gwarancja 12 miesięcy na wszystkie nasze produkty.',
+      text3: 'Oferujemy pełny serwis — od projektu, przez produkcję, po dostawę i montaż. Gwarancja 24 miesiące na wszystkie nasze produkty.',
       feature1: 'Polska produkcja',
       feature2: 'Drewno skandynawskie',
-      feature3: 'Gwarancja 12 miesięcy',
+      feature3: 'Gwarancja 24 miesiące',
       feature4: 'Dostawa w 5-10 dni',
     },
     // Contact

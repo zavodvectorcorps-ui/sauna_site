@@ -7,26 +7,26 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const defaultGifts = [
   {
     icon: 'Bath',
-    title: 'Balia do schladzania w prezencie',
-    subtitle: 'przy saunie od 3 metrow',
+    title: 'Balia do schładzania w prezencie',
+    subtitle: 'przy saunie od 3 metrów',
     value: '3 980',
-    desc: 'Idealna do schladzania po seansie w saunie. Dodajemy przy zamowieniu sauny od 3 metrow.',
+    desc: 'Idealna do schładzania po seansie w saunie. Dodajemy przy zamówieniu sauny od 3 metrów.',
     image: '',
   },
   {
     icon: 'Lightbulb',
-    title: 'Oswietlenie LED wewnatrz sauny',
-    subtitle: 'bez doplaty',
+    title: 'Oświetlenie LED wewnątrz sauny',
+    subtitle: 'bez dopłaty',
     value: '1 160',
-    desc: 'Oswietlenie LED w lazni i przebieralni. Lepsza atmosfera i komfort wieczorem.',
+    desc: 'Oświetlenie LED w łaźni i przebieralni. Lepsza atmosfera i komfort wieczorem.',
     image: '',
   },
   {
     icon: 'DoorOpen',
-    title: 'Drzwi ze szkla hartowanego',
+    title: 'Drzwi ze szkła hartowanego',
     subtitle: 'w standardzie',
     value: '530',
-    desc: 'Szklane drzwi hartowane 8mm w standardzie. Wiecej swiatla i nowoczesny wyglad.',
+    desc: 'Szklane drzwi hartowane 8mm w standardzie. Więcej światła i nowoczesny wygląd.',
     image: '',
   },
 ];
@@ -88,11 +88,11 @@ export const SpecialOffer = () => {
             <span className="text-[#C6A87C] text-xs font-semibold tracking-wider uppercase">Specjalna oferta</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] mb-3">
-            Przy zamowieniu sauny otrzymujesz dodatki<br className="hidden sm:block" />
-            <span className="text-[#C6A87C]">o realnej wartosci</span>
+            Przy zamówieniu sauny otrzymujesz dodatki<br className="hidden sm:block" />
+            <span className="text-[#C6A87C]">o realnej wartości</span>
           </h2>
           <p className="text-sm sm:text-base text-[#595959] max-w-xl mx-auto">
-            Ktore zwiekszaja komfort korzystania z sauny. Oferta obowiazuje do konca miesiaca.
+            Które zwiększają komfort korzystania z sauny. Oferta obowiązuje do końca miesiąca.
           </p>
         </motion.div>
 
@@ -128,7 +128,7 @@ export const SpecialOffer = () => {
                   </div>
                   <p className="text-sm text-[#595959] mb-4 leading-relaxed">{gift.desc}</p>
                   <div className="pt-3 border-t border-black/5">
-                    <span className="text-[10px] text-[#8C8C8C] uppercase tracking-wider">Wartosc katalogowa</span>
+                    <span className="text-[10px] text-[#8C8C8C] uppercase tracking-wider">Wartość katalogowa</span>
                     <p className="text-lg font-bold text-[#1A1A1A]">{gift.value} <span className="text-sm font-normal text-[#8C8C8C]">PLN</span></p>
                   </div>
                 </div>
@@ -149,7 +149,7 @@ export const SpecialOffer = () => {
               className="flex items-center gap-2 bg-[#C6A87C] text-white px-8 py-4 font-semibold hover:bg-[#B09060] transition-colors"
               data-testid="special-offer-calc-btn"
             >
-              Sprawdz koszt sauny
+              Sprawdź koszt sauny
               <ArrowRight size={18} />
             </button>
             <button
@@ -157,12 +157,12 @@ export const SpecialOffer = () => {
               className="flex items-center gap-2 bg-[#1A1A1A] text-white px-8 py-4 font-semibold hover:bg-black transition-colors"
               data-testid="special-offer-contact-btn"
             >
-              Zachowaj oferte — zostaw kontakt
+              Zachowaj ofertę — zostaw kontakt
             </button>
           </div>
           <p className="text-[10px] text-[#8C8C8C] mt-4 max-w-md mx-auto">
-            Oferta dotyczy nowych zamowien. Balia dodawana jest przy dlugosci sauny od 3 metrow.
-            Oferta obowiazuje do konca miesiaca lub do wyczerpania puli.
+            Oferta dotyczy nowych zamówień. Balia dodawana jest przy długości sauny od 3 metrów.
+            Oferta obowiązuje do końca miesiąca lub do wyczerpania puli.
           </p>
         </motion.div>
       </div>
@@ -180,17 +180,17 @@ export const SpecialOffer = () => {
             {submitted ? (
               <div className="text-center py-6">
                 <Gift size={40} className="mx-auto text-[#C6A87C] mb-3" />
-                <h3 className="text-lg font-semibold mb-2">Dziekujemy!</h3>
-                <p className="text-sm text-[#595959]">Nasz doradca wkrotce sie z Toba skontaktuje, aby omowic szczegoly oferty specjalnej.</p>
+                <h3 className="text-lg font-semibold mb-2">Dziękujemy!</h3>
+                <p className="text-sm text-[#595959]">Nasz doradca wkrótce się z Tobą skontaktuje, aby omówić szczegóły oferty specjalnej.</p>
                 <button onClick={() => setShowForm(false)} className="mt-4 px-6 py-2 bg-[#1A1A1A] text-white text-sm hover:bg-black">Zamknij</button>
               </div>
             ) : (
               <>
-                <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">Zachowaj aktualna oferte</h3>
-                <p className="text-sm text-[#595959] mb-5">Zostaw dane, a doradca przygotuje wycene z aktualnymi gratisami.</p>
+                <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">Zachowaj aktualną ofertę</h3>
+                <p className="text-sm text-[#595959] mb-5">Zostaw dane, a doradca przygotuje wycenę z aktualnymi gratisami.</p>
                 <form onSubmit={handleSubmit} className="space-y-3">
                   <input
-                    type="text" placeholder="Imie *" required value={formData.name}
+                    type="text" placeholder="Imię *" required value={formData.name}
                     onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
                     className="w-full p-3 border border-black/10 text-sm focus:border-[#C6A87C] outline-none"
                     data-testid="special-offer-name"
@@ -207,14 +207,14 @@ export const SpecialOffer = () => {
                     className="w-full p-3 border border-black/10 text-sm focus:border-[#C6A87C] outline-none text-[#595959]"
                     data-testid="special-offer-size"
                   >
-                    <option value="">Jaka dlugosc sauny?</option>
-                    <option value="2-3m">okolo 2-3 metry</option>
+                    <option value="">Jaka długość sauny?</option>
+                    <option value="2-3m">około 2-3 metry</option>
                     <option value="3-4m">3-4 metry</option>
-                    <option value="4m+">powyzej 4 metrow</option>
+                    <option value="4m+">powyżej 4 metrów</option>
                     <option value="nie wiem">jeszcze nie wiem</option>
                   </select>
                   <textarea
-                    placeholder="Wiadomosc (opcjonalnie)" value={formData.message}
+                    placeholder="Wiadomość (opcjonalnie)" value={formData.message}
                     onChange={e => setFormData(p => ({ ...p, message: e.target.value }))}
                     rows={2} className="w-full p-3 border border-black/10 text-sm focus:border-[#C6A87C] outline-none resize-none"
                   />
@@ -223,7 +223,7 @@ export const SpecialOffer = () => {
                     className="w-full py-3 bg-[#C6A87C] text-white font-semibold hover:bg-[#B09060] transition-colors disabled:opacity-50"
                     data-testid="special-offer-submit"
                   >
-                    {submitting ? 'Wysylanie...' : 'Sprawdz koszt i zarezerwuj oferte'}
+                    {submitting ? 'Wysyłanie...' : 'Sprawdź koszt i zarezerwuj ofertę'}
                   </button>
                 </form>
               </>

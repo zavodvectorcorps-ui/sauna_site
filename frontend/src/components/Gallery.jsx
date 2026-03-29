@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -11,6 +11,7 @@ export const Gallery = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [images, setImages] = useState([]);
+  const [failedUrls, setFailedUrls] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [galleryConfig, setGalleryConfig] = useState({ hidden_api_images: [], show_api_images: true });
   const [sectionContent, setSectionContent] = useState(null);
@@ -116,6 +117,12 @@ export const Gallery = () => {
     }
   };
 
+  const handleImageError = useCallback((url) => {
+    setFailedUrls(prev => new Set([...prev, url]));
+  }, []);
+
+  const visibleImages = images.filter(img => !failedUrls.has(img.url));
+
   const openLightbox = (index) => {
     setCurrentImageIndex(index);
     setLightboxOpen(true);
@@ -129,13 +136,13 @@ export const Gallery = () => {
 
   const nextImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === images.length - 1 ? 0 : prev + 1
+      prev === visibleImages.length - 1 ? 0 : prev + 1
     );
   };
 
   const prevImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === 0 ? images.length - 1 : prev - 1
+      prev === 0 ? visibleImages.length - 1 : prev - 1
     );
   };
 
@@ -172,7 +179,7 @@ export const Gallery = () => {
           <div className="flex justify-center py-20">
             <div className="spinner" />
           </div>
-        ) : images.length === 0 ? (
+        ) : visibleImages.length === 0 ? (
           <div className="text-center py-20 text-[#8C8C8C]">
             <p>Галерея пуста</p>
           </div>
@@ -200,7 +207,7 @@ export const Gallery = () => {
                 className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-4 md:px-14 pb-4"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                {images.map((image, index) => (
+                {visibleImages.map((image, index) => (
                   <div
                     key={`${image.url}-${index}`}
                     className="flex-shrink-0 w-[280px] md:w-[350px] lg:w-[400px] snap-center cursor-pointer group"
@@ -213,6 +220,7 @@ export const Gallery = () => {
                         alt={image.alt}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
+                        onError={() => handleImageError(image.url)}
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                       <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -228,7 +236,7 @@ export const Gallery = () => {
               {/* Scroll indicator */}
               <div className="flex justify-center items-center gap-2 mt-4">
                 <span className="text-sm text-[#8C8C8C]">
-                  {images.length} zdjęć
+                  {visibleImages.length} zdjęć
                 </span>
                 <span className="text-[#C6A87C]">•</span>
                 <span className="text-sm text-[#8C8C8C]">
@@ -242,7 +250,7 @@ export const Gallery = () => {
 
       {/* Lightbox */}
       <AnimatePresence>
-        {lightboxOpen && images.length > 0 && (
+        {lightboxOpen && visibleImages.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -287,15 +295,15 @@ export const Gallery = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              src={images[currentImageIndex]?.url}
-              alt={images[currentImageIndex]?.alt}
+              src={visibleImages[currentImageIndex]?.url}
+              alt={visibleImages[currentImageIndex]?.alt}
               className="max-w-[90vw] max-h-[85vh] object-contain"
               onClick={(e) => e.stopPropagation()}
             />
 
             {/* Counter */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-sm bg-black/50 px-4 py-2">
-              {currentImageIndex + 1} / {images.length}
+              {currentImageIndex + 1} / {visibleImages.length}
             </div>
           </motion.div>
         )}

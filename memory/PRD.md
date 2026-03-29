@@ -67,6 +67,16 @@
 - API: GET/PUT /api/settings/sauna-advantages, /api/admin/settings/sauna-advantages
 - Исправлен overflow сайдбара админки (overflow-y-auto вместо overflow-hidden)
 
+### Фаза 6.1 — Комплексные исправления (2026-03-29)
+- Плавный переход фото→видео в Hero секциях (увеличена длительность transition до 1000ms)
+- Уменьшен отступ сверху в блоке "7 фактов" (py-16→py-10, mb-14→mb-10)
+- Галерея "Nasze realizacje": добавлена фильтрация битых Cloudinary-изображений (onError скрывает)
+- Исправлены все польские диакритики (ą,ę,ó,ś,ź,ż,ć,ń) в ~25 файлах и БД — SpecialOffer, BalieHero, BalieFeatures, BalieColors, BalieInstallment, BalieStoveScheme, BalieSchematic, BalieProducts, BalieContact, Calculator, Models, SaunaInstallment, MainLanding + админ-компоненты
+- Гарантия унифицирована: везде 24 miesiące (было 12 в некоторых местах)
+- Добавлен FAQ для купелей (BalieFaq.jsx) — 6 вопросов, аккордеон, SEO schema.org
+- Добавлена админка FAQ купелей (BaliaFaqAdmin.jsx) с загрузкой фото
+- API: GET/PUT /api/settings/balia-faq, /api/admin/settings/balia-faq
+
 ## Бэклог
 ### P1 — Мультиязычность
 - Интеграция i18next (PL/RU/EN)

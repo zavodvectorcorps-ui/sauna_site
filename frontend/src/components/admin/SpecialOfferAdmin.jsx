@@ -4,9 +4,9 @@ import { Save, Upload, Trash2, Plus, Image, GripVertical } from 'lucide-react';
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const defaultCards = [
-  { icon: 'Bath', title: 'Balia do schladzania w prezencie', subtitle: 'przy saunie od 3 metrow', value: '3 980', desc: 'Idealna do schladzania po seansie w saunie. Dodajemy przy zamowieniu sauny od 3 metrow.', image: '' },
-  { icon: 'Lightbulb', title: 'Oswietlenie LED wewnatrz sauny', subtitle: 'bez doplaty', value: '1 160', desc: 'Oswietlenie LED w lazni i przebieralni. Lepsza atmosfera i komfort wieczorem.', image: '' },
-  { icon: 'DoorOpen', title: 'Drzwi ze szkla hartowanego', subtitle: 'w standardzie', value: '530', desc: 'Szklane drzwi hartowane 8mm w standardzie. Wiecej swiatla i nowoczesny wyglad.', image: '' },
+  { icon: 'Bath', title: 'Balia do schładzania w prezencie', subtitle: 'przy saunie od 3 metrów', value: '3 980', desc: 'Idealna do schładzania po seansie w saunie. Dodajemy przy zamówieniu sauny od 3 metrów.', image: '' },
+  { icon: 'Lightbulb', title: 'Oświetlenie LED wewnątrz sauny', subtitle: 'bez dopłaty', value: '1 160', desc: 'Oświetlenie LED w łaźni i przebieralni. Lepsza atmosfera i komfort wieczorem.', image: '' },
+  { icon: 'DoorOpen', title: 'Drzwi ze szkła hartowanego', subtitle: 'w standardzie', value: '530', desc: 'Szklane drzwi hartowane 8mm w standardzie. Więcej światła i nowoczesny wygląd.', image: '' },
 ];
 
 const ICON_OPTIONS = ['Bath', 'Lightbulb', 'DoorOpen', 'Gift'];

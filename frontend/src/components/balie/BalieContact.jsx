@@ -59,7 +59,7 @@ export const BalieContact = () => {
             <div className="text-center py-8">
               <CheckCircle size={48} className="mx-auto text-green-400 mb-4" />
               <h3 className="text-xl font-semibold text-white mb-2">Dziekujemy!</h3>
-              <p className="text-white/50 mb-4">Skontaktujemy sie z Toba wkrotce.</p>
+              <p className="text-white/50 mb-4">Skontaktujemy się z Tobą wkrótce.</p>
               {catalogAvailable && (
                 <a
                   href={`${API}/api/catalog/download`}
@@ -83,7 +83,7 @@ export const BalieContact = () => {
               <textarea placeholder="Wiadomosc" rows={3} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
                 className="w-full p-3 bg-[#1A1E27] border border-white/10 text-white text-sm focus:border-[#D4AF37] outline-none placeholder-white/30 resize-none" />
               <button type="submit" disabled={submitting} className="w-full py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors disabled:opacity-50 flex items-center justify-center gap-2" data-testid="balie-contact-submit">
-                <Send size={16} /> {submitting ? 'Wysylanie...' : 'Wyslij wiadomosc'}
+                <Send size={16} /> {submitting ? 'Wysyłanie...' : 'Wyślij wiadomość'}
               </button>
             </form>
           )}
