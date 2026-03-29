@@ -2,5 +2,5 @@
 
 ## Admin Panel
 - URL: /admin
-- Login: admin
+- Username: admin
 - Password: 220066
