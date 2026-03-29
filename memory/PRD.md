@@ -49,14 +49,22 @@
 - resolveMediaUrl хелпер — относительные пути /api/images/xxx → полные URL
 - Все URL в БД — относительные
 
-## Key API Endpoints (новые)
+### Multilingual UI (Mar 2026)
+- **4 языка**: Польский (PL, по умолчанию), Английский (EN), Немецкий (DE), Чешский (CS)
+- **Переключатель языков** на всех страницах: MainLanding, Sauny, Balie, Blog, B2B
+- **Переведённые секции**: навигация, герой, калькулятор, галерея, склад, отзывы, о компании, контакт, футер
+- **Общий компонент** `LanguageSwitcher.jsx` (dropdown с иконкой Globe)
+- **Хранение**: localStorage ключ `wm-sauna-lang`
+- Статьи блога и динамический контент из БД остаются на польском
+
+## Key API Endpoints
 - GET/PUT `/api/settings/promo-banner`
 - GET/PUT `/api/settings/balie-about`
 - GET/PUT `/api/settings/balie-contact`
 - GET/PUT `/api/settings/balie-installment`
+- GET/PUT `/api/settings/section_visibility`
 
 ## Backlog
-- P1: i18next мультиязычность (PL/RU/EN)
 - P2: Toast обработка ошибок (глобальная)
 - P3: A/B тестирование CTA
 - P4: Рефакторинг server.py (>2600 строк) → отдельные роуты
