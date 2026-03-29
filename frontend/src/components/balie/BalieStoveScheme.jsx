@@ -6,11 +6,11 @@ const API = process.env.REACT_APP_BACKEND_URL;
 const defaultStoveTypes = [
   {
     id: 'internal',
-    title: 'Piec wewnetrzny',
+    title: 'Piec wewnętrzny',
     subtitle: 'Zintegrowany w balii',
     image: null,
     features: ['Montaż wewnątrz misy balii','Bezpośredni kontakt z wodą — szybsze nagrzewanie','Kompaktowa konstrukcja','Idealny dla mniejszych przestrzeni'],
-    pros: ['Szybsze nagrzewanie','Mniej miejsca na zewnatrz'],
+    pros: ['Szybsze nagrzewanie','Mniej miejsca na zewnątrz'],
     cons: ['Mniejsza przestrzen kapielowa'],
   },
   {
@@ -47,7 +47,7 @@ const ExternalSvg = () => (
     <path d="M350 130 L340 130 Q325 130 325 140 L325 150 Q325 160 315 160 L300 160" fill="none" stroke="#e85050" strokeWidth="3" />
     <polygon points="303,155 297,160 303,165" fill="#e85050" />
     <text x="325" y="120" fill="#e85050" fontSize="9" fontWeight="bold">ciepła woda</text>
-    <text x="180" y="290" fill="white" fontSize="10" textAnchor="middle" opacity="0.5">Podwojny obieg wody</text>
+    <text x="180" y="290" fill="white" fontSize="10" textAnchor="middle" opacity="0.5">Podwójny obieg wody</text>
     <text x="180" y="305" fill="white" fontSize="8" textAnchor="middle" opacity="0.3">Nagrzewanie 1-2h nawet przy -20°C</text>
   </svg>
 );
@@ -107,7 +107,7 @@ const ExternalMinimalSvg = () => (
     {/* Chimney line */}
     <line x1="390" y1="140" x2="390" y2="90" stroke="#D4AF37" strokeWidth="1" opacity="0.5" />
     <circle cx="390" cy="85" r="5" fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.5" />
-    <text x="250" y="300" fill="white" fontSize="10" textAnchor="middle" opacity="0.3">Podwojny obieg wody</text>
+    <text x="250" y="300" fill="white" fontSize="10" textAnchor="middle" opacity="0.3">Podwójny obieg wody</text>
   </svg>
 );
 
@@ -154,7 +154,7 @@ const ExternalDetailedSvg = () => (
     <path d="M300 175 L340 175" stroke="#4a9eff" strokeWidth="2.5" />
     <text x="320" y="168" fill="#4a9eff" fontSize="7" textAnchor="middle">IN (zimna)</text>
     <path d="M340 135 L300 135" stroke="#ff6b35" strokeWidth="2.5" />
-    <text x="320" y="128" fill="#ff6b35" fontSize="7" textAnchor="middle">OUT (ciepla)</text>
+    <text x="320" y="128" fill="#ff6b35" fontSize="7" textAnchor="middle">OUT (ciepła)</text>
     {/* Chimney */}
     <rect x="372" y="40" width="16" height="60" fill="none" stroke="#ff6b35" strokeWidth="1" strokeDasharray="4 2" />
     <text x="380" y="35" fill="#ff6b35" fontSize="6" textAnchor="middle">komin</text>

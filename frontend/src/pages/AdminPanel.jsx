@@ -11,6 +11,10 @@ import { BaliaCatalogAdmin } from '../components/admin/BaliaCatalogAdmin';
 import { BaliaColorsAdmin } from '../components/admin/BaliaColorsAdmin';
 import { BaliaCardOptionsAdmin } from '../components/admin/BaliaCardOptionsAdmin';
 import { BaliaFaqAdmin } from '../components/admin/BaliaFaqAdmin';
+import { BlogAdmin } from '../components/admin/BlogAdmin';
+import { SaunaVideoReviewsAdmin } from '../components/admin/SaunaVideoReviewsAdmin';
+import { B2BAdmin } from '../components/admin/B2BAdmin';
+import { WhatsAppAdmin } from '../components/admin/WhatsAppAdmin';
 import { SaunaMessagesAdmin } from '../components/admin/SaunaMessagesAdmin';
 import { SaunaDesignAdmin } from '../components/admin/SaunaDesignAdmin';
 import { SaunaContentAdmin } from '../components/admin/SaunaContentAdmin';
@@ -172,6 +176,34 @@ const AdminPanel = () => {
         { id: 'balia_integrations', label: 'Интеграции', icon: Settings },
       ],
     },
+    {
+      id: 'blog',
+      label: 'Блог',
+      icon: FileText,
+      color: '#8B5CF6',
+      tabs: [
+        { id: 'blog_articles', label: 'Статьи', icon: FileText },
+      ],
+    },
+    {
+      id: 'b2b_group',
+      label: 'B2B',
+      icon: Users,
+      color: '#059669',
+      tabs: [
+        { id: 'b2b', label: 'Настройки B2B', icon: Users },
+      ],
+    },
+    {
+      id: 'global',
+      label: 'Глобальные',
+      icon: Settings,
+      color: '#D97706',
+      tabs: [
+        { id: 'whatsapp', label: 'WhatsApp', icon: MessageSquare },
+        { id: 'video_reviews', label: 'Видео-обзоры', icon: Eye },
+      ],
+    },
   ];
 
   // Map tab IDs to components
@@ -235,6 +267,14 @@ const AdminPanel = () => {
         return <BaliaCatalogAdmin {...props} />;
       case 'balia_integrations':
         return <BaliaIntegrationsAdmin {...props} />;
+      case 'blog_articles':
+        return <BlogAdmin {...props} />;
+      case 'video_reviews':
+        return <SaunaVideoReviewsAdmin {...props} />;
+      case 'b2b':
+        return <B2BAdmin {...props} />;
+      case 'whatsapp':
+        return <WhatsAppAdmin {...props} />;
       default:
         return null;
     }

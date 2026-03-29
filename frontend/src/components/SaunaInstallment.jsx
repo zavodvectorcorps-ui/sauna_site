@@ -6,7 +6,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const defaultItems = [
   { icon: Calendar, title: 'Od 4 do 20 miesięcy', desc: 'Elastyczny okres spłaty' },
-  { icon: Percent, title: '0% nadplaty', desc: 'Bez ukrytych kosztow' },
+  { icon: Percent, title: '0% nadpłaty', desc: 'Bez ukrytych kosztów' },
   { icon: CreditCard, title: 'Rata od 500 zl/mc', desc: 'Przystepna miesieczna rata' },
   { icon: Truck, title: 'Darmowa dostawa', desc: 'Na terenie całej Polski' },
 ];

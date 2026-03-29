@@ -13,7 +13,7 @@ const DEFAULT_SCHEMATIC = {
     { id: 'bowl', label: 'Gleboka misa — 100 cm', desc: 'Idealny rozmiar dla osob wyzszych.' },
     { id: 'frame', label: 'Metalowy stelaz', desc: 'Odporny na wilgoc, korozje i odksztalcenia.' },
     { id: 'cladding', label: 'Termodrewno i ukryte mocowania', desc: 'Odpornosc na pekanie i wysychanie.' },
-    { id: 'stove', label: 'Mocne piece z podwojnym obiegiem', desc: 'Nagrzewanie w 1-2h, nawet przy -20°C.' },
+    { id: 'stove', label: 'Mocne piece z podwójnym obiegiem', desc: 'Nagrzewanie w 1-2h, nawet przy -20°C.' },
     { id: 'warranty', label: '10 lat gwarancji + 25 lat trwałości', desc: 'Budowane na pokolenia.' },
   ],
 };
@@ -22,14 +22,14 @@ const DEFAULT_STOVE = {
   title: 'Jak dziala piec?',
   subtitle: 'Oferujemy dwa typy piecow na drewno ze stali nierdzewnej V4A.',
   types: [
-    { id: 'internal', title: 'Piec wewnetrzny', subtitle: 'Zintegrowany w balii', image: null, features: ['Montaz wewnatrz misy balii','Bezposredni kontakt z woda','Kompaktowa konstrukcja','Idealny dla mniejszych przestrzeni'], pros: ['Szybsze nagrzewanie','Mniej miejsca na zewnatrz'], cons: ['Mniejsza przestrzen kapielowa'] },
+    { id: 'internal', title: 'Piec wewnętrzny', subtitle: 'Zintegrowany w balii', image: null, features: ['Montaż wewnątrz misy balii','Bezpośredni kontakt z wodą','Kompaktowa konstrukcja','Idealny dla mniejszych przestrzeni'], pros: ['Szybsze nagrzewanie','Mniej miejsca na zewnątrz'], cons: ['Mniejsza przestrzeń kąpielowa'] },
     { id: 'external', title: 'Piec zewnętrzny', subtitle: 'Z podwójnym obiegiem wody', image: null, features: ['Montaż poza misą balii','Podwójny obieg wody','Pełna przestrzeń kąpielowa','Łatwiejszy dostęp do palenia'], pros: ['Większa przestrzeń w balii','Wygodniejsze dołożenie drewna'], cons: ['Wymaga więcej miejsca na zewnątrz'] },
   ],
 };
 
 const DEFAULT_FEATURES = [
   { icon: 'ShieldCheck', title: '2 Lata Gwarancji', desc: 'Pełne bezpieczeństwo i wsparcie serwisowe.', active: true },
-  { icon: 'Hammer', title: 'Reczna Produkcja', desc: 'Kazdy detal dopracowany przez rzemieslnikow.', active: true },
+  { icon: 'Hammer', title: 'Ręczna Produkcja', desc: 'Każdy detal dopracowany przez rzemieślników.', active: true },
   { icon: 'Leaf', title: 'Eko Materialy', desc: 'Modrzew syberyjski z certyfikowanych zrodel.', active: true },
 ];
 const DEFAULT_OPTIONS = [
@@ -40,7 +40,7 @@ const DEFAULT_OPTIONS = [
 ];
 const DEFAULT_BADGES = [
   { icon: 'Truck', title: 'Dostawa w całej Polsce', active: true },
-  { icon: 'Wrench', title: 'Montaz w cenie', active: true },
+  { icon: 'Wrench', title: 'Montaż w cenie', active: true },
   { icon: 'Award', title: 'Certyfikat FSC', active: true },
   { icon: 'Flag', title: 'Made in Poland', active: true },
 ];

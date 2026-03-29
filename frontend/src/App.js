@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider } from "./context/LanguageContext";
 import { SettingsProvider, useSettings } from "./context/SettingsContext";
+import BlogPage from "./pages/BlogPage";
+import BlogArticlePage from "./pages/BlogArticlePage";
 import { SeoHead } from "./components/SeoHead";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
@@ -24,9 +26,12 @@ import { PromoBanner } from "./components/PromoBanner";
 import { SpecialOffer } from "./components/SpecialOffer";
 import { SaunaInstallment } from "./components/SaunaInstallment";
 import { SaunaAdvantages } from "./components/SaunaAdvantages";
+import { SaunaVideoReviews } from "./components/SaunaVideoReviews";
+import { WhatsAppButton } from "./components/WhatsAppButton";
 import AdminPanel from "./pages/AdminPanel";
 import PipelineView from "./pages/PipelineView";
 import MainLanding from "./pages/MainLanding";
+import B2BPage from "./pages/B2BPage";
 import { BalieLandingPage } from "./components/balie/BalieLandingPage";
 import { BalieConfigurator } from "./components/balie/BalieConfigurator";
 
@@ -88,6 +93,7 @@ const MainContent = () => {
             {sectionKey === 'models' && <>
               <PromoFeatures />
               <SaunaAdvantages />
+              <SaunaVideoReviews />
               <PromoBanner />
               <SaunaInstallment />
             </>}
@@ -129,11 +135,15 @@ function App() {
               {/* Balie pages */}
               <Route path="/balie" element={<BalieLandingPage />} />
               <Route path="/balie/konfigurator" element={<BalieConfigurator />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:slug" element={<BlogArticlePage />} />
+              <Route path="/b2b" element={<B2BPage />} />
 
               {/* Admin */}
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/admin/pipeline" element={<PipelineView />} />
             </Routes>
+            <WhatsAppButton />
           </BrowserRouter>
         </SettingsProvider>
       </LanguageProvider>

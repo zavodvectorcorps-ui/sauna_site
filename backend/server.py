@@ -388,6 +388,44 @@ class SpecialOfferSettings(BaseModel):
     id: str = "special_offer_settings"
     cards: List[Dict[str, Any]] = []
 
+class VideoReviewItem(BaseModel):
+    id: str = ""
+    youtube_url: str = ""
+    title: str = ""
+    description: str = ""
+    sort_order: int = 0
+
+class SaunaVideoReviewsSettings(BaseModel):
+    id: str = "sauna_video_reviews_settings"
+    title: str = "Wideo-recenzje naszych saun"
+    subtitle: str = "Zobacz, jak nasze sauny wyglądają w rzeczywistości"
+    items: List[VideoReviewItem] = []
+
+class B2BSettings(BaseModel):
+    id: str = "b2b_settings"
+    hero_title: str = "Współpraca B2B"
+    hero_subtitle: str = "Zostań partnerem WM Group i rozwijaj swój biznes"
+    hero_image: str = ""
+    benefits_title: str = "Dlaczego warto współpracować?"
+    benefits: List[Dict[str, Any]] = [
+        {"id": "b1", "icon": "TrendingUp", "title": "Atrakcyjne marże", "desc": "Oferujemy konkurencyjne ceny hurtowe i elastyczne warunki współpracy dla partnerów biznesowych."},
+        {"id": "b2", "icon": "Truck", "title": "Szybka realizacja", "desc": "Gotowe produkty w 5-10 dni roboczych. Logistyka i dostawa na terenie całej Polski i Europy."},
+        {"id": "b3", "icon": "Users", "title": "Wsparcie marketingowe", "desc": "Zapewniamy materiały marketingowe, zdjęcia produktów i wsparcie w sprzedaży."},
+        {"id": "b4", "icon": "ShieldCheck", "title": "Gwarancja jakości", "desc": "Wszystkie produkty objęte 24-miesięczną gwarancją. Kontrola jakości w ponad 30 punktach."},
+    ]
+    cta_title: str = "Zainteresowany współpracą?"
+    cta_description: str = "Skontaktuj się z naszym działem B2B, aby omówić warunki współpracy."
+    cta_phone: str = "+48 732 099 201"
+    cta_email: str = "b2b@wm-sauna.pl"
+
+class WhatsAppSettings(BaseModel):
+    id: str = "whatsapp_settings"
+    enabled: bool = True
+    phone_number: str = "+48732099201"
+    default_message_pl: str = "Dzień dobry! Chciałbym zapytać o ofertę WM Group."
+    default_message_en: str = "Hello! I would like to ask about WM Group offer."
+    show_on_all_pages: bool = True
+
 class IntegrationSettings(BaseModel):
     id: str = "integration_settings"
     # Telegram
@@ -962,6 +1000,27 @@ async def get_sauna_advantages_public():
     return settings
 
 
+@api_router.get("/settings/video-reviews")
+async def get_video_reviews_public():
+    settings = await db.settings.find_one({"id": "sauna_video_reviews_settings"}, {"_id": 0})
+    if not settings:
+        return SaunaVideoReviewsSettings().model_dump()
+    return settings
+
+@api_router.get("/settings/b2b")
+async def get_b2b_settings_public():
+    settings = await db.settings.find_one({"id": "b2b_settings"}, {"_id": 0})
+    if not settings:
+        return B2BSettings().model_dump()
+    return settings
+
+@api_router.get("/settings/whatsapp")
+async def get_whatsapp_settings_public():
+    settings = await db.settings.find_one({"id": "whatsapp_settings"}, {"_id": 0})
+    if not settings:
+        return WhatsAppSettings().model_dump()
+    return settings
+
 @api_router.get("/settings/social-proof")
 async def get_social_proof_public():
     settings = await db.settings.find_one({"id": "social_proof_settings"}, {"_id": 0})
@@ -1225,6 +1284,55 @@ async def update_sauna_advantages(settings: SaunaAdvantagesSettings, username: s
         upsert=True
     )
     return {"status": "success"}
+
+
+@api_router.put("/admin/settings/video-reviews")
+async def update_video_reviews(settings: SaunaVideoReviewsSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "sauna_video_reviews_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/b2b")
+async def update_b2b_settings(settings: B2BSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "b2b_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/whatsapp")
+async def update_whatsapp_settings(settings: WhatsAppSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one(
+        {"id": "whatsapp_settings"},
+        {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.get("/admin/settings/video-reviews")
+async def get_admin_video_reviews(username: str = Depends(verify_admin)):
+    settings = await db.settings.find_one({"id": "sauna_video_reviews_settings"}, {"_id": 0})
+    if not settings:
+        return SaunaVideoReviewsSettings().model_dump()
+    return settings
+
+@api_router.get("/admin/settings/b2b")
+async def get_admin_b2b_settings(username: str = Depends(verify_admin)):
+    settings = await db.settings.find_one({"id": "b2b_settings"}, {"_id": 0})
+    if not settings:
+        return B2BSettings().model_dump()
+    return settings
+
+@api_router.get("/admin/settings/whatsapp")
+async def get_admin_whatsapp_settings(username: str = Depends(verify_admin)):
+    settings = await db.settings.find_one({"id": "whatsapp_settings"}, {"_id": 0})
+    if not settings:
+        return WhatsAppSettings().model_dump()
+    return settings
 
 
 @api_router.put("/admin/settings/social-proof")
@@ -2223,6 +2331,107 @@ async def upload_balia_schematic_image(file: UploadFile = File(...), username: s
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+
+# ============ BLOG ENDPOINTS ============
+
+class BlogArticle(BaseModel):
+    slug: str = ""
+    title: str = ""
+    meta_description: str = ""
+    category: str = "sauny"
+    tags: List[str] = []
+    cover_image: str = ""
+    content: str = ""
+    excerpt: str = ""
+    author: str = "WM Group"
+    published: bool = False
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+
+def slugify(text: str) -> str:
+    text = text.lower().strip()
+    for k, v in {'ą':'a','ć':'c','ę':'e','ł':'l','ń':'n','ó':'o','ś':'s','ź':'z','ż':'z'}.items():
+        text = text.replace(k, v)
+    import re as _re
+    text = _re.sub(r'[^a-z0-9\s-]', '', text)
+    text = _re.sub(r'[\s]+', '-', text)
+    return _re.sub(r'-+', '-', text).strip('-')
+
+
+@api_router.get("/blog/articles")
+async def get_blog_articles(category: Optional[str] = None):
+    query = {"published": True}
+    if category:
+        query["category"] = category
+    articles = []
+    async for doc in db.blog_articles.find(query, {"_id": 0, "content": 0}).sort("created_at", -1):
+        articles.append(doc)
+    return articles
+
+
+@api_router.get("/blog/articles/{slug}")
+async def get_blog_article(slug: str):
+    article = await db.blog_articles.find_one({"slug": slug}, {"_id": 0})
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    return article
+
+
+@api_router.get("/blog/categories")
+async def get_blog_categories():
+    pipeline = [
+        {"$match": {"published": True}},
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    cats = []
+    async for doc in db.blog_articles.aggregate(pipeline):
+        cats.append({"id": doc["_id"], "count": doc["count"]})
+    return cats
+
+
+@api_router.post("/admin/blog/articles")
+async def create_blog_article(article: BlogArticle, username: str = Depends(verify_admin)):
+    if not article.slug:
+        article.slug = slugify(article.title)
+    existing = await db.blog_articles.find_one({"slug": article.slug})
+    if existing:
+        raise HTTPException(status_code=400, detail="Article with this slug already exists")
+    now = datetime.now(timezone.utc).isoformat()
+    data = article.model_dump()
+    data["created_at"] = now
+    data["updated_at"] = now
+    await db.blog_articles.insert_one(data)
+    return {"status": "success", "slug": article.slug}
+
+
+@api_router.put("/admin/blog/articles/{slug}")
+async def update_blog_article(slug: str, article: BlogArticle, username: str = Depends(verify_admin)):
+    data = article.model_dump()
+    data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.blog_articles.update_one({"slug": slug}, {"$set": data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Article not found")
+    return {"status": "success"}
+
+
+@api_router.delete("/admin/blog/articles/{slug}")
+async def delete_blog_article(slug: str, username: str = Depends(verify_admin)):
+    result = await db.blog_articles.delete_one({"slug": slug})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Article not found")
+    return {"status": "success"}
+
+
+@api_router.get("/admin/blog/articles")
+async def admin_get_blog_articles(username: str = Depends(verify_admin)):
+    articles = []
+    async for doc in db.blog_articles.find({}, {"_id": 0}).sort("created_at", -1):
+        articles.append(doc)
+    return articles
 
 
 # Include the router

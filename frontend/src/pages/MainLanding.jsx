@@ -202,6 +202,12 @@ const MainLanding = () => {
       <header className="py-8 px-6 text-center">
         <h1 className="text-xl font-bold tracking-[0.3em] text-white uppercase">WM Group</h1>
         <p className="text-white/30 text-xs tracking-widest mt-1">SAUNY &bull; BALIE &bull; SPA</p>
+        <nav className="mt-4 flex justify-center gap-6">
+          <button onClick={() => navigate('/sauny')} className="text-white/50 hover:text-[#C6A87C] text-sm transition-colors">Sauny</button>
+          <button onClick={() => navigate('/balie')} className="text-white/50 hover:text-[#D4AF37] text-sm transition-colors">Balie</button>
+          <button onClick={() => navigate('/blog')} className="text-white/50 hover:text-white text-sm transition-colors">Blog</button>
+          <button onClick={() => navigate('/b2b')} className="text-white/50 hover:text-[#059669] text-sm transition-colors" data-testid="nav-b2b">B2B</button>
+        </nav>
       </header>
 
       {/* Product cards */}
@@ -238,7 +244,7 @@ const MainLanding = () => {
                 <span className="text-[#C6A87C] text-xs font-semibold tracking-[0.15em] uppercase">Warszawa, Polska</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 leading-tight">
-                Polski producent saun i kupieli<br />
+                Polski producent saun i balii<br />
                 <span className="text-[#C6A87C]">od 2015 roku</span>
               </h2>
               <div className="space-y-4 text-white/50 text-sm leading-relaxed">
