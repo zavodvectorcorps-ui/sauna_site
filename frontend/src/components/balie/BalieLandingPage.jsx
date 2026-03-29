@@ -15,10 +15,11 @@ import { BalieSchematic } from './BalieSchematic';
 import { BalieStoveScheme } from './BalieStoveScheme';
 
 import { BalieFaq } from './BalieFaq';
+import { OrderProcess } from '../OrderProcess';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-const DEFAULT_ORDER = ['hero','features','products','installment','colors','options','schematic','stove','about','gallery','faq','testimonials','contact'];
+const DEFAULT_ORDER = ['hero','features','products','installment','colors','options','schematic','stove','about','gallery','faq','orderprocess','testimonials','contact'];
 
 const sectionComponents = {
   hero: () => <BalieHero />,
@@ -32,6 +33,7 @@ const sectionComponents = {
   about: ({ enabled }) => enabled ? <BalieAbout /> : null,
   gallery: () => <BalieGallery />,
   faq: () => <BalieFaq />,
+  orderprocess: () => <OrderProcess type="balia" />,
   testimonials: () => <BalieTestimonials />,
   contact: () => <BalieContact />,
 };
@@ -44,7 +46,15 @@ export const BalieLandingPage = () => {
   useEffect(() => {
     fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
       setPromoBlocks(data?.promo_blocks || null);
-      if (data?.section_order?.length) setSectionOrder(data.section_order);
+      if (data?.section_order?.length) {
+        const order = [...data.section_order];
+        if (!order.includes('orderprocess')) {
+          const faqIdx = order.indexOf('faq');
+          if (faqIdx !== -1) order.splice(faqIdx + 1, 0, 'orderprocess');
+          else order.push('orderprocess');
+        }
+        setSectionOrder(order);
+      }
     }).catch(() => {});
   }, []);
 

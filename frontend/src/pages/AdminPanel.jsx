@@ -15,6 +15,7 @@ import { BlogAdmin } from '../components/admin/BlogAdmin';
 import { SaunaVideoReviewsAdmin } from '../components/admin/SaunaVideoReviewsAdmin';
 import { B2BAdmin } from '../components/admin/B2BAdmin';
 import { WhatsAppAdmin } from '../components/admin/WhatsAppAdmin';
+import { OrderProcessAdmin } from '../components/admin/OrderProcessAdmin';
 import { SaunaMessagesAdmin } from '../components/admin/SaunaMessagesAdmin';
 import { SaunaDesignAdmin } from '../components/admin/SaunaDesignAdmin';
 import { SaunaContentAdmin } from '../components/admin/SaunaContentAdmin';
@@ -148,6 +149,7 @@ const AdminPanel = () => {
         { id: 'calculator', label: 'Калькулятор', icon: LayoutGrid },
         { id: 'reviews', label: 'Отзывы', icon: Star },
         { id: 'faq', label: 'FAQ', icon: FileText },
+        { id: 'order_process_sauna', label: 'Процесс заказа', icon: GripVertical },
         { id: 'promo_features', label: 'Преимущества', icon: Star },
         { id: 'advantages', label: '7 фактов', icon: Star },
         { id: 'layout', label: 'Оформление', icon: LayoutGrid },
@@ -172,6 +174,7 @@ const AdminPanel = () => {
         { id: 'balia_testimonials', label: 'Отзывы', icon: Star },
         { id: 'balia_content', label: 'Контент', icon: FileText },
         { id: 'balia_faq', label: 'FAQ', icon: FileText },
+        { id: 'order_process_balia', label: 'Процесс заказа', icon: GripVertical },
         { id: 'balia_catalog', label: 'Каталог', icon: FileText },
         { id: 'balia_integrations', label: 'Интеграции', icon: Settings },
       ],
@@ -275,6 +278,10 @@ const AdminPanel = () => {
         return <B2BAdmin {...props} />;
       case 'whatsapp':
         return <WhatsAppAdmin {...props} />;
+      case 'order_process_sauna':
+        return <OrderProcessAdmin {...props} type="sauna" />;
+      case 'order_process_balia':
+        return <OrderProcessAdmin {...props} type="balia" />;
       default:
         return null;
     }

@@ -429,6 +429,32 @@ class WhatsAppSettings(BaseModel):
     default_message_en: str = "Hello! I would like to ask about WM Group offer."
     show_on_all_pages: bool = True
 
+class OrderProcessSettings(BaseModel):
+    id: str = "order_process_settings"
+    title: str = "Jak wygląda proces zamówienia?"
+    subtitle: str = "Od pierwszego kontaktu do gotowej sauny — przejrzysty proces w 5 prostych krokach"
+    steps: List[Dict[str, Any]] = [
+        {"id": "s1", "number": "1", "title": "Zostaw kontakt", "desc": "Wypełnij formularz lub zadzwoń. Nasz doradca skontaktuje się z Tobą w ciągu 24 godzin."},
+        {"id": "s2", "number": "2", "title": "Doprecyzujemy konfigurację", "desc": "Wspólnie dobierzemy model, rozmiar, materiały i wyposażenie dopasowane do Twoich potrzeb."},
+        {"id": "s3", "number": "3", "title": "Wycenimy i ustalimy termin", "desc": "Otrzymasz szczegółową wycenę i propozycję terminu realizacji — zwykle 5–10 dni roboczych."},
+        {"id": "s4", "number": "4", "title": "Wyprodukujemy z dbałością o detale", "desc": "Twoja sauna powstaje w naszym zakładzie. Kontrola jakości w ponad 30 punktach przed wysyłką."},
+        {"id": "s5", "number": "5", "title": "Dostarczymy i gotowe!", "desc": "Dostarczamy saunę pod wskazany adres na terenie Polski i Europy. Możliwość montażu na miejscu."},
+    ]
+    show_on_sauny: bool = True
+    show_on_balie: bool = True
+
+class BaliaOrderProcessSettings(BaseModel):
+    id: str = "balia_order_process_settings"
+    title: str = "Jak zamówić balię?"
+    subtitle: str = "Prosty i przejrzysty proces — od kontaktu do gotowej balii w Twoim ogrodzie"
+    steps: List[Dict[str, Any]] = [
+        {"id": "bs1", "number": "1", "title": "Zostaw kontakt", "desc": "Wypełnij formularz lub zadzwoń. Doradca skontaktuje się z Tobą w ciągu 24 godzin."},
+        {"id": "bs2", "number": "2", "title": "Dobierzemy idealny model", "desc": "Pomożemy wybrać rozmiar, rodzaj drewna, piec i dodatkowe wyposażenie dopasowane do Twoich oczekiwań."},
+        {"id": "bs3", "number": "3", "title": "Wycenimy i potwierdzimy termin", "desc": "Otrzymasz szczegółową wycenę. Realizacja zwykle w 5–10 dni roboczych."},
+        {"id": "bs4", "number": "4", "title": "Wyprodukujemy z najwyższą starannością", "desc": "Twoja balia powstaje z wyselekcjonowanego drewna. Kontrola jakości na każdym etapie produkcji."},
+        {"id": "bs5", "number": "5", "title": "Dostarczymy i gotowe!", "desc": "Dostawa pod wskazany adres. Napełniasz wodę, rozpalasz piec — i cieszysz się relaksem!"},
+    ]
+
 class IntegrationSettings(BaseModel):
     id: str = "integration_settings"
     # Telegram
@@ -1024,6 +1050,20 @@ async def get_whatsapp_settings_public():
         return WhatsAppSettings().model_dump()
     return settings
 
+@api_router.get("/settings/order-process")
+async def get_order_process_public():
+    settings = await db.settings.find_one({"id": "order_process_settings"}, {"_id": 0})
+    if not settings:
+        return OrderProcessSettings().model_dump()
+    return settings
+
+@api_router.get("/settings/balia-order-process")
+async def get_balia_order_process_public():
+    settings = await db.settings.find_one({"id": "balia_order_process_settings"}, {"_id": 0})
+    if not settings:
+        return BaliaOrderProcessSettings().model_dump()
+    return settings
+
 @api_router.get("/settings/social-proof")
 async def get_social_proof_public():
     settings = await db.settings.find_one({"id": "social_proof_settings"}, {"_id": 0})
@@ -1335,6 +1375,30 @@ async def get_admin_whatsapp_settings(username: str = Depends(verify_admin)):
     settings = await db.settings.find_one({"id": "whatsapp_settings"}, {"_id": 0})
     if not settings:
         return WhatsAppSettings().model_dump()
+    return settings
+
+@api_router.put("/admin/settings/order-process")
+async def update_order_process(settings: OrderProcessSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one({"id": "order_process_settings"}, {"$set": settings.model_dump()}, upsert=True)
+    return {"status": "success"}
+
+@api_router.get("/admin/settings/order-process")
+async def get_admin_order_process(username: str = Depends(verify_admin)):
+    settings = await db.settings.find_one({"id": "order_process_settings"}, {"_id": 0})
+    if not settings:
+        return OrderProcessSettings().model_dump()
+    return settings
+
+@api_router.put("/admin/settings/balia-order-process")
+async def update_balia_order_process(settings: BaliaOrderProcessSettings, username: str = Depends(verify_admin)):
+    await db.settings.update_one({"id": "balia_order_process_settings"}, {"$set": settings.model_dump()}, upsert=True)
+    return {"status": "success"}
+
+@api_router.get("/admin/settings/balia-order-process")
+async def get_admin_balia_order_process(username: str = Depends(verify_admin)):
+    settings = await db.settings.find_one({"id": "balia_order_process_settings"}, {"_id": 0})
+    if not settings:
+        return BaliaOrderProcessSettings().model_dump()
     return settings
 
 

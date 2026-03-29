@@ -27,6 +27,7 @@ import { SpecialOffer } from "./components/SpecialOffer";
 import { SaunaInstallment } from "./components/SaunaInstallment";
 import { SaunaAdvantages } from "./components/SaunaAdvantages";
 import { SaunaVideoReviews } from "./components/SaunaVideoReviews";
+import { OrderProcess } from "./components/OrderProcess";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import AdminPanel from "./pages/AdminPanel";
 import PipelineView from "./pages/PipelineView";
@@ -97,6 +98,7 @@ const MainContent = () => {
               <PromoBanner />
               <SaunaInstallment />
             </>}
+            {sectionKey === 'faq' && <OrderProcess type="sauna" />}
           </React.Fragment>
         );
       })}
