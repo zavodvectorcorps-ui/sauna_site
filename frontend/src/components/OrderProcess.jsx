@@ -68,7 +68,7 @@ export const OrderProcess = ({ type = 'sauna' }) => {
   const accent = dark ? '#D4AF37' : '#C6A87C';
 
   return (
-    <section className={`py-14 sm:py-20 overflow-hidden ${dark ? 'bg-[#0F1218]' : 'bg-[#FAFAF8]'}`} data-testid={`order-process-${type}`}>
+    <section className={`py-6 sm:py-8 overflow-hidden ${dark ? 'bg-[#0F1218]' : 'bg-[#FAFAF8]'}`} data-testid={`order-process-${type}`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <motion.div
@@ -76,7 +76,7 @@ export const OrderProcess = ({ type = 'sauna' }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={headerInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12 sm:mb-16"
+          className="text-center mb-8 sm:mb-10"
         >
           <p className={`text-xs sm:text-sm tracking-widest uppercase mb-3 font-semibold`} style={{ color: accent }}>Proces zamówienia</p>
           <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-3 ${dark ? 'text-white' : 'text-[#1A1A1A]'}`}>
@@ -103,7 +103,7 @@ export const OrderProcess = ({ type = 'sauna' }) => {
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mt-12 sm:mt-16"
+          className="text-center mt-8 sm:mt-10"
         >
           <a
             href="tel:+48732099201"

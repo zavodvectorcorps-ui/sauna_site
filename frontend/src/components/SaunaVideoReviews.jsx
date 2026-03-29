@@ -84,14 +84,14 @@ export const SaunaVideoReviews = () => {
   const sortedItems = [...data.items].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
   return (
-    <section className="py-12 sm:py-16 bg-white overflow-hidden" data-testid="sauna-video-reviews">
+    <section className="py-6 sm:py-8 bg-white overflow-hidden" data-testid="sauna-video-reviews">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <motion.div
           ref={headerRef}
           initial={{ opacity: 0, y: 20 }}
           animate={headerInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-10 sm:mb-14"
+          className="text-center mb-6 sm:mb-8"
         >
           <p className="text-[#C6A87C] text-xs sm:text-sm tracking-widest uppercase mb-3">Wideo</p>
           <h2 className="text-[#1A1A1A] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-3">
