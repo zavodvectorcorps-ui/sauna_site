@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useAutoScroll } from '../hooks/useAutoScroll';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -54,7 +55,6 @@ export const SaunaAdvantages = () => {
   const headerRef = useRef(null);
   const headerInView = useInView(headerRef, { once: true, margin: '-40px' });
   const [data, setData] = useState(null);
-  const scrollRef = useRef(null);
 
   useEffect(() => {
     fetch(`${API}/api/settings/sauna-advantages`)
@@ -63,17 +63,13 @@ export const SaunaAdvantages = () => {
       .catch(() => {});
   }, []);
 
+  const { scrollRef, currentIndex, scrollDir, onTouchStart, onTouchEnd } = useAutoScroll({ itemCount: data?.items?.length || 0, intervalMs: 3500 });
+
   if (!data) return null;
 
   const leftItems = data.items.filter(a => a.side === 'left');
   const rightItems = data.items.filter(a => a.side === 'right');
   const imageUrl = data.image_url?.startsWith('/') ? `${API}${data.image_url}` : data.image_url;
-
-  const scrollCards = (dir) => {
-    if (!scrollRef.current) return;
-    const w = scrollRef.current.offsetWidth * 0.87;
-    scrollRef.current.scrollBy({ left: dir === 'left' ? -w : w, behavior: 'smooth' });
-  };
 
   return (
     <section className="py-6 sm:py-8 bg-[#F9F9F7] overflow-hidden" data-testid="sauna-advantages">
@@ -125,13 +121,15 @@ export const SaunaAdvantages = () => {
           <div className="relative">
             <div
               ref={scrollRef}
-              className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4"
+              onTouchStart={onTouchStart}
+              onTouchEnd={onTouchEnd}
+              className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 pl-4 pr-4"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
             >
               {data.items.map((item, i) => (
                 <div
                   key={item.id || item.num}
-                  className="min-w-[75%] snap-center flex-shrink-0 bg-white border border-black/5 p-5"
+                  className="min-w-[72%] snap-center flex-shrink-0 bg-white border border-black/5 p-5"
                 >
                   <div className="flex gap-3 items-start">
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#C6A87C] flex items-center justify-center mt-0.5">
@@ -151,11 +149,14 @@ export const SaunaAdvantages = () => {
               ))}
             </div>
             {data.items.length > 2 && (
-              <div className="flex justify-center gap-3 mt-3">
-                <button onClick={() => scrollCards('left')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="advantages-scroll-left">
+              <div className="flex justify-center items-center gap-2 mt-3">
+                <button onClick={() => scrollDir('left')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="advantages-scroll-left">
                   <ChevronLeft size={18} className="text-[#595959]" />
                 </button>
-                <button onClick={() => scrollCards('right')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="advantages-scroll-right">
+                {data.items.map((_, i) => (
+                  <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentIndex ? 'bg-[#C6A87C]' : 'bg-[#D4D4D4]'}`} />
+                ))}
+                <button onClick={() => scrollDir('right')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="advantages-scroll-right">
                   <ChevronRight size={18} className="text-[#595959]" />
                 </button>
               </div>

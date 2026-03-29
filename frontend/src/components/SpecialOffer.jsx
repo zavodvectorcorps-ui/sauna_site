@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Gift, Lightbulb, DoorOpen, Bath, ArrowRight, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useAutoScroll } from '../hooks/useAutoScroll';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -40,7 +41,7 @@ export const SpecialOffer = () => {
   const [submitted, setSubmitted] = useState(false);
   const [gifts, setGifts] = useState(defaultGifts);
 
-  const scrollRef = useRef(null);
+  const { scrollRef, currentIndex, scrollDir, onTouchStart, onTouchEnd } = useAutoScroll({ itemCount: gifts.length, intervalMs: 4500 });
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/settings/special-offer`)
@@ -74,12 +75,6 @@ export const SpecialOffer = () => {
     document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const scrollCards = (dir) => {
-    if (!scrollRef.current) return;
-    const w = scrollRef.current.offsetWidth * 0.87;
-    scrollRef.current.scrollBy({ left: dir === 'left' ? -w : w, behavior: 'smooth' });
-  };
-
   return (
     <section className="relative overflow-hidden bg-[#F9F9F7] py-16 sm:py-20" data-testid="special-offer">
       <div className="absolute top-0 left-0 right-0 h-1 bg-[#C6A87C]" />
@@ -104,11 +99,13 @@ export const SpecialOffer = () => {
           </p>
         </motion.div>
 
-        {/* Mobile: horizontal scroll */}
+        {/* Mobile: horizontal scroll with peek */}
         <div className="md:hidden relative mb-12" data-testid="special-offer-mobile-scroll">
           <div
             ref={scrollRef}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 pl-4 pr-4"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             {gifts.map((gift, i) => {
@@ -116,7 +113,7 @@ export const SpecialOffer = () => {
               return (
                 <div
                   key={i}
-                  className="min-w-[80%] snap-center flex-shrink-0 bg-white border border-black/5 overflow-hidden"
+                  className="min-w-[72%] snap-center flex-shrink-0 bg-white border border-black/5 overflow-hidden"
                   data-testid={`special-offer-card-${i}`}
                 >
                   {gift.image && (
@@ -124,19 +121,19 @@ export const SpecialOffer = () => {
                       <img src={gift.image} alt={gift.title} className="w-full h-full object-cover" />
                     </div>
                   )}
-                  <div className="p-6">
-                    <div className="flex items-start gap-4 mb-4">
+                  <div className="p-5">
+                    <div className="flex items-start gap-3 mb-3">
                       {!gift.image && (
-                        <div className="w-12 h-12 bg-[#C6A87C]/10 flex items-center justify-center flex-shrink-0">
-                          <IconComp size={24} className="text-[#C6A87C]" />
+                        <div className="w-10 h-10 bg-[#C6A87C]/10 flex items-center justify-center flex-shrink-0">
+                          <IconComp size={20} className="text-[#C6A87C]" />
                         </div>
                       )}
                       <div className="flex-1">
-                        <h3 className="font-semibold text-[#1A1A1A] text-sm sm:text-base mb-0.5">{gift.title}</h3>
+                        <h3 className="font-semibold text-[#1A1A1A] text-sm mb-0.5">{gift.title}</h3>
                         <span className="text-xs text-[#C6A87C] font-medium">{gift.subtitle}</span>
                       </div>
                     </div>
-                    <p className="text-sm text-[#595959] mb-4 leading-relaxed">{gift.desc}</p>
+                    <p className="text-sm text-[#595959] mb-3 leading-relaxed">{gift.desc}</p>
                     <div className="pt-3 border-t border-black/5">
                       <span className="text-[10px] text-[#8C8C8C] uppercase tracking-wider">Wartość katalogowa</span>
                       <p className="text-lg font-bold text-[#1A1A1A]">{gift.value} <span className="text-sm font-normal text-[#8C8C8C]">PLN</span></p>
@@ -147,11 +144,14 @@ export const SpecialOffer = () => {
             })}
           </div>
           {gifts.length > 1 && (
-            <div className="flex justify-center gap-3 mt-3">
-              <button onClick={() => scrollCards('left')} className="w-9 h-9 flex items-center justify-center bg-white border border-black/5 hover:bg-[#C6A87C]/10 transition-colors" data-testid="special-scroll-left">
+            <div className="flex justify-center items-center gap-2 mt-3">
+              <button onClick={() => scrollDir('left')} className="w-9 h-9 flex items-center justify-center bg-white border border-black/5 hover:bg-[#C6A87C]/10 transition-colors" data-testid="special-scroll-left">
                 <ChevronLeft size={18} className="text-[#595959]" />
               </button>
-              <button onClick={() => scrollCards('right')} className="w-9 h-9 flex items-center justify-center bg-white border border-black/5 hover:bg-[#C6A87C]/10 transition-colors" data-testid="special-scroll-right">
+              {gifts.map((_, i) => (
+                <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentIndex ? 'bg-[#C6A87C]' : 'bg-[#D4D4D4]'}`} />
+              ))}
+              <button onClick={() => scrollDir('right')} className="w-9 h-9 flex items-center justify-center bg-white border border-black/5 hover:bg-[#C6A87C]/10 transition-colors" data-testid="special-scroll-right">
                 <ChevronRight size={18} className="text-[#595959]" />
               </button>
             </div>

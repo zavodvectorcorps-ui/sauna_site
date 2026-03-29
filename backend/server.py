@@ -16,6 +16,7 @@ import secrets
 import base64
 import cloudinary
 import cloudinary.uploader
+from object_storage import init_storage, put_object, get_object, get_mime_type
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -1943,21 +1944,32 @@ async def upload_image(
 ):
     try:
         contents = await file.read()
-        # Store as base64 in MongoDB (for simplicity)
         image_id = str(uuid.uuid4())
-        base64_data = base64.b64encode(contents).decode('utf-8')
-        content_type = file.content_type or 'image/jpeg'
-        
+        ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else "jpg"
+        content_type = file.content_type or get_mime_type(file.filename)
+        storage_path = f"wm-group/images/{image_id}.{ext}"
+
+        try:
+            result = put_object(storage_path, contents, content_type)
+            storage_path = result.get("path", storage_path)
+        except Exception as e:
+            logger.warning(f"Object storage upload failed, falling back to MongoDB: {e}")
+            storage_path = None
+
         image_doc = {
             "id": image_id,
             "filename": file.filename,
             "content_type": content_type,
-            "data": base64_data,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
         }
+
+        if storage_path:
+            image_doc["storage_path"] = storage_path
+        else:
+            image_doc["data"] = base64.b64encode(contents).decode('utf-8')
+
         await db.uploads.insert_one(image_doc)
-        
-        # Return URL that can be used to retrieve the image
+
         return {
             "status": "success",
             "image_id": image_id,
@@ -1969,13 +1981,30 @@ async def upload_image(
 
 @api_router.get("/images/{image_id}")
 async def get_uploaded_image(image_id: str):
-    from fastapi.responses import Response
+    # Static asset fallback
+    if image_id == "sauna-cutaway-7facts":
+        static_path = Path("/app/backend/uploads/sauna-cutaway.webp")
+        if static_path.exists():
+            return FileResponse(static_path, media_type="image/webp")
+
     image = await db.uploads.find_one({"id": image_id})
     if not image:
         raise HTTPException(status_code=404, detail="Image not found")
-    
-    image_data = base64.b64decode(image["data"])
-    return Response(content=image_data, media_type=image["content_type"])
+
+    # Try object storage first
+    if image.get("storage_path"):
+        try:
+            data, ct = get_object(image["storage_path"])
+            return Response(content=data, media_type=image.get("content_type", ct))
+        except Exception as e:
+            logger.warning(f"Object storage fetch failed for {image_id}: {e}")
+
+    # Fallback to MongoDB base64
+    if image.get("data"):
+        image_data = base64.b64decode(image["data"])
+        return Response(content=image_data, media_type=image["content_type"])
+
+    raise HTTPException(status_code=404, detail="Image data not found")
 
 
 # Video upload
@@ -1987,61 +2016,57 @@ async def upload_video(file: UploadFile = File(...), username: str = Depends(ver
     if not file.content_type or not file.content_type.startswith("video/"):
         raise HTTPException(status_code=400, detail="Only video files are allowed")
     try:
-        import shutil, subprocess, threading
         video_id = str(uuid.uuid4())
-        out_path = VIDEO_DIR / f"{video_id}.mp4"
         contents = await file.read()
         original_size = len(contents)
-        # Save original immediately so URL works right away
+        storage_path = f"wm-group/videos/{video_id}.mp4"
+
+        stored_in_cloud = False
+        try:
+            result = put_object(storage_path, contents, "video/mp4")
+            storage_path = result.get("path", storage_path)
+            stored_in_cloud = True
+        except Exception as e:
+            logger.warning(f"Object storage upload failed for video, falling back to filesystem: {e}")
+
+        # Always save to filesystem as fallback/cache
+        out_path = VIDEO_DIR / f"{video_id}.mp4"
         with open(out_path, "wb") as f:
             f.write(contents)
 
-        # Compress in background thread
-        def compress_video():
-            ffmpeg_path = shutil.which("ffmpeg")
-            if not ffmpeg_path:
-                try:
-                    import static_ffmpeg
-                    static_ffmpeg.add_paths()
-                    ffmpeg_path = shutil.which("ffmpeg")
-                except ImportError:
-                    return
-            if not ffmpeg_path:
-                return
-            tmp_path = VIDEO_DIR / f"{video_id}_compressed.mp4"
-            try:
-                result = subprocess.run([
-                    ffmpeg_path, "-y", "-i", str(out_path),
-                    "-vf", "scale='min(1280,iw)':-2",
-                    "-c:v", "libx264", "-crf", "28", "-preset", "fast",
-                    "-an", "-movflags", "+faststart",
-                    str(tmp_path)
-                ], capture_output=True, timeout=300)
-                if result.returncode == 0 and tmp_path.exists():
-                    tmp_path.replace(out_path)
-                    compressed_size = out_path.stat().st_size
-                    logger.info(f"Video compressed: {original_size//1024}KB -> {compressed_size//1024}KB")
-                else:
-                    tmp_path.unlink(missing_ok=True)
-                    logger.warning("ffmpeg compression failed, keeping original")
-            except Exception as e:
-                tmp_path.unlink(missing_ok=True)
-                logger.warning(f"Video compression error: {e}")
+        # Store metadata in DB
+        await db.video_uploads.insert_one({
+            "id": video_id,
+            "filename": file.filename,
+            "storage_path": storage_path if stored_in_cloud else None,
+            "content_type": "video/mp4",
+            "size": original_size,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
 
-        threading.Thread(target=compress_video, daemon=True).start()
-
-        return {"status": "success", "url": f"/api/videos/{video_id}.mp4", "original_kb": original_size // 1024, "compressed_kb": original_size // 1024}
+        return {"status": "success", "url": f"/api/videos/{video_id}.mp4", "original_kb": original_size // 1024}
     except Exception as e:
         logger.error(f"Error uploading video: {e}")
         raise HTTPException(status_code=500, detail="Error uploading video")
 
 @api_router.get("/videos/{filename}")
 async def get_video(filename: str):
-    from fastapi.responses import FileResponse
+    video_id = filename.replace(".mp4", "")
+
+    # Try object storage via DB metadata
+    video_doc = await db.video_uploads.find_one({"id": video_id})
+    if video_doc and video_doc.get("storage_path"):
+        try:
+            data, ct = get_object(video_doc["storage_path"])
+            return Response(content=data, media_type="video/mp4")
+        except Exception as e:
+            logger.warning(f"Object storage fetch failed for video {video_id}: {e}")
+
+    # Fallback to filesystem
     filepath = VIDEO_DIR / filename
-    if not filepath.exists():
-        raise HTTPException(status_code=404, detail="Video not found")
-    return FileResponse(filepath, media_type="video/mp4")
+    if filepath.exists():
+        return FileResponse(filepath, media_type="video/mp4")
+    raise HTTPException(status_code=404, detail="Video not found")
 
 
 CATALOG_DIR = Path("/app/backend/uploads")
@@ -2543,6 +2568,16 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+@app.on_event("startup")
+async def startup_init():
+    try:
+        init_storage()
+        logger.info("Object storage initialized at startup")
+    except Exception as e:
+        logger.warning(f"Object storage init failed at startup (will retry on first use): {e}")
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

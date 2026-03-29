@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
+import { useAutoScroll } from '../hooks/useAutoScroll';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -10,7 +11,7 @@ export const Reviews = () => {
   const { language, t } = useLanguage();
   const { reviews } = useSettings();
   const [sectionContent, setSectionContent] = useState(null);
-  const scrollRef = useRef(null);
+  const { scrollRef, currentIndex, scrollDir, onTouchStart, onTouchEnd } = useAutoScroll({ itemCount: reviews?.length || 0, intervalMs: 5000 });
 
   useEffect(() => {
     fetchContent();
@@ -31,12 +32,6 @@ export const Reviews = () => {
     return review[key] || review.text_pl || '';
   };
 
-  const scrollCards = (dir) => {
-    if (!scrollRef.current) return;
-    const w = scrollRef.current.offsetWidth * 0.87;
-    scrollRef.current.scrollBy({ left: dir === 'left' ? -w : w, behavior: 'smooth' });
-  };
-
   const ReviewCard = ({ review, index, isMobile }) => (
     <motion.div
       key={review.id}
@@ -44,7 +39,7 @@ export const Reviews = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: isMobile ? 0 : index * 0.1 }}
-      className={`review-card ${isMobile ? 'min-w-[85%] snap-center flex-shrink-0' : ''}`}
+      className={`review-card ${isMobile ? 'min-w-[78%] snap-center flex-shrink-0' : ''}`}
       data-testid={`review-card-${review.id}`}
     >
       <Quote size={32} className="text-[#C6A87C]/30 mb-4" fill="currentColor" />
@@ -84,11 +79,13 @@ export const Reviews = () => {
           </p>
         </div>
 
-        {/* Mobile: horizontal scroll */}
+        {/* Mobile: horizontal scroll with peek */}
         <div className="md:hidden relative" data-testid="reviews-mobile-scroll">
           <div
             ref={scrollRef}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 pl-4 pr-4"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             {reviews.map((review, index) => (
@@ -96,11 +93,14 @@ export const Reviews = () => {
             ))}
           </div>
           {reviews.length > 1 && (
-            <div className="flex justify-center gap-3 mt-3">
-              <button onClick={() => scrollCards('left')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="reviews-scroll-left">
+            <div className="flex justify-center items-center gap-2 mt-3">
+              <button onClick={() => scrollDir('left')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="reviews-scroll-left">
                 <ChevronLeft size={18} className="text-[#595959]" />
               </button>
-              <button onClick={() => scrollCards('right')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="reviews-scroll-right">
+              {reviews.map((_, i) => (
+                <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentIndex ? 'bg-[#C6A87C]' : 'bg-[#D4D4D4]'}`} />
+              ))}
+              <button onClick={() => scrollDir('right')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="reviews-scroll-right">
                 <ChevronRight size={18} className="text-[#595959]" />
               </button>
             </div>
