@@ -64,7 +64,17 @@ export const SaunaCatalogSectionsAdmin = ({ authHeader, showMessage, activeSubTa
     setSectionOrder({ ...sectionOrder, sections: newSections });
   };
 
-  const sectionNames = { hero: 'Hero (Главный экран)', models: 'Модели саун', calculator: 'Калькулятор', gallery: 'Галерея', stock: 'Сауны в наличии', reviews: 'Отзывы', faq: 'FAQ', about: 'О компании', contact: 'Контакты' };
+  const sectionNames = {
+    hero: 'Hero (Главный экран)',
+    models: 'Модели саун + Преимущества + 7 фактов + Видео-обзоры',
+    calculator: 'Калькулятор',
+    gallery: 'Галерея',
+    stock: 'Сауны в наличии',
+    reviews: 'Отзывы',
+    faq: 'FAQ + Процесс заказа',
+    about: 'О компании',
+    contact: 'Контакты',
+  };
 
   if (loading) return <div className="flex items-center justify-center py-12"><div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" /></div>;
 

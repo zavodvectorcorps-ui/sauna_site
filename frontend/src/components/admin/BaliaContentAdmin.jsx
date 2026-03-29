@@ -57,6 +57,8 @@ const DEFAULT_SECTIONS = [
   { id: 'about', label: 'O nas' },
   { id: 'gallery', label: 'Galeria' },
   { id: 'configurator', label: 'Konfigurator CTA' },
+  { id: 'faq', label: 'FAQ' },
+  { id: 'orderprocess', label: 'Proces zamówienia' },
   { id: 'testimonials', label: 'Opinie' },
   { id: 'contact', label: 'Kontakt' },
 ];
@@ -102,7 +104,12 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
           promo_features: data.promo_features?.length ? data.promo_features : prev.promo_features,
           promo_options: data.promo_options?.length ? data.promo_options : prev.promo_options,
           promo_badges: data.promo_badges?.length ? data.promo_badges : prev.promo_badges,
-          section_order: data.section_order?.length ? data.section_order : prev.section_order,
+          section_order: (() => {
+            const fromApi = data.section_order?.length ? data.section_order : prev.section_order;
+            const allIds = DEFAULT_SECTIONS.map(s => s.id);
+            const missing = allIds.filter(id => !fromApi.includes(id));
+            return [...fromApi, ...missing];
+          })(),
           schematic: data.schematic ? { ...prev.schematic, ...data.schematic } : prev.schematic,
           stove_scheme: data.stove_scheme ? { ...prev.stove_scheme, ...data.stove_scheme, types: data.stove_scheme.types?.length ? data.stove_scheme.types.map((t,i) => ({...(prev.stove_scheme.types[i] || {}), ...t})) : prev.stove_scheme.types } : prev.stove_scheme,
         }));
