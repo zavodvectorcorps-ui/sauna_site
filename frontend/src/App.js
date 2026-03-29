@@ -36,6 +36,8 @@ import B2BPage from "./pages/B2BPage";
 import { BalieLandingPage } from "./components/balie/BalieLandingPage";
 import { BalieConfigurator } from "./components/balie/BalieConfigurator";
 
+const OrderProcessSauna = () => <OrderProcess type="sauna" />;
+
 const sectionComponents = {
   hero: Hero,
   models: Models,
@@ -44,6 +46,7 @@ const sectionComponents = {
   stock: StockSaunas,
   reviews: Reviews,
   faq: FAQ,
+  orderprocess: OrderProcessSauna,
   about: About,
   contact: Contact,
 };
@@ -77,7 +80,7 @@ const MainContent = () => {
     );
   }
 
-  const sections = sectionOrder?.sections || ['hero', 'models', 'calculator', 'gallery', 'stock', 'reviews', 'faq', 'about', 'contact'];
+  const sections = sectionOrder?.sections || ['hero', 'models', 'calculator', 'gallery', 'stock', 'reviews', 'faq', 'orderprocess', 'about', 'contact'];
 
   return (
     <>
@@ -98,7 +101,6 @@ const MainContent = () => {
               <PromoBanner />
               <SaunaInstallment />
             </>}
-            {sectionKey === 'faq' && <OrderProcess type="sauna" />}
           </React.Fragment>
         );
       })}

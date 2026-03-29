@@ -23,7 +23,11 @@ export const SaunaCatalogSectionsAdmin = ({ authHeader, showMessage, activeSubTa
           fetch(`${API}/api/settings/sections`),
         ]);
         if (catRes.ok) setCatalogInfo(await catRes.json());
-        setSectionOrder(await secRes.json());
+        const secData = await secRes.json();
+        const allSections = ['hero', 'models', 'calculator', 'gallery', 'stock', 'reviews', 'faq', 'orderprocess', 'about', 'contact'];
+        const existing = secData.sections || [];
+        const missing = allSections.filter(s => !existing.includes(s));
+        setSectionOrder({ ...secData, sections: [...existing, ...missing] });
       } catch (e) { console.error(e); }
       setLoading(false);
     })();
@@ -71,7 +75,8 @@ export const SaunaCatalogSectionsAdmin = ({ authHeader, showMessage, activeSubTa
     gallery: 'Галерея',
     stock: 'Сауны в наличии',
     reviews: 'Отзывы',
-    faq: 'FAQ + Процесс заказа',
+    faq: 'FAQ',
+    orderprocess: 'Процесс заказа',
     about: 'О компании',
     contact: 'Контакты',
   };
