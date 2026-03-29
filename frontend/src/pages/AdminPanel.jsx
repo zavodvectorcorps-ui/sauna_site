@@ -32,6 +32,11 @@ import { SaunaCatalogSectionsAdmin } from '../components/admin/SaunaCatalogSecti
 import { InstallmentAdmin } from '../components/admin/InstallmentAdmin';
 import { SpecialOfferAdmin } from '../components/admin/SpecialOfferAdmin';
 import { MainLandingAdmin } from '../components/admin/MainLandingAdmin';
+import { PromoBannerAdmin } from '../components/admin/PromoBannerAdmin';
+import { BalieAboutAdmin } from '../components/admin/BalieAboutAdmin';
+import { BalieContactAdmin } from '../components/admin/BalieContactAdmin';
+import { BalieInstallmentAdmin } from '../components/admin/BalieInstallmentAdmin';
+import { BalieGalleryAdmin } from '../components/admin/BalieGalleryAdmin';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -150,6 +155,8 @@ const AdminPanel = () => {
         { id: 'reviews', label: 'Отзывы', icon: Star },
         { id: 'faq', label: 'FAQ', icon: FileText },
         { id: 'order_process_sauna', label: 'Процесс заказа', icon: GripVertical },
+        { id: 'video_reviews', label: 'Видео-обзоры', icon: Eye },
+        { id: 'promo_banner', label: 'Промо-баннер', icon: Star },
         { id: 'promo_features', label: 'Преимущества', icon: Star },
         { id: 'advantages', label: '7 фактов', icon: Star },
         { id: 'layout', label: 'Оформление', icon: LayoutGrid },
@@ -174,6 +181,10 @@ const AdminPanel = () => {
         { id: 'balia_card_options', label: 'Опции карточки', icon: Settings },
         { id: 'balia_testimonials', label: 'Отзывы', icon: Star },
         { id: 'balia_content', label: 'Контент', icon: FileText },
+        { id: 'balia_about', label: 'О нас', icon: FileText },
+        { id: 'balia_contact', label: 'Контакты', icon: Phone },
+        { id: 'balia_installment', label: 'Рассрочка', icon: CreditCard },
+        { id: 'balia_gallery', label: 'Галерея', icon: Image },
         { id: 'balia_faq', label: 'FAQ', icon: FileText },
         { id: 'order_process_balia', label: 'Процесс заказа', icon: GripVertical },
         { id: 'balia_catalog', label: 'Каталог', icon: FileText },
@@ -205,7 +216,6 @@ const AdminPanel = () => {
       color: '#D97706',
       tabs: [
         { id: 'whatsapp', label: 'WhatsApp', icon: MessageSquare },
-        { id: 'video_reviews', label: 'Видео-обзоры', icon: Eye },
       ],
     },
   ];
@@ -256,6 +266,8 @@ const AdminPanel = () => {
         return <InstallmentAdmin {...props} />;
       case 'special_offer':
         return <SpecialOfferAdmin {...props} />;
+      case 'promo_banner':
+        return <PromoBannerAdmin {...props} />;
       case 'balia_products':
         return <BaliaProductsAdmin {...props} />;
       case 'balia_colors':
@@ -266,6 +278,14 @@ const AdminPanel = () => {
         return <BaliaTestimonialsAdmin {...props} />;
       case 'balia_content':
         return <BaliaContentAdmin {...props} />;
+      case 'balia_about':
+        return <BalieAboutAdmin {...props} />;
+      case 'balia_contact':
+        return <BalieContactAdmin {...props} />;
+      case 'balia_installment':
+        return <BalieInstallmentAdmin {...props} />;
+      case 'balia_gallery':
+        return <BalieGalleryAdmin {...props} />;
       case 'balia_faq':
         return <BaliaFaqAdmin {...props} />;
       case 'balia_catalog':

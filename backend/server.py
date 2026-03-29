@@ -1227,6 +1227,102 @@ async def update_section_visibility(request: Request, username: str = Depends(ve
     return {"status": "success"}
 
 # Gallery config
+
+# === Promo Banner settings ===
+@api_router.get("/settings/promo-banner")
+async def get_promo_banner():
+    doc = await db.settings.find_one({"id": "promo_banner"}, {"_id": 0})
+    if not doc:
+        return {
+            "id": "promo_banner",
+            "badge": "Specjalna oferta",
+            "title_line1": "Skonfiguruj swoją saunę",
+            "title_line2": "i zarezerwuj zniżkę do 10%",
+            "description": "Wybierz model, dopasuj opcje i wyślij zapytanie. Nasz doradca przygotuje indywidualną wycenę z personalną zniżką.",
+            "button_text": "Przejdź do kalkulatora"
+        }
+    return doc
+
+@api_router.put("/admin/settings/promo-banner")
+async def update_promo_banner(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["id"] = "promo_banner"
+    await db.settings.update_one({"id": "promo_banner"}, {"$set": data}, upsert=True)
+    return {"status": "success"}
+
+# === Balie About settings ===
+@api_router.get("/settings/balie-about")
+async def get_balie_about():
+    doc = await db.settings.find_one({"id": "balie_about"}, {"_id": 0})
+    if not doc:
+        return {
+            "id": "balie_about",
+            "title": "WM-Balia — Pasja do Relaksu",
+            "description": "Łączymy rzemiosło z nowoczesnym designem, tworząc balie, które stają się centrum relaksu w Twoim ogrodzie. Każda balia to połączenie naturalnego drewna, wydajnego ogrzewania i ergonomicznej konstrukcji.",
+            "stats": [
+                {"value": "500+", "label": "Zadowolonych klientów"},
+                {"value": "2 lata", "label": "Gwarancji na każdą balię"},
+                {"value": "100%", "label": "Naturalne materiały"},
+                {"value": "Warszawa", "label": "Siedziba i showroom"}
+            ]
+        }
+    return doc
+
+@api_router.put("/admin/settings/balie-about")
+async def update_balie_about(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["id"] = "balie_about"
+    await db.settings.update_one({"id": "balie_about"}, {"$set": data}, upsert=True)
+    return {"status": "success"}
+
+# === Balie Contact settings ===
+@api_router.get("/settings/balie-contact")
+async def get_balie_contact():
+    doc = await db.settings.find_one({"id": "balie_contact"}, {"_id": 0})
+    if not doc:
+        return {
+            "id": "balie_contact",
+            "title": "Zamów swoją balię",
+            "subtitle": "Skontaktuj się z nami, a pomożemy Ci wybrać idealną balię dla Twojego ogrodu",
+            "phone": "+48 123 456 789",
+            "email": "kontakt@wm-balia.pl",
+            "address": "ul. Przykładowa 10, 00-001 Warszawa"
+        }
+    return doc
+
+@api_router.put("/admin/settings/balie-contact")
+async def update_balie_contact(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["id"] = "balie_contact"
+    await db.settings.update_one({"id": "balie_contact"}, {"$set": data}, upsert=True)
+    return {"status": "success"}
+
+# === Balie Installment settings ===
+@api_router.get("/settings/balie-installment")
+async def get_balie_installment():
+    doc = await db.settings.find_one({"id": "balie_installment"}, {"_id": 0})
+    if not doc:
+        return {
+            "id": "balie_installment",
+            "title": "Kup balię na raty",
+            "subtitle": "Elastyczne finansowanie",
+            "items": [
+                {"icon": "CreditCard", "title": "Raty od 0%", "desc": "Atrakcyjne warunki finansowania"},
+                {"icon": "Calendar", "title": "Do 48 miesięcy", "desc": "Wybierz okres spłaty"},
+                {"icon": "Percent", "title": "Rata od 199 zł/mies.", "desc": "Przykładowa rata miesięczna"},
+                {"icon": "Truck", "title": "Darmowa dostawa", "desc": "Na terenie całej Polski"}
+            ]
+        }
+    return doc
+
+@api_router.put("/admin/settings/balie-installment")
+async def update_balie_installment(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["id"] = "balie_installment"
+    await db.settings.update_one({"id": "balie_installment"}, {"$set": data}, upsert=True)
+    return {"status": "success"}
+
+
 @api_router.get("/admin/settings/gallery")
 async def get_gallery_config(username: str = Depends(verify_admin)):
     config = await db.settings.find_one({"id": "gallery_config"}, {"_id": 0})

@@ -8,9 +8,11 @@ export const BalieContact = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [catalogAvailable, setCatalogAvailable] = useState(false);
+  const [contactData, setContactData] = useState(null);
 
   useEffect(() => {
     fetch(`${API}/api/catalog/info`).then(r => r.json()).then(d => setCatalogAvailable(d?.available)).catch(() => {});
+    fetch(`${API}/api/settings/balie-contact`).then(r => r.json()).then(d => setContactData(d)).catch(() => {});
   }, []);
 
   const handleSubmit = async (e) => {
@@ -32,9 +34,9 @@ export const BalieContact = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            Skontaktuj sie z <span className="text-[#D4AF37]">nami</span>
+            {contactData?.title || 'Skontaktuj sie z'} <span className="text-[#D4AF37]">{contactData?.title ? '' : 'nami'}</span>
           </h2>
-          <p className="text-white/50 text-sm">Chetnie odpowiemy na kazde pytanie</p>
+          <p className="text-white/50 text-sm">{contactData?.subtitle || 'Chetnie odpowiemy na kazde pytanie'}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -42,15 +44,15 @@ export const BalieContact = () => {
           <div className="space-y-6">
             <div className="flex items-start gap-4">
               <Phone size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
-              <div><div className="text-white font-medium">Telefon</div><div className="text-white/40 text-sm">+48 515 995 190</div></div>
+              <div><div className="text-white font-medium">Telefon</div><div className="text-white/40 text-sm">{contactData?.phone || '+48 515 995 190'}</div></div>
             </div>
             <div className="flex items-start gap-4">
               <Mail size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
-              <div><div className="text-white font-medium">Email</div><div className="text-white/40 text-sm">kontakt@wm-balia.pl</div></div>
+              <div><div className="text-white font-medium">Email</div><div className="text-white/40 text-sm">{contactData?.email || 'kontakt@wm-balia.pl'}</div></div>
             </div>
             <div className="flex items-start gap-4">
               <MapPin size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
-              <div><div className="text-white font-medium">Adres</div><div className="text-white/40 text-sm">ul. Boryny 3, Warszawa, Polska</div></div>
+              <div><div className="text-white font-medium">Adres</div><div className="text-white/40 text-sm">{contactData?.address || 'ul. Boryny 3, Warszawa, Polska'}</div></div>
             </div>
           </div>
 

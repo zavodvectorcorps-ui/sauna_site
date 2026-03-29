@@ -105,7 +105,7 @@ export const SpecialOffer = () => {
             ref={scrollRef}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 pl-4 pr-4"
+            className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 scroll-pl-4"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             {gifts.map((gift, i) => {
@@ -113,7 +113,7 @@ export const SpecialOffer = () => {
               return (
                 <div
                   key={i}
-                  className="min-w-[72%] snap-center flex-shrink-0 bg-white border border-black/5 overflow-hidden"
+                  className="w-[72vw] flex-shrink-0 snap-start bg-white border border-black/8 shadow-md overflow-hidden rounded-lg"
                   data-testid={`special-offer-card-${i}`}
                 >
                   {gift.image && (

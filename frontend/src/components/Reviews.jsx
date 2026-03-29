@@ -39,7 +39,7 @@ export const Reviews = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: isMobile ? 0 : index * 0.1 }}
-      className={`review-card ${isMobile ? 'min-w-[78%] snap-center flex-shrink-0' : ''}`}
+      className={`review-card ${isMobile ? 'w-[72vw] flex-shrink-0 snap-start shadow-md rounded-lg' : ''}`}
       data-testid={`review-card-${review.id}`}
     >
       <Quote size={32} className="text-[#C6A87C]/30 mb-4" fill="currentColor" />
@@ -48,7 +48,7 @@ export const Reviews = () => {
           <Star key={i} size={16} className={i < review.rating ? 'text-[#D4AF37] fill-current' : 'text-[#E5E5E5]'} />
         ))}
       </div>
-      <p className="text-[#595959] text-lg leading-relaxed mb-6 font-accent italic">
+      <p className={`text-[#595959] leading-relaxed mb-6 font-accent italic ${isMobile ? 'text-sm line-clamp-4' : 'text-lg'}`}>
         "{getReviewText(review)}"
       </p>
       <div className="flex items-center gap-4">
@@ -85,7 +85,7 @@ export const Reviews = () => {
             ref={scrollRef}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 pl-4 pr-4"
+            className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 scroll-pl-4"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             {reviews.map((review, index) => (

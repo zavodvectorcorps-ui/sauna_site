@@ -25,7 +25,7 @@ const VideoCard = ({ item, index, isMobile }) => {
       initial={{ opacity: 0, y: 24 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: isMobile ? 0 : index * 0.1 }}
-      className={`group ${isMobile ? 'min-w-[72%] snap-center flex-shrink-0' : ''}`}
+      className={`group ${isMobile ? 'w-[68vw] flex-shrink-0 snap-start shadow-md rounded-lg overflow-hidden' : ''}`}
       data-testid={`video-review-${index}`}
     >
       <div className="relative aspect-video bg-[#1A1A1A] overflow-hidden">
@@ -102,7 +102,7 @@ export const SaunaVideoReviews = () => {
             ref={scrollRef}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 pl-4 pr-4"
+            className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 scroll-pl-4"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             {sortedItems.map((item, i) => (

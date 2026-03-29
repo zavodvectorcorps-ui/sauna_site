@@ -1,7 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useAutoScroll } from '../hooks/useAutoScroll';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -63,8 +61,6 @@ export const SaunaAdvantages = () => {
       .catch(() => {});
   }, []);
 
-  const { scrollRef, currentIndex, scrollDir, onTouchStart, onTouchEnd } = useAutoScroll({ itemCount: data?.items?.length || 0, intervalMs: 3500 });
-
   if (!data) return null;
 
   const leftItems = data.items.filter(a => a.side === 'left');
@@ -110,57 +106,37 @@ export const SaunaAdvantages = () => {
           </div>
         </div>
 
-        {/* Mobile/Tablet: horizontal scroll cards */}
-        <div className="lg:hidden" data-testid="advantages-mobile-scroll">
+        {/* Mobile/Tablet: vertical list */}
+        <div className="lg:hidden" data-testid="advantages-mobile">
           <AnimatedImage
             src={imageUrl}
             alt="Sauna w przekroju — schemat budowy"
-            className="max-w-sm mx-auto mb-6"
+            className="max-w-sm mx-auto mb-8"
           />
-
-          <div className="relative">
-            <div
-              ref={scrollRef}
-              onTouchStart={onTouchStart}
-              onTouchEnd={onTouchEnd}
-              className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 pl-4 pr-4"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
-            >
-              {data.items.map((item, i) => (
-                <div
-                  key={item.id || item.num}
-                  className="min-w-[72%] snap-center flex-shrink-0 bg-white border border-black/5 p-5"
-                >
-                  <div className="flex gap-3 items-start">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#C6A87C] flex items-center justify-center mt-0.5">
-                      <span className="text-white font-bold text-xs">{item.num}</span>
-                    </div>
-                    <div>
-                      <h4 className="text-[#1A1A1A] font-semibold text-sm leading-snug mb-0.5">{item.title}</h4>
-                      <p className="text-[#8C8C8C] text-xs leading-relaxed">{item.desc}</p>
-                      {item.badge && (
-                        <span className="inline-block mt-1.5 px-2.5 py-0.5 bg-[#C6A87C]/10 text-[#C6A87C] text-xs font-semibold rounded-full">
-                          {item.badge}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+          <div className="space-y-5 max-w-lg mx-auto">
+            {data.items.map((item, i) => (
+              <motion.div
+                key={item.id || item.num}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-20px' }}
+                transition={{ duration: 0.4, delay: i * 0.07 }}
+                className="flex gap-3 items-start"
+              >
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#C6A87C] flex items-center justify-center mt-0.5">
+                  <span className="text-white font-bold text-xs">{item.num}</span>
                 </div>
-              ))}
-            </div>
-            {data.items.length > 2 && (
-              <div className="flex justify-center items-center gap-2 mt-3">
-                <button onClick={() => scrollDir('left')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="advantages-scroll-left">
-                  <ChevronLeft size={18} className="text-[#595959]" />
-                </button>
-                {data.items.map((_, i) => (
-                  <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentIndex ? 'bg-[#C6A87C]' : 'bg-[#D4D4D4]'}`} />
-                ))}
-                <button onClick={() => scrollDir('right')} className="w-9 h-9 flex items-center justify-center bg-[#F2F2F0] hover:bg-[#C6A87C]/20 transition-colors" data-testid="advantages-scroll-right">
-                  <ChevronRight size={18} className="text-[#595959]" />
-                </button>
-              </div>
-            )}
+                <div>
+                  <h4 className="text-[#1A1A1A] font-semibold text-sm leading-snug mb-0.5">{item.title}</h4>
+                  <p className="text-[#8C8C8C] text-xs leading-relaxed">{item.desc}</p>
+                  {item.badge && (
+                    <span className="inline-block mt-1.5 px-2.5 py-0.5 bg-[#C6A87C]/10 text-[#C6A87C] text-xs font-semibold rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>

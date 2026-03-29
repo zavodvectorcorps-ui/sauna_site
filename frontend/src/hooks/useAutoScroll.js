@@ -3,41 +3,51 @@ import { useRef, useEffect, useCallback, useState } from 'react';
 export function useAutoScroll({ itemCount, intervalMs = 4000, enabled = true }) {
   const scrollRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const indexRef = useRef(0);
   const pausedRef = useRef(false);
   const timerRef = useRef(null);
 
+  const updateIndex = useCallback((idx) => {
+    indexRef.current = idx;
+    setCurrentIndex(idx);
+  }, []);
+
   const scrollToIndex = useCallback((index) => {
-    if (!scrollRef.current || itemCount <= 1) return;
     const container = scrollRef.current;
-    const child = container.children[index];
-    if (!child) return;
-    const offset = child.offsetLeft - container.offsetLeft - 16;
-    container.scrollTo({ left: offset, behavior: 'smooth' });
-    setCurrentIndex(index);
+    if (!container || itemCount <= 1) return;
+    const cards = container.querySelectorAll('[data-testid]');
+    if (cards.length === 0) return;
+    const card = cards[index];
+    if (!card) return;
+    const containerLeft = container.getBoundingClientRect().left;
+    const cardLeft = card.getBoundingClientRect().left;
+    const newScroll = container.scrollLeft + (cardLeft - containerLeft);
+    container.scrollTo({ left: newScroll, behavior: 'smooth' });
   }, [itemCount]);
 
   const scrollDir = useCallback((dir) => {
+    const curr = indexRef.current;
     const next = dir === 'left'
-      ? Math.max(0, currentIndex - 1)
-      : Math.min(itemCount - 1, currentIndex + 1);
+      ? (curr <= 0 ? itemCount - 1 : curr - 1)
+      : (curr >= itemCount - 1 ? 0 : curr + 1);
     scrollToIndex(next);
+    updateIndex(next);
     pausedRef.current = true;
     clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => { pausedRef.current = false; }, intervalMs * 2);
-  }, [currentIndex, itemCount, scrollToIndex, intervalMs]);
+  }, [itemCount, scrollToIndex, updateIndex, intervalMs]);
 
   useEffect(() => {
     if (!enabled || itemCount <= 1) return;
     const id = setInterval(() => {
       if (pausedRef.current) return;
-      setCurrentIndex(prev => {
-        const next = prev >= itemCount - 1 ? 0 : prev + 1;
-        scrollToIndex(next);
-        return next;
-      });
+      const curr = indexRef.current;
+      const next = curr >= itemCount - 1 ? 0 : curr + 1;
+      scrollToIndex(next);
+      updateIndex(next);
     }, intervalMs);
     return () => clearInterval(id);
-  }, [enabled, itemCount, intervalMs, scrollToIndex]);
+  }, [enabled, itemCount, intervalMs, scrollToIndex, updateIndex]);
 
   const onTouchStart = useCallback(() => {
     pausedRef.current = true;
