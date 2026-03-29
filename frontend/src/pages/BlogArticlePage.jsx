@@ -5,6 +5,7 @@ import { ArrowLeft, Calendar, Clock, Tag, Share2 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { GlobalHeader } from '../components/GlobalHeader';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -37,8 +38,10 @@ export default function BlogArticlePage() {
         meta={[{ name: 'description', content: article.meta_description || article.excerpt }]}
       />
 
+      <GlobalHeader />
+
       {/* Header */}
-      <div className="bg-[#1A1A1A] text-white py-16 sm:py-24">
+      <div className="bg-[#1A1A1A] text-white py-12 sm:py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <button onClick={() => navigate('/blog')} className="flex items-center gap-2 text-white/50 hover:text-[#C6A87C] text-sm mb-8 transition-colors" data-testid="blog-back">

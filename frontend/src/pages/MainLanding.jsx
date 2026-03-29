@@ -206,7 +206,7 @@ const MainLanding = () => {
           <button onClick={() => navigate('/sauny')} className="text-white/50 hover:text-[#C6A87C] text-sm transition-colors">Sauny</button>
           <button onClick={() => navigate('/balie')} className="text-white/50 hover:text-[#D4AF37] text-sm transition-colors">Balie</button>
           <button onClick={() => navigate('/blog')} className="text-white/50 hover:text-white text-sm transition-colors">Blog</button>
-          <button onClick={() => navigate('/b2b')} className="text-white/50 hover:text-[#059669] text-sm transition-colors" data-testid="nav-b2b">B2B <span className="text-white/30">(Dla hoteli i pensjonatów)</span></button>
+          <button onClick={() => navigate('/b2b')} className="text-[#34D399] hover:text-[#6EE7B7] text-sm font-semibold transition-colors" data-testid="nav-b2b">B2B <span className="text-[#34D399]/60">(Dla hoteli i pensjonatów)</span></button>
         </nav>
       </header>
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight, Tag } from 'lucide-react';
+import { GlobalHeader } from '../components/GlobalHeader';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -50,8 +51,9 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF8]" data-testid="blog-page">
+      <GlobalHeader />
       {/* Hero */}
-      <div className="bg-[#1A1A1A] text-white py-20 sm:py-28">
+      <div className="bg-[#1A1A1A] text-white py-16 sm:py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <p className="text-[#C6A87C] text-sm tracking-widest uppercase mb-4">Baza wiedzy</p>

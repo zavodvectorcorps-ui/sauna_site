@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, TrendingUp, Truck, Users, ShieldCheck, Star, Phone, Mail, Send, CheckCircle, Building2 } from 'lucide-react';
+import { TrendingUp, Truck, Users, ShieldCheck, Star, Phone, Mail, Send, CheckCircle, Building2, DollarSign, CalendarRange, BarChart3, Sparkles, Wrench, Leaf, Film, Package } from 'lucide-react';
+import { GlobalHeader } from '../components/GlobalHeader';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-const ICON_MAP = { TrendingUp, Truck, Users, ShieldCheck, Star, Phone, Mail, Building2 };
+const ICON_MAP = { TrendingUp, Truck, Users, ShieldCheck, Star, Phone, Mail, Building2, DollarSign, CalendarRange, BarChart3, Sparkles, Wrench, Leaf, Film, Package };
 
 export default function B2BPage() {
   const [data, setData] = useState(null);
@@ -49,22 +50,7 @@ export default function B2BPage() {
 
   return (
     <div className="min-h-screen bg-[#0C0C0C]" data-testid="b2b-page">
-      {/* Header */}
-      <header className="py-6 px-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/')} className="text-white/40 hover:text-white transition-colors" data-testid="b2b-back">
-              <ArrowLeft size={20} />
-            </button>
-            <h1 className="text-lg font-bold tracking-[0.2em] text-white uppercase">WM Group</h1>
-          </div>
-          <nav className="flex gap-4">
-            <button onClick={() => navigate('/sauny')} className="text-white/50 hover:text-[#C6A87C] text-sm transition-colors">Sauny</button>
-            <button onClick={() => navigate('/balie')} className="text-white/50 hover:text-[#D4AF37] text-sm transition-colors">Balie</button>
-            <button onClick={() => navigate('/blog')} className="text-white/50 hover:text-white text-sm transition-colors">Blog</button>
-          </nav>
-        </div>
-      </header>
+      <GlobalHeader />
 
       {/* Hero */}
       <section className="relative py-20 sm:py-28 overflow-hidden" data-testid="b2b-hero">
@@ -124,6 +110,72 @@ export default function B2BPage() {
                 </motion.div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Financial Benefits */}
+      <section className="py-16 sm:py-20 border-t border-white/5" data-testid="b2b-financial">
+        <div className="max-w-5xl mx-auto px-4">
+          <motion.h2 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
+            Korzyści finansowe — ile można zarobić?
+          </motion.h2>
+          <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-white/40 text-sm text-center max-w-2xl mx-auto mb-12">
+            Inwestycja w saunę to nie koszt — to źródło nowego przychodu dla Twojego obiektu.
+          </motion.p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { value: '+100–150 zł', label: 'za dobę', desc: 'Średni wzrost ceny noclegu z dostępem do sauny' },
+              { value: '85–90%', label: 'obłożenie', desc: 'W sezonie z sauną vs 70% bez sauny' },
+              { value: '12–18', label: 'miesięcy', desc: 'Średni czas zwrotu inwestycji' },
+              { value: '+3000 zł', label: 'miesięcznie', desc: 'Dodatkowy przychód z wynajmu sauny' },
+            ].map((s, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="text-center p-6 border border-white/5">
+                <div className="text-[#C6A87C] text-2xl sm:text-3xl font-bold mb-1">{s.value}</div>
+                <div className="text-white text-sm font-medium mb-2">{s.label}</div>
+                <p className="text-white/30 text-xs">{s.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Financing */}
+      <section className="py-16 sm:py-20 border-t border-white/5" data-testid="b2b-financing">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Finansowanie — leasing</h2>
+              <p className="text-white/40 text-sm leading-relaxed mb-6">
+                Właściciele obiektów wypoczynkowych mogą sfinansować zakup sauny za pomocą leasingu. Pozwala on rozłożyć koszt na dogodne raty, minimalizując jednorazowy wydatek.
+              </p>
+              <div className="p-5 border border-[#C6A87C]/20 bg-[#C6A87C]/5">
+                <p className="text-white text-sm mb-2 font-medium">Przykładowa kalkulacja:</p>
+                <p className="text-white/40 text-sm">Inwestycja: <span className="text-white">60 000 zł</span></p>
+                <p className="text-white/40 text-sm">Rata leasingowa: <span className="text-white">ok. 1 500–2 000 zł/mies.</span></p>
+                <p className="text-white/40 text-sm">Dodatkowy przychód: <span className="text-[#C6A87C]">+3 000–4 500 zł/mies.</span></p>
+                <p className="text-xs text-[#C6A87C] mt-3 font-medium">Inwestycja zwraca się od pierwszego miesiąca.</p>
+              </div>
+            </motion.div>
+            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Dlaczego WM Group?</h2>
+              <ul className="space-y-3">
+                {[
+                  'Sauny z termodrewna — żywotność min. 25 lat',
+                  'Kontrola jakości w ponad 30 punktach',
+                  'Kompleksowa dostawa i montaż na miejscu',
+                  'Materiały marketingowe i wsparcie sprzedażowe',
+                  'Gwarancja 24 miesiące na wszystkie produkty',
+                  'Profesjonalny film promocyjny przy zakupie >70 tys. zł',
+                  'Serwis posprzedażowy i szybki czas reakcji',
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm">
+                    <CheckCircle size={16} className="text-[#C6A87C] mt-0.5 flex-shrink-0" />
+                    <span className="text-white/60">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
           </div>
         </div>
       </section>
