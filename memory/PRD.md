@@ -35,21 +35,17 @@
 - Дашборд: визиты, CTA, заявки, конверсия, UTM, воронка
 - GTM / GA4 / Google Ads / Facebook Pixel — из админки
 - Consent-gated: скрипты грузятся только при согласии
-- Совет "Быстрый старт" в админке
 
 ### GDPR/RODO Compliance (Mar 2026) — COMPLETE
-- **Polityka prywatności** (/privacy): 10 секций на польском, данные из БД
-- **Polityka cookies** (/cookies): 7 секций, Google Analytics, управление cookies
-- **Cookie Consent Banner**: 2 кнопки (Akceptuję wszystkie / Tylko niezbędne)
-- **RODO notice**: строка под формами контакта (Contact, BalieContact, CatalogFormGate)
-- **"Ustawienia cookies"**: кнопка в футере — сброс согласия
-- **Consent-gated analytics**: GA/GTM/FB Pixel загружаются ТОЛЬКО с согласия
-- Данные компании (company_name, address, NIP, email) из siteSettings
+- Polityka prywatności (/privacy), Polityka cookies (/cookies)
+- Cookie Consent Banner, RODO notice под формами
+- Consent-gated analytics: GA/GTM/FB Pixel только с согласия
 
-### WhatsApp Button (Mar 2026) — COMPLETE
-- Квадратная иконка (стиль iPhone app icon) с закруглёнными углами
-- Надпись "WhatsApp" всегда видна рядом с иконкой
-- Пульсирующая анимация при загрузке
+### Floating Contact (Mar 2026) — COMPLETE
+- WhatsApp иконка (квадратная, стиль iPhone) + тултип при наведении
+- Кнопка звонка (золотая) — ниже WhatsApp
+- При клике на телефон: разворачивается панель с WhatsApp и номером
+- Глобально на всех страницах (FloatingContact.jsx)
 
 ## Key API Endpoints
 - GET /api/settings/bulk — Все настройки

@@ -150,7 +150,6 @@ const SaunaHomePage = () => {
       </main>
       <Footer />
       <StickyCTA />
-      <FloatingContact />
     </div>
   );
 };
@@ -194,7 +193,7 @@ function App() {
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/admin/pipeline" element={<PipelineView />} />
             </Routes>
-            <WhatsAppButton />
+            <FloatingContact />
             <CookieConsentBanner />
           </BrowserRouter>
         </SettingsProvider>
