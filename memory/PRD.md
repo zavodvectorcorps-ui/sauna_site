@@ -20,12 +20,16 @@
 - Sauna Bulk: GET /api/settings/bulk — 1 запрос (кэш 30 сек)
 - Balie Bulk: GET /api/balia/bulk — 1 запрос вместо 12+ (кэш 30 сек, 684ms->177ms)
 - In-memory BulkCache с автоинвалидацией
+- In-memory ImageCache (200 items, 1h TTL) — кэширует картинки из Object Storage
+- Preload всех картинок купелей (цвета, продукты, галерея) в BalieContext при загрузке данных
+- Skeleton-анимация в BalieColors при загрузке картинок
+- Cache-Control: public, max-age=604800, immutable на /api/images/{id}
 - GZip, BalieContext.js + SettingsContext.js
 
 ### Data Migration (Mar 2026) — COMPLETE
 - GET /api/admin/export — экспорт всех данных (268 docs, 162 KB)
 - POST /api/admin/import — импорт с upsert (не дублирует)
-- Вкладка "Система → Экспорт/Импорт" в админке
+- Вкладка "Система → Экспорт/Импорт" в админке — TESTED, WORKING
 
 ### Catalog Storage — COMPLETE
 - PDF каталоги в Object Storage, авто-восстановление при деплое
@@ -42,6 +46,7 @@
 - GET /api/balia/bulk — Данные купелей (cached)
 - GET /api/admin/export — Экспорт данных
 - POST /api/admin/import — Импорт данных
+- GET /api/images/{id} — Картинки с ImageCache + Cache-Control
 
 ## Backlog
 - P2: Toast обработка ошибок
