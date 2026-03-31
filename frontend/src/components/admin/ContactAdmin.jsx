@@ -101,6 +101,25 @@ export const ContactAdmin = ({ authHeader }) => {
             ))}
           </div>
         </div>
+        <div className="mt-4 pt-4 border-t border-black/5">
+          <h3 className="text-sm font-semibold text-gray-500 mb-3 flex items-center gap-1.5">
+            <MapPin size={13} className="text-[#C6A87C]" /> Google Maps
+          </h3>
+          <label className="text-sm text-gray-500 mb-1 block">Ссылка на карту (embed URL)</label>
+          <input
+            value={site?.map_embed_url || ''}
+            onChange={e => setSite({ ...site, map_embed_url: e.target.value })}
+            className="w-full p-2.5 border border-black/10 text-sm focus:border-[#C6A87C] outline-none"
+            placeholder="https://www.google.com/maps/embed?pb=..."
+            data-testid="site-map_embed_url"
+          />
+          <p className="text-xs text-gray-400 mt-1">Откройте Google Maps → найдите нужное место → Поделиться → Встраивание карты → скопируйте src из iframe</p>
+          {site?.map_embed_url && (
+            <div className="mt-3 aspect-video overflow-hidden border border-black/5">
+              <iframe title="Preview" src={site.map_embed_url} width="100%" height="100%" style={{ border: 0 }} loading="lazy" />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Sauna Contact Section */}
