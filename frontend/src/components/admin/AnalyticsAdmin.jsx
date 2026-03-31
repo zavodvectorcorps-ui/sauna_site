@@ -122,6 +122,12 @@ export const AnalyticsAdmin = ({ authHeader, showMessage, activeSubTab }) => {
             </div>
             <p className="text-xs text-[#8C8C8C] mt-3">В Google Ads и Facebook эти события маппятся как Lead. UTM-метки сохраняются автоматически.</p>
           </div>
+
+          {/* Quick start tip */}
+          <div className="bg-[#FFFBEB] p-5 border border-[#C6A87C]/30">
+            <h3 className="font-semibold text-sm mb-2 text-[#92730A]">Быстрый старт</h3>
+            <p className="text-xs text-[#7A6012] leading-relaxed">Для запуска <strong>Google Ads</strong> достаточно вставить GTM ID выше и настроить конверсии внутри Google Tag Manager. Для <strong>Facebook</strong> — вставить Pixel ID. Всё остальное сайт делает автоматически: отправляет события <code>Lead</code> при заполнении любой формы и <code>PageView</code> при переходах между страницами.</p>
+          </div>
         </div>
       </div>
     );

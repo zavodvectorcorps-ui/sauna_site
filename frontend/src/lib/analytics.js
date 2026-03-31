@@ -86,6 +86,7 @@ export const useAnalytics = () => {
 };
 
 // Component to inject GTM/GA4/FB Pixel scripts
+// Respects GDPR cookie consent — analytics scripts load ONLY with consent
 export const TrackingScripts = () => {
   const { getSetting } = useSettings();
   const tracking = getSetting('tracking_settings');
@@ -95,8 +96,13 @@ export const TrackingScripts = () => {
     if (injected.current || !tracking) return;
     injected.current = true;
 
-    // Google Tag Manager
-    if (tracking.gtm_id) {
+    // Check cookie consent
+    let consent = null;
+    try { consent = JSON.parse(localStorage.getItem('wm_cookie_consent')); } catch {}
+    const analyticsAllowed = consent?.analytics === true;
+
+    // Google Tag Manager — only with analytics consent
+    if (tracking.gtm_id && analyticsAllowed) {
       const script = document.createElement('script');
       script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${tracking.gtm_id}');`;
       document.head.appendChild(script);
@@ -112,8 +118,8 @@ export const TrackingScripts = () => {
       document.body.prepend(noscript);
     }
 
-    // Google Analytics 4 (standalone, if no GTM)
-    if (tracking.ga4_id && !tracking.gtm_id) {
+    // Google Analytics 4 (standalone, if no GTM) — only with analytics consent
+    if (tracking.ga4_id && !tracking.gtm_id && analyticsAllowed) {
       const gtagScript = document.createElement('script');
       gtagScript.async = true;
       gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${tracking.ga4_id}`;
@@ -126,8 +132,8 @@ export const TrackingScripts = () => {
       document.head.appendChild(inlineScript);
     }
 
-    // Google Ads (if GTM is used, Ads usually configured in GTM, but add standalone config too)
-    if (tracking.google_ads_id && tracking.gtm_id) {
+    // Google Ads (if GTM is used) — only with analytics consent
+    if (tracking.google_ads_id && tracking.gtm_id && analyticsAllowed) {
       const adsScript = document.createElement('script');
       adsScript.innerHTML = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('config','${tracking.google_ads_id}');`;
       document.head.appendChild(adsScript);
@@ -138,8 +144,8 @@ export const TrackingScripts = () => {
       window.__wm_ads_label = tracking.google_ads_conversion_label || '';
     }
 
-    // Facebook Pixel
-    if (tracking.facebook_pixel_id) {
+    // Facebook Pixel — only with analytics consent
+    if (tracking.facebook_pixel_id && analyticsAllowed) {
       const fbScript = document.createElement('script');
       fbScript.innerHTML = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${tracking.facebook_pixel_id}');fbq('track','PageView');`;
       document.head.appendChild(fbScript);

@@ -161,9 +161,18 @@ export const Footer = () => {
             <p className="text-white/40 text-sm">
               {t('footer.copyright')}
             </p>
-            <p className="text-white/40 text-sm">
-              Made with passion in Poland
-            </p>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => { localStorage.removeItem('wm_cookie_consent'); window.location.reload(); }}
+                className="text-white/30 text-xs hover:text-white/60 transition-colors cursor-pointer"
+                data-testid="cookie-settings-btn"
+              >
+                Ustawienia cookies
+              </button>
+              <p className="text-white/40 text-sm">
+                Made with passion in Poland
+              </p>
+            </div>
           </div>
         </div>
       </div>

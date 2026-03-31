@@ -71,6 +71,9 @@ export const CatalogFormGate = ({ children, className, testId }) => {
                   {submitting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
                   {labels.submit}
                 </button>
+                <p className="text-[9px] text-[#8C8C8C] leading-relaxed">
+                  Dane będą przetwarzane w celu przesłania katalogu. Szczegóły w <a href="/privacy" className="text-[#C6A87C] hover:underline" target="_blank">Polityce prywatności</a>.
+                </p>
               </form>
             </motion.div>
           </motion.div>

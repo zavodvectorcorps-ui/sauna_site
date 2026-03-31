@@ -204,6 +204,9 @@ export const Contact = () => {
                   )}
                   {t('contact.form_submit')}
                 </button>
+                <p className="text-[10px] text-[#8C8C8C] leading-relaxed mt-3" data-testid="rodo-notice">
+                  Administratorem danych osobowych jest {siteSettings?.company_name || '[NAZWA_FIRMY]'}. Dane podane w formularzu będą przetwarzane w celu udzielenia odpowiedzi na przesłane zapytanie. Szczegóły w <a href="/privacy" className="text-[#C6A87C] hover:underline">Polityce prywatności</a>.
+                </p>
               </form>
             )}
           </motion.div>

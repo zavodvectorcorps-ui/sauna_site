@@ -38,6 +38,10 @@ import { BalieLandingPage } from "./components/balie/BalieLandingPage";
 import { BalieConfigurator } from "./components/balie/BalieConfigurator";
 import { TrackingScripts, useAnalytics } from "./lib/analytics";
 import { useLocation } from "react-router-dom";
+import { CookieConsentBanner } from "./components/CookieConsentBanner";
+
+const PrivacyPolicyPage = React.lazy(() => import("./pages/PrivacyPolicyPage"));
+const CookiePolicyPage = React.lazy(() => import("./pages/CookiePolicyPage"));
 
 const OrderProcessSauna = () => <OrderProcess type="sauna" />;
 
@@ -174,11 +178,24 @@ function App() {
               <Route path="/blog/:slug" element={<BlogArticlePage />} />
               <Route path="/b2b" element={<B2BPage />} />
 
+              {/* Legal pages */}
+              <Route path="/privacy" element={
+                <React.Suspense fallback={<div className="min-h-screen bg-[#FAFAF8]" />}>
+                  <PrivacyPolicyPage />
+                </React.Suspense>
+              } />
+              <Route path="/cookies" element={
+                <React.Suspense fallback={<div className="min-h-screen bg-[#FAFAF8]" />}>
+                  <CookiePolicyPage />
+                </React.Suspense>
+              } />
+
               {/* Admin */}
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/admin/pipeline" element={<PipelineView />} />
             </Routes>
             <WhatsAppButton />
+            <CookieConsentBanner />
           </BrowserRouter>
         </SettingsProvider>
         </AutoTranslateProvider>

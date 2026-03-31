@@ -92,6 +92,9 @@ export const BalieContact = () => {
               <button type="submit" disabled={submitting} className="w-full py-3 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors disabled:opacity-50 flex items-center justify-center gap-2" data-testid="balie-contact-submit">
                 <Send size={16} /> {submitting ? tr('Wysyłanie...') : tr('Wyślij wiadomość')}
               </button>
+              <p className="text-[10px] text-white/30 leading-relaxed">
+                Administratorem danych osobowych jest {contactData?.company_name || '[NAZWA_FIRMY]'}. Dane podane w formularzu będą przetwarzane w celu udzielenia odpowiedzi na przesłane zapytanie. Szczegóły w <a href="/privacy" className="text-[#D4AF37] hover:underline">Polityce prywatności</a>.
+              </p>
             </form>
           )}
         </div>
