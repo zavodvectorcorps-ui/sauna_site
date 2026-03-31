@@ -2232,18 +2232,21 @@ CATALOG_DIR.mkdir(exist_ok=True)
 
 @api_router.post("/admin/catalog/upload")
 async def upload_catalog(file: UploadFile = File(...), username: str = Depends(verify_admin)):
-    """Upload a PDF catalog file."""
+    """Upload a PDF catalog file to Object Storage."""
     if not file.filename.lower().endswith('.pdf'):
         raise HTTPException(status_code=400, detail="Только PDF-файлы")
     try:
         contents = await file.read()
         if len(contents) > 50 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="Файл слишком большой (макс 50 МБ)")
+        from object_storage import put_object
+        put_object("catalogs/catalog.pdf", contents, "application/pdf")
+        # Also save locally as cache
         catalog_path = CATALOG_DIR / "catalog.pdf"
         catalog_path.write_bytes(contents)
         await db.settings.update_one(
             {"id": "catalog_settings"},
-            {"$set": {"id": "catalog_settings", "filename": file.filename, "size": len(contents), "uploaded_at": datetime.now(timezone.utc).isoformat()}},
+            {"$set": {"id": "catalog_settings", "filename": file.filename, "size": len(contents), "uploaded_at": datetime.now(timezone.utc).isoformat(), "storage": "object_storage"}},
             upsert=True,
         )
         return {"status": "success", "filename": file.filename, "size": len(contents)}
@@ -2256,23 +2259,45 @@ async def upload_catalog(file: UploadFile = File(...), username: str = Depends(v
 @api_router.get("/catalog/download")
 async def download_catalog():
     """Download the catalog PDF."""
-    from fastapi.responses import FileResponse
+    from fastapi.responses import FileResponse, Response
     catalog_path = CATALOG_DIR / "catalog.pdf"
-    if not catalog_path.exists():
-        raise HTTPException(status_code=404, detail="Каталог не загружен")
     settings = await db.settings.find_one({"id": "catalog_settings"}, {"_id": 0})
     filename = settings.get("filename", "WM-Sauna-Katalog.pdf") if settings else "WM-Sauna-Katalog.pdf"
-    return FileResponse(str(catalog_path), media_type="application/pdf", filename=filename)
+    # Try local cache first
+    if catalog_path.exists():
+        return FileResponse(str(catalog_path), media_type="application/pdf", filename=filename)
+    # Fallback to Object Storage
+    if not settings:
+        raise HTTPException(status_code=404, detail="Каталог не загружен")
+    try:
+        from object_storage import get_object
+        data, _ = get_object("catalogs/catalog.pdf")
+        # Cache locally
+        catalog_path.write_bytes(data)
+        return Response(content=data, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+    except Exception:
+        raise HTTPException(status_code=404, detail="Каталог не загружен")
 
 
 @api_router.get("/catalog/info")
 async def catalog_info():
     """Check if catalog is available."""
     catalog_path = CATALOG_DIR / "catalog.pdf"
-    if not catalog_path.exists():
-        return {"available": False}
+    if catalog_path.exists():
+        settings = await db.settings.find_one({"id": "catalog_settings"}, {"_id": 0})
+        return {"available": True, "filename": settings.get("filename", ""), "size": settings.get("size", 0)} if settings else {"available": True}
+    # Check Object Storage
     settings = await db.settings.find_one({"id": "catalog_settings"}, {"_id": 0})
-    return {"available": True, "filename": settings.get("filename", ""), "size": settings.get("size", 0)} if settings else {"available": True}
+    if not settings:
+        return {"available": False}
+    try:
+        from object_storage import get_object
+        data, _ = get_object("catalogs/catalog.pdf")
+        # Cache locally
+        catalog_path.write_bytes(data)
+        return {"available": True, "filename": settings.get("filename", ""), "size": settings.get("size", 0)}
+    except Exception:
+        return {"available": False}
 
 
 @api_router.delete("/admin/catalog")
@@ -2292,11 +2317,13 @@ async def upload_balia_catalog(file: UploadFile = File(...), username: str = Dep
         contents = await file.read()
         if len(contents) > 50 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="Файл слишком большой (макс 50 МБ)")
+        from object_storage import put_object
+        put_object("catalogs/balia-catalog.pdf", contents, "application/pdf")
         catalog_path = CATALOG_DIR / "balia-catalog.pdf"
         catalog_path.write_bytes(contents)
         await db.settings.update_one(
             {"id": "balia_catalog_settings"},
-            {"$set": {"id": "balia_catalog_settings", "filename": file.filename, "size": len(contents), "uploaded_at": datetime.now(timezone.utc).isoformat()}},
+            {"$set": {"id": "balia_catalog_settings", "filename": file.filename, "size": len(contents), "uploaded_at": datetime.now(timezone.utc).isoformat(), "storage": "object_storage"}},
             upsert=True,
         )
         return {"status": "success", "filename": file.filename, "size": len(contents)}
@@ -2307,21 +2334,38 @@ async def upload_balia_catalog(file: UploadFile = File(...), username: str = Dep
 
 @api_router.get("/balia-catalog/download")
 async def download_balia_catalog():
-    from fastapi.responses import FileResponse
+    from fastapi.responses import FileResponse, Response
     catalog_path = CATALOG_DIR / "balia-catalog.pdf"
-    if not catalog_path.exists():
-        raise HTTPException(status_code=404, detail="Каталог купелей не загружен")
     settings = await db.settings.find_one({"id": "balia_catalog_settings"}, {"_id": 0})
     filename = settings.get("filename", "WM-Balia-Katalog.pdf") if settings else "WM-Balia-Katalog.pdf"
-    return FileResponse(str(catalog_path), media_type="application/pdf", filename=filename)
+    if catalog_path.exists():
+        return FileResponse(str(catalog_path), media_type="application/pdf", filename=filename)
+    if not settings:
+        raise HTTPException(status_code=404, detail="Каталог купелей не загружен")
+    try:
+        from object_storage import get_object
+        data, _ = get_object("catalogs/balia-catalog.pdf")
+        catalog_path.write_bytes(data)
+        return Response(content=data, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+    except Exception:
+        raise HTTPException(status_code=404, detail="Каталог купелей не загружен")
 
 @api_router.get("/balia-catalog/info")
 async def balia_catalog_info():
     catalog_path = CATALOG_DIR / "balia-catalog.pdf"
-    if not catalog_path.exists():
-        return {"available": False}
+    if catalog_path.exists():
+        settings = await db.settings.find_one({"id": "balia_catalog_settings"}, {"_id": 0})
+        return {"available": True, "filename": settings.get("filename", ""), "size": settings.get("size", 0)} if settings else {"available": True}
     settings = await db.settings.find_one({"id": "balia_catalog_settings"}, {"_id": 0})
-    return {"available": True, "filename": settings.get("filename", ""), "size": settings.get("size", 0)} if settings else {"available": True}
+    if not settings:
+        return {"available": False}
+    try:
+        from object_storage import get_object
+        data, _ = get_object("catalogs/balia-catalog.pdf")
+        catalog_path.write_bytes(data)
+        return {"available": True, "filename": settings.get("filename", ""), "size": settings.get("size", 0)}
+    except Exception:
+        return {"available": False}
 
 @api_router.delete("/admin/balia-catalog")
 async def delete_balia_catalog(username: str = Depends(verify_admin)):

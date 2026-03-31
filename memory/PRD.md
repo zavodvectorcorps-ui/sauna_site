@@ -16,7 +16,8 @@
 - Горизонтальный скролл, peek-эффект, автоскролл
 
 ### Object Storage & Media
-- Emergent Object Storage (36 фото + 46 видео)
+- Emergent Object Storage (36 фото + 46 видео + каталоги PDF)
+- Каталоги хранятся в Object Storage, локальный кеш авто-восстанавливается
 
 ### Multilingual (4 языка)
 - PL, EN, DE, CS. GPT-4.1-nano автоперевод с MongoDB кэшем
@@ -47,16 +48,24 @@
 - Глобально на всех страницах
 
 ### Google Maps (Mar 2026) — COMPLETE
-- Карта на главной странице (под формой контактов)
-- Карта на странице саун (секция контакт)
-- Админка принимает как чистый URL, так и полный iframe — автопарсинг src
-- Дефолтная ссылка указывает на WM Group в Варшаве
+- Карта на главной странице и на странице саун
+- Админка принимает URL или полный iframe — автопарсинг
+
+### Catalog Storage (Mar 2026) — COMPLETE
+- PDF каталоги хранятся в Object Storage (переживают деплой)
+- Локальный кеш с авто-восстановлением при обращении
+- Модальное окно каталога через createPortal (центрирование)
+
+### Video Hero Balie (Mar 2026) — COMPLETE
+- Фоновое видео купелей загружается через bulk API
+- balia_hero_settings добавлены в /api/settings/bulk
 
 ## Key API Endpoints
-- GET /api/settings/bulk — Все настройки
+- GET /api/settings/bulk — Все настройки (вкл. balia_hero_settings)
 - POST /api/analytics/event — Аналитика
 - GET /api/admin/analytics/summary — Дашборд
-- GET/PUT /api/settings/tracking — Коды трекинга
+- GET /api/catalog/info — Проверка наличия каталога (с авто-восстановлением из Object Storage)
+- GET /api/catalog/download — Скачивание каталога
 
 ## Backlog
 - P2: Toast обработка ошибок
