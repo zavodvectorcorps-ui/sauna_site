@@ -69,7 +69,31 @@ class ImageCache:
             del self._data[oldest]
         self._data[key] = {'data': data, 'ct': content_type, 'ts': time_module.time()}
 
-image_cache = ImageCache(max_items=200, ttl=3600)
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+from PIL import Image as PILImage
+import io as iomod
+
+# Thread pool for CPU-bound image operations (Pillow resize)
+_img_executor = ThreadPoolExecutor(max_workers=4)
+
+def _resize_image_sync(raw_data, w, q):
+    """Synchronous image resize (runs in thread pool)"""
+    img = PILImage.open(iomod.BytesIO(raw_data))
+    if img.mode in ('RGBA', 'LA', 'P'):
+        img = img.convert('RGBA')
+    else:
+        img = img.convert('RGB')
+    if w and img.width > w:
+        ratio = w / img.width
+        new_h = int(img.height * ratio)
+        img = img.resize((w, new_h), PILImage.LANCZOS)
+    buf = iomod.BytesIO()
+    quality = q or 80
+    img.save(buf, format='WEBP', quality=quality, method=4)
+    return buf.getvalue()
+
+image_cache = ImageCache(max_items=500, ttl=7200)
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
@@ -2206,19 +2230,15 @@ async def upload_image(
 
 @api_router.get("/images/{image_id}")
 async def get_uploaded_image(image_id: str, w: int = None, q: int = None, request: Request = None):
-    # w = target width, q = quality (1-100), default: serve original
     cache_headers = {"Cache-Control": "public, max-age=604800, immutable"}
 
-    # Static asset fallback
     if image_id == "sauna-cutaway-7facts":
         static_path = Path("/app/backend/uploads/sauna-cutaway.webp")
         if static_path.exists():
             return FileResponse(static_path, media_type="image/webp", headers=cache_headers)
 
-    # Build cache key with resize params
     cache_key = f"{image_id}_{w or 'orig'}_{q or 'orig'}"
 
-    # Check in-memory image cache first
     cached_data, cached_ct = image_cache.get(cache_key)
     if cached_data:
         return Response(content=cached_data, media_type=cached_ct, headers=cache_headers)
@@ -2230,16 +2250,15 @@ async def get_uploaded_image(image_id: str, w: int = None, q: int = None, reques
     raw_data = None
     content_type = image.get("content_type", "image/jpeg")
 
-    # Try object storage first
     if image.get("storage_path"):
         try:
-            data, ct = get_object(image["storage_path"])
+            loop = asyncio.get_event_loop()
+            data, ct = await loop.run_in_executor(_img_executor, get_object, image["storage_path"])
             raw_data = data
             content_type = image.get("content_type", ct)
         except Exception as e:
             logger.warning(f"Object storage fetch failed for {image_id}: {e}")
 
-    # Fallback to MongoDB base64
     if raw_data is None and image.get("data"):
         raw_data = base64.b64decode(image["data"])
         content_type = image["content_type"]
@@ -2247,30 +2266,15 @@ async def get_uploaded_image(image_id: str, w: int = None, q: int = None, reques
     if raw_data is None:
         raise HTTPException(status_code=404, detail="Image data not found")
 
-    # Optimize: resize and/or convert to WebP
     if w or q:
         try:
-            from PIL import Image as PILImage
-            import io
-            img = PILImage.open(io.BytesIO(raw_data))
-            if img.mode in ('RGBA', 'LA', 'P'):
-                img = img.convert('RGBA')
-            else:
-                img = img.convert('RGB')
-            if w and img.width > w:
-                ratio = w / img.width
-                new_h = int(img.height * ratio)
-                img = img.resize((w, new_h), PILImage.LANCZOS)
-            buf = io.BytesIO()
-            quality = q or 80
-            img.save(buf, format='WEBP', quality=quality, method=4)
-            optimized = buf.getvalue()
+            loop = asyncio.get_event_loop()
+            optimized = await loop.run_in_executor(_img_executor, _resize_image_sync, raw_data, w, q)
             image_cache.set(cache_key, optimized, "image/webp")
             return Response(content=optimized, media_type="image/webp", headers=cache_headers)
         except Exception as e:
             logger.warning(f"Image optimization failed for {image_id}: {e}")
 
-    # Return original
     image_cache.set(cache_key, raw_data, content_type)
     return Response(content=raw_data, media_type=content_type, headers=cache_headers)
 
@@ -3224,6 +3228,57 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+
+async def _prewarm_image_cache():
+    """Pre-warm image cache with all product/color images at common sizes"""
+    await asyncio.sleep(3)  # Let the server fully start
+    try:
+        # Gather all image IDs from products, colors, gallery
+        image_ids = set()
+        async for doc in db.balia_products.find({}, {"image": 1}):
+            img = doc.get("image", "")
+            if "/api/images/" in img:
+                image_ids.add(img.split("/api/images/")[-1])
+        async for doc in db.balia_colors.find({}, {"image": 1}):
+            img = doc.get("image", "")
+            if "/api/images/" in img:
+                image_ids.add(img.split("/api/images/")[-1])
+
+        logger.info(f"Pre-warming cache for {len(image_ids)} images...")
+
+        # Common resize variants
+        variants = [(500, 75), (200, 70)]
+        loop = asyncio.get_event_loop()
+        warmed = 0
+
+        for img_id in image_ids:
+            image = await db.uploads.find_one({"id": img_id})
+            if not image or not image.get("storage_path"):
+                continue
+            try:
+                raw_data, ct = await loop.run_in_executor(_img_executor, get_object, image["storage_path"])
+            except Exception:
+                continue
+            for w, q in variants:
+                cache_key = f"{img_id}_{w}_{q}"
+                if image_cache.get(cache_key)[0]:
+                    continue
+                try:
+                    optimized = await loop.run_in_executor(_img_executor, _resize_image_sync, raw_data, w, q)
+                    image_cache.set(cache_key, optimized, "image/webp")
+                    warmed += 1
+                except Exception:
+                    pass
+            # Also cache original
+            orig_key = f"{img_id}_orig_orig"
+            if not image_cache.get(orig_key)[0]:
+                image_cache.set(orig_key, raw_data, image.get("content_type", ct))
+
+        logger.info(f"Image cache pre-warmed: {warmed} optimized variants cached")
+    except Exception as e:
+        logger.warning(f"Image cache pre-warm failed: {e}")
+
+
 @app.on_event("startup")
 async def startup_init():
     try:
@@ -3254,6 +3309,9 @@ async def startup_init():
             logger.info(f"Database has {settings_count} settings, skipping seed")
     except Exception as e:
         logger.error(f"Database seeding error: {e}")
+
+    # Pre-warm image cache in background
+    asyncio.create_task(_prewarm_image_cache())
 
 
 @app.on_event("shutdown")
