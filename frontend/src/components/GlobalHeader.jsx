@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Phone } from 'lucide-react';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { useSettings } from '../context/SettingsContext';
 
 const NAV = [
   { path: '/sauny', label: 'Sauny', color: '#C6A87C' },
@@ -12,6 +13,8 @@ const NAV = [
 export const GlobalHeader = ({ light = false }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { siteSettings } = useSettings();
+  const phone = siteSettings?.phone || '+48 732 099 201';
 
   const bg = light
     ? 'bg-white/95 backdrop-blur-md border-b border-black/5'
@@ -68,14 +71,14 @@ export const GlobalHeader = ({ light = false }) => {
           <LanguageSwitcher variant={light ? 'light' : 'dark'} />
 
           <a
-            href="tel:+48732099201"
+            href={`tel:${phone.replace(/\s/g, '')}`}
             className={`hidden md:flex items-center gap-2 text-sm font-medium transition-colors ${
               light ? 'text-[#1A1A1A] hover:text-[#C6A87C]' : 'text-white/70 hover:text-[#C6A87C]'
             }`}
             data-testid="global-header-phone"
           >
             <Phone size={14} className="text-[#C6A87C]" />
-            +48 732 099 201
+            {phone}
           </a>
         </div>
       </div>

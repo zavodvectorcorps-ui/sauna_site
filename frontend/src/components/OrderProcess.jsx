@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Phone, ArrowRight } from 'lucide-react';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
+import { useSettings } from '../context/SettingsContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -51,6 +52,8 @@ export const OrderProcess = ({ type = 'sauna' }) => {
   const headerInView = useInView(headerRef, { once: true, margin: '-40px' });
   const dark = type === 'balia';
   const { tr } = useAutoTranslate();
+  const { siteSettings } = useSettings();
+  const phone = siteSettings?.phone || '+48 732 099 201';
 
   const endpoint = type === 'balia' ? 'balia-order-process' : 'order-process';
 
@@ -109,7 +112,7 @@ export const OrderProcess = ({ type = 'sauna' }) => {
             data-testid={`order-process-cta-${type}`}
           >
             <Phone size={18} />
-            {tr('Zadzwoń i zamów')}: +48 732 099 201
+            {tr('Zadzwoń i zamów')}: {phone}
           </a>
           <p className={`text-xs mt-3 ${dark ? 'text-white/30' : 'text-[#8C8C8C]'}`}>{tr('Lub wypełnij formularz kontaktowy poniżej')}</p>
         </motion.div>

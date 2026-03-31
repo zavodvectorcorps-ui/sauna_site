@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const SeoHead = () => {
   const { language } = useLanguage();
+  const { siteSettings } = useSettings();
   const [seo, setSeo] = useState(null);
 
   useEffect(() => {
@@ -31,8 +33,8 @@ export const SeoHead = () => {
     description,
     url: canonical || (typeof window !== 'undefined' ? window.location.origin : ''),
     image: ogImage,
-    telephone: "+48 732 099 201",
-    email: "wmsauna@gmail.com",
+    telephone: siteSettings?.phone || "+48 732 099 201",
+    email: siteSettings?.email || "wmsauna@gmail.com",
     address: {
       "@type": "PostalAddress",
       streetAddress: "ul. Boryny 3",

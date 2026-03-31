@@ -48,8 +48,12 @@ export const BalieLandingPage = () => {
   const { tr } = useAutoTranslate();
   const [promoBlocks, setPromoBlocks] = useState(null);
   const [sectionOrder, setSectionOrder] = useState(DEFAULT_ORDER);
+  const [baliePhone, setBaliePhone] = useState('+48 515 995 190');
 
   useEffect(() => {
+    fetch(`${API}/api/settings/balie-contact`).then(r => r.json()).then(d => {
+      if (d?.phone) setBaliePhone(d.phone);
+    }).catch(() => {});
     fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
       setPromoBlocks(data?.promo_blocks || null);
       if (data?.section_order?.length) {
@@ -103,9 +107,9 @@ export const BalieLandingPage = () => {
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher variant="dark" />
-            <a href="tel:+48515995190" className="flex items-center gap-2 text-[#D4AF37] text-sm font-medium">
+            <a href={`tel:${baliePhone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-[#D4AF37] text-sm font-medium">
               <Phone size={16} />
-              <span className="hidden sm:inline">+48 515 995 190</span>
+              <span className="hidden sm:inline">{baliePhone}</span>
             </a>
           </div>
         </div>
@@ -135,10 +139,10 @@ export const BalieLandingPage = () => {
               <p className="text-white/30 text-sm leading-relaxed">Ręcznie robione balie i jacuzzi premium z naturalnego drewna. Polski producent z Warszawy.</p>
             </div>
             <div>
-              <h4 className="text-white font-semibold text-sm mb-3">Kontakt</h4>
+              <h4 className="text-white font-semibold text-sm mb-3">{tr('Kontakt')}</h4>
               <div className="space-y-2 text-white/40 text-sm">
-                <p>ul. Boryny 3, Warszawa</p>
-                <p>+48 515 995 190</p>
+                <p>{tr('ul. Boryny 3, Warszawa')}</p>
+                <p>{baliePhone}</p>
                 <p>kontakt@wm-balia.pl</p>
               </div>
             </div>

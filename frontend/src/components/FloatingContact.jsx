@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, X, MessageCircle } from 'lucide-react';
-
-const PHONE = '+48732099201';
-const WHATSAPP_URL = `https://wa.me/${PHONE.replace('+', '')}?text=${encodeURIComponent('Dzień dobry! Chciałbym zapytać o saunę.')}`;
-const PHONE_URL = `tel:${PHONE}`;
+import { useSettings } from '../context/SettingsContext';
 
 export const FloatingContact = () => {
   const [open, setOpen] = useState(false);
+  const { siteSettings } = useSettings();
+  const phone = siteSettings?.phone || '+48 732 099 201';
+  const phoneClean = phone.replace(/\s/g, '');
 
   return (
     <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-40 flex flex-col items-end gap-3" data-testid="floating-contact">
@@ -19,7 +19,7 @@ export const FloatingContact = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.8 }}
               transition={{ duration: 0.2, delay: 0.05 }}
-              href={WHATSAPP_URL}
+              href={`https://wa.me/${phoneClean.replace('+', '')}?text=${encodeURIComponent('Dzień dobry! Chciałbym zapytać o saunę.')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 bg-[#25D366] text-white pl-4 pr-5 py-3 shadow-lg hover:bg-[#1fba57] transition-colors"
@@ -33,12 +33,12 @@ export const FloatingContact = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.8 }}
               transition={{ duration: 0.2 }}
-              href={PHONE_URL}
+              href={`tel:${phoneClean}`}
               className="flex items-center gap-3 bg-[#1A1A1A] text-white pl-4 pr-5 py-3 shadow-lg hover:bg-[#333] transition-colors"
               data-testid="floating-phone"
             >
               <Phone size={20} />
-              <span className="text-sm font-medium whitespace-nowrap">+48 732 099 201</span>
+              <span className="text-sm font-medium whitespace-nowrap">{phone}</span>
             </motion.a>
           </>
         )}

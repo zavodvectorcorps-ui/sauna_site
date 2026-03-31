@@ -5,6 +5,7 @@ import { ArrowRight, Flame, Droplets, MapPin, ShieldCheck, Leaf, Heart, Phone, M
 import { resolveMediaUrl } from '../lib/utils';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
+import { useSettings } from '../context/SettingsContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -157,6 +158,10 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
 const MainLanding = () => {
   const navigate = useNavigate();
   const { tr } = useAutoTranslate();
+  const { siteSettings } = useSettings();
+  const phone = siteSettings?.phone || '+48 732 099 201';
+  const email = siteSettings?.email || 'wmsauna@gmail.com';
+  const address = siteSettings?.address || 'Warszawa, Polska';
   const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -288,9 +293,9 @@ const MainLanding = () => {
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
             <div className="md:col-span-2 space-y-6">
-              <div className="flex items-start gap-4"><Phone size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">{tr('Telefon')}</div><a href="tel:+48732099201" className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">+48 732 099 201</a></div></div>
-              <div className="flex items-start gap-4"><Mail size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">Email</div><a href="mailto:kontakt@wm-sauna.pl" className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">kontakt@wm-sauna.pl</a></div></div>
-              <div className="flex items-start gap-4"><MapPin size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">{tr('Adres')}</div><p className="text-white/50 text-sm">{tr('Warszawa, Polska')}</p></div></div>
+              <div className="flex items-start gap-4"><Phone size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">{tr('Telefon')}</div><a href={`tel:${phone.replace(/\s/g, '')}`} className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">{phone}</a></div></div>
+              <div className="flex items-start gap-4"><Mail size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">Email</div><a href={`mailto:${email}`} className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">{email}</a></div></div>
+              <div className="flex items-start gap-4"><MapPin size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">{tr('Adres')}</div><p className="text-white/50 text-sm">{tr(address)}</p></div></div>
             </div>
             <div className="md:col-span-3">
               {submitted ? (

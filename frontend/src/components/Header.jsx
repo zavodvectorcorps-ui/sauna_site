@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Phone, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { language, changeLanguage, t } = useLanguage();
+  const { siteSettings } = useSettings();
+  const phone = siteSettings?.phone || '+48 732 099 201';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -124,7 +127,7 @@ export const Header = () => {
 
               {/* Phone */}
               <a
-                href="tel:+48732099201"
+                href={`tel:${phone.replace(/\s/g, '')}`}
                 data-testid="phone-link"
                 className={`flex items-center gap-2 text-sm font-medium transition-colors duration-200 ${
                   isScrolled
@@ -133,7 +136,7 @@ export const Header = () => {
                 }`}
               >
                 <Phone size={16} className="text-[#C6A87C]" />
-                +48 732 099 201
+                {phone}
               </a>
             </div>
 
@@ -225,11 +228,11 @@ export const Header = () => {
 
                   {/* Phone Mobile */}
                   <a
-                    href="tel:+48732099201"
+                    href={`tel:${phone.replace(/\s/g, '')}`}
                     className="flex items-center justify-center gap-2 btn-primary w-full"
                   >
                     <Phone size={18} />
-                    +48 732 099 201
+                    {phone}
                   </a>
                 </div>
               </div>
