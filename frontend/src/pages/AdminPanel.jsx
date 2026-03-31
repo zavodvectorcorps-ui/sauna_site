@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Settings, Users, Image, MessageSquare, LayoutGrid, LogOut, 
   Eye, GripVertical, Phone, FileText, Star, ChevronDown, Droplets, Flame, CreditCard, Gift, BarChart3
@@ -39,10 +39,12 @@ import { ContactAdmin } from '../components/admin/ContactAdmin';
 import { BalieInstallmentAdmin } from '../components/admin/BalieInstallmentAdmin';
 import { BalieGalleryAdmin } from '../components/admin/BalieGalleryAdmin';
 import { AnalyticsAdmin } from '../components/admin/AnalyticsAdmin';
+import { useSettings } from '../context/SettingsContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AdminPanel = () => {
+  const { refreshSettings } = useSettings();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [authHeader, setAuthHeader] = useState('');
@@ -51,10 +53,14 @@ const AdminPanel = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [collapsedGroups, setCollapsedGroups] = useState({});
 
-  const showMessage = (type, text) => {
+  const showMessage = useCallback((type, text) => {
     setMessage({ type, text });
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
-  };
+    // Auto-refresh settings context on successful save
+    if (type === 'success' && text !== 'Вход выполнен успешно') {
+      refreshSettings();
+    }
+  }, [refreshSettings]);
 
   const handleLogin = async (e) => {
     e.preventDefault();

@@ -126,6 +126,7 @@ class HeroSettings(BaseModel):
     subtitle_pl: str = "Od 2015 roku tworzymy sauny premium z najwyższej jakości drewna skandynawskiego. Gotowe do dostawy w 5-10 dni."
     subtitle_en: str = "Since 2015, we create premium saunas from the highest quality Scandinavian wood. Ready for delivery in 5-10 days."
     subtitle_ru: str = "С 2015 года создаём премиальные сауны из высококачественной скандинавской древесины. Готовы к доставке за 5-10 дней."
+    features: list = ["Polska produkcja", "Gotowe w 5-10 dni", "Gwarancja 24 miesiące"]
 
 class AboutSettings(BaseModel):
     id: str = "about_settings"
