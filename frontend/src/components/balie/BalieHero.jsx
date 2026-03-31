@@ -5,11 +5,14 @@ import { useSettings } from '../../context/SettingsContext';
 import { resolveMediaUrl, optimizedImg } from '../../lib/utils';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
 import { useBalieData } from '../../context/BalieContext';
+import { useABTest } from '../../context/ABTestContext';
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=1920&q=80";
 
 export const BalieHero = () => {
   const { baliaHero } = useSettings();
   const { tr } = useAutoTranslate();
+  const abPrimary = useABTest('balie_primary');
+  const abSecondary = useABTest('balie_secondary');
   const [content, setContent] = useState({
     badge: 'Ręcznie robione w Polsce',
     headline: 'Luksus w Twoim Ogrodzie',
@@ -90,11 +93,20 @@ export const BalieHero = () => {
           </h1>
           <p className="text-white/60 text-base sm:text-lg max-w-2xl mx-auto mb-10">{tr(content.subheadline)}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
-            <button onClick={() => scrollTo('produkty')} className="px-8 py-4 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors" data-testid="balie-hero-cta">
-              {tr(content.ctaPrimary)}
+            <button
+              onClick={() => { scrollTo('produkty'); abPrimary.trackClick(); }}
+              className="px-8 py-4 bg-[#D4AF37] text-[#0F1218] font-semibold hover:bg-[#C5A028] transition-colors"
+              style={abPrimary.variant?.color ? { backgroundColor: abPrimary.variant.color } : {}}
+              data-testid="balie-hero-cta"
+            >
+              {abPrimary.variant?.text_pl ? tr(abPrimary.variant.text_pl) : tr(content.ctaPrimary)}
             </button>
-            <button onClick={() => scrollTo('produkty')} className="px-8 py-4 border border-white/20 text-white font-medium hover:bg-white/5 transition-colors">
-              {tr(content.ctaSecondary)}
+            <button
+              onClick={() => { scrollTo('produkty'); abSecondary.trackClick(); }}
+              className="px-8 py-4 border border-white/20 text-white font-medium hover:bg-white/5 transition-colors"
+              style={abSecondary.variant?.color ? { backgroundColor: abSecondary.variant.color, borderColor: abSecondary.variant.color } : {}}
+            >
+              {abSecondary.variant?.text_pl ? tr(abSecondary.variant.text_pl) : tr(content.ctaSecondary)}
             </button>
           </div>
 

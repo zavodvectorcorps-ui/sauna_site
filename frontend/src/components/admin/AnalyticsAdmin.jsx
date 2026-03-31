@@ -1,7 +1,355 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Save, BarChart3, TrendingUp, Users, Download, FileText, Send, MousePointer, Eye } from 'lucide-react';
+import { Save, BarChart3, TrendingUp, Users, Download, FileText, Send, MousePointer, Eye, Plus, Trash2, Play, Pause, Award } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
+
+const BUTTON_OPTIONS = [
+  { id: 'hero_primary', label: 'Hero - Главная CTA (сауны)' },
+  { id: 'hero_secondary', label: 'Hero - Вторая CTA (сауны)' },
+  { id: 'balie_primary', label: 'Balie Hero - Главная CTA' },
+  { id: 'balie_secondary', label: 'Balie Hero - Вторая CTA' },
+  { id: 'model_details', label: 'Карточка модели - "Zobacz szczegoly"' },
+  { id: 'model_configure', label: 'Сравнение - "Skonfiguruj"' },
+];
+
+// ═══ A/B Tests Management Panel ═══
+const EMPTY_VARIANT = { id: '', text_pl: '', text_en: '', color: '' };
+
+const ABTestsPanel = ({ authHeader, showMessage, fetchWithAuth }) => {
+  const [tests, setTests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editingTest, setEditingTest] = useState(null);
+  const [form, setForm] = useState({ name: '', button_id: 'hero_primary', variants: [{ ...EMPTY_VARIANT, id: 'a' }, { ...EMPTY_VARIANT, id: 'b' }] });
+
+  const loadTests = useCallback(async () => {
+    try {
+      const res = await fetchWithAuth(`${API}/api/admin/ab/tests`);
+      setTests(await res.json());
+    } catch {}
+    setLoading(false);
+  }, [fetchWithAuth]);
+
+  useEffect(() => { loadTests(); }, [loadTests]);
+
+  const resetForm = () => {
+    setForm({ name: '', button_id: 'hero_primary', variants: [{ ...EMPTY_VARIANT, id: 'a' }, { ...EMPTY_VARIANT, id: 'b' }] });
+    setEditingTest(null);
+  };
+
+  const handleSave = async () => {
+    if (!form.name.trim()) { showMessage('error', 'Введите название теста'); return; }
+    const hasText = form.variants.every(v => v.text_pl.trim());
+    if (!hasText) { showMessage('error', 'Заполните текст для всех вариантов'); return; }
+    try {
+      if (editingTest) {
+        await fetchWithAuth(`${API}/api/admin/ab/tests/${editingTest}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: form.name, button_id: form.button_id, variants: form.variants }),
+        });
+        showMessage('success', 'Тест обновлён');
+      } else {
+        await fetchWithAuth(`${API}/api/admin/ab/tests`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form),
+        });
+        showMessage('success', 'Тест создан');
+      }
+      resetForm();
+      loadTests();
+    } catch { showMessage('error', 'Ошибка сохранения'); }
+  };
+
+  const toggleStatus = async (test) => {
+    const newStatus = test.status === 'active' ? 'paused' : 'active';
+    await fetchWithAuth(`${API}/api/admin/ab/tests/${test.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus }),
+    });
+    showMessage('success', newStatus === 'active' ? 'Тест запущен' : 'Тест приостановлен');
+    loadTests();
+  };
+
+  const deleteTest = async (id) => {
+    if (!window.confirm('Удалить тест и все его данные?')) return;
+    await fetchWithAuth(`${API}/api/admin/ab/tests/${id}`, { method: 'DELETE' });
+    showMessage('success', 'Тест удалён');
+    loadTests();
+  };
+
+  const editTest = (test) => {
+    setEditingTest(test.id);
+    setForm({ name: test.name, button_id: test.button_id, variants: test.variants || [] });
+  };
+
+  const addVariant = () => {
+    const nextId = String.fromCharCode(97 + form.variants.length); // a, b, c, d...
+    setForm(prev => ({ ...prev, variants: [...prev.variants, { ...EMPTY_VARIANT, id: nextId }] }));
+  };
+
+  const updateVariant = (index, field, value) => {
+    setForm(prev => {
+      const variants = [...prev.variants];
+      variants[index] = { ...variants[index], [field]: value };
+      return { ...prev, variants };
+    });
+  };
+
+  const removeVariant = (index) => {
+    if (form.variants.length <= 2) { showMessage('error', 'Минимум 2 варианта'); return; }
+    setForm(prev => ({ ...prev, variants: prev.variants.filter((_, i) => i !== index) }));
+  };
+
+  const getConversionRate = (stats, variantId) => {
+    const s = stats?.[variantId];
+    if (!s || !s.unique_impressions) return 0;
+    return ((s.unique_clicks / s.unique_impressions) * 100);
+  };
+
+  const getWinner = (test) => {
+    if (!test.stats || !test.variants?.length) return null;
+    let best = null;
+    let bestRate = -1;
+    test.variants.forEach(v => {
+      const rate = getConversionRate(test.stats, v.id);
+      if (rate > bestRate) { bestRate = rate; best = v; }
+    });
+    return bestRate > 0 ? best : null;
+  };
+
+  if (loading) return <div className="flex items-center justify-center py-12"><div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" /></div>;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-xl font-bold text-[#1A1A1A]" data-testid="ab-tests-title">A/B Тестирование CTA</h2>
+          <p className="text-sm text-[#8C8C8C] mt-1">Тестируйте текст, цвет и варианты кнопок для максимальной конверсии</p>
+        </div>
+      </div>
+
+      {/* ── Create / Edit form ── */}
+      <div className="border border-black/5 p-5 mb-6" data-testid="ab-test-form">
+        <h3 className="font-semibold text-sm mb-4">{editingTest ? 'Редактирование теста' : 'Новый тест'}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-xs text-[#8C8C8C] mb-1">Название теста</label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
+              placeholder="Например: Hero CTA текст"
+              className="w-full p-2 border border-black/10 text-sm"
+              data-testid="ab-test-name-input"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-[#8C8C8C] mb-1">Кнопка</label>
+            <select
+              value={form.button_id}
+              onChange={e => setForm(prev => ({ ...prev, button_id: e.target.value }))}
+              className="w-full p-2 border border-black/10 text-sm bg-white"
+              data-testid="ab-test-button-select"
+            >
+              {BUTTON_OPTIONS.map(opt => (
+                <option key={opt.id} value={opt.id}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <label className="block text-xs text-[#8C8C8C] mb-2">Варианты</label>
+        <div className="space-y-3 mb-4">
+          {form.variants.map((variant, i) => (
+            <div key={i} className="flex items-start gap-3 p-3 bg-[#F9F9F7] border border-black/5">
+              <div className="w-8 h-8 flex items-center justify-center bg-[#1A1A1A] text-white text-xs font-bold flex-shrink-0 mt-1">
+                {variant.id.toUpperCase()}
+              </div>
+              <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div>
+                  <label className="text-[10px] text-[#8C8C8C]">Текст (PL)</label>
+                  <input
+                    type="text"
+                    value={variant.text_pl}
+                    onChange={e => updateVariant(i, 'text_pl', e.target.value)}
+                    placeholder="Текст кнопки на польском"
+                    className="w-full p-1.5 border border-black/10 text-sm"
+                    data-testid={`ab-variant-${variant.id}-text-pl`}
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-[#8C8C8C]">Текст (EN)</label>
+                  <input
+                    type="text"
+                    value={variant.text_en}
+                    onChange={e => updateVariant(i, 'text_en', e.target.value)}
+                    placeholder="English text (optional)"
+                    className="w-full p-1.5 border border-black/10 text-sm"
+                  />
+                </div>
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <label className="text-[10px] text-[#8C8C8C]">Цвет кнопки</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={variant.color || '#C6A87C'}
+                        onChange={e => updateVariant(i, 'color', e.target.value)}
+                        className="w-8 h-8 border border-black/10 cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={variant.color || ''}
+                        onChange={e => updateVariant(i, 'color', e.target.value)}
+                        placeholder="(по умолчанию)"
+                        className="flex-1 p-1.5 border border-black/10 text-sm font-mono"
+                      />
+                    </div>
+                  </div>
+                  {form.variants.length > 2 && (
+                    <button onClick={() => removeVariant(i)} className="p-1.5 text-red-400 hover:text-red-600">
+                      <Trash2 size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button onClick={addVariant} className="flex items-center gap-1 text-xs text-[#C6A87C] hover:text-[#B09060] font-medium" data-testid="ab-add-variant-btn">
+            <Plus size={14} /> Добавить вариант
+          </button>
+          <div className="flex-1" />
+          {editingTest && (
+            <button onClick={resetForm} className="px-4 py-2 text-xs border border-black/10 text-[#595959] hover:bg-black/5">
+              Отмена
+            </button>
+          )}
+          <button onClick={handleSave} className="flex items-center gap-2 bg-[#C6A87C] text-white px-5 py-2 text-sm font-medium hover:bg-[#B09060]" data-testid="ab-save-test-btn">
+            <Save size={14} /> {editingTest ? 'Сохранить' : 'Создать тест'}
+          </button>
+        </div>
+      </div>
+
+      {/* ── Active tests with stats ── */}
+      {tests.length === 0 ? (
+        <div className="border border-dashed border-black/10 p-8 text-center" data-testid="ab-no-tests">
+          <BarChart3 size={32} className="mx-auto text-[#8C8C8C] mb-3" />
+          <p className="text-sm text-[#8C8C8C]">Нет тестов. Создайте первый A/B тест выше.</p>
+        </div>
+      ) : (
+        <div className="space-y-4" data-testid="ab-tests-list">
+          {tests.map(test => {
+            const winner = getWinner(test);
+            const buttonLabel = BUTTON_OPTIONS.find(b => b.id === test.button_id)?.label || test.button_id;
+            return (
+              <div key={test.id} className="border border-black/5 overflow-hidden" data-testid={`ab-test-${test.id}`}>
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 bg-[#F9F9F7] border-b border-black/5">
+                  <div className="flex items-center gap-3">
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${test.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      {test.status === 'active' ? <Play size={10} /> : <Pause size={10} />}
+                      {test.status === 'active' ? 'Активен' : 'Приостановлен'}
+                    </span>
+                    <span className="font-semibold text-sm text-[#1A1A1A]">{test.name}</span>
+                    <span className="text-xs text-[#8C8C8C]">{buttonLabel}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => toggleStatus(test)} className="p-1.5 text-[#595959] hover:text-[#1A1A1A] border border-black/10" title={test.status === 'active' ? 'Приостановить' : 'Запустить'} data-testid={`ab-toggle-${test.id}`}>
+                      {test.status === 'active' ? <Pause size={14} /> : <Play size={14} />}
+                    </button>
+                    <button onClick={() => editTest(test)} className="px-3 py-1.5 text-xs border border-black/10 text-[#595959] hover:bg-black/5">Изменить</button>
+                    <button onClick={() => deleteTest(test.id)} className="p-1.5 text-red-400 hover:text-red-600 border border-red-200" data-testid={`ab-delete-${test.id}`}>
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Variants stats */}
+                <div className="p-4">
+                  <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${test.variants?.length || 2}, 1fr)` }}>
+                    {(test.variants || []).map(v => {
+                      const s = test.stats?.[v.id] || { impressions: 0, clicks: 0, unique_impressions: 0, unique_clicks: 0 };
+                      const convRate = s.unique_impressions > 0 ? ((s.unique_clicks / s.unique_impressions) * 100) : 0;
+                      const isWinner = winner?.id === v.id;
+                      return (
+                        <div key={v.id} className={`border p-4 ${isWinner ? 'border-green-300 bg-green-50/50' : 'border-black/5'}`} data-testid={`ab-variant-stat-${v.id}`}>
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <span className="w-6 h-6 flex items-center justify-center bg-[#1A1A1A] text-white text-[10px] font-bold">{v.id.toUpperCase()}</span>
+                              {isWinner && <Award size={14} className="text-green-600" />}
+                            </div>
+                            {v.color && <span className="w-5 h-5 border border-black/10" style={{ backgroundColor: v.color }} />}
+                          </div>
+                          <p className="text-sm font-medium text-[#1A1A1A] mb-1 truncate" title={v.text_pl}>{v.text_pl || '—'}</p>
+                          {v.text_en && <p className="text-xs text-[#8C8C8C] mb-3 truncate">{v.text_en}</p>}
+                          <div className="space-y-2 mt-3">
+                            <div className="flex justify-between text-xs">
+                              <span className="text-[#8C8C8C]">Показы</span>
+                              <span className="font-medium">{s.unique_impressions}</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-[#8C8C8C]">Клики</span>
+                              <span className="font-medium">{s.unique_clicks}</span>
+                            </div>
+                            <div className="pt-2 border-t border-black/5 flex justify-between text-xs">
+                              <span className="font-semibold text-[#1A1A1A]">Конверсия</span>
+                              <span className={`font-bold text-base ${convRate > 0 ? (isWinner ? 'text-green-600' : 'text-[#C6A87C]') : 'text-[#8C8C8C]'}`}>
+                                {convRate.toFixed(1)}%
+                              </span>
+                            </div>
+                            {/* Visual bar */}
+                            <div className="h-2 bg-black/5 rounded-full overflow-hidden">
+                              <div className="h-full rounded-full transition-all" style={{
+                                width: `${Math.min(convRate, 100)}%`,
+                                backgroundColor: isWinner ? '#059669' : '#C6A87C',
+                                minWidth: convRate > 0 ? '4px' : '0',
+                              }} />
+                            </div>
+                          </div>
+                          {/* Preview button */}
+                          <div className="mt-3 pt-3 border-t border-black/5">
+                            <button className="w-full py-2 text-white text-xs font-medium" style={{ backgroundColor: v.color || '#C6A87C' }}>
+                              {v.text_pl || 'Превью'}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {winner && (
+                    <div className="mt-3 flex items-center gap-2 bg-green-50 border border-green-200 p-3">
+                      <Award size={16} className="text-green-600 flex-shrink-0" />
+                      <span className="text-xs text-green-700">
+                        <strong>Лидер: Вариант {winner.id.toUpperCase()}</strong> — "{winner.text_pl}" показывает лучшую конверсию
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Instructions */}
+      <div className="mt-6 bg-[#FFFBEB] p-5 border border-[#C6A87C]/30">
+        <h3 className="font-semibold text-sm mb-2 text-[#92730A]">Как работает A/B тестирование</h3>
+        <ul className="text-xs text-[#7A6012] space-y-1 leading-relaxed">
+          <li>Каждый посетитель автоматически получает один вариант кнопки (привязка к cookie)</li>
+          <li>Один и тот же посетитель всегда видит один и тот же вариант для стабильных результатов</li>
+          <li>Показы и клики считаются по уникальным посетителям</li>
+          <li>Рекомендуется набрать мин. 100 уникальных показов на вариант перед выводами</li>
+          <li>Можно тестировать: текст (PL/EN), цвет кнопки. Для каждой кнопки — один активный тест</li>
+        </ul>
+      </div>
+    </div>
+  );
+};
 
 export const AnalyticsAdmin = ({ authHeader, showMessage, activeSubTab }) => {
   const [trackingSettings, setTrackingSettings] = useState(null);
@@ -41,6 +389,11 @@ export const AnalyticsAdmin = ({ authHeader, showMessage, activeSubTab }) => {
   };
 
   if (loading) return <div className="flex items-center justify-center py-12"><div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" /></div>;
+
+  // ───── A/B Tests section ─────
+  if (activeSubTab === 'ab_tests') {
+    return <ABTestsPanel authHeader={authHeader} showMessage={showMessage} fetchWithAuth={fetchWithAuth} />;
+  }
 
   // Tracking codes settings
   if (activeSubTab === 'tracking') {

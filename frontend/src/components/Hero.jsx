@@ -7,6 +7,7 @@ import { useSettings } from '../context/SettingsContext';
 import { CatalogFormGate } from './CatalogFormGate';
 import { resolveMediaUrl, optimizedImg } from '../lib/utils';
 import { trackEvent } from '../lib/analytics';
+import { useABTest } from '../context/ABTestContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -14,6 +15,8 @@ export const Hero = () => {
   const { language, t } = useLanguage();
   const { tr } = useAutoTranslate();
   const { heroSettings, getSetting } = useSettings();
+  const abPrimary = useABTest('hero_primary');
+  const abSecondary = useABTest('hero_secondary');
   const buttonConfig = getSetting('button_config');
   const [hasCatalog, setHasCatalog] = useState(false);
   const videoRef = useRef(null);
@@ -42,9 +45,21 @@ export const Hero = () => {
       scrollToSection(target);
     }
     trackEvent('click_cta', { button: buttonId, action, target });
+    // Track A/B click
+    if (buttonId === 'hero_primary') abPrimary.trackClick();
+    if (buttonId === 'hero_secondary') abSecondary.trackClick();
   };
 
   const getButtonText = (buttonId, fallbackKey) => {
+    // A/B test override
+    if (buttonId === 'hero_primary' && abPrimary.variant) {
+      const lang = language.toLowerCase();
+      return (lang === 'en' && abPrimary.variant.text_en) ? abPrimary.variant.text_en : (abPrimary.variant.text_pl || t(fallbackKey));
+    }
+    if (buttonId === 'hero_secondary' && abSecondary.variant) {
+      const lang = language.toLowerCase();
+      return (lang === 'en' && abSecondary.variant.text_en) ? abSecondary.variant.text_en : (abSecondary.variant.text_pl || t(fallbackKey));
+    }
     const btn = buttonConfig?.buttons?.[buttonId];
     if (btn) {
       const lang = language.toLowerCase();
@@ -52,6 +67,12 @@ export const Hero = () => {
       if (btn.text_pl) return btn.text_pl;
     }
     return t(fallbackKey);
+  };
+
+  const getButtonStyle = (buttonId) => {
+    if (buttonId === 'hero_primary' && abPrimary.variant?.color) return { backgroundColor: abPrimary.variant.color };
+    if (buttonId === 'hero_secondary' && abSecondary.variant?.color) return { backgroundColor: abSecondary.variant.color };
+    return {};
   };
 
   const defaultFeatures = ['Polska produkcja', 'Gotowe w 5-10 dni', 'Gwarancja 24 miesiące'];
@@ -182,6 +203,7 @@ export const Hero = () => {
               data-testid="hero-cta-primary"
               onClick={() => handleButtonAction('hero_primary', '#calculator')}
               className="btn-primary flex items-center gap-2 group"
+              style={getButtonStyle('hero_primary')}
             >
               {getButtonText('hero_primary', 'hero.cta_primary')}
               <ArrowRight
@@ -193,6 +215,7 @@ export const Hero = () => {
               data-testid="hero-cta-secondary"
               onClick={() => handleButtonAction('hero_secondary', '#stock')}
               className="bg-[#1A1A1A] text-white px-8 py-4 text-sm font-semibold uppercase tracking-wider hover:bg-[#333] transition-colors"
+              style={getButtonStyle('hero_secondary')}
             >
               {getButtonText('hero_secondary', 'hero.cta_secondary')}
             </button>

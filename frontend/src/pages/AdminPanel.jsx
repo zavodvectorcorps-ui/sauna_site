@@ -235,6 +235,7 @@ const AdminPanel = () => {
       color: '#7C3AED',
       tabs: [
         { id: 'analytics_dashboard', label: 'Дашборд', icon: BarChart3 },
+        { id: 'ab_tests', label: 'A/B Тесты', icon: BarChart3 },
         { id: 'tracking', label: 'Коды трекинга', icon: Settings },
       ],
     },
@@ -337,6 +338,7 @@ const AdminPanel = () => {
         return <OrderProcessAdmin {...props} type="balia" />;
       case 'analytics_dashboard':
       case 'tracking':
+      case 'ab_tests':
         return <AnalyticsAdmin {...props} activeSubTab={activeTab} />;
       case 'data_migration':
         return <DataMigrationAdmin {...props} />;

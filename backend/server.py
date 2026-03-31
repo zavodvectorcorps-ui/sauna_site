@@ -3189,6 +3189,114 @@ async def get_analytics_summary(days: int = 30, username: str = Depends(verify_a
     }
 
 
+# ═══════════════════════════════════════════
+# A/B Testing API
+# ═══════════════════════════════════════════
+
+@api_router.get("/ab/active")
+async def get_active_ab_tests():
+    """Public: return all active A/B tests for the frontend."""
+    tests = []
+    async for doc in db.ab_tests.find({"status": "active"}, {"_id": 0}):
+        tests.append(doc)
+    return tests
+
+
+@api_router.post("/ab/event")
+async def track_ab_event(request: Request):
+    """Public: track impression or click for an A/B test variant."""
+    body = await request.json()
+    event = {
+        "test_id": body.get("test_id", ""),
+        "variant_id": body.get("variant_id", ""),
+        "event": body.get("event", "impression"),
+        "visitor_id": body.get("visitor_id", ""),
+        "page": body.get("page", ""),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+    if event["test_id"] and event["variant_id"]:
+        await db.ab_events.insert_one(event)
+    return {"ok": True}
+
+
+@api_router.get("/admin/ab/tests")
+async def get_ab_tests(username: str = Depends(verify_admin)):
+    """Admin: list all A/B tests with aggregated statistics."""
+    tests = []
+    async for doc in db.ab_tests.find({}, {"_id": 0}):
+        tests.append(doc)
+
+    # Aggregate stats for all tests
+    if tests:
+        test_ids = [t["id"] for t in tests]
+        pipeline = [
+            {"$match": {"test_id": {"$in": test_ids}}},
+            {"$group": {
+                "_id": {"test_id": "$test_id", "variant_id": "$variant_id", "event": "$event"},
+                "count": {"$sum": 1},
+                "unique_visitors": {"$addToSet": "$visitor_id"},
+            }},
+        ]
+        stats = {}
+        async for doc in db.ab_events.aggregate(pipeline):
+            tid = doc["_id"]["test_id"]
+            vid = doc["_id"]["variant_id"]
+            evt = doc["_id"]["event"]
+            if tid not in stats:
+                stats[tid] = {}
+            if vid not in stats[tid]:
+                stats[tid][vid] = {"impressions": 0, "clicks": 0, "unique_impressions": 0, "unique_clicks": 0}
+            if evt == "impression":
+                stats[tid][vid]["impressions"] = doc["count"]
+                stats[tid][vid]["unique_impressions"] = len(doc["unique_visitors"])
+            elif evt == "click":
+                stats[tid][vid]["clicks"] = doc["count"]
+                stats[tid][vid]["unique_clicks"] = len(doc["unique_visitors"])
+
+        for t in tests:
+            t["stats"] = stats.get(t["id"], {})
+
+    return tests
+
+
+@api_router.post("/admin/ab/tests")
+async def create_ab_test(request: Request, username: str = Depends(verify_admin)):
+    """Admin: create a new A/B test."""
+    body = await request.json()
+    test = {
+        "id": str(uuid.uuid4()),
+        "name": body.get("name", ""),
+        "button_id": body.get("button_id", ""),
+        "status": body.get("status", "active"),
+        "variants": body.get("variants", []),
+        "target_pages": body.get("target_pages", ["/sauny", "/balie"]),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.ab_tests.insert_one(test)
+    test.pop("_id", None)
+    return test
+
+
+@api_router.put("/admin/ab/tests/{test_id}")
+async def update_ab_test(test_id: str, request: Request, username: str = Depends(verify_admin)):
+    """Admin: update an A/B test."""
+    body = await request.json()
+    body.pop("_id", None)
+    body.pop("id", None)
+    body["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.ab_tests.update_one({"id": test_id}, {"$set": body})
+    doc = await db.ab_tests.find_one({"id": test_id}, {"_id": 0})
+    return doc or {}
+
+
+@api_router.delete("/admin/ab/tests/{test_id}")
+async def delete_ab_test(test_id: str, username: str = Depends(verify_admin)):
+    """Admin: delete an A/B test and its events."""
+    await db.ab_tests.delete_one({"id": test_id})
+    await db.ab_events.delete_many({"test_id": test_id})
+    return {"ok": True}
+
+
 # Include the router
 app.include_router(api_router)
 

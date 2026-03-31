@@ -6,6 +6,7 @@ import { SaunaInstallment } from './SaunaInstallment';
 import { useSettings } from '../context/SettingsContext';
 import { trackEvent } from '../lib/analytics';
 import { optimizedImg } from '../lib/utils';
+import { useABTest } from '../context/ABTestContext';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -27,6 +28,8 @@ const getModelType = (model) => {
 export const Models = () => {
   const { language } = useLanguage();
   const { getSetting, catalogAvailable: ctxCatalog } = useSettings();
+  const abDetails = useABTest('model_details');
+  const abConfigure = useABTest('model_configure');
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(true);
   const sectionContent = getSetting('models_settings');
@@ -365,7 +368,11 @@ export const Models = () => {
                         </div>
                         <p className="text-gray-500 text-[10px]">Od 4 do 20 miesięcy, 0% nadpłaty</p>
                       </div>
-                      <button className="w-full py-3 bg-[#1A1A1A] text-white font-medium hover:bg-[#C6A87C] transition-colors">{l.details}</button>
+                      <button
+                        className="w-full py-3 bg-[#1A1A1A] text-white font-medium hover:bg-[#C6A87C] transition-colors"
+                        style={abDetails.variant?.color ? { backgroundColor: abDetails.variant.color } : {}}
+                        onClick={() => abDetails.trackClick()}
+                      >{abDetails.variant?.text_pl || l.details}</button>
                     </div>
                   </div>
                 </motion.div>
@@ -454,7 +461,10 @@ export const Models = () => {
                       <td className="p-4"></td>
                       {compareList.map(m => (<td key={m.id} className="p-4 text-center">
                         <button onClick={() => { setShowCompare(false); document.body.style.overflow = ''; setTimeout(() => { document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' }); setTimeout(() => window.dispatchEvent(new CustomEvent('selectModel', { detail: { modelId: m.id } })), 500); }, 100); }}
-                          className="w-full py-2.5 bg-[#C6A87C] text-white text-sm font-semibold hover:bg-[#B09060]">{l.configure}</button>
+                          className="w-full py-2.5 bg-[#C6A87C] text-white text-sm font-semibold hover:bg-[#B09060]"
+                          style={abConfigure.variant?.color ? { backgroundColor: abConfigure.variant.color } : {}}
+                          onClick={() => abConfigure.trackClick()}
+                        >{abConfigure.variant?.text_pl || l.configure}</button>
                       </td>))}
                     </tr>
                   </tbody>

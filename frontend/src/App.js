@@ -37,6 +37,7 @@ import B2BPage from "./pages/B2BPage";
 import { BalieLandingPage } from "./components/balie/BalieLandingPage";
 import { BalieConfigurator } from "./components/balie/BalieConfigurator";
 import { TrackingScripts, useAnalytics } from "./lib/analytics";
+import { ABTestProvider } from "./context/ABTestContext";
 import { useLocation } from "react-router-dom";
 import { CookieConsentBanner } from "./components/CookieConsentBanner";
 
@@ -160,6 +161,7 @@ function App() {
       <LanguageProvider>
         <AutoTranslateProvider>
         <SettingsProvider>
+          <ABTestProvider>
           <BrowserRouter>
             <PageTracker />
             <TrackingScripts />
@@ -196,6 +198,7 @@ function App() {
             <FloatingContact />
             <CookieConsentBanner />
           </BrowserRouter>
+          </ABTestProvider>
         </SettingsProvider>
         </AutoTranslateProvider>
       </LanguageProvider>
