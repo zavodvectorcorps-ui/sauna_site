@@ -5,7 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
 import { useSettings } from '../context/SettingsContext';
 import { CatalogFormGate } from './CatalogFormGate';
-import { resolveMediaUrl } from '../lib/utils';
+import { resolveMediaUrl, optimizedImg } from '../lib/utils';
 import { trackEvent } from '../lib/analytics';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -71,8 +71,9 @@ export const Hero = () => {
     return heroSettings[key] || t('hero.subtitle');
   };
 
-  const backgroundImage = resolveMediaUrl(heroSettings?.background_image) || 
+  const rawBg = resolveMediaUrl(heroSettings?.background_image) || 
     'https://images.unsplash.com/photo-1759302353458-3c617bfd428b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGludGVyaW9yJTIwcGFub3JhbWljJTIwd2luZG93JTIwbmF0dXJlJTIwdmlld3xlbnwwfHx8fDE3NzA4NDMyODh8MA&ixlib=rb-4.1.0&q=85';
+  const backgroundImage = optimizedImg(rawBg, { w: 1200, q: 80 });
 
   const overlayOpacity = heroSettings?.overlay_opacity ?? 80;
   const opFrom = Math.min(overlayOpacity + 10, 100) / 100;

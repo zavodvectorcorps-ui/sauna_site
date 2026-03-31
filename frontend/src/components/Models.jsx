@@ -5,6 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { SaunaInstallment } from './SaunaInstallment';
 import { useSettings } from '../context/SettingsContext';
 import { trackEvent } from '../lib/analytics';
+import { optimizedImg } from '../lib/utils';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -100,10 +101,9 @@ export const Models = () => {
         modelType: getModelType(model),
       }));
 
-      // Preload all model images in background
+      // Preload optimized model images in background (smaller for fast mobile load)
       processedModels.forEach(m => {
-        if (m.mainImage) { const img = new Image(); img.src = m.mainImage; }
-        (m.galleryImages || []).forEach(url => { const img = new Image(); img.src = url; });
+        if (m.mainImage) { const img = new Image(); img.src = optimizedImg(m.mainImage, { w: 500, q: 75 }); }
       });
 
       setModels(processedModels);
@@ -256,7 +256,7 @@ export const Models = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 group-hover:from-black/70 transition-all duration-500" />
                   {getCategoryImage(cat.key) ? (
-                    <img src={getCategoryImage(cat.key)} alt={cat.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img src={optimizedImg(getCategoryImage(cat.key), { w: 500, q: 75 })} alt={cat.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
                   ) : (
                     <div className="absolute inset-0 bg-[#2C2C2C]" />
                   )}
@@ -321,7 +321,7 @@ export const Models = () => {
                   data-testid={`model-card-${model.id}`}
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
-                    <img src={model.mainImage} alt={model.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                    <img src={optimizedImg(model.mainImage, { w: 500, q: 75 })} alt={model.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
                     {/* Ready sauna badge */}
                     <div className="absolute top-4 left-4 bg-[#1A1A1A]/85 text-white px-3 py-1 text-[10px] font-medium tracking-wide uppercase">
                       {l.readySauna}
@@ -398,7 +398,7 @@ export const Models = () => {
               <div className="flex items-center gap-3 overflow-x-auto">
                 {compareList.map(m => (
                   <div key={m.id} className="flex items-center gap-2 bg-[#F9F9F7] border border-black/5 pl-1 pr-2 py-1 flex-shrink-0">
-                    <img src={m.mainImage} alt={m.name} className="w-10 h-10 object-cover" />
+                    <img src={optimizedImg(m.mainImage, { w: 100, q: 60 })} alt={m.name} className="w-10 h-10 object-cover" />
                     <span className="text-xs font-medium whitespace-nowrap max-w-[120px] truncate">{m.name}</span>
                     <button onClick={() => setCompareList(prev => prev.filter(x => x.id !== m.id))} className="text-[#8C8C8C] hover:text-red-500"><X size={14} /></button>
                   </div>
@@ -432,7 +432,7 @@ export const Models = () => {
                   <thead>
                     <tr>
                       <th className="p-4 text-left text-sm text-[#8C8C8C] font-medium w-[140px]"></th>
-                      {compareList.map(m => (<th key={m.id} className="p-4 text-center"><img src={m.mainImage} alt={m.name} className="w-full aspect-[4/3] object-cover mb-3" /><p className="font-semibold text-[#1A1A1A] text-sm">{m.name}</p></th>))}
+                      {compareList.map(m => (<th key={m.id} className="p-4 text-center"><img src={optimizedImg(m.mainImage, { w: 400, q: 75 })} alt={m.name} className="w-full aspect-[4/3] object-cover mb-3" /><p className="font-semibold text-[#1A1A1A] text-sm">{m.name}</p></th>))}
                     </tr>
                   </thead>
                   <tbody>
@@ -474,7 +474,7 @@ export const Models = () => {
 
               {/* Gallery */}
               <div className="relative aspect-[16/9] md:aspect-[2.2/1] bg-[#F2F2F0]">
-                <img src={selectedModel.galleryImages[currentImageIndex]} alt={selectedModel.name} className="w-full h-full object-cover" />
+                <img src={optimizedImg(selectedModel.galleryImages[currentImageIndex], { w: 1200, q: 85 })} alt={selectedModel.name} className="w-full h-full object-cover" />
                 {selectedModel.galleryImages.length > 1 && (
                   <>
                     <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 flex items-center justify-center hover:bg-[#C6A87C] hover:text-white transition-colors"><ChevronLeft size={24} /></button>
@@ -482,7 +482,7 @@ export const Models = () => {
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                       {selectedModel.galleryImages.map((img, idx) => (
                         <button key={idx} onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(idx); }} className={`w-12 h-12 border-2 overflow-hidden ${idx === currentImageIndex ? 'border-[#C6A87C]' : 'border-white/50'}`}>
-                          <img src={img} alt="" className="w-full h-full object-cover" />
+                          <img src={optimizedImg(img, { w: 100, q: 60 })} alt="" className="w-full h-full object-cover" />
                         </button>
                       ))}
                     </div>
@@ -567,7 +567,7 @@ export const Models = () => {
                           <div className="flex flex-col md:flex-row gap-4">
                             {variantImg && (
                               <div className="md:w-1/3 flex-shrink-0">
-                                <img src={variantImg} alt={v.name} className="w-full object-contain bg-white border border-black/5" />
+                                <img src={optimizedImg(variantImg, { w: 400, q: 75 })} alt={v.name} className="w-full object-contain bg-white border border-black/5" />
                               </div>
                             )}
                             <div className="flex-1">

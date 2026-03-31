@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, FileDown } from 'lucide-react';
 import { BalieCatalogGate } from './BalieCatalogGate';
 import { useSettings } from '../../context/SettingsContext';
-import { resolveMediaUrl } from '../../lib/utils';
+import { resolveMediaUrl, optimizedImg } from '../../lib/utils';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
 import { useBalieData } from '../../context/BalieContext';
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=1920&q=80";
@@ -51,7 +51,7 @@ export const BalieHero = () => {
     if (balieData?.balia_catalog_info?.available) setCatalogAvailable(true);
   }, [balieData]);
 
-  const bgImage = resolveMediaUrl(content.background_image) || DEFAULT_IMAGE;
+  const bgImage = optimizedImg(resolveMediaUrl(content.background_image), { w: 1200, q: 80 }) || DEFAULT_IMAGE;
   const bgVideo = resolveMediaUrl(content.background_video);
   const useVideo = content.bg_mode === 'video' && bgVideo;
 
