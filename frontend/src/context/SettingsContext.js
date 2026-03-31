@@ -60,7 +60,28 @@ export const SettingsProvider = ({ children }) => {
       loading,
       refreshSettings: fetchAllSettings,
     }}>
-      {children}
+      {loading ? (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: '#0C0C0C',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexDirection: 'column', gap: '16px',
+        }}>
+          <div style={{
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: '22px', fontWeight: 700,
+            letterSpacing: '0.2em', color: '#fff',
+            textTransform: 'uppercase',
+          }}>
+            WM<span style={{ color: '#C6A87C' }}> Group</span>
+          </div>
+          <div style={{
+            width: '48px', height: '2px', background: '#C6A87C',
+            animation: 'wmPulse 1.2s ease-in-out infinite',
+          }} />
+          <style>{`@keyframes wmPulse { 0%,100% { opacity:.3; transform:scaleX(.5) } 50% { opacity:1; transform:scaleX(1) } }`}</style>
+        </div>
+      ) : children}
     </SettingsContext.Provider>
   );
 };
