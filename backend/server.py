@@ -914,6 +914,14 @@ async def get_all_settings_bulk():
         sid = doc.get("id")
         if sid:
             settings_map[sid] = doc
+    # Add defaults for settings not yet saved to DB
+    default_models = {
+        "button_config": ButtonConfig,
+        "integration_settings": IntegrationSettings,
+    }
+    for sid, model_cls in default_models.items():
+        if sid not in settings_map:
+            settings_map[sid] = model_cls().model_dump()
     reviews = await db.reviews.find({"active": True}, {"_id": 0}).to_list(100)
     if not reviews:
         reviews = get_default_reviews()

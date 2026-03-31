@@ -35,30 +35,38 @@
 ### Full Admin Coverage (Mar 2026)
 - PromoBanner, BalieAbout, BalieContact, BalieInstallment, BalieGallery — все редактируются через админку
 
-### Multilingual UI (Mar 2026) — COMPLETE
-- **4 языка**: Польский (PL, по умолчанию), Английский (EN), Немецкий (DE), Чешский (CS)
-- **Переключатель языков** на всех страницах
+### Multilingual UI (Mar 2026)
+- 4 языка: PL, EN, DE, CS с переключателем
 
-### Auto-Translation of All Content (Mar 2026) — COMPLETE
-- **GPT-4.1-nano** для автоматического перевода ВСЕГО контента
-- **tr() функция** из `AutoTranslateContext.js`
-- **MongoDB кэш**: коллекция `translations_cache`
+### Auto-Translation (Mar 2026)
+- GPT-4.1-nano через emergentintegrations с MongoDB кэшем
 
-### Hero Badges Admin (Mar 2026) — COMPLETE
-- 3 текстовых бейджа ("Polska produkcja", "Gotowe w 5-10 dni", "Gwarancja 24 miesiące") редактируются в админке
-- Секция "Преимущества (бейджи на Hero)" в разделе Сауны > Hero
+### Hero Badges Admin (Mar 2026)
+- 3 текстовых бейджа редактируются в админке (Сауны > Hero)
 
-### Performance Optimization (Mar 2026) — COMPLETE
-- **Bulk Settings Endpoint**: `GET /api/settings/bulk` — возвращает все 32+ настроек + отзывы одним запросом
-- **SettingsContext**: 1 запрос вместо 8 при инициализации
-- **21 компонент** обновлены: используют `getSetting()` из контекста вместо индивидуальных fetch-запросов
-- **Устранено ~30 HTTP запросов** при загрузке каждой страницы
+### Performance Optimization (Mar 2026)
+- **Bulk Settings Endpoint**: `GET /api/settings/bulk` — все 32+ настройки одним запросом
+- **GZip Middleware**: сжатие ответов >500 байт (52KB → 21KB для bulk)
+- **21 компонент** обновлены: используют `getSetting()` из контекста
+- **~30 HTTP запросов** при загрузке сокращены до 1
+
+### Button Config System (Mar 2026)
+- Hero кнопки читают action/target/text из `button_config` в БД
+- Админка: настройка действий (якорь/ссылка/форма) и текстов кнопок
+
+### AmoCRM Catalog Pipeline (Mar 2026)
+- Заявки на скачивание каталога (`type: catalog_request`) идут в отдельную воронку AMO CRM
+- Настройка `amocrm_catalog_pipeline_id` и `amocrm_catalog_status_id` в админке интеграций
+- Telegram уведомление с иконкой каталога
+
+### CatalogFormGate Modal Fix (Mar 2026)
+- z-index: 9999, overflow-y-auto, my-auto для корректного центрирования
 
 ## Key API Endpoints
-- `GET /api/settings/bulk` — Все настройки одним запросом (MAIN)
-- `POST /api/translate` — Auto-translation via GPT с MongoDB кэшированием
-- `GET/PUT /api/settings/hero` (with features array)
-- `GET/PUT /api/settings/site`
+- `GET /api/settings/bulk` — Все настройки + дефолты одним запросом (MAIN)
+- `POST /api/translate` — Auto-translation via GPT
+- `GET/PUT /api/settings/hero`, `/api/settings/site`, `/api/settings/buttons`
+- `POST /api/contact` — обработка заявок (contact, catalog_request, calculator_order)
 
 ## Backlog
 - P2: Toast обработка ошибок (глобальная)
