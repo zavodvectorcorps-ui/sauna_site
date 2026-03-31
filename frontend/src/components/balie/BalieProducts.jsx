@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, ArrowRight, Loader2, Users, Droplets, Ruler, ChevronLeft, ChevronRight, Check, Send, Sliders, Flame, GitCompareArrows, Thermometer, Box } from 'lucide-react';
 import { BalieInstallment } from './BalieInstallment';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
+import { useBalieData } from '../../context/BalieContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -574,22 +575,18 @@ export const BalieProducts = () => {
   const [selected, setSelected] = useState(null);
   const [compareIds, setCompareIds] = useState([]);
   const [showCompare, setShowCompare] = useState(false);
+  const { data: balieData } = useBalieData();
 
   useEffect(() => {
-    Promise.all([
-      fetch(`${API}/api/balia/products`).then(r => r.json()).catch(() => []),
-      fetch(`${API}/api/balia/calculator/prices`).then(r => r.json()).catch(() => ({ models: [], categories: [] })),
-      fetch(`${API}/api/balia/card-options-settings`).then(r => r.json()).catch(() => ({ enabled_categories: [] })),
-      fetch(`${API}/api/balia/option-exclusions`).then(r => r.json()).catch(() => ({ exclusions: {} })),
-    ]).then(([prods, api, opts, excl]) => {
-      setProducts(prods);
-      setApiModels(api.models || []);
-      setApiCategories(api.categories || []);
-      setCardOptions(opts);
-      setExclusions(excl.exclusions || {});
-      setLoading(false);
-    });
-  }, []);
+    if (!balieData) return;
+    setProducts(balieData.products || []);
+    const prices = balieData.calculator_prices || {};
+    setApiModels(prices.models || []);
+    setApiCategories(prices.categories || []);
+    setCardOptions(balieData.card_options || { enabled_categories: [] });
+    setExclusions(balieData.option_exclusions?.exclusions || {});
+    setLoading(false);
+  }, [balieData]);
 
   const getApiModel = (id) => apiModels.find(m => m.id === id);
 

@@ -18,10 +18,9 @@ import { BalieStoveScheme } from './BalieStoveScheme';
 import { BalieFaq } from './BalieFaq';
 import { OrderProcess } from '../OrderProcess';
 import { useSettings } from '../../context/SettingsContext';
+import { BalieProvider, useBalieData } from '../../context/BalieContext';
 
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
-
-const API = process.env.REACT_APP_BACKEND_URL;
 
 const DEFAULT_ORDER = ['hero','features','products','installment','colors','options','schematic','stove','about','gallery','faq','orderprocess','testimonials','contact'];
 
@@ -43,29 +42,37 @@ const sectionComponents = {
 };
 
 export const BalieLandingPage = () => {
+  return (
+    <BalieProvider>
+      <BalieLandingPageInner />
+    </BalieProvider>
+  );
+};
+
+const BalieLandingPageInner = () => {
   const navigate = useNavigate();
   const { sectionVisibility } = useSettings();
   const { tr } = useAutoTranslate();
-  const [promoBlocks, setPromoBlocks] = useState(null);
   const [sectionOrder, setSectionOrder] = useState(DEFAULT_ORDER);
   const { getSetting } = useSettings();
   const contactData = getSetting('balie_contact');
   const baliePhone = contactData?.phone || '+48 515 995 190';
+  const { data: balieData } = useBalieData();
+
+  const content = balieData?.content || {};
+  const promoBlocks = content?.promo_blocks || null;
 
   useEffect(() => {
-    fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
-      setPromoBlocks(data?.promo_blocks || null);
-      if (data?.section_order?.length) {
-        const order = [...data.section_order];
-        if (!order.includes('orderprocess')) {
-          const faqIdx = order.indexOf('faq');
-          if (faqIdx !== -1) order.splice(faqIdx + 1, 0, 'orderprocess');
-          else order.push('orderprocess');
-        }
-        setSectionOrder(order);
+    if (content?.section_order?.length) {
+      const order = [...content.section_order];
+      if (!order.includes('orderprocess')) {
+        const faqIdx = order.indexOf('faq');
+        if (faqIdx !== -1) order.splice(faqIdx + 1, 0, 'orderprocess');
+        else order.push('orderprocess');
       }
-    }).catch(() => {});
-  }, []);
+      setSectionOrder(order);
+    }
+  }, [content]);
 
   const isEnabled = (blockId) => promoBlocks?.[blockId]?.enabled !== false;
 

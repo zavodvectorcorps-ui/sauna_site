@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { useBalieData } from '../../context/BalieContext';
 
 export const BalieTestimonials = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [idx, setIdx] = useState(0);
   const timerRef = useRef(null);
   const { tr } = useAutoTranslate();
+  const { data: balieData } = useBalieData();
 
   useEffect(() => {
-    fetch(`${API}/api/balia/testimonials`).then(r => r.json()).then(setTestimonials).catch(() => {});
-  }, []);
+    if (balieData?.testimonials) setTestimonials(balieData.testimonials);
+  }, [balieData]);
 
   useEffect(() => {
     if (testimonials.length > 1) {

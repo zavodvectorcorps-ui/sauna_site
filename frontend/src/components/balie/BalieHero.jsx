@@ -4,8 +4,7 @@ import { BalieCatalogGate } from './BalieCatalogGate';
 import { useSettings } from '../../context/SettingsContext';
 import { resolveMediaUrl } from '../../lib/utils';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { useBalieData } from '../../context/BalieContext';
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=1920&q=80";
 
 export const BalieHero = () => {
@@ -30,6 +29,7 @@ export const BalieHero = () => {
   const [showCatalogGate, setShowCatalogGate] = useState(false);
   const videoRef = useRef(null);
   const [videoReady, setVideoReady] = useState(false);
+  const { data: balieData } = useBalieData();
 
   useEffect(() => {
     if (baliaHero) {
@@ -48,8 +48,8 @@ export const BalieHero = () => {
   }, [baliaHero]);
 
   useEffect(() => {
-    fetch(`${API}/api/balia-catalog/info`).then(r => r.json()).then(d => setCatalogAvailable(d?.available)).catch(() => {});
-  }, []);
+    if (balieData?.balia_catalog_info?.available) setCatalogAvailable(true);
+  }, [balieData]);
 
   const bgImage = resolveMediaUrl(content.background_image) || DEFAULT_IMAGE;
   const bgVideo = resolveMediaUrl(content.background_video);

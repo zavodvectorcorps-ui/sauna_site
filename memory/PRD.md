@@ -22,9 +22,11 @@
 ### Multilingual (4 языка)
 - PL, EN, DE, CS. GPT-4.1-nano автоперевод с MongoDB кэшем
 
-### Performance
-- Bulk Settings: 1 запрос вместо ~30 (GET /api/settings/bulk)
+### Performance (Mar 2026) — OPTIMIZED
+- Sauna Bulk: GET /api/settings/bulk — 1 запрос вместо ~30
+- Balie Bulk: GET /api/balia/bulk — 1 запрос вместо 10+ (asyncio.gather)
 - GZip: 52KB -> 21KB
+- BalieContext.js + SettingsContext.js — глобальные стейты для данных
 
 ### Hero & Button Config
 - Бейджи + кнопки Hero из БД
@@ -37,35 +39,33 @@
 - GTM / GA4 / Google Ads / Facebook Pixel — из админки
 - Consent-gated: скрипты грузятся только при согласии
 
-### GDPR/RODO Compliance (Mar 2026) — COMPLETE
+### GDPR/RODO Compliance — COMPLETE
 - Polityka prywatnosci (/privacy), Polityka cookies (/cookies)
 - Cookie Consent Banner, RODO notice под формами
-- Consent-gated analytics
 
-### Floating Contact (Mar 2026) — COMPLETE
+### Floating Contact — COMPLETE
 - WhatsApp + Позвонить — квадратные иконки (стиль iPhone app)
 - Тултипы при наведении, клик по телефону — только номер
 - Глобально на всех страницах
 
-### Google Maps (Mar 2026) — COMPLETE
-- Карта на главной странице и на странице саун
-- Админка принимает URL или полный iframe — автопарсинг
+### Google Maps — COMPLETE
+- Карта на главной и странице саун, автопарсинг iframe в админке
 
-### Catalog Storage (Mar 2026) — COMPLETE
-- PDF каталоги хранятся в Object Storage (переживают деплой)
-- Локальный кеш с авто-восстановлением при обращении
-- Модальное окно каталога через createPortal (центрирование)
+### Catalog Storage — COMPLETE
+- PDF каталоги в Object Storage, локальный кеш с авто-восстановлением
 
-### Video Hero Balie (Mar 2026) — COMPLETE
-- Фоновое видео купелей загружается через bulk API
-- balia_hero_settings добавлены в /api/settings/bulk
+### SEO OG Image — COMPLETE
+- OG Image сохраняется как относительный путь, SeoHead формирует абсолютный URL через canonical_url
+
+### Catalog Modal — COMPLETE
+- createPortal для центрирования модального окна каталога
 
 ## Key API Endpoints
-- GET /api/settings/bulk — Все настройки (вкл. balia_hero_settings)
+- GET /api/settings/bulk — Все настройки саун
+- GET /api/balia/bulk — Все данные купелей (1 запрос)
 - POST /api/analytics/event — Аналитика
 - GET /api/admin/analytics/summary — Дашборд
-- GET /api/catalog/info — Проверка наличия каталога (с авто-восстановлением из Object Storage)
-- GET /api/catalog/download — Скачивание каталога
+- GET /api/catalog/info — Проверка каталога (Object Storage fallback)
 
 ## Backlog
 - P2: Toast обработка ошибок

@@ -3,6 +3,7 @@ import { Send, CheckCircle, MapPin, Phone, Mail, FileDown } from 'lucide-react';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
 import { useSettings } from '../../context/SettingsContext';
 import { trackEvent } from '../../lib/analytics';
+import { useBalieData } from '../../context/BalieContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -14,10 +15,11 @@ export const BalieContact = () => {
   const { tr } = useAutoTranslate();
   const { getSetting } = useSettings();
   const contactData = getSetting('balie_contact');
+  const { data: balieData } = useBalieData();
 
   useEffect(() => {
-    fetch(`${API}/api/catalog/info`).then(r => r.json()).then(d => setCatalogAvailable(d?.available)).catch(() => {});
-  }, []);
+    if (balieData?.catalog_info?.available) setCatalogAvailable(true);
+  }, [balieData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

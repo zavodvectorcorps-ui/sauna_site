@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ShieldCheck, Hammer, Leaf, Truck, Wrench, Award, Flag, Waves, Wind, Lightbulb, ThermometerSun } from 'lucide-react';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { useBalieData } from '../../context/BalieContext';
 
 const iconMap = { ShieldCheck, Hammer, Leaf, Truck, Wrench, Award, Flag, Waves, Wind, Lightbulb, ThermometerSun };
 
@@ -31,14 +30,15 @@ export const BalieFeatures = () => {
   const [options, setOptions] = useState(defaultOptions);
   const [badges, setBadges] = useState(defaultBadges);
   const { tr } = useAutoTranslate();
+  const { data: balieData } = useBalieData();
 
   useEffect(() => {
-    fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
-      if (data?.promo_features?.length) setFeatures(data.promo_features);
-      if (data?.promo_options?.length) setOptions(data.promo_options);
-      if (data?.promo_badges?.length) setBadges(data.promo_badges);
-    }).catch(() => {});
-  }, []);
+    if (!balieData?.content) return;
+    const data = balieData.content;
+    if (data?.promo_features?.length) setFeatures(data.promo_features);
+    if (data?.promo_options?.length) setOptions(data.promo_options);
+    if (data?.promo_badges?.length) setBadges(data.promo_badges);
+  }, [balieData]);
 
   const activeFeatures = features.filter(f => f.active !== false);
   const activeOptions = options.filter(o => o.active !== false);

@@ -1,21 +1,20 @@
 import { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Loader2, Image } from 'lucide-react';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { useBalieData } from '../../context/BalieContext';
 
 export const BalieGallery = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState(null);
   const { tr } = useAutoTranslate();
+  const { data: balieData } = useBalieData();
 
   useEffect(() => {
-    fetch(`${API}/api/balia/gallery`).then(r => r.json()).then(data => {
-      setImages(data || []);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, []);
+    if (!balieData) return;
+    setImages(balieData.gallery || []);
+    setLoading(false);
+  }, [balieData]);
 
   const openLightbox = (idx) => { setLightbox(idx); document.body.style.overflow = 'hidden'; };
   const closeLightbox = () => { setLightbox(null); document.body.style.overflow = ''; };

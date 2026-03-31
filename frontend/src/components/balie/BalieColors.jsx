@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Palette } from 'lucide-react';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { useBalieData } from '../../context/BalieContext';
 
 // Fallback color data (CSS gradients) used when no photos uploaded
 const fallbackSwatches = {
@@ -54,10 +53,11 @@ const categories = [
 export const BalieColors = () => {
   const [activeCategory, setActiveCategory] = useState('fiberglass');
   const [apiColors, setApiColors] = useState([]);
+  const { data: balieData } = useBalieData();
 
   useEffect(() => {
-    fetch(`${API}/api/balia/colors`).then(r => r.json()).then(setApiColors).catch(() => {});
-  }, []);
+    if (balieData?.colors) setApiColors(balieData.colors);
+  }, [balieData]);
 
   const getSwatches = (catId) => {
     const fromApi = apiColors.filter(c => c.category === catId && c.image);

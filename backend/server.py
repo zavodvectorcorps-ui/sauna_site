@@ -2485,6 +2485,67 @@ async def delete_balia_testimonial(testimonial_id: str, username: str = Depends(
     await db.balia_testimonials.delete_one({"id": testimonial_id})
     return {"status": "deleted"}
 
+
+@api_router.get("/balia/bulk")
+async def get_balia_bulk():
+    """Single endpoint returning all public balie data for fast page load."""
+    import asyncio
+
+    # Fire all DB queries + external API in parallel
+    content_t = db.balia_content.find_one({"type": "main"}, {"_id": 0})
+    products_t = db.balia_products.find({}, {"_id": 0}).sort("order", 1).to_list(100)
+    testimonials_t = db.balia_testimonials.find({}, {"_id": 0}).sort("order", 1).to_list(100)
+    gallery_t = db.balia_gallery.find({}, {"_id": 0}).sort("order", 1).to_list(200)
+    colors_t = db.balia_colors.find({}, {"_id": 0}).sort("order", 1).to_list(500)
+    card_options_t = db.settings.find_one({"id": "balia_card_options"}, {"_id": 0})
+    option_exclusions_t = db.settings.find_one({"id": "balia_option_exclusions"}, {"_id": 0})
+
+    async def fetch_prices():
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as c:
+                r = await c.get(f"{CALCULATOR_API_URL}/api/prices")
+                return r.json()
+        except Exception:
+            return {"models": [], "categories": []}
+
+    async def check_catalog(key, path_name):
+        cat_path = CATALOG_DIR / path_name
+        settings = await db.settings.find_one({"id": key}, {"_id": 0})
+        if cat_path.exists():
+            return {"available": True, "filename": settings.get("filename", ""), "size": settings.get("size", 0)} if settings else {"available": True}
+        if not settings:
+            return {"available": False}
+        try:
+            from object_storage import get_object
+            data, _ = get_object(f"catalogs/{path_name}")
+            cat_path.write_bytes(data)
+            return {"available": True, "filename": settings.get("filename", ""), "size": settings.get("size", 0)}
+        except Exception:
+            return {"available": False}
+
+    (content, products, testimonials, gallery, colors,
+     card_options, option_exclusions, prices,
+     catalog_info, balia_catalog_info) = await asyncio.gather(
+        content_t, products_t, testimonials_t, gallery_t, colors_t,
+        card_options_t, option_exclusions_t, fetch_prices(),
+        check_catalog("catalog_settings", "catalog.pdf"),
+        check_catalog("balia_catalog_settings", "balia-catalog.pdf"),
+    )
+
+    return {
+        "content": content or {},
+        "products": products or [],
+        "testimonials": testimonials or [],
+        "gallery": gallery or [],
+        "colors": colors or [],
+        "card_options": card_options or {"id": "balia_card_options", "enabled_categories": []},
+        "option_exclusions": option_exclusions or {"id": "balia_option_exclusions", "exclusions": {}},
+        "calculator_prices": prices,
+        "catalog_info": catalog_info,
+        "balia_catalog_info": balia_catalog_info,
+    }
+
+
 # Balia content (hero, features, etc.)
 @api_router.get("/balia/content")
 async def get_balia_content():
