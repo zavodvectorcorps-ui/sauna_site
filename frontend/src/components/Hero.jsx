@@ -28,11 +28,8 @@ export const Hero = () => {
     }
   };
 
-  const features = [
-    tr('Polska produkcja'),
-    tr('Gotowe w 5-10 dni'),
-    tr('Gwarancja 24 miesiące'),
-  ];
+  const defaultFeatures = ['Polska produkcja', 'Gotowe w 5-10 dni', 'Gwarancja 24 miesiące'];
+  const features = (heroSettings?.features || defaultFeatures).map(f => tr(f));
 
   const getTitle = () => {
     if (!heroSettings) return t('hero.title');
