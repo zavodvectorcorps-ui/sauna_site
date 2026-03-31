@@ -23,7 +23,7 @@
 
 ### Performance
 - Bulk Settings: 1 запрос вместо ~30 (GET /api/settings/bulk)
-- GZip: 52KB → 21KB
+- GZip: 52KB -> 21KB
 
 ### Hero & Button Config
 - Бейджи + кнопки Hero из БД
@@ -39,13 +39,18 @@
 ### GDPR/RODO Compliance (Mar 2026) — COMPLETE
 - Polityka prywatnosci (/privacy), Polityka cookies (/cookies)
 - Cookie Consent Banner, RODO notice под формами
-- Consent-gated analytics: GA/GTM/FB Pixel только с согласия
+- Consent-gated analytics
 
 ### Floating Contact (Mar 2026) — COMPLETE
-- WhatsApp + Позвонить — квадратные иконки (стиль iPhone app), закруглённые углы
-- Тултипы при наведении: "WhatsApp" / "Zadzwon"
-- Клик по телефону — только номер (без дублирования WhatsApp)
-- Глобально на всех страницах: главная, сауны, купели, блог, B2B
+- WhatsApp + Позвонить — квадратные иконки (стиль iPhone app)
+- Тултипы при наведении, клик по телефону — только номер
+- Глобально на всех страницах
+
+### Google Maps (Mar 2026) — COMPLETE
+- Карта на главной странице (под формой контактов)
+- Карта на странице саун (секция контакт)
+- Админка принимает как чистый URL, так и полный iframe — автопарсинг src
+- Дефолтная ссылка указывает на WM Group в Варшаве
 
 ## Key API Endpoints
 - GET /api/settings/bulk — Все настройки

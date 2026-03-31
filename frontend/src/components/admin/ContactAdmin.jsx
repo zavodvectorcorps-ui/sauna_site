@@ -105,15 +105,21 @@ export const ContactAdmin = ({ authHeader }) => {
           <h3 className="text-sm font-semibold text-gray-500 mb-3 flex items-center gap-1.5">
             <MapPin size={13} className="text-[#C6A87C]" /> Google Maps
           </h3>
-          <label className="text-sm text-gray-500 mb-1 block">Ссылка на карту (embed URL)</label>
+          <label className="text-sm text-gray-500 mb-1 block">Ссылка на карту (embed URL или полный iframe)</label>
           <input
             value={site?.map_embed_url || ''}
-            onChange={e => setSite({ ...site, map_embed_url: e.target.value })}
+            onChange={e => {
+              let val = e.target.value;
+              // Auto-extract src from pasted iframe tag
+              const match = val.match(/src=["']([^"']+)["']/);
+              if (match) val = match[1];
+              setSite({ ...site, map_embed_url: val });
+            }}
             className="w-full p-2.5 border border-black/10 text-sm focus:border-[#C6A87C] outline-none"
-            placeholder="https://www.google.com/maps/embed?pb=..."
+            placeholder="https://www.google.com/maps/embed?pb=... или вставьте iframe целиком"
             data-testid="site-map_embed_url"
           />
-          <p className="text-xs text-gray-400 mt-1">Откройте Google Maps → найдите нужное место → Поделиться → Встраивание карты → скопируйте src из iframe</p>
+          <p className="text-xs text-gray-400 mt-1">Вставьте ссылку или полный код iframe — URL извлечётся автоматически</p>
           {site?.map_embed_url && (
             <div className="mt-3 aspect-video overflow-hidden border border-black/5">
               <iframe title="Preview" src={site.map_embed_url} width="100%" height="100%" style={{ border: 0 }} loading="lazy" />

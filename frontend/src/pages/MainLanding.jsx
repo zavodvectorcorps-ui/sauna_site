@@ -319,6 +319,21 @@ const MainLanding = () => {
               )}
             </div>
           </div>
+          {/* Map */}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-12">
+            <iframe
+              title="WM Group Location"
+              src={siteSettings?.map_embed_url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2446.237789917054!2d20.94916221172422!3d52.184550271858335!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47193321efe2d2cd%3A0xe02bd55a82f8973!2sW.M.%20Group%20%E2%80%93%20Sauny%2C%20Balie%2C%20Jacuzzi%20Ogrodowe%20od%20producenta%20Wm-sauna.pl!5e0!3m2!1sru!2spl!4v1774963768524!5m2!1sru!2spl"}
+              width="100%"
+              height="350"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full"
+              data-testid="main-landing-map"
+            />
+          </motion.div>
         </div>
       </section>
 
