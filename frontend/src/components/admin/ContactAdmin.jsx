@@ -3,7 +3,7 @@ import { Save, Phone, Mail, MapPin, Clock, Globe, Building } from 'lucide-react'
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-export const ContactAdmin = ({ fetchWithAuth }) => {
+export const ContactAdmin = ({ authHeader }) => {
   const [site, setSite] = useState(null);
   const [contact, setContact] = useState(null);
   const [balieContact, setBalieContact] = useState(null);
@@ -24,9 +24,9 @@ export const ContactAdmin = ({ fetchWithAuth }) => {
   }, []);
 
   const save = async (endpoint, data, label) => {
-    await fetchWithAuth(`${API}/api/admin/settings/${endpoint}`, {
+    await fetch(`${API}/api/admin/settings/${endpoint}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader },
       body: JSON.stringify(data),
     });
     setSaved(label);
