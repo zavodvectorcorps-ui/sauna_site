@@ -3149,11 +3149,20 @@ async def get_analytics_summary(days: int = 30, username: str = Depends(verify_a
 # Include the router
 app.include_router(api_router)
 
-# CORS middleware
+# CORS middleware — dynamic origin for credentials support
+def get_cors_origins():
+    env_origins = os.environ.get('CORS_ORIGINS', '*')
+    if env_origins.strip() == '*':
+        return ["*"]
+    return [o.strip() for o in env_origins.split(',') if o.strip()]
+
+_cors_origins = get_cors_origins()
+_cors_credentials = _cors_origins != ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_credentials=_cors_credentials,
+    allow_origins=_cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

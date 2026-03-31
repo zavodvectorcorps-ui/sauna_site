@@ -30,13 +30,15 @@ const sendEvent = (event, meta = {}) => {
     ...utm,
     meta,
   };
-  // Use sendBeacon for reliability (survives page unload)
-  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-  if (navigator.sendBeacon) {
-    navigator.sendBeacon(`${API_URL}/api/analytics/event`, blob);
-  } else {
-    fetch(`${API_URL}/api/analytics/event`, { method: 'POST', body: blob, keepalive: true }).catch(() => {});
-  }
+  const body = JSON.stringify(payload);
+  // Use fetch with no-cors credentials to avoid CORS issues on cross-origin deployments
+  fetch(`${API_URL}/api/analytics/event`, {
+    method: 'POST',
+    body,
+    headers: { 'Content-Type': 'application/json' },
+    keepalive: true,
+    credentials: 'omit',
+  }).catch(() => {});
 };
 
 // Fire GA4 and Facebook events
