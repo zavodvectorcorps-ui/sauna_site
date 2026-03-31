@@ -26,7 +26,7 @@ export const ContactAdmin = ({ authHeader }) => {
   const save = async (endpoint, data, label) => {
     await fetch(`${API}/api/admin/settings/${endpoint}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeader },
+      headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
       body: JSON.stringify(data),
     });
     setSaved(label);
