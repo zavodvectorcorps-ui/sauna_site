@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Save, BarChart3, TrendingUp, Users, Download, FileText, Send, MousePointer, Eye, Plus, Trash2, Play, Pause, Award } from 'lucide-react';
+import { Save, BarChart3, TrendingUp, Users, Download, FileText, Send, MousePointer, Eye, Plus, Trash2, Play, Pause, Award, CheckCircle, AlertTriangle, Zap } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -117,6 +117,20 @@ const ABTestsPanel = ({ authHeader, showMessage, fetchWithAuth }) => {
       if (rate > bestRate) { bestRate = rate; best = v; }
     });
     return bestRate > 0 ? best : null;
+  };
+
+  const applyWinner = async (test, variantId) => {
+    const variant = test.variants.find(v => v.id === variantId);
+    if (!window.confirm(`Применить вариант "${variant?.text_pl}" как основной текст кнопки?\n\nТест будет завершён, кнопка обновится автоматически.`)) return;
+    try {
+      await fetchWithAuth(`${API}/api/admin/ab/tests/${test.id}/apply-winner`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variant_id: variantId }),
+      });
+      showMessage('success', `Вариант "${variant?.text_pl}" применён! Тест завершён.`);
+      loadTests();
+    } catch { showMessage('error', 'Ошибка применения'); }
   };
 
   if (loading) return <div className="flex items-center justify-center py-12"><div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" /></div>;
@@ -246,23 +260,51 @@ const ABTestsPanel = ({ authHeader, showMessage, fetchWithAuth }) => {
           {tests.map(test => {
             const winner = getWinner(test);
             const buttonLabel = BUTTON_OPTIONS.find(b => b.id === test.button_id)?.label || test.button_id;
+            const analysis = test.analysis || {};
+            const zTest = analysis.z_test || {};
+            const isSignificant = zTest.significant;
+            const needsMoreData = analysis.recommendation === 'needs_more_data';
+            const isCompleted = test.status === 'completed';
             return (
-              <div key={test.id} className="border border-black/5 overflow-hidden" data-testid={`ab-test-${test.id}`}>
+              <div key={test.id} className={`border overflow-hidden ${isCompleted ? 'border-blue-200 bg-blue-50/20' : 'border-black/5'}`} data-testid={`ab-test-${test.id}`}>
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 bg-[#F9F9F7] border-b border-black/5">
-                  <div className="flex items-center gap-3">
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${test.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                      {test.status === 'active' ? <Play size={10} /> : <Pause size={10} />}
-                      {test.status === 'active' ? 'Активен' : 'Приостановлен'}
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+                      isCompleted ? 'bg-blue-100 text-blue-700' :
+                      test.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      {isCompleted ? <CheckCircle size={10} /> : test.status === 'active' ? <Play size={10} /> : <Pause size={10} />}
+                      {isCompleted ? 'Завершён' : test.status === 'active' ? 'Активен' : 'Приостановлен'}
                     </span>
                     <span className="font-semibold text-sm text-[#1A1A1A]">{test.name}</span>
                     <span className="text-xs text-[#8C8C8C]">{buttonLabel}</span>
+                    {/* Z-test significance badge */}
+                    {isSignificant && !isCompleted && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                        <CheckCircle size={10} /> {zTest.confidence}% уверенность
+                      </span>
+                    )}
+                    {needsMoreData && !isCompleted && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-amber-50 text-amber-600 border border-amber-200">
+                        <AlertTriangle size={10} /> Мало данных ({analysis.total_impressions || 0}/100)
+                      </span>
+                    )}
+                    {!needsMoreData && !isSignificant && !isCompleted && analysis.total_impressions > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-gray-50 text-gray-500 border border-gray-200">
+                        Нет значимой разницы
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => toggleStatus(test)} className="p-1.5 text-[#595959] hover:text-[#1A1A1A] border border-black/10" title={test.status === 'active' ? 'Приостановить' : 'Запустить'} data-testid={`ab-toggle-${test.id}`}>
-                      {test.status === 'active' ? <Pause size={14} /> : <Play size={14} />}
-                    </button>
-                    <button onClick={() => editTest(test)} className="px-3 py-1.5 text-xs border border-black/10 text-[#595959] hover:bg-black/5">Изменить</button>
+                    {!isCompleted && (
+                      <>
+                        <button onClick={() => toggleStatus(test)} className="p-1.5 text-[#595959] hover:text-[#1A1A1A] border border-black/10" title={test.status === 'active' ? 'Приостановить' : 'Запустить'} data-testid={`ab-toggle-${test.id}`}>
+                          {test.status === 'active' ? <Pause size={14} /> : <Play size={14} />}
+                        </button>
+                        <button onClick={() => editTest(test)} className="px-3 py-1.5 text-xs border border-black/10 text-[#595959] hover:bg-black/5">Изменить</button>
+                      </>
+                    )}
                     <button onClick={() => deleteTest(test.id)} className="p-1.5 text-red-400 hover:text-red-600 border border-red-200" data-testid={`ab-delete-${test.id}`}>
                       <Trash2 size={14} />
                     </button>
@@ -276,12 +318,14 @@ const ABTestsPanel = ({ authHeader, showMessage, fetchWithAuth }) => {
                       const s = test.stats?.[v.id] || { impressions: 0, clicks: 0, unique_impressions: 0, unique_clicks: 0 };
                       const convRate = s.unique_impressions > 0 ? ((s.unique_clicks / s.unique_impressions) * 100) : 0;
                       const isWinner = winner?.id === v.id;
+                      const isApplied = isCompleted && test.applied_variant === v.id;
                       return (
-                        <div key={v.id} className={`border p-4 ${isWinner ? 'border-green-300 bg-green-50/50' : 'border-black/5'}`} data-testid={`ab-variant-stat-${v.id}`}>
+                        <div key={v.id} className={`border p-4 ${isApplied ? 'border-blue-300 bg-blue-50/50' : isWinner && isSignificant ? 'border-green-300 bg-green-50/50' : isWinner ? 'border-[#C6A87C]/30 bg-[#FFFBEB]/30' : 'border-black/5'}`} data-testid={`ab-variant-stat-${v.id}`}>
                           <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
                               <span className="w-6 h-6 flex items-center justify-center bg-[#1A1A1A] text-white text-[10px] font-bold">{v.id.toUpperCase()}</span>
-                              {isWinner && <Award size={14} className="text-green-600" />}
+                              {isApplied && <CheckCircle size={14} className="text-blue-600" />}
+                              {isWinner && isSignificant && !isApplied && <Award size={14} className="text-green-600" />}
                             </div>
                             {v.color && <span className="w-5 h-5 border border-black/10" style={{ backgroundColor: v.color }} />}
                           </div>
@@ -298,7 +342,7 @@ const ABTestsPanel = ({ authHeader, showMessage, fetchWithAuth }) => {
                             </div>
                             <div className="pt-2 border-t border-black/5 flex justify-between text-xs">
                               <span className="font-semibold text-[#1A1A1A]">Конверсия</span>
-                              <span className={`font-bold text-base ${convRate > 0 ? (isWinner ? 'text-green-600' : 'text-[#C6A87C]') : 'text-[#8C8C8C]'}`}>
+                              <span className={`font-bold text-base ${convRate > 0 ? (isWinner && isSignificant ? 'text-green-600' : isWinner ? 'text-[#C6A87C]' : 'text-[#595959]') : 'text-[#8C8C8C]'}`}>
                                 {convRate.toFixed(1)}%
                               </span>
                             </div>
@@ -306,7 +350,7 @@ const ABTestsPanel = ({ authHeader, showMessage, fetchWithAuth }) => {
                             <div className="h-2 bg-black/5 rounded-full overflow-hidden">
                               <div className="h-full rounded-full transition-all" style={{
                                 width: `${Math.min(convRate, 100)}%`,
-                                backgroundColor: isWinner ? '#059669' : '#C6A87C',
+                                backgroundColor: isWinner && isSignificant ? '#059669' : isWinner ? '#C6A87C' : '#D1D5DB',
                                 minWidth: convRate > 0 ? '4px' : '0',
                               }} />
                             </div>
@@ -321,11 +365,51 @@ const ABTestsPanel = ({ authHeader, showMessage, fetchWithAuth }) => {
                       );
                     })}
                   </div>
-                  {winner && (
-                    <div className="mt-3 flex items-center gap-2 bg-green-50 border border-green-200 p-3">
-                      <Award size={16} className="text-green-600 flex-shrink-0" />
-                      <span className="text-xs text-green-700">
-                        <strong>Лидер: Вариант {winner.id.toUpperCase()}</strong> — "{winner.text_pl}" показывает лучшую конверсию
+
+                  {/* Analysis & Recommendation block */}
+                  {isCompleted && test.applied_variant && (
+                    <div className="mt-3 flex items-center gap-2 bg-blue-50 border border-blue-200 p-3" data-testid="ab-test-completed">
+                      <CheckCircle size={16} className="text-blue-600 flex-shrink-0" />
+                      <span className="text-xs text-blue-700">
+                        <strong>Тест завершён.</strong> Вариант {test.applied_variant.toUpperCase()} применён как основной текст кнопки.
+                      </span>
+                    </div>
+                  )}
+                  {isSignificant && !isCompleted && analysis.winner_id && (
+                    <div className="mt-3 bg-emerald-50 border border-emerald-200 p-4" data-testid="ab-recommendation">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                          <Zap size={16} className="text-emerald-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-emerald-800 mb-1">Рекомендация: Применить вариант {analysis.winner_id.toUpperCase()}</p>
+                          <p className="text-xs text-emerald-600 mb-3">
+                            Z-test: z = {zTest.z_score}, p = {zTest.p_value} | Уверенность: <strong>{zTest.confidence}%</strong> (порог: 95%)
+                          </p>
+                          <button
+                            onClick={() => applyWinner(test, analysis.winner_id)}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors"
+                            data-testid="ab-apply-winner-btn"
+                          >
+                            <CheckCircle size={14} /> Применить победителя
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {!isSignificant && !isCompleted && winner && !needsMoreData && (
+                    <div className="mt-3 flex items-center gap-2 bg-gray-50 border border-gray-200 p-3">
+                      <AlertTriangle size={16} className="text-gray-400 flex-shrink-0" />
+                      <span className="text-xs text-gray-500">
+                        Вариант {winner.id.toUpperCase()} лидирует, но разница <strong>статистически незначима</strong> (уверенность {zTest.confidence || 0}%, нужно 95%). Продолжайте тест.
+                      </span>
+                    </div>
+                  )}
+                  {needsMoreData && !isCompleted && (
+                    <div className="mt-3 flex items-center gap-2 bg-amber-50 border border-amber-200 p-3">
+                      <AlertTriangle size={16} className="text-amber-500 flex-shrink-0" />
+                      <span className="text-xs text-amber-600">
+                        Недостаточно данных для анализа. Набрано <strong>{analysis.total_impressions || 0}</strong> из рекомендованных <strong>100</strong> показов. Ожидайте накопления данных.
                       </span>
                     </div>
                   )}

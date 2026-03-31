@@ -3189,9 +3189,37 @@ async def get_analytics_summary(days: int = 30, username: str = Depends(verify_a
     }
 
 
+import math
+
 # ═══════════════════════════════════════════
 # A/B Testing API
 # ═══════════════════════════════════════════
+
+def _ab_ztest(n1: int, c1: int, n2: int, c2: int) -> dict:
+    """Two-proportion z-test for A/B testing.
+    n1, c1 = impressions & clicks for variant 1
+    n2, c2 = impressions & clicks for variant 2
+    Returns: z_score, p_value, confidence, significant (p < 0.05)
+    """
+    if n1 < 1 or n2 < 1:
+        return {"z_score": 0, "p_value": 1.0, "confidence": 0, "significant": False, "min_sample": True}
+    p1 = c1 / n1
+    p2 = c2 / n2
+    p_pool = (c1 + c2) / (n1 + n2) if (n1 + n2) > 0 else 0
+    se = math.sqrt(p_pool * (1 - p_pool) * (1/n1 + 1/n2)) if p_pool > 0 and p_pool < 1 else 0
+    if se == 0:
+        return {"z_score": 0, "p_value": 1.0, "confidence": 0, "significant": False, "min_sample": n1 < 30 or n2 < 30}
+    z = (p1 - p2) / se
+    # Approximate two-tailed p-value using error function
+    p_value = math.erfc(abs(z) / math.sqrt(2))
+    confidence = round((1 - p_value) * 100, 1)
+    return {
+        "z_score": round(z, 3),
+        "p_value": round(p_value, 4),
+        "confidence": confidence,
+        "significant": p_value < 0.05,
+        "min_sample": n1 < 30 or n2 < 30,
+    }
 
 @api_router.get("/ab/active")
 async def get_active_ab_tests():
@@ -3255,6 +3283,46 @@ async def get_ab_tests(username: str = Depends(verify_admin)):
 
         for t in tests:
             t["stats"] = stats.get(t["id"], {})
+            # Z-test analysis for each test
+            variants = t.get("variants", [])
+            test_stats = t["stats"]
+            if len(variants) >= 2 and test_stats:
+                # Find best variant by conversion rate
+                variant_data = []
+                for v in variants:
+                    s = test_stats.get(v["id"], {})
+                    n = s.get("unique_impressions", 0)
+                    c = s.get("unique_clicks", 0)
+                    rate = (c / n * 100) if n > 0 else 0
+                    variant_data.append({"id": v["id"], "n": n, "c": c, "rate": rate})
+                variant_data.sort(key=lambda x: x["rate"], reverse=True)
+                best = variant_data[0]
+                # Compare best vs each other variant, use most conservative (highest p-value)
+                worst_p = 0
+                best_ztest = None
+                for other in variant_data[1:]:
+                    result = _ab_ztest(best["n"], best["c"], other["n"], other["c"])
+                    if result["p_value"] >= worst_p:
+                        worst_p = result["p_value"]
+                        best_ztest = result
+                total_impressions = sum(vd["n"] for vd in variant_data)
+                t["analysis"] = {
+                    "winner_id": best["id"] if best_ztest and best_ztest["significant"] else None,
+                    "leader_id": best["id"],
+                    "z_test": best_ztest or {"z_score": 0, "p_value": 1.0, "confidence": 0, "significant": False, "min_sample": True},
+                    "total_impressions": total_impressions,
+                    "recommendation": (
+                        "apply_winner" if best_ztest and best_ztest["significant"] else
+                        "needs_more_data" if total_impressions < 100 else
+                        "no_significant_difference"
+                    ),
+                }
+            else:
+                t["analysis"] = {
+                    "winner_id": None, "leader_id": None,
+                    "z_test": {"z_score": 0, "p_value": 1.0, "confidence": 0, "significant": False, "min_sample": True},
+                    "total_impressions": 0, "recommendation": "needs_more_data",
+                }
 
     return tests
 
@@ -3295,6 +3363,42 @@ async def delete_ab_test(test_id: str, username: str = Depends(verify_admin)):
     await db.ab_tests.delete_one({"id": test_id})
     await db.ab_events.delete_many({"test_id": test_id})
     return {"ok": True}
+
+
+@api_router.post("/admin/ab/tests/{test_id}/apply-winner")
+async def apply_ab_winner(test_id: str, request: Request, username: str = Depends(verify_admin)):
+    """Admin: apply the winning variant's text/color to button_config and complete the test."""
+    body = await request.json()
+    variant_id = body.get("variant_id", "")
+    test = await db.ab_tests.find_one({"id": test_id}, {"_id": 0})
+    if not test:
+        raise HTTPException(status_code=404, detail="Test not found")
+    variant = next((v for v in test.get("variants", []) if v["id"] == variant_id), None)
+    if not variant:
+        raise HTTPException(status_code=400, detail="Variant not found")
+
+    # Update button_config in settings
+    button_config = await db.settings.find_one({"id": "button_config"}, {"_id": 0})
+    if not button_config:
+        button_config = {"id": "button_config", "buttons": {}}
+    buttons = button_config.get("buttons", {})
+    btn_id = test["button_id"]
+    if btn_id not in buttons:
+        buttons[btn_id] = {}
+    if variant.get("text_pl"):
+        buttons[btn_id]["text_pl"] = variant["text_pl"]
+    if variant.get("text_en"):
+        buttons[btn_id]["text_en"] = variant["text_en"]
+    button_config["buttons"] = buttons
+    await db.settings.update_one({"id": "button_config"}, {"$set": button_config}, upsert=True)
+
+    # Mark test as completed
+    await db.ab_tests.update_one({"id": test_id}, {"$set": {
+        "status": "completed",
+        "applied_variant": variant_id,
+        "completed_at": datetime.now(timezone.utc).isoformat(),
+    }})
+    return {"ok": True, "applied": variant, "button_id": btn_id}
 
 
 # Include the router
