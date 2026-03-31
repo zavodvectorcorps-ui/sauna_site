@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Palette } from 'lucide-react';
 import { useBalieData } from '../../context/BalieContext';
 import { optimizedImg } from '../../lib/utils';
+import { RetryImg } from '../RetryImg';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -63,14 +64,6 @@ const resolveUrl = (src) => {
 // Single color swatch with loading state
 const ColorSwatch = ({ src, name }) => {
   const [loaded, setLoaded] = useState(false);
-  const imgRef = useRef(null);
-
-  useEffect(() => {
-    // Check if already cached by browser
-    if (imgRef.current?.complete && imgRef.current?.naturalWidth > 0) {
-      setLoaded(true);
-    }
-  }, []);
 
   return (
     <div className="group text-center">
@@ -78,13 +71,11 @@ const ColorSwatch = ({ src, name }) => {
         {!loaded && (
           <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-white/5 to-white/[0.02]" />
         )}
-        <img
-          ref={imgRef}
+        <RetryImg
           src={optimizedImg(src, { w: 200, q: 70 })}
           alt={name}
           className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
           loading="eager"
-          decoding="async"
           onLoad={() => setLoaded(true)}
         />
       </div>

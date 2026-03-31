@@ -4,6 +4,7 @@ import { BalieInstallment } from './BalieInstallment';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
 import { useBalieData } from '../../context/BalieContext';
 import { optimizedImg } from '../../lib/utils';
+import { RetryImg } from '../RetryImg';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -34,7 +35,7 @@ const ProductCard = ({ product, apiModel, onClick, isCompare, onToggleCompare })
     <div className="relative bg-[#1A1E27] border border-white/5 overflow-hidden group hover:border-[#D4AF37]/30 transition-all" data-testid={`balie-product-${product.id}`}>
       <div onClick={() => onClick(product)} className="cursor-pointer">
         <div className="relative aspect-[4/3] overflow-hidden">
-          <img src={optimizedImg(product.image, { w: 500, q: 75 })} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+          <RetryImg src={optimizedImg(product.image, { w: 500, q: 75 })} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
           {product.tags?.length > 0 && (
             <div className="absolute top-3 left-3 flex gap-1.5">
               {product.tags.slice(0, 2).map((tag, i) => (
@@ -239,7 +240,7 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
             {/* LEFT: Photo + Description */}
             <div className="lg:w-1/2 flex-shrink-0">
               <div className="relative aspect-[4/3] bg-[#0F1218]">
-                <img src={optimizedImg(images[imgIdx], { w: 800, q: 80 })} alt={product.name} className="w-full h-full object-cover" />
+                <RetryImg src={optimizedImg(images[imgIdx], { w: 800, q: 80 })} alt={product.name} className="w-full h-full object-cover" />
                 {images.length > 1 && (
                   <>
                     <button onClick={() => setImgIdx(p => p === 0 ? images.length - 1 : p - 1)} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/50 text-white flex items-center justify-center hover:bg-[#D4AF37]"><ChevronLeft size={18} /></button>

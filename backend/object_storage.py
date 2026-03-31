@@ -34,14 +34,23 @@ def put_object(path: str, data: bytes, content_type: str) -> dict:
     return resp.json()
 
 
-def get_object(path: str):
+def get_object(path: str, retries: int = 3):
     key = init_storage()
-    resp = requests.get(
-        f"{STORAGE_URL}/objects/{path}",
-        headers={"X-Storage-Key": key}, timeout=120
-    )
-    resp.raise_for_status()
-    return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
+    for attempt in range(retries):
+        try:
+            resp = requests.get(
+                f"{STORAGE_URL}/objects/{path}",
+                headers={"X-Storage-Key": key}, timeout=30
+            )
+            resp.raise_for_status()
+            return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
+        except (requests.exceptions.RequestException, Exception) as e:
+            if attempt < retries - 1:
+                import time
+                time.sleep(0.5 * (attempt + 1))
+                logger.warning(f"Object storage retry {attempt+1}/{retries} for {path}: {e}")
+            else:
+                raise
 
 
 MIME_TYPES = {

@@ -3231,9 +3231,8 @@ logger = logging.getLogger(__name__)
 
 async def _prewarm_image_cache():
     """Pre-warm image cache with all product/color images at common sizes"""
-    await asyncio.sleep(3)  # Let the server fully start
+    await asyncio.sleep(3)
     try:
-        # Gather all image IDs from products, colors, gallery
         image_ids = set()
         async for doc in db.balia_products.find({}, {"image": 1}):
             img = doc.get("image", "")
@@ -3246,10 +3245,10 @@ async def _prewarm_image_cache():
 
         logger.info(f"Pre-warming cache for {len(image_ids)} images...")
 
-        # Common resize variants
-        variants = [(500, 75), (200, 70)]
+        variants = [(500, 75), (200, 70), (800, 80)]
         loop = asyncio.get_event_loop()
         warmed = 0
+        failed_ids = []
 
         for img_id in image_ids:
             image = await db.uploads.find_one({"id": img_id})
@@ -3258,6 +3257,7 @@ async def _prewarm_image_cache():
             try:
                 raw_data, ct = await loop.run_in_executor(_img_executor, get_object, image["storage_path"])
             except Exception:
+                failed_ids.append(img_id)
                 continue
             for w, q in variants:
                 cache_key = f"{img_id}_{w}_{q}"
@@ -3269,10 +3269,31 @@ async def _prewarm_image_cache():
                     warmed += 1
                 except Exception:
                     pass
-            # Also cache original
             orig_key = f"{img_id}_orig_orig"
             if not image_cache.get(orig_key)[0]:
                 image_cache.set(orig_key, raw_data, image.get("content_type", ct))
+
+        if failed_ids:
+            logger.info(f"Retrying {len(failed_ids)} failed images in 10s...")
+            await asyncio.sleep(10)
+            for img_id in failed_ids:
+                image = await db.uploads.find_one({"id": img_id})
+                if not image or not image.get("storage_path"):
+                    continue
+                try:
+                    raw_data, ct = await loop.run_in_executor(_img_executor, get_object, image["storage_path"])
+                    for w, q in variants:
+                        cache_key = f"{img_id}_{w}_{q}"
+                        try:
+                            optimized = await loop.run_in_executor(_img_executor, _resize_image_sync, raw_data, w, q)
+                            image_cache.set(cache_key, optimized, "image/webp")
+                            warmed += 1
+                        except Exception:
+                            pass
+                    orig_key = f"{img_id}_orig_orig"
+                    image_cache.set(orig_key, raw_data, image.get("content_type", ct))
+                except Exception as e:
+                    logger.warning(f"Retry failed for {img_id}: {e}")
 
         logger.info(f"Image cache pre-warmed: {warmed} optimized variants cached")
     except Exception as e:
