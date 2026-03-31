@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Loader2, Image } from 'lucide-react';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
 import { useBalieData } from '../../context/BalieContext';
+import { optimizedImg } from '../../lib/utils';
 
 export const BalieGallery = () => {
   const [images, setImages] = useState([]);
@@ -44,7 +45,7 @@ export const BalieGallery = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
           {images.map((img, idx) => (
             <div key={img.id || idx} className="relative aspect-square overflow-hidden cursor-pointer group" onClick={() => openLightbox(idx)}>
-              <img src={img.url} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+              <img src={optimizedImg(img.url, { w: 400, q: 75 })} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                 <Image size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
@@ -59,7 +60,7 @@ export const BalieGallery = () => {
           <button onClick={closeLightbox} className="absolute top-4 right-4 w-10 h-10 bg-white/10 text-white flex items-center justify-center hover:bg-white/20 z-10"><X size={20} /></button>
           <button onClick={(e) => { e.stopPropagation(); prev(); }} className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 text-white flex items-center justify-center hover:bg-white/20"><ChevronLeft size={24} /></button>
           <button onClick={(e) => { e.stopPropagation(); next(); }} className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 text-white flex items-center justify-center hover:bg-white/20"><ChevronRight size={24} /></button>
-          <img src={images[lightbox]?.url} alt="" className="max-w-[90vw] max-h-[85vh] object-contain" onClick={(e) => e.stopPropagation()} />
+          <img src={optimizedImg(images[lightbox]?.url, { w: 1200, q: 85 })} alt="" className="max-w-[90vw] max-h-[85vh] object-contain" onClick={(e) => e.stopPropagation()} />
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/50 text-sm">{lightbox + 1} / {images.length}</div>
         </div>
       )}

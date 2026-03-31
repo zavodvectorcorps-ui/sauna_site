@@ -1246,6 +1246,13 @@ async def get_stock_saunas_public():
     saunas = await db.stock_saunas.find({"active": True}, {"_id": 0}).sort("sort_order", 1).to_list(100)
     return saunas
 
+
+# Calculator section content
+@api_router.get("/content/calculator")
+async def get_calculator_content():
+    content = await db.settings.find_one({"id": "calculator_content"}, {"_id": 0})
+    return content or {}
+
 # ============= Admin Routes =============
 
 @api_router.post("/admin/login")
@@ -2198,7 +2205,8 @@ async def upload_image(
         raise HTTPException(status_code=500, detail="Error uploading image")
 
 @api_router.get("/images/{image_id}")
-async def get_uploaded_image(image_id: str):
+async def get_uploaded_image(image_id: str, w: int = None, q: int = None, request: Request = None):
+    # w = target width, q = quality (1-100), default: serve original
     cache_headers = {"Cache-Control": "public, max-age=604800, immutable"}
 
     # Static asset fallback
@@ -2207,8 +2215,11 @@ async def get_uploaded_image(image_id: str):
         if static_path.exists():
             return FileResponse(static_path, media_type="image/webp", headers=cache_headers)
 
+    # Build cache key with resize params
+    cache_key = f"{image_id}_{w or 'orig'}_{q or 'orig'}"
+
     # Check in-memory image cache first
-    cached_data, cached_ct = image_cache.get(image_id)
+    cached_data, cached_ct = image_cache.get(cache_key)
     if cached_data:
         return Response(content=cached_data, media_type=cached_ct, headers=cache_headers)
 
@@ -2216,24 +2227,52 @@ async def get_uploaded_image(image_id: str):
     if not image:
         raise HTTPException(status_code=404, detail="Image not found")
 
+    raw_data = None
+    content_type = image.get("content_type", "image/jpeg")
+
     # Try object storage first
     if image.get("storage_path"):
         try:
             data, ct = get_object(image["storage_path"])
+            raw_data = data
             content_type = image.get("content_type", ct)
-            image_cache.set(image_id, data, content_type)
-            return Response(content=data, media_type=content_type, headers=cache_headers)
         except Exception as e:
             logger.warning(f"Object storage fetch failed for {image_id}: {e}")
 
     # Fallback to MongoDB base64
-    if image.get("data"):
-        image_data = base64.b64decode(image["data"])
+    if raw_data is None and image.get("data"):
+        raw_data = base64.b64decode(image["data"])
         content_type = image["content_type"]
-        image_cache.set(image_id, image_data, content_type)
-        return Response(content=image_data, media_type=content_type, headers=cache_headers)
 
-    raise HTTPException(status_code=404, detail="Image data not found")
+    if raw_data is None:
+        raise HTTPException(status_code=404, detail="Image data not found")
+
+    # Optimize: resize and/or convert to WebP
+    if w or q:
+        try:
+            from PIL import Image as PILImage
+            import io
+            img = PILImage.open(io.BytesIO(raw_data))
+            if img.mode in ('RGBA', 'LA', 'P'):
+                img = img.convert('RGBA')
+            else:
+                img = img.convert('RGB')
+            if w and img.width > w:
+                ratio = w / img.width
+                new_h = int(img.height * ratio)
+                img = img.resize((w, new_h), PILImage.LANCZOS)
+            buf = io.BytesIO()
+            quality = q or 80
+            img.save(buf, format='WEBP', quality=quality, method=4)
+            optimized = buf.getvalue()
+            image_cache.set(cache_key, optimized, "image/webp")
+            return Response(content=optimized, media_type="image/webp", headers=cache_headers)
+        except Exception as e:
+            logger.warning(f"Image optimization failed for {image_id}: {e}")
+
+    # Return original
+    image_cache.set(cache_key, raw_data, content_type)
+    return Response(content=raw_data, media_type=content_type, headers=cache_headers)
 
 
 # Video upload

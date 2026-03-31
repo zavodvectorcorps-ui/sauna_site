@@ -9,13 +9,20 @@ const resolveUrl = (src) => {
   return `${API}${src}`;
 };
 
+// Build optimized image URL for preloading (server-side resize + WebP)
+const optUrl = (src, w, q) => {
+  const resolved = resolveUrl(src);
+  if (!resolved || !resolved.includes('/api/images/')) return resolved;
+  return `${resolved}?w=${w}&q=${q}`;
+};
+
 // Preload all balie images in background for instant tab switching
 const preloadImages = (data) => {
   if (!data) return;
   const urls = new Set();
-  (data.colors || []).forEach(c => { if (c.image) urls.add(resolveUrl(c.image)); });
-  (data.products || []).forEach(p => { if (p.image) urls.add(resolveUrl(p.image)); });
-  (data.gallery || []).forEach(g => { if (g.url) urls.add(resolveUrl(g.url)); });
+  (data.colors || []).forEach(c => { if (c.image) urls.add(optUrl(c.image, 200, 70)); });
+  (data.products || []).forEach(p => { if (p.image) urls.add(optUrl(p.image, 500, 75)); });
+  (data.gallery || []).forEach(g => { if (g.url) urls.add(optUrl(g.url, 600, 75)); });
   urls.forEach(url => {
     const img = new Image();
     img.src = url;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Flame, ArrowRight } from 'lucide-react';
 import { useBalieData } from '../../context/BalieContext';
-import { resolveMediaUrl } from '../../lib/utils';
+import { resolveMediaUrl, optimizedImg } from '../../lib/utils';
 
 const defaultStoveTypes = [
   {
@@ -249,7 +249,7 @@ export const BalieStoveScheme = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           <div className="bg-[#111620] border border-white/5 p-4 flex items-center justify-center overflow-hidden">
             {active?.image ? (
-              <img src={active.image} alt={active.title} className="w-full h-full object-contain max-h-[350px]" />
+              <img src={optimizedImg(active.image, { w: 600, q: 80 })} alt={active.title} className="w-full h-full object-contain max-h-[350px]" />
             ) : (
               (() => {
                 const style = active?.svg_style || 'default';

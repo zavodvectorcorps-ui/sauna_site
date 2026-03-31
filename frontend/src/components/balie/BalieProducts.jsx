@@ -3,6 +3,7 @@ import { X, ArrowRight, Loader2, Users, Droplets, Ruler, ChevronLeft, ChevronRig
 import { BalieInstallment } from './BalieInstallment';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
 import { useBalieData } from '../../context/BalieContext';
+import { optimizedImg } from '../../lib/utils';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -33,7 +34,7 @@ const ProductCard = ({ product, apiModel, onClick, isCompare, onToggleCompare })
     <div className="relative bg-[#1A1E27] border border-white/5 overflow-hidden group hover:border-[#D4AF37]/30 transition-all" data-testid={`balie-product-${product.id}`}>
       <div onClick={() => onClick(product)} className="cursor-pointer">
         <div className="relative aspect-[4/3] overflow-hidden">
-          <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+          <img src={optimizedImg(product.image, { w: 500, q: 75 })} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
           {product.tags?.length > 0 && (
             <div className="absolute top-3 left-3 flex gap-1.5">
               {product.tags.slice(0, 2).map((tag, i) => (
@@ -238,7 +239,7 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
             {/* LEFT: Photo + Description */}
             <div className="lg:w-1/2 flex-shrink-0">
               <div className="relative aspect-[4/3] bg-[#0F1218]">
-                <img src={images[imgIdx]} alt={product.name} className="w-full h-full object-cover" />
+                <img src={optimizedImg(images[imgIdx], { w: 800, q: 80 })} alt={product.name} className="w-full h-full object-cover" />
                 {images.length > 1 && (
                   <>
                     <button onClick={() => setImgIdx(p => p === 0 ? images.length - 1 : p - 1)} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/50 text-white flex items-center justify-center hover:bg-[#D4AF37]"><ChevronLeft size={18} /></button>
@@ -346,7 +347,7 @@ const ProductModal = ({ product, apiModel, apiCategories, cardOptions, exclusion
                                           className="flex-shrink-0 w-14 h-14 overflow-hidden border border-white/10 hover:border-[#D4AF37]/50 transition-colors bg-[#0F1218] group/thumb"
                                           data-testid={`balie-opt-img-${opt.id}`}
                                         >
-                                          <img src={opt.imageUrl} alt={opt.name || opt.namePl} className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110" loading="lazy" />
+                                          <img src={optimizedImg(opt.imageUrl, { w: 120, q: 70 })} alt={opt.name || opt.namePl} className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110" loading="lazy" />
                                         </button>
                                       )}
                                       <button onClick={() => toggleOption(cat.id, opt)}
@@ -506,7 +507,7 @@ const CompareModal = ({ products, apiModels, onClose, onRemove }) => {
                 {items.map(it => (
                   <th key={it.product.id} className="p-4 text-center">
                     <div className="relative inline-block">
-                      <img src={it.product.image} alt={it.product.name} className="w-28 h-20 object-cover mx-auto mb-2 border border-white/10" />
+                      <img src={optimizedImg(it.product.image, { w: 200, q: 70 })} alt={it.product.name} className="w-28 h-20 object-cover mx-auto mb-2 border border-white/10" />
                       <button
                         onClick={() => onRemove(it.product.id)}
                         className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500/80 text-white flex items-center justify-center hover:bg-red-500 text-xs"

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useBalieData } from '../../context/BalieContext';
-import { resolveMediaUrl } from '../../lib/utils';
+import { resolveMediaUrl, optimizedImg } from '../../lib/utils';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -157,7 +157,7 @@ export const BalieSchematic = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div className="relative bg-[#1A1E27] border border-white/5 p-4 aspect-[4/3] flex items-center justify-center overflow-hidden">
             {image ? (
-              <img src={image} alt={title} className="w-full h-full object-contain" />
+              <img src={optimizedImg(image, { w: 800, q: 80 })} alt={title} className="w-full h-full object-contain" />
             ) : (
               (() => { const Svg = svgComponents[svgStyle] || SvgDiagram; return <Svg />; })()
             )}

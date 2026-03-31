@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Palette } from 'lucide-react';
 import { useBalieData } from '../../context/BalieContext';
+import { optimizedImg } from '../../lib/utils';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -79,7 +80,7 @@ const ColorSwatch = ({ src, name }) => {
         )}
         <img
           ref={imgRef}
-          src={resolveUrl(src)}
+          src={optimizedImg(src, { w: 200, q: 70 })}
           alt={name}
           className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
           loading="eager"
@@ -109,7 +110,7 @@ export const BalieColors = () => {
     apiColors.forEach(c => {
       if (c.image) {
         const img = new Image();
-        img.src = resolveUrl(c.image);
+        img.src = optimizedImg(c.image, { w: 200, q: 70 });
       }
     });
   }, [apiColors]);
