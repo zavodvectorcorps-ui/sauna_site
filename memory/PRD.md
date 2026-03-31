@@ -57,6 +57,9 @@
 - Frontend: ABTestContext + useABTest hook (cookie-based visitor assignment, deterministic variant allocation)
 - Applied to 6 CTA buttons: Hero primary/secondary, Balie primary/secondary, Model details, Model configure
 - Admin UI: полноценная панель во вкладке "A/B Тесты" с формой создания, управлением (пауза/запуск/удаление) и статистикой конверсий
+- **Z-test статистическая значимость**: автоматический расчёт p-value, z-score, уверенности (%)
+- **Автоматические рекомендации**: бейджи "X% уверенность" / "Мало данных" / "Нет значимой разницы"
+- **Кнопка "Применить победителя"**: обновляет button_config текстом/цветом победителя, завершает тест
 - MongoDB collections: `ab_tests`, `ab_events`
 
 ### OG Image Fix — COMPLETE
