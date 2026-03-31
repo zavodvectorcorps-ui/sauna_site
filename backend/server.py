@@ -2761,6 +2761,29 @@ async def startup_init():
     except Exception as e:
         logger.warning(f"Object storage init failed at startup (will retry on first use): {e}")
 
+    # Seed database if empty
+    try:
+        settings_count = await db.settings.count_documents({})
+        if settings_count == 0:
+            logger.info("Empty database detected — seeding from seed_data.json...")
+            import json as _json
+            seed_path = os.path.join(os.path.dirname(__file__), "seed_data.json")
+            if os.path.exists(seed_path):
+                with open(seed_path, "r", encoding="utf-8") as f:
+                    seed = _json.load(f)
+                for coll_name, docs in seed.items():
+                    if docs:
+                        collection = db[coll_name]
+                        await collection.insert_many(docs)
+                        logger.info(f"  Seeded {coll_name}: {len(docs)} docs")
+                logger.info("Database seeding complete!")
+            else:
+                logger.warning("seed_data.json not found, skipping seed")
+        else:
+            logger.info(f"Database has {settings_count} settings, skipping seed")
+    except Exception as e:
+        logger.error(f"Database seeding error: {e}")
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

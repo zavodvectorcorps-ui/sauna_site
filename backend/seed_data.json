@@ -1,0 +1,1990 @@
+{
+  "settings": [
+    {
+      "id": "calculator_config",
+      "enabled_categories": [
+        "piece",
+        "lawki",
+        "okna",
+        "szyba_panoramiczna",
+        "wyposaenie_",
+        "opcje_dodatkowe"
+      ],
+      "enabled_models": [],
+      "show_discount_badge": true,
+      "disabled_options": [
+        "szyba_nie",
+        "12080"
+      ]
+    },
+    {
+      "id": "section_order",
+      "sections": [
+        "hero",
+        "models",
+        "orderprocess",
+        "gallery",
+        "stock",
+        "calculator",
+        "reviews",
+        "faq",
+        "about",
+        "contact"
+      ]
+    },
+    {
+      "id": "layout_settings",
+      "section_padding_bottom": 40,
+      "section_padding_top": 40,
+      "section_spacing": "small"
+    },
+    {
+      "id": "gallery_config",
+      "hidden_api_images": [],
+      "show_api_images": true
+    },
+    {
+      "id": "models_config",
+      "enabled_models": [],
+      "show_section": true,
+      "descriptions": {}
+    },
+    {
+      "id": "models_settings",
+      "subtitle_en": "Choose a sauna model and learn its details.",
+      "subtitle_pl": "Wybierz model sauny i poznaj jej szczegóły.",
+      "title_en": "Our sauna models",
+      "title_pl": "Nasze modele saun"
+    },
+    {
+      "id": "seo_settings",
+      "canonical_url": "https://wm-sauna.pl",
+      "description_en": "WM-Sauna - Polish premium wooden sauna manufacturer.",
+      "description_pl": "WM-Sauna - polski producent saun drewnianych premium.",
+      "keywords_en": "wooden sauna, sauna manufacturer, barrel sauna",
+      "keywords_pl": "sauna drewniana, producent saun, sauna beczka",
+      "og_image": "",
+      "title_en": "WM-Sauna | Wooden Sauna Manufacturer in Poland",
+      "title_pl": "WM-Sauna | Producent Saun Drewnianych w Polsce"
+    },
+    {
+      "id": "social_proof_settings",
+      "items": [
+        {
+          "value": "500+",
+          "label_pl": "Wyprodukowanych saun",
+          "label_en": "Saunas produced"
+        },
+        {
+          "value": "98%",
+          "label_pl": "Zadowolonych klientów",
+          "label_en": "Satisfied customers"
+        },
+        {
+          "value": "11+",
+          "label_pl": "Lat doświadczenia",
+          "label_en": "Years of experience"
+        },
+        {
+          "value": "5-21",
+          "label_pl": "Dni czas realizacji",
+          "label_en": "Days fulfillment time"
+        }
+      ],
+      "show_section": true
+    },
+    {
+      "id": "faq_settings",
+      "items": [
+        {
+          "id": "faq1",
+          "question_pl": "Jakich materiałów używacie do budowy saun i w jaki sposób łączycie deski?",
+          "question_en": "What materials do you use to build the saunas, and what type of wood joint do you apply?",
+          "answer_pl": "Do produkcji naszych saun używamy wyłącznie starannie wyselekcjonowanego drewna – świerku skandynawskiego o solidnej grubości 44 mm. Jest to drewno rosnące w surowym klimacie, dzięki czemu charakteryzuje się dużą gęstością, wyjątkową trwałością i doskonałymi właściwościami termoizolacyjnymi.\n\nAby zapewnić maksymalną szczelność konstrukcji, stosujemy specjalistyczne łączenie typu „frez księżycowy” (profil półokrągły). Taka geometria sprawia, że deski idealnie do siebie przylegają, tworząc niezwykle szczelną, monolityczną ścianę. Gwarantuje to niemal całkowity brak widocznych szczelin, eliminuje ryzyko przewiewów i sprawia, że Twoja sauna perfekcyjnie trzyma ciepło nawet podczas najsroższych zim.",
+          "answer_en": "For the production of our saunas, we exclusively use carefully selected premium wood: Scandinavian spruce with a solid thickness of 44 mm. Grown in a harsh northern climate, this wood is characterized by high density, exceptional durability, and outstanding thermal insulation properties.\n\nTo ensure the maximum tightness of the structure, we use a specialized \"moon groove\" (crescent profile) joint. This specific geometry allows the wooden boards to fit together perfectly, creating a highly sealed, monolithic wall. This design guarantees almost zero visible gaps, completely eliminates the risk of drafts, and ensures your sauna retains heat perfectly, even during the harshest winters.",
+          "image_url": "",
+          "sort_order": 0,
+          "active": true
+        },
+        {
+          "id": "faq2",
+          "question_pl": "Dlaczego nie stosujecie dodatkowej izolacji termicznej (ocieplenia)?",
+          "question_en": "Why don't you use additional thermal insulation in the walls?",
+          "answer_pl": "To świadoma i niezwykle ważna decyzja technologiczna. Celowo rezygnujemy z dodatkowego ocieplenia (np. wełną wewnątrz ścian), ponieważ wymagałoby to zastosowania folii paroizolacyjnej. Drewno w saunie pod wpływem ekstremalnych zmian temperatury i wilgotności stale „pracuje” – naturalnie rozszerza się i kurczy.\n\nTa nieustanna praca materiału z czasem prowadzi do mikropęknięć i rozerwania folii paroizolacyjnej. W efekcie gorąca para wodna przenika do warstwy izolacji, gdzie skrapla się i nie ma możliwości odparowania. To idealne środowisko do rozwoju niebezpiecznej dla zdrowia pleśni i grzyba, a także prosta droga do gnicia i czernienia drewna, co drastycznie skraca żywotność całej sauny.\n\nNasze rozwiązanie to lity profil świerkowy o grubości 44 mm ze szczelnym łączeniem na „frez księżycowy”. Taka konstrukcja sama w sobie jest doskonałym izolatorem. Pozwala drewnu naturalnie oddychać i całkowicie wysychać po seansie, gwarantując higienę i trwałość na długie lata.",
+          "answer_en": "This is a crucial and deliberate technological design choice. We intentionally avoid extra hidden insulation (such as mineral wool) because it strictly requires the installation of a vapor barrier. The wood inside a sauna is constantly \"working\" — expanding and contracting significantly due to extreme fluctuations in temperature and humidity.\n\nOver time, this natural dynamic movement inevitably stretches and tears the vapor barrier. Once compromised, hot steam penetrates the insulation layer, condenses, and becomes trapped. This trapped moisture leads to internal wood rot, dark stains, and the rapid growth of hazardous black mold and fungus. Consequently, the lifespan of the sauna is drastically shortened.\n\nOur approach relies on solid 44 mm thick Scandinavian spruce with tightly interlocking \"moon groove\" joints. This thick, solid wood wall acts as an excellent natural thermal insulator on its own. Most importantly, it allows the structure to breathe and dry out completely after each use, ensuring decades of safe, hygienic, and mold-free operation.",
+          "image_url": "",
+          "sort_order": 1,
+          "active": true
+        },
+        {
+          "id": "faq_1774623902570",
+          "question_pl": "Jak wygląda kwestia dostawy?",
+          "question_en": "How is the delivery organized?",
+          "answer_pl": "Dostarczamy nasze sauny i balie bezpośrednio do klienta, korzystając z własnego transportu. Jest to usługa dodatkowo płatna, a jej ostateczny koszt wyceniamy indywidualnie w zależności od odległości z naszego zakładu w Warszawie do miejsca docelowego.\n\nWażna informacja: nasza usługa obejmuje wyłącznie transport towaru pod wskazany adres. Rozładunek oraz bezpieczne posadowienie sauny na przygotowanym wcześniej podłożu leży po stronie klienta. W tym celu należy we własnym zakresie wynająć lokalnie dźwig lub samochód typu HDS (z manipulatorem). Nasz kierowca podjedzie najbezpieczniej i najbliżej jak to możliwe, aby ułatwić i przyspieszyć proces rozładunku.",
+          "answer_en": "We deliver our saunas and hot tubs directly to your location using our own transport. This is an additional paid service, and the final cost is calculated individually based on the distance from our facility in Warsaw to your delivery address.\n\nImportant note: our service strictly covers the transportation of the product to the specified location. For safe unloading and placement of the sauna onto your prepared foundation, the client must independently arrange and hire a local crane or a truck with a manipulator (HIAB). Our driver will park as close to the installation site as safely possible to ensure a smooth and quick unloading process.",
+          "image_url": "",
+          "sort_order": 2,
+          "active": true
+        },
+        {
+          "id": "faq_1774624003669",
+          "question_pl": "Jaka jest różnica między termodrewnem a zwykłym drewnem i dlaczego polecamy właśnie to rozwiązanie?",
+          "question_en": "What is the difference between thermowood and regular wood, and why do we highly recommend it?",
+          "answer_pl": "Termodrewno to naturalne drewno poddane innowacyjnemu procesowi modyfikacji w specjalnych komorach w bardzo wysokich temperaturach (od 190 do 212°C) przy użyciu wyłącznie pary wodnej, bez grama chemii. Ten proces zmienia strukturę komórkową materiału, czyniąc go surowcem idealnym do budowy saun i balii ogrodowych.\n\nOto 5 głównych powodów, dla których zdecydowanie rekomendujemy wybór termodrewna:\n\nWyjątkowa stabilność wymiarowa. Zwykłe drewno chłonie wilgoć, przez co pęcznieje, kurczy się, wypacza i pęka. Termodrewno traci zdolność absorpcji wody z otoczenia. Dzięki temu Twoja sauna lub balia zachowa idealny kształt i szczelność przez lata, niezależnie od deszczu czy mrozu.\n\nPełna odporność na gnicie i grzyby. Podczas wygrzewania z drewna usuwane są cukry (hemicelulozy), które stanowią pożywkę dla mikroorganizmów. Termodrewno jest biologicznie martwe dla grzybów, pleśni i szkodników, dlatego nie gnije nawet przy stałym kontakcie z wodą.\n\nCałkowity brak żywicy. W wysokiej temperaturze żywica zostaje w 100% odparowana. Masz pewność, że podczas gorących seansów w saunie na ścianach czy ławkach nigdy nie pojawią się lepkie, gorące krople żywicy, które mogłyby poparzyć skórę.\n\nLepsza izolacja termiczna. Termodrewno zatrzymuje ciepło o 20-30% lepiej niż zwykłe drewno. Oznacza to, że sauna nagrzewa się szybciej i wolniej stygnie, co pozwala zaoszczędzić drewno lub prąd.\n\nSzlachetna estetyka. Proces termiczny nadaje deskom na całym przekroju głęboki, luksusowy, karmelowo-czekoladowy odcień, który prezentuje się niezwykle ekskluzywnie i nowocześnie.\n\nPodsumowanie: Wybierając termodrewno, inwestujesz w produkt klasy premium, który przetrwa znacznie dłużej niż standardowe drewno, nie wymaga uciążliwej konserwacji i zachwyca pięknym wyglądem przez wiele sezonów.",
+          "answer_en": "Thermowood is natural wood that has undergone an innovative modification process in specialized chambers at very high temperatures (190 to 212°C) using only steam, with absolutely no chemicals. This process alters the cellular structure of the material, making it the perfect raw material for outdoor saunas and hot tubs.\n\nHere are 5 key reasons why we strongly recommend choosing thermowood:\n\nExceptional Dimensional Stability. Regular wood absorbs and releases moisture, causing it to swell, shrink, warp, and crack. Thermowood loses its ability to absorb moisture from the air. Your sauna or hot tub will maintain its perfect shape and tightness for years, regardless of rain or freezing temperatures.\n\nAbsolute Resistance to Rot and Fungi. The thermal treatment bakes out wood sugars (hemicellulose), which are the primary food source for microorganisms. Thermowood is biologically dead to fungi, mold, and insects, meaning it will not rot even with constant exposure to water.\n\n100% Resin-Free. At such high temperatures, all the resin is completely evaporated from the boards. You can be assured that no sticky, burning sap will ever leak onto the walls or benches while the sauna is heating up.\n\nEnhanced Thermal Insulation. Thermowood retains heat 20-30% better than standard wood. This means your sauna will heat up faster and cool down slower, saving you firewood or electricity.\n\nPremium Aesthetics. The thermal modification darkens the wood all the way through, giving it a rich, luxurious caramel-chocolate shade that looks incredibly elegant and expensive.\n\nSummary: By choosing thermowood, you are investing in a premium product that will outlast regular wood many times over, requires minimal maintenance, and retains its stunning appearance for decades.",
+          "image_url": "",
+          "sort_order": 3,
+          "active": true
+        },
+        {
+          "id": "faq_1774624139201",
+          "question_pl": "Jakie są zalety pieca opalanego drewnem w porównaniu z elektrycznym i dlaczego polecacie właśnie to rozwiązanie?",
+          "question_en": "What is the advantage of a wood-burning stove over an electric one, and why do you recommend it?",
+          "answer_pl": "W przypadku saun i balii ogrodowych zawsze zdecydowanie rekomendujemy klasyczny piec na drewno. Jest to najbardziej niezawodne, wydajne i bezpieczne rozwiązanie do ogrodu. Oto 4 główne powody:\n\nBrak skomplikowanych instalacji elektrycznych. Mocny piec elektryczny wymaga poprowadzenia przez działkę specjalnego przyłącza trójfazowego (siła 380V). To generuje wysokie koszty, wymaga prac ziemnych i wizyty elektryka. Piec na drewno jest w 100% niezależny – zadziała nawet podczas całkowitej awarii prądu w Twojej okolicy.\n\nWyższa wydajność (KDP) i szybsze nagrzewanie. Piec na drewno dysponuje ogromnym zapasem mocy. Znacznie szybciej nagrzewa wnętrze sauny lub wodę w balii niż grzałki elektryczne. Jest to kluczowe zwłaszcza podczas mroźnych zim, kiedy słabsze piece elektryczne często nie nadążają z produkcją ciepła.\n\nPełne bezpieczeństwo przy polewaniu kamieni. Piec na drewno nie boi się wody – możesz śmiało i obficie polewać kamienie, by uzyskać potężne uderzenie pary. Z piecem elektrycznym trzeba bardzo uważać: stanowczo odradzamy obfite polewanie kamieni wodą w wersjach elektrycznych! Woda powoduje odkładanie się kamienia i nalotu na rozgrzanych grzałkach (Tykach). Z biegiem czasu prowadzi to do uszkodzenia elementów grzejnych, co grozi przebiciem prądu, zwarciem instalacji, a w skrajnych przypadkach nawet pożarem.\n\nPrawdziwy klimat. Nic nie zastąpi kojącego trzasku palącego się drewna, widoku żywego ognia i autentycznego zapachu. To fundament prawdziwego rytuału, którego nie da się podrobić prądem.",
+          "answer_en": "For outdoor saunas and hot tubs, we always strongly recommend choosing a classic wood-burning stove. It is the most reliable, powerful, and safe solution for an outdoor setup. Here are the 4 main reasons:\n\nNo complex electrical work. A powerful electric heater strictly requires a dedicated 3-phase power line (380V) running across your property. This involves expensive trenching and hiring a certified electrician. A wood-burning stove is completely autonomous—it will work perfectly even during a total power outage in your area.\n\nMaximum efficiency and faster heating. A wood stove has a massive power reserve. It heats up the sauna room or the water in a hot tub much faster than electric alternatives. This is especially critical during freezing winter days when electric heaters often struggle to keep up with heat loss.\n\nAbsolute safety with water and steam. A wood-burning stove is not afraid of water—you can generously pour water over the stones to create thick, perfect steam. With an electric heater, you must be extremely careful: we strongly advise against pouring water on stones with an electric stove! Water creates hard mineral deposits (limescale) on the glowing heating elements. Over time, this destroys the elements, which can lead to electrical leakage, dangerous short circuits, and even fire.\n\nAuthentic atmosphere. Nothing can replace the cozy crackle of burning wood, the sight of a live flame, and the unique scent. It is the very core of a genuine sauna ritual that electricity simply cannot replicate.",
+          "image_url": "",
+          "sort_order": 4,
+          "active": true
+        },
+        {
+          "id": "faq_1774624479654",
+          "question_pl": "Czy montujecie promienniki na podczerwień (sauny infrared)?",
+          "question_en": "Do you use infrared (IR) lamps in your saunas?",
+          "answer_pl": "Nie, nie stosujemy lamp na podczerwień. Nasza firma specjalizuje się wyłącznie w budowie klasycznych saun (fińskich i ruskich bań). Jesteśmy przekonani, że prawdziwy, głęboki relaks, odpowiedni mikroklimat i autentyczną atmosferę można osiągnąć tylko dzięki tradycyjnym piecom z kamieniami. Kabiny infrared to zupełnie inny rodzaj zabiegu, który nie zapewnia tego unikalnego doświadczenia, uderzenia gorącej pary i zapachu naturalnego drewna, na którym tak bardzo nam zależy.",
+          "answer_en": "No, we do not use infrared heaters. Our company specializes exclusively in classic outdoor saunas (Finnish and Russian banyas). We firmly believe that the authentic atmosphere, deep body heating, and unique microclimate can only be achieved using traditional stoves with stones. Infrared cabins offer a completely different type of therapy that lacks the genuine sauna experience, the burst of hot steam, and the rich scent of natural wood that we strive to provide for our clients.",
+          "image_url": "",
+          "sort_order": 5,
+          "active": true
+        },
+        {
+          "id": "faq_1774624501666",
+          "question_pl": "Jaki jest czas realizacji zamówienia?",
+          "question_en": "What is the production lead time?",
+          "answer_pl": "Standardowy czas produkcji naszych saun i balii wynosi 3 tygodnie (± 1 tydzień, w zależności od aktualnego obłożenia zakładu oraz wybranej przez Ciebie konfiguracji).\n\nNie sprzedajemy masowych, gotowych produktów z magazynu. Każda sauna i balia jest budowana od podstaw, indywidualnie pod konkretne zamówienie. Ten czas jest nam niezbędny na staranną selekcję drewna, precyzyjny montaż, instalację sprzętu oraz rygorystyczną kontrolę jakości przed wysyłką. Czas oczekiwania rzędu 3-4 tygodni to gwarancja, że otrzymasz dopracowany w każdym detalu produkt premium, stworzony specjalnie do Twojego ogrodu.",
+          "answer_en": "The standard manufacturing time for our saunas and hot tubs is 3 weeks (± 1 week, depending on current production capacity and your chosen configuration).\n\nWe do not sell mass-produced, off-the-shelf items. Every sauna and hot tub is custom-built to order by our experienced craftsmen. This time is necessary for careful wood selection, precise assembly, equipment installation, and strict quality control before shipping. The 3 to 4-week wait ensures you receive a flawless, premium product crafted specifically for you.",
+          "image_url": "",
+          "sort_order": 6,
+          "active": true
+        },
+        {
+          "id": "faq_1774624688565",
+          "question_pl": "Jak rozwiązana jest kwestia wentylacji w waszych saunach?",
+          "question_en": "How does the ventilation system work in your saunas?",
+          "answer_pl": "Prawidłowa cyrkulacja powietrza to absolutna podstawa komfortowych seansów i długowieczności drewna. W każdej naszej saunie montujemy przemyślany system naturalnej wentylacji, składający się z dwóch regulowanych zaworów powietrznych.\n\nJeden zawór znajduje się w dolnej części sauny – jego zadaniem jest stałe doprowadzanie świeżego, bogatego w tlen powietrza z zewnątrz. Drugi zawór umieszczony jest w górnej części – umożliwia on swobodne odprowadzanie zużytego, gorącego powietrza.\n\nTaki obieg zapewnia dwie kluczowe korzyści:\n\nPodczas seansu w saunie oddycha się lekko i przyjemnie, a powietrze nie staje się ciężkie i duszne.\n\nPo zakończeniu kąpieli otwarte zawory gwarantują szybkie i dokładne wysuszenie wnętrza. Wilgoć nie gromadzi się w środku, co całkowicie eliminuje problem zaduchu i skutecznie chroni drewno przed gniciem, wydłużając żywotność sauny.",
+          "answer_en": "Proper airflow is essential for a comfortable sauna experience and the longevity of the wood. In every sauna we build, we install a well-designed natural ventilation system consisting of two adjustable air valves (vents).\n\nOne valve is located at the bottom of the sauna—it is responsible for continuously drawing in fresh, oxygen-rich air from the outside. The second valve is placed near the top—this allows the used, hot air to exhaust naturally.\n\nThis continuous circulation provides two major benefits:\n\nDuring your sessions, the air inside remains fresh and easy to breathe, never becoming heavy or stale.\n\nAfter using the sauna, leaving the valves open ensures rapid and thorough drying of the interior. It prevents moisture from accumulating, which completely eliminates dampness and reliably protects the wood from rotting, extending the lifespan of your sauna.",
+          "image_url": "",
+          "sort_order": 7,
+          "active": true
+        },
+        {
+          "id": "5bff2b6e-f6f3-4d25-960a-769f176310ca",
+          "question_pl": "Czy sauna wymaga pozwolenia na budowę?",
+          "question_en": "Does a sauna require a building permit?",
+          "answer_pl": "Sauna ogrodowa o powierzchni do 35 m² nie wymaga pozwolenia na budowę ani zgłoszenia. Wystarczy stabilne, płaskie podłoże — kostka brukowa, płyta betonowa lub utwardzona ziemia. Nasza sauna jest traktowana jak element małej architektury ogrodowej.",
+          "answer_en": "A garden sauna up to 35 m² does not require a building permit. A stable, flat surface is sufficient.",
+          "image_url": "",
+          "sort_order": 8,
+          "active": true
+        },
+        {
+          "id": "6826ec31-b57b-4df4-9d91-4b7c44948a91",
+          "question_pl": "Jaki fundament jest potrzebny pod saunę?",
+          "question_en": "What foundation is needed for a sauna?",
+          "answer_pl": "Wystarczy równa, utwardzona powierzchnia. Zalecamy kostkę brukową, płytę betonową lub fundamenty punktowe. Podłoże powinno zapewniać odpływ wody i stabilność konstrukcji. Fundament żelbetowy nie jest wymagany.",
+          "answer_en": "A flat, hardened surface is sufficient. We recommend paving stones, concrete slab, or point foundations.",
+          "image_url": "",
+          "sort_order": 9,
+          "active": true
+        },
+        {
+          "id": "5be71b19-32db-4fb4-a17e-62b1f006c576",
+          "question_pl": "Czy mogę korzystać z sauny zimą?",
+          "question_en": "Can I use the sauna in winter?",
+          "answer_pl": "Tak, nasze sauny są zaprojektowane do całorocznego użytkowania. Zimą nagrzewanie trwa nieco dłużej (ok. 30-60 minut więcej), ale sauna osiąga pełną temperaturę 80-100°C nawet przy silnym mrozie. Grube ściany ze skandynawskiego drewna doskonale izolują ciepło.",
+          "answer_en": "Yes, our saunas are designed for year-round use. In winter, heating takes slightly longer, but the sauna reaches full temperature even in freezing conditions.",
+          "image_url": "",
+          "sort_order": 10,
+          "active": true
+        },
+        {
+          "id": "5e4d51fc-9ba3-4bfb-8165-f12797a7438f",
+          "question_pl": "Jak konserwować saunę ogrodową?",
+          "question_en": "How to maintain a garden sauna?",
+          "answer_pl": "Zalecamy co 1-2 lata nakładać impregnat ochronny na zewnętrzne ściany sauny. Wewnątrz nie stosujemy chemii — naturalne drewno oddycha i reguluje wilgotność. Po każdym użyciu wystarczy przewietrzyć saunę przez 15-20 minut, otwierając drzwi i odpowietrznik.",
+          "answer_en": "We recommend applying protective impregnant to external walls every 1-2 years. After each use, ventilate the sauna for 15-20 minutes.",
+          "image_url": "",
+          "sort_order": 11,
+          "active": true
+        },
+        {
+          "id": "a9a4b037-1e57-41eb-9cb9-1a35cde432e9",
+          "question_pl": "Czy oferujecie podłączenie elektryczne do sauny?",
+          "question_en": "Do you offer electrical connection for the sauna?",
+          "answer_pl": "Nasze sauny z piecem na drewno nie wymagają podłączenia elektrycznego. Jeśli wybierasz opcję z oświetleniem LED lub piecem elektrycznym, potrzebne jest standardowe podłączenie 230V lub 400V. Instalację elektryczną powinien wykonać uprawniony elektryk.",
+          "answer_en": "Our wood-fired saunas don't require electrical connection. If you choose LED lighting or electric heater, you need a 230V or 400V connection.",
+          "image_url": "",
+          "sort_order": 12,
+          "active": true
+        }
+      ],
+      "subtitle_en": "Answers to the most important questions about our saunas.",
+      "subtitle_pl": "Odpowiedzi na najważniejsze pytania dotyczące naszych saun.",
+      "title_en": "Frequently Asked Questions",
+      "title_pl": "Najczęściej zadawane pytania"
+    },
+    {
+      "id": "hero_settings",
+      "background_image": "/api/images/7c9df99b-725b-44b1-bf0b-22fd2b6141f3",
+      "subtitle_en": "Since 2015, we create premium saunas from the highest quality Scandinavian wood. Ready for delivery in 5-21 days.",
+      "subtitle_pl": "Od 2015 roku tworzymy sauny premium z najwyższej jakości drewna skandynawskiego. Gotowe do dostawy w 5-21 dni.",
+      "subtitle_ru": "С 2015 года создаём премиальные сауны из высококачественной скандинавской древесины. Готовы к доставке за 5-10 дней.",
+      "title_en": "Wooden Sauna Manufacturer in Poland",
+      "title_pl": "Producent Saun Drewnianych w Polsce",
+      "title_ru": "Производитель деревянных саун в Польше",
+      "overlay_opacity": 15,
+      "bg_position": "bottom",
+      "text_color": "#FFFFFF",
+      "background_video": "/api/videos/6e6e374a-4c86-45e5-af76-1e767755af26.mp4",
+      "bg_mode": "video"
+    },
+    {
+      "id": "integration_settings",
+      "amocrm_access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjNkMmIyNDUwNmIyOGI0ODA0YmYyMmFjMGI4MTAzMDQ4OTUwZGExNDM5ZTJkOWMzM2JjNmZmYTIxYTVmZTFkNzBjNzU2MmQ1YmRjMDg3MzRiIn0.eyJhdWQiOiIyNzZhMGU3Zi0yNGU4LTQ1MmUtYmRjMy1mOTEyYWNiZTZkYjkiLCJqdGkiOiIzZDJiMjQ1MDZiMjhiNDgwNGJmMjJhYzBiODEwMzA0ODk1MGRhMTQzOWUyZDljMzNiYzZmZmEyMWE1ZmUxZDcwYzc1NjJkNWJkYzA4NzM0YiIsImlhdCI6MTc3NDI5MTcwMCwibmJmIjoxNzc0MjkxNzAwLCJleHAiOjE4MzI5NzYwMDAsInN1YiI6IjEwNTQxODE0IiwiZ3JhbnRfdHlwZSI6IiIsImFjY291bnRfaWQiOjMxNTAzODM0LCJiYXNlX2RvbWFpbiI6ImFtb2NybS5ydSIsInZlcnNpb24iOjIsInNjb3BlcyI6WyJwdXNoX25vdGlmaWNhdGlvbnMiLCJmaWxlcyIsImNybSIsImZpbGVzX2RlbGV0ZSIsIm5vdGlmaWNhdGlvbnMiXSwiaGFzaF91dWlkIjoiYmIxZjlhNGYtNmE0Yi00OGIyLWJlMmItMTgxMzE1ZGMxMDlhIiwiYXBpX2RvbWFpbiI6ImFwaS1iLmFtb2NybS5ydSJ9.LC4giyf_CENZOnWnGGmrYzvM_33iFypgQGRuCE__yidK7PL9oxbCYhspZXonOwqlKw1_ZEqBQn3ZxHYmKtZTJz_z88Nu4gLnTITy5kAlCXIOXwpUaavUtJCJtOQbjkr2bz13YT7beM0EemPUvSDRHXFrMSiVSKQEw33aPwsloPu2gmcT4jzkuhBmsWemgxT7KoXN7yZPQJrCi8g9Xpn6tKsPwQjrDVgAEdlCCj688f8ZZXsY8dicQFhrOGwKVa-UxEliY2ys5Vpi9S5wtYxD9YqIBa6n3KNe2oGozDGn24xawtxhLOxTwg7wpxb1pHhftltn7MF8E4K_QmbIbVMcbA",
+      "amocrm_client_id": "276a0e7f-24e8-452e-bdc3-f912acbe6db9",
+      "amocrm_client_secret": "P8p5olEkX2gXm1dCIYuluw0JnwlPB8ZRx9Qblwy8vFyeuj7UkqBQLlR5GQNuUKJI",
+      "amocrm_domain": "elitnaszklarnia.amocrm.ru",
+      "amocrm_enabled": true,
+      "amocrm_field_email": 0,
+      "amocrm_field_message": 0,
+      "amocrm_field_model": 0,
+      "amocrm_field_name": 0,
+      "amocrm_field_phone": 0,
+      "amocrm_field_price": 0,
+      "amocrm_pipeline_id": 8969514,
+      "amocrm_redirect_uri": "",
+      "amocrm_refresh_token": "",
+      "amocrm_responsible_user_id": 0,
+      "amocrm_status_id": 74609998,
+      "amocrm_token_expires_at": "",
+      "telegram_bot_token": "8744288077:AAEeAq71u9m8k54buqKy-jJgxQn0hFhxyUk",
+      "telegram_chat_id": "-5097527222",
+      "telegram_enabled": true
+    },
+    {
+      "id": "balia_card_options",
+      "enabled_categories": [
+        "led",
+        "electronics",
+        "hydromassage",
+        "air_bubble",
+        "lighting",
+        "drink_holder",
+        "comfort"
+      ]
+    },
+    {
+      "id": "balia_option_exclusions",
+      "exclusions": {
+        "balia-kwadratowa-220": [
+          "option1",
+          "option2"
+        ],
+        "balia-schłodzenie": [
+          "option3",
+          "none_hydro",
+          "hydro_6_8",
+          "hydro_10",
+          "air_bubble",
+          "led_inside_1",
+          "led_inside_2",
+          "led_inside_3",
+          "mini_led_set",
+          "ambilight_strip",
+          "cover_200_with_tub",
+          "cover_200_separate",
+          "cover_225_with_tub",
+          "cover_225_separate",
+          "cladding_cedar_225",
+          "cladding_cedar_200",
+          "cladding_wpc_225",
+          "cladding_wpc_200",
+          "cladding_thermo_225",
+          "cladding_thermo_200",
+          "big_stair_spruce",
+          "big_stair_thermo",
+          "big_stair_wpc",
+          "big_stair_cedar",
+          "sand_filter_system",
+          "sand_filter_connections",
+          "insulation_200",
+          "insulation_225",
+          "v4a_external",
+          "v4a_integrated",
+          "electric_heater_3",
+          "electric_heater_6",
+          "drink_cedar_led",
+          "head_pillow",
+          "wood_paint_oil",
+          "bluetooth_radio"
+        ]
+      }
+    },
+    {
+      "id": "installment_settings",
+      "balia_logo_url": "/api/images/af71cfbf-60c3-480a-98d7-5a2c4a2aadb8",
+      "sauna_logo_url": "/api/images/557c0024-6362-4e37-9734-c2103abade88"
+    },
+    {
+      "id": "special_offer_settings",
+      "cards": [
+        {
+          "icon": "Bath",
+          "title": "Balia do schładzania w prezencie",
+          "subtitle": "przy saunie od 3 metrow",
+          "value": "3 980",
+          "desc": "Idealna do schładzania po seansie w saunie.",
+          "image": ""
+        },
+        {
+          "icon": "Lightbulb",
+          "title": "Oświetlenie LED wewnątrz sauny",
+          "subtitle": "bez doplaty",
+          "value": "1 160",
+          "desc": "Oświetlenie LED w lazni i przebieralni.",
+          "image": ""
+        },
+        {
+          "icon": "DoorOpen",
+          "title": "Drzwi ze szkla hartowanego",
+          "subtitle": "w standardzie",
+          "value": "530",
+          "desc": "Szklane drzwi hartowane 8mm w standardzie.",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "balia_integration_settings",
+      "amocrm_enabled": true,
+      "amocrm_field_email": 0,
+      "amocrm_field_message": 0,
+      "amocrm_field_model": 0,
+      "amocrm_field_name": 0,
+      "amocrm_field_phone": 0,
+      "amocrm_field_price": 0,
+      "amocrm_pipeline_id": 9610450,
+      "amocrm_responsible_user_id": 0,
+      "amocrm_status_id": 77672770,
+      "telegram_bot_token": "",
+      "telegram_chat_id": "",
+      "telegram_enabled": false
+    },
+    {
+      "id": "balia_catalog_settings",
+      "filename": "kat.pdf",
+      "size": 7845717,
+      "uploaded_at": "2026-03-26T12:21:43.911392+00:00"
+    },
+    {
+      "id": "main_landing_settings",
+      "balia_image": "/api/images/a189d5aa-4fbc-4d58-b40f-8b1edfcf3c66",
+      "sauna_image": "/api/images/15574f0d-d263-4713-a5da-28c4c42f5612",
+      "balia_image_position": "50%",
+      "sauna_image_position": "50% 70%",
+      "balia_video": "/api/videos/93c11ed3-55ec-4e03-8c53-edef2944f0b7.mp4",
+      "sauna_video": "/api/videos/353a600c-95e0-4d70-8313-6e2f7959abfc.mp4"
+    },
+    {
+      "id": "about_settings",
+      "image": "https://images.unsplash.com/photo-1627750673372-ceabdbeb768c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGNhYmluJTIwZXh0ZXJpb3IlMjBnYXJkZW58ZW58MHx8fHwxNzcwODQzMzIzfDA&ixlib=rb-4.1.0&q=85",
+      "text1_en": "We are a Polish wooden sauna manufacturer based in Warsaw. Since 2015, we create premium saunas, combining traditional craftsmanship with modern design.",
+      "text1_pl": "Jesteśmy polskim producentem saun drewnianych z siedzibą w Warszawie. Od 2015 roku tworzymy sauny premium, łącząc tradycyjne rzemiosło z nowoczesnym designem.",
+      "text1_ru": "Мы — польский производитель деревянных саун с офисом в Варшаве. С 2015 года создаём премиальные сауны, сочетая традиционное мастерство с современным дизайном.",
+      "text2_en": "We use only the highest quality Scandinavian wood, kiln-dried. Each sauna passes over 30 quality control points before shipping.",
+      "text2_pl": "Używamy tylko najwyższej jakości drewna skandynawskiego, suszonego w komorach. Każda sauna przechodzi ponad 30 punktów kontroli jakości przed wysyłką.",
+      "text2_ru": "Используем только высококачественную скандинавскую древесину, высушенную в камерах. Каждая сауна проходит более 30 пунктов контроля качества перед отправкой.",
+      "text3_en": "We offer full service — from design, through production, to delivery and installation. 24-month warranty on all our products.",
+      "text3_pl": "Oferujemy pełny serwis — od projektu, przez produkcję, po dostawę i montaż. Gwarancja 24 miesięcy na wszystkie nasze produkty.",
+      "text3_ru": "Предлагаем полный сервис — от проекта, через производство, до доставки и монтажа. Гарантия 12 месяцев на все наши продукты.",
+      "years_experience": 10
+    },
+    {
+      "id": "promo_features_settings",
+      "items": [
+        {
+          "id": "pf1",
+          "icon": "Truck",
+          "title_pl": "Gotowa sauna w 5-21 dni",
+          "title_en": "Ready sauna in 5-21 days",
+          "desc_pl": "Nie musisz nic montowac. Sauna przyjezdza w pelni zmontowana i gotowa do uzytku.",
+          "desc_en": "No assembly required. The sauna arrives fully assembled and ready to use."
+        },
+        {
+          "id": "pf2",
+          "icon": "TreePine",
+          "title_pl": "Skandynawskie drewno klasy A+",
+          "title_en": "Class A+ Scandinavian wood",
+          "desc_pl": "Suszone komorowo drewno bez kieszeni zywicznych. Stabilne i trwale przez lata.",
+          "desc_en": "Kiln-dried wood without resin pockets. Stable and durable for years."
+        },
+        {
+          "id": "pf3",
+          "icon": "ShieldCheck",
+          "title_pl": "Gwarancja i serwis",
+          "title_en": "Warranty and service",
+          "desc_pl": "Kontrola w ponad 30 punktach przed wysylka. 24 miesięcy gwarancji i serwis posprzedazowy.",
+          "desc_en": "Inspection at over 30 points before shipment. 24-month warranty and after-sales service."
+        },
+        {
+          "id": "pf4",
+          "icon": "Headphones",
+          "title_pl": "Doradca pomoze dobrac",
+          "title_en": "Advisor helps choose",
+          "desc_pl": "Pomagamy dobrac model do przestrzeni i stylu domu. Wycena bezplatna.",
+          "desc_en": "We help choose the model for your space and style. Free estimate."
+        }
+      ]
+    },
+    {
+      "id": "sauna_advantages_settings",
+      "description": "Suche skandynawskie drewno klasy A+, montaż w naszej pracowni, precyzyjne łączenia na wkręty, bezpieczny piec, trzy poziomy ochrony przed wilgocią i wygodne dopracowane wnętrze",
+      "image_url": "/api/images/1531a990-0313-4c9a-a4e4-6f497da8debd",
+      "items": [
+        {
+          "id": "adv_1",
+          "num": 1,
+          "title": "Skandynawskie drewno suszone w komorach, najwyższej jakości",
+          "desc": "Drewno bez kieszeni żywicznych utrzymuje stabilny kształt i nie wysycha z czasem",
+          "badge": "",
+          "side": "left"
+        },
+        {
+          "id": "adv_2",
+          "num": 2,
+          "title": "Profilowane drewno i stalowe obręcze z nierdzewki",
+          "desc": "Montaż na mocnych wkrętach sprawia, że łączenia trzymają kształt bez przewiewów i szczelin",
+          "badge": "",
+          "side": "left"
+        },
+        {
+          "id": "adv_3",
+          "num": 3,
+          "title": "Piec o dobranej mocy z ochroną przed przegrzaniem drewna",
+          "desc": "Sauna nagrzewa się szybko, a rodzina ma pełne bezpieczeństwo",
+          "badge": "Kamienie gratis",
+          "side": "right"
+        },
+        {
+          "id": "adv_4",
+          "num": 4,
+          "title": "Wybór wyposażenia i wygodna ergonomia wnętrza",
+          "desc": "Możesz wybrać układ pomieszczeń, a wewnątrz masz równą podłogę, wygodne półki i praktyczne kratki",
+          "badge": "",
+          "side": "right"
+        },
+        {
+          "id": "adv_5",
+          "num": 5,
+          "title": "Przemyślana wentylacja nawiewna i wywiewna",
+          "desc": "Sprawia, że para w saunie jest świeża bez duszności i zbędnego kondensatu",
+          "badge": "",
+          "side": "right"
+        },
+        {
+          "id": "adv_6",
+          "num": 6,
+          "title": "Montujemy saunę w naszej pracowni i sprawdzamy ją w ponad 30 punktach",
+          "desc": "Przed wysyłką robimy pełną kontrolę. Gwarancja to 24 miesiące i zapewniamy serwis",
+          "badge": "",
+          "side": "left"
+        },
+        {
+          "id": "adv_7",
+          "num": 7,
+          "title": "Dwie warstwy impregnatu na zewnątrz chronią przed wilgocią i szkodnikami",
+          "desc": "Silikonowe uszczelnienie zabezpiecza fronty ścian. Malujemy saunę na produkcji",
+          "badge": "Malowanie w wybranym kolorze",
+          "side": "left"
+        }
+      ],
+      "subtitle": "Pokazujemy na schemacie, abyś dokładnie widział, za co płacisz",
+      "title": "Siedem faktów, dzięki którym nasze sauny służą znacznie dłużej"
+    },
+    {
+      "id": "balia_faq_settings",
+      "items": [
+        {
+          "id": "b2e3718b-cd74-453a-9ee4-723b07ec1675",
+          "question_pl": "Jak długo nagrzewa się balia?",
+          "question_en": "How long does it take to heat a hot tub?",
+          "answer_pl": "Czas nagrzewania zależy od modelu i pojemności. Standardowa balia z piecem zewnętrznym nagrzewa się w 1,5–3 godziny do temperatury 38–40°C. W zimie czas może się wydłużyć o 30–60 minut.",
+          "answer_en": "Heating time depends on the model and capacity. A standard hot tub with an external heater heats up in 1.5–3 hours to 38–40°C. In winter, the time may increase by 30–60 minutes.",
+          "image_url": "",
+          "sort_order": 0,
+          "active": true
+        },
+        {
+          "id": "b4a54985-8f9d-40f8-a47c-481e786de1a0",
+          "question_pl": "Jak dbać o drewno balii?",
+          "question_en": "How to care for the wood of a hot tub?",
+          "answer_pl": "Zalecamy co roku nakładać impregnat ochronny na zewnętrzną powierzchnię. Wewnątrz balia nie wymaga impregnacji — naturalne drewno jest bezpieczne w kontakcie z wodą. Po każdym użyciu warto spuścić wodę i pozostawić balię otwartą do wyschnięcia.",
+          "answer_en": "We recommend applying a protective impregnant to the exterior surface once a year. The inside doesn't need impregnation — natural wood is safe in contact with water. After each use, drain the water and leave the tub open to dry.",
+          "image_url": "",
+          "sort_order": 1,
+          "active": true
+        },
+        {
+          "id": "99a86e1a-0766-425b-a94d-7a0de1bee72b",
+          "question_pl": "Czy potrzebne jest pozwolenie na budowę?",
+          "question_en": "Is a building permit required?",
+          "answer_pl": "Nie, balia drewniana jest traktowana jako element wyposażenia ogrodu i nie wymaga pozwolenia na budowę ani zgłoszenia. Wystarczy płaskie, stabilne podłoże — kostka brukowa, płyta betonowa lub utwardzona ziemia.",
+          "answer_en": "No, a wooden hot tub is considered garden equipment and doesn't require a building permit. You just need a flat, stable surface — paving stones, concrete slab, or compacted earth.",
+          "image_url": "",
+          "sort_order": 2,
+          "active": true
+        },
+        {
+          "id": "5dc4c4f8-9f0c-4e23-abe1-df0dc85193b0",
+          "question_pl": "Jaki fundament jest potrzebny pod balię?",
+          "question_en": "What foundation is needed for a hot tub?",
+          "answer_pl": "Wystarczy równa, utwardzona powierzchnia. Może to być kostka brukowa, płyta betonowa lub dobrze ubita ziemia. Podłoże musi wytrzymać ciężar balii napełnionej wodą (ok. 1–2 tony w zależności od modelu).",
+          "answer_en": "A flat, hardened surface is sufficient. It can be paving stones, concrete slab, or well-compacted earth. The surface must support the weight of the tub filled with water (about 1–2 tonnes depending on the model).",
+          "image_url": "",
+          "sort_order": 3,
+          "active": true
+        },
+        {
+          "id": "004a6e2b-9177-457e-b5c3-fdef9ebd28c5",
+          "question_pl": "Czy mogę korzystać z balii zimą?",
+          "question_en": "Can I use the hot tub in winter?",
+          "answer_pl": "Tak! Korzystanie z balii zimą to jedno z największych przyjemności. Nasze balie są zaprojektowane do użytku przez cały rok. Zimą zalecamy używanie pokrywy termicznej, która utrzymuje ciepło i przyspiesza nagrzewanie.",
+          "answer_en": "Yes! Using a hot tub in winter is one of the greatest pleasures. Our tubs are designed for year-round use. In winter, we recommend using a thermal cover to retain heat and speed up heating.",
+          "image_url": "",
+          "sort_order": 4,
+          "active": true
+        },
+        {
+          "id": "9092edf8-92aa-48a9-9bdf-bab4468c82eb",
+          "question_pl": "Jak często trzeba zmieniać wodę?",
+          "question_en": "How often should the water be changed?",
+          "answer_pl": "Przy korzystaniu bez środków chemicznych — po każdym użyciu lub co 2–3 dni. Jeśli stosujesz środki do uzdatniania wody, wymiana co 1–2 tygodnie. Zawsze zależy to od częstotliwości użytkowania i liczby osób.",
+          "answer_en": "Without chemical treatment — after each use or every 2–3 days. With water treatment products, every 1–2 weeks. It always depends on frequency of use and number of users.",
+          "image_url": "",
+          "sort_order": 5,
+          "active": true
+        },
+        {
+          "id": "259b43d5-a96e-42e8-99d4-bdb08d4724c1",
+          "question_pl": "Ile osób mieści się w balii?",
+          "question_en": "How many people fit in a hot tub?",
+          "answer_pl": "To zależy od modelu. Nasze balie pomieszczą od 2 do 8 osób. Najpopularniejsze modele to balie na 4-6 osób — idealne dla rodziny lub małej grupy przyjaciół. Każdy model ma podane wymiary i pojemność w karcie produktu.",
+          "answer_en": "It depends on the model. Our hot tubs accommodate 2 to 8 people.",
+          "image_url": "",
+          "sort_order": 6,
+          "active": true
+        },
+        {
+          "id": "e2a57f46-ec68-48ff-a17b-0a9c5ea4e8fe",
+          "question_pl": "Jakie drewno jest najlepsze do balii?",
+          "question_en": "What wood is best for a hot tub?",
+          "answer_pl": "Najczęściej używamy modrzewia syberyjskiego i świerku skandynawskiego klasy A+. Modrzew jest naturalnie odporny na wilgoć i nie wymaga dodatkowej impregnacji wewnątrz. Świerk jest lżejszy i bardziej ekonomiczny, ale wymaga staranniejszej konserwacji.",
+          "answer_en": "We mostly use Siberian larch and Scandinavian spruce A+.",
+          "image_url": "",
+          "sort_order": 7,
+          "active": true
+        },
+        {
+          "id": "dac9c20c-7ade-4f05-af89-c96a36476f72",
+          "question_pl": "Czy balia potrzebuje podłączenia do kanalizacji?",
+          "question_en": "Does a hot tub need sewer connection?",
+          "answer_pl": "Nie, nasze balie mają wbudowany zawór spustowy. Wodę można spuścić bezpośrednio do ogrodu (jeśli nie stosowano chemii) lub podłączyć wąż do odpływu. Nie jest wymagane podłączenie do kanalizacji ani instalacji wodociągowej.",
+          "answer_en": "No, our hot tubs have a built-in drain valve.",
+          "image_url": "",
+          "sort_order": 8,
+          "active": true
+        },
+        {
+          "id": "667cc506-64f3-4749-ac3e-a9bfc9ee6247",
+          "question_pl": "Ile kosztuje utrzymanie balii?",
+          "question_en": "How much does it cost to maintain a hot tub?",
+          "answer_pl": "Koszty utrzymania są niskie. Piec na drewno nie wymaga prądu. Koszt drewna na jedno nagrzanie to ok. 15-25 zł. Środki do uzdatniania wody to ok. 30-50 zł miesięcznie przy regularnym użytkowaniu. Nie ma stałych opłat za prąd jak w jacuzzi elektrycznym.",
+          "answer_en": "Maintenance costs are low. Wood cost per heating is about 15-25 PLN.",
+          "image_url": "",
+          "sort_order": 9,
+          "active": true
+        },
+        {
+          "id": "0203d232-9a75-4b1d-8dcc-12cd9a26c687",
+          "question_pl": "Jaka jest gwarancja na balię?",
+          "question_en": "What is the warranty on a hot tub?",
+          "answer_pl": "Wszystkie nasze balie objęte są 24-miesięczną gwarancją producenta. Gwarancja obejmuje wady materiałowe i produkcyjne. Zapewniamy również serwis posprzedażowy i pomoc techniczną przez cały okres użytkowania produktu.",
+          "answer_en": "All our hot tubs come with a 24-month manufacturer's warranty.",
+          "image_url": "",
+          "sort_order": 10,
+          "active": true
+        }
+      ],
+      "subtitle_en": "Answers to the most important questions about our hot tubs.",
+      "subtitle_pl": "Odpowiedzi na najważniejsze pytania dotyczące naszych balii.",
+      "title_en": "Frequently Asked Questions",
+      "title_pl": "Najczęściej zadawane pytania"
+    },
+    {
+      "id": "sauna_video_reviews_settings",
+      "items": [
+        {
+          "id": "vr_1774805332455",
+          "youtube_url": "https://youtube.com/shorts/VReAyJzNIug",
+          "title": "Ciepło, komfort, relaks",
+          "description": "Zobacz naszą saunę w praktyce i poczuj klimat prawdziwego odpoczynku.",
+          "sort_order": 0
+        },
+        {
+          "id": "vr_1774806094675",
+          "youtube_url": "https://youtube.com/shorts/E8h-e690GnY",
+          "title": "Zobacz naszą saunę z bliska",
+          "description": "Krótkie spojrzenie na wnętrze, materiały i wykończenie.",
+          "sort_order": 1
+        },
+        {
+          "id": "vr_1774806133105",
+          "youtube_url": "https://youtube.com/shorts/sY9rajj3MwY",
+          "title": "Sauna na każdą przestrzeń",
+          "description": "Uniwersalna propozycja dla różnych typów ogrodu i działki.",
+          "sort_order": 2
+        },
+        {
+          "id": "vr_1774806171770",
+          "youtube_url": "https://youtube.com/shorts/SpYWOVlU35I",
+          "title": "Gotowa sauna bez kompromisów",
+          "description": "Wygodne, dopracowane rozwiązanie dla wymagających klientów.",
+          "sort_order": 3
+        },
+        {
+          "id": "vr_1774806486755",
+          "youtube_url": "https://youtube.com/shorts/mrpnWSevKNY",
+          "title": "Stwórz własną strefę relaksu",
+          "description": "Model, który świetnie sprawdzi się przy domu lub na działce.",
+          "sort_order": 4
+        },
+        {
+          "id": "vr_1774806554934",
+          "youtube_url": "https://youtube.com/shorts/GqcmbeUf34Y",
+          "title": "Twoja sauna w ogrodzie",
+          "description": "Krótki film o naszej saunie ogrodowej — wygoda, styl i relaks w jednym.",
+          "sort_order": 5
+        }
+      ],
+      "subtitle": "Zobacz, jak nasze sauny wyglądają w rzeczywistości",
+      "title": "Wideo-recenzje naszych saun"
+    },
+    {
+      "id": "b2b_settings",
+      "benefits": [
+        {
+          "id": "b1",
+          "icon": "ShieldCheck",
+          "title": "Intymność i prywatność gości",
+          "desc": "Wynajem sauny na wyłączność (np. na godziny) umożliwia pełen relaks bez konieczności współdzielenia przestrzeni. Goście to doceniają."
+        },
+        {
+          "id": "b2",
+          "icon": "TrendingUp",
+          "title": "Wzrost rezerwacji o 15–25%",
+          "desc": "Tylko 15–20% ośrodków wypoczynkowych oferuje saunę. Dodając ją do oferty, zwiększasz szansę na przyciągnięcie klientów szukających komfortu."
+        },
+        {
+          "id": "b3",
+          "icon": "CalendarRange",
+          "title": "Wydłużenie sezonu turystycznego",
+          "desc": "Sauny cieszą się ogromną popularnością jesienią i zimą. Morsowanie + sauna = goście przez cały rok, nie tylko latem."
+        },
+        {
+          "id": "b4",
+          "icon": "DollarSign",
+          "title": "Dodatkowy przychód +3000 zł/mies.",
+          "desc": "Obiekty z sauną podnoszą ceny wynajmu średnio o 100–150 zł za dobę. Przy 30 dniach obłożenia to dodatkowe 3000–4500 zł miesięcznie."
+        },
+        {
+          "id": "b5",
+          "icon": "BarChart3",
+          "title": "Podniesienie wartości marketingowej",
+          "desc": "Obiekty z sauną aktywniej promują się w mediach społecznościowych i na Booking.com. Filtr 'wellness' używany przez 35% użytkowników."
+        },
+        {
+          "id": "b6",
+          "icon": "Leaf",
+          "title": "Trwałe i ekologiczne termodrewno",
+          "desc": "Nasze sauny z termodrewna mają żywotność min. 25 lat. Naturalne, odporne na wilgoć i szkodniki. Bez chemii — w zgodzie z naturą."
+        },
+        {
+          "id": "b7",
+          "icon": "Wrench",
+          "title": "Szybki serwis i wsparcie posprzedażowe",
+          "desc": "Kompleksowa obsługa serwisowa pozwala na bezproblemowe utrzymanie stref wellness i pełną satysfakcję gości."
+        },
+        {
+          "id": "b8",
+          "icon": "Film",
+          "title": "Profesjonalny film promocyjny",
+          "desc": "Przy zakupie sauny o wartości powyżej 70 tys. zł oferujemy profesjonalne nagranie promocyjne — ceniony materiał marketingowy dla Twojego obiektu."
+        }
+      ],
+      "benefits_title": "Korzyści dla Twojego obiektu",
+      "cta_description": "Otrzymaj bezpłatną, spersonalizowaną wycenę wymarzonego produktu wraz z wyposażeniem i propozycją finansowania zewnętrznego (leasing).",
+      "cta_email": "b2b@wm-sauna.pl",
+      "cta_phone": "+48 732 099 201",
+      "cta_title": "Zainteresowany współpracą B2B?",
+      "hero_image": "",
+      "hero_subtitle": "Luksus, który przyciąga gości. Zwiększ atrakcyjność swojego obiektu, przyciągnij więcej gości i podnieś jego wartość.",
+      "hero_title": "Sauny dla hoteli, pensjonatów i ośrodków SPA",
+      "gallery": [
+        {
+          "id": "g1",
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1757940556610-a114be4733bf?w=800&q=80",
+          "title": "Wnętrze sauny premium — drewno i kamienie",
+          "desc": "Nowoczesna sauna z ogrzewanymi kamieniami"
+        },
+        {
+          "id": "g2",
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1755610146364-ce2d51b36c27?w=800&q=80",
+          "title": "Strefa wellness w hotelu",
+          "desc": "Przestronna sauna dla gości hotelowych"
+        },
+        {
+          "id": "g3",
+          "type": "image",
+          "url": "https://images.pexels.com/photos/11319254/pexels-photo-11319254.jpeg?auto=compress&w=800",
+          "title": "Sauna beczka zimą",
+          "desc": "Sauna ogrodowa w scenerii zimowej"
+        },
+        {
+          "id": "g4",
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1714738127719-5ec9957178b6?w=800&q=80",
+          "title": "Sauna w otoczeniu natury",
+          "desc": "Strefa relaksu na świeżym powietrzu"
+        },
+        {
+          "id": "g5",
+          "type": "image",
+          "url": "https://images.pexels.com/photos/34155274/pexels-photo-34155274.jpeg?auto=compress&w=800",
+          "title": "Sauna beczka w lesie",
+          "desc": "Rustykalny klimat dla gości szukających natury"
+        },
+        {
+          "id": "g6",
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1734594709660-3f2a2a540735?w=800&q=80",
+          "title": "Elegancka strefa saun",
+          "desc": "Profesjonalne wykończenie z naturalnego drewna"
+        }
+      ],
+      "gallery_subtitle": "Zobacz, jak nasze sauny wyglądają w hotelach i ośrodkach wypoczynkowych",
+      "gallery_title": "Nasze realizacje"
+    },
+    {
+      "id": "whatsapp_settings",
+      "default_message_en": "test",
+      "default_message_pl": "test",
+      "enabled": true,
+      "phone_number": "+48111222333",
+      "show_on_all_pages": true
+    },
+    {
+      "id": "section_visibility",
+      "balia": {},
+      "sauna": {}
+    },
+    {
+      "id": "promo_banner",
+      "badge": "Specjalna oferta",
+      "button_text": "Przejdź do kalkulatora",
+      "description": "Każda sauna jest tworzona indywidualnie, dopasowana do Twoich potrzeb. Skorzystaj z kalkulatora, aby poznać dokładną cenę.",
+      "title_line1": "Skonfiguruj swoją saunę",
+      "title_line2": "i zarezerwuj zniżkę"
+    },
+    {
+      "id": "balie_about",
+      "description": "Jesteśmy polskim producentem drewnianych balii i jacuzzi z siedzibą w Warszawie. Od ponad 8 lat łączymy tradycyjne rzemiosło z nowoczesnym designem, tworząc produkty najwyższej jakości.\n\nKażda nasza balia powstaje z wyselekcjonowanego drewna iglastego, suszonego komorowo. Dbamy o każdy detal, bo wierzymy, że Twój odpoczynek zasługuje na najlepsze.",
+      "stats": [
+        {
+          "icon": "Users",
+          "value": "500+",
+          "label": "Zadowolonych klientów"
+        },
+        {
+          "icon": "Award",
+          "value": "8+",
+          "label": "Lat doświadczenia"
+        },
+        {
+          "icon": "Heart",
+          "value": "100%",
+          "label": "Polskie materiały"
+        }
+      ],
+      "title": "WM-Balia — Pasja do Relaksu"
+    },
+    {
+      "id": "balie_contact",
+      "address": "ul. Boryny 3, Warszawa, Polska",
+      "email": "wmsauna@gmail.com",
+      "phone": "+48739104109",
+      "subtitle": "Chętnie odpowiemy na każde pytanie",
+      "title": "Zamów swoją balię"
+    },
+    {
+      "id": "balie_installment",
+      "items": [
+        {
+          "icon": "Calendar",
+          "title": "Od 4 do 20 miesięcy",
+          "desc": "Elastyczny okres spłaty"
+        },
+        {
+          "icon": "Percent",
+          "title": "0% nadpłaty",
+          "desc": "Bez ukrytych kosztów"
+        },
+        {
+          "icon": "CreditCard",
+          "title": "Rata od 300 zł/mc",
+          "desc": "Przystępna miesięczna rata"
+        },
+        {
+          "icon": "Truck",
+          "title": "Darmowa dostawa",
+          "desc": "Na terenie całej Polski"
+        }
+      ],
+      "subtitle": "Elastyczne finansowanie — komfort bez nadpłat",
+      "title": "Kup balię na raty"
+    },
+    {
+      "id": "site_settings",
+      "address": "ul. Boryny 3, 02-257 Warszawa",
+      "company_name": "WM-Sauna",
+      "email": "wmsauna@gmail.com",
+      "facebook_url": "https://www.facebook.com/wmsaunapl",
+      "instagram_url": "https://www.instagram.com/wm_spa.pl",
+      "nip": "9512561195",
+      "phone": "+48699587615",
+      "regon": "52438914000000",
+      "working_hours": "Pon–Pt: 9:00 – 17:45",
+      "youtube_url": "https://www.youtube.com/channel/UC0FQvbFVowJ32qJsQz-heZg"
+    },
+    {
+      "id": "contact_settings",
+      "form_subtitle_en": "Fill out the form and we'll call you back within 24 hours",
+      "form_subtitle_pl": "Wypełnij formularz, a oddzwonimy w ciągu 24h",
+      "form_title_en": "Send inquiry",
+      "form_title_pl": "Wyślij zapytanie",
+      "subtitle_en": "Have questions? We'll be happy to answer them. Contact us by phone or fill out the form.",
+      "subtitle_pl": "Masz pytania? Chętnie na nie odpowiemy. Skontaktuj się z nami telefonicznie lub wypełnij formularz.",
+      "title_en": "Contact us",
+      "title_pl": "Skontaktuj się z nami"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "default_1",
+      "active": true,
+      "image": "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTJ8fGZhY2V8ZW58MHx8MHx8fDA%3D",
+      "location": "Warszawa",
+      "name": "Marek Kowalski",
+      "rating": 5,
+      "sauna": "Sauna Beczka 3m",
+      "text_en": "The sauna exceeded my expectations. The build quality is amazing, and the entire ordering process was simple and transparent. Highly recommend!",
+      "text_pl": "Sauna przekroczyła moje oczekiwania. Jakość wykonania jest niesamowita, a cały proces zamówienia był prosty i przejrzysty. Polecam każdemu!",
+      "text_ru": "Сауна превзошла мои ожидания. Качество изготовления потрясающее, а весь процесс заказа был простым и понятным. Рекомендую всем!"
+    },
+    {
+      "id": "review_1774615983773",
+      "name": "Anna Dąbrowska",
+      "location": "Warszawa",
+      "rating": 5,
+      "text_pl": "Zdecydowaliśmy się na saunę z dużą szybą panoramiczną i ukrytym oświetleniem LED pod ławkami. Efekt wizualny po zmroku dosłownie zwala z nóg! Siedzisz w gorącym wnętrzu, pachnącym naturalną olchą, i patrzysz na swój ogród. Zależało mi na estetyce i muszę przyznać, że wykonanie detali, takich jak oparcia czy brodzik pod prysznicem, to czysty profesjonalizm. Piękna i funkcjonalna ozdoba działki.",
+      "text_en": "Zdecydowaliśmy się na saunę z dużą szybą panoramiczną i ukrytym oświetleniem LED pod ławkami. Efekt wizualny po zmroku dosłownie zwala z nóg! Siedzisz w gorącym wnętrzu, pachnącym naturalną olchą, i patrzysz na swój ogród. Zależało mi na estetyce i muszę przyznać, że wykonanie detali, takich jak oparcia czy brodzik pod prysznicem, to czysty profesjonalizm. Piękna i funkcjonalna ozdoba działki.",
+      "text_ru": "Текст отзыва...",
+      "image": "https://images.unsplash.com/photo-1636406269177-4827c00bb263?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "sauna": "Sauna KWADRO 4m",
+      "active": true
+    },
+    {
+      "id": "review_1774622211569",
+      "name": "Piotr Wojciechowski",
+      "location": "Krakow",
+      "rating": 5,
+      "text_pl": "Długo wahałem się nad wyborem materiału, ale ostatecznie postawiłem na saunę z termodrewna z klasycznym piecem opalanym drewnem. To niesamowite, jak dobrze ta konstrukcja trzyma ciepło nawet przy silnych mrozach. Termodrewno wygląda bardzo szlachetnie i daje poczucie solidności na lata. Zero problemów z wilgocią czy wypaczaniem się desek. Gorąco polecam każdemu, kto szuka produktu premium.",
+      "text_en": "Długo wahałem się nad wyborem materiału, ale ostatecznie postawiłem na saunę z termodrewna z klasycznym piecem opalanym drewnem. To niesamowite, jak dobrze ta konstrukcja trzyma ciepło nawet przy silnych mrozach. Termodrewno wygląda bardzo szlachetnie i daje poczucie solidności na lata. Zero problemów z wilgocią czy wypaczaniem się desek. Gorąco polecam każdemu, kto szuka produktu premium.",
+      "text_ru": "Текст отзыва...",
+      "image": "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "sauna": "Sauna 5m",
+      "active": true
+    },
+    {
+      "id": "review_1774622293836",
+      "name": "Michał Wiśniewski",
+      "location": "Łódź",
+      "rating": 5,
+      "text_pl": "Kupiliśmy model Kwadro 500 dla naszej dużej rodziny i to był strzał w dziesiątkę. Przestronny pokój relaksacyjny z dużym stołem to absolutne mistrzostwo – stał się naszym ulubionym miejscem na wieczorne rozmowy z przyjaciółmi między seansami. Sauna nagrzewa się bardzo równomiernie, a jakość drewna i spasowanie elementów są na najwyższym poziomie. Ekipa montażowa spisała się na medal!Treść opinii...",
+      "text_en": "Kupiliśmy model Kwadro 500 dla naszej dużej rodziny i to był strzał w dziesiątkę. Przestronny pokój relaksacyjny z dużym stołem to absolutne mistrzostwo – stał się naszym ulubionym miejscem na wieczorne rozmowy z przyjaciółmi między seansami. Sauna nagrzewa się bardzo równomiernie, a jakość drewna i spasowanie elementów są na najwyższym poziomie. Ekipa montażowa spisała się na medal!",
+      "text_ru": "Текст отзыва...",
+      "image": "https://images.unsplash.com/photo-1610216705422-caa3fcb6d158?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjAyfHxmYWNlfGVufDB8fDB8fHww",
+      "sauna": "Sauna KWADRO 5m",
+      "active": true
+    }
+  ],
+  "balia_products": [
+    {
+      "id": "balia-okragla-200",
+      "api_model_id": "round_225",
+      "description": "Okrągła balia Ø200. Każda balia robiona jest na zamówienie – możesz wybrać rodzaj i kolor pokrywy, kolor drewna i laminatu, typ pieca oraz inne dodatki.",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771003682/wm-balia/juixxz4djyuqdxtbfbvk.webp",
+      "name": "Okrągła 200cm",
+      "order": 1,
+      "price": "od 10 990 zł",
+      "tags": [],
+      "updated_at": "2026-03-25T17:27:41.772893+00:00",
+      "gallery_images": [
+        "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771003365/wm-balia/mk5gntocuzsyr1ewptdj.webp",
+        "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771003389/wm-balia/e3199vuhp5kqqflcvbvv.webp",
+        "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771003446/wm-balia/uwpru0flnouzte0ldmm4.webp",
+        "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771003557/wm-balia/dvvdm0lzwo4idf2h7dvn.png",
+        "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771003730/wm-balia/tyeqemmgjwethlvcetnj.png",
+        "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771003822/wm-balia/ympdscn1chifpntauywm.png",
+        "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771003859/wm-balia/napqzjotmfjidqtpktok.png"
+      ]
+    },
+    {
+      "id": "balia-okragla-225",
+      "api_model_id": "square_230_ext",
+      "description": "Większa wersja naszej klasycznej balii okrągłej. Idealna dla 8 osób. Premium wykończenie z modrzewia syberyjskiego.",
+      "image": "https://i.imgur.com/LUHM79n.jpeg",
+      "name": "Okrągła 225cm",
+      "order": 2,
+      "price": "od 12 390 zł",
+      "tags": [
+        "8 osób",
+        "Premium",
+        "225cm"
+      ],
+      "updated_at": "2026-03-25T17:27:41.915393+00:00",
+      "gallery_images": []
+    },
+    {
+      "id": "balia-kwadratowa-170",
+      "api_model_id": "square_170x200",
+      "description": "Elegancka balia kwadratowa. Nowoczesny design łączy się z tradycyjnym rzemiosłem. Idealna do mniejszych przestrzeni.",
+      "gallery_images": [],
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771003249/wm-balia/d2qa7iljxth4xs5otx3z.webp",
+      "name": "Kwadratowa 170x200cm",
+      "order": 3,
+      "price": "od 14 990 zł",
+      "tags": [
+        "4 osoby",
+        "Kompaktowa"
+      ],
+      "updated_at": "2026-03-25T17:27:42.025838+00:00"
+    },
+    {
+      "id": "balia-kwadratowa-220",
+      "api_model_id": "square_220",
+      "description": "Przestronna balia kwadratowa dla całej rodziny. Wyjątkowy komfort i ergonomia.",
+      "gallery_images": [],
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771003893/wm-balia/habppjfxanexqfcydcwv.png",
+      "name": "Kwadratowa 220x220cm",
+      "order": 4,
+      "price": "od 16 990 zł",
+      "tags": [
+        "6 osób",
+        "Rodzinna"
+      ],
+      "updated_at": "2026-03-25T17:27:42.134221+00:00"
+    },
+    {
+      "id": "balia-kwadratowa-245",
+      "api_model_id": "square_245",
+      "description": "Nasza największa balia kwadratowa. Luksusowy relaks dla 8-10 osób. Idealna do rezydencji i hoteli.",
+      "gallery_images": [],
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771003291/wm-balia/ctjb3kixdjufngagl0p2.png",
+      "name": "Kwadratowa 245x245cm",
+      "order": 5,
+      "price": "od 19 990 zł",
+      "tags": [
+        "10 osób",
+        "XL",
+        "Luksusowa"
+      ],
+      "updated_at": "2026-03-25T17:27:42.257820+00:00"
+    },
+    {
+      "id": "balia-schłodzenie",
+      "api_model_id": "model_1770296358524",
+      "description": "Kompaktowa balia do zimnych kąpieli po saunie. Hartowanie ciała i poprawa krążenia. Ice bath experience.",
+      "gallery_images": [],
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1771006313/wm-balia/mky7mvqq5awn7judjywf.png",
+      "name": "Balia do schłodzenia",
+      "order": 6,
+      "price": "od 5 990 zł",
+      "tags": [
+        "Ice bath",
+        "Sauna",
+        "Kompaktowa"
+      ],
+      "updated_at": "2026-03-25T17:27:42.403927+00:00"
+    },
+    {
+      "id": "balia-ofuro",
+      "api_model_id": "model_1774618183323",
+      "description": "Japońska balia Ofuro o wymiarach 117x189 cm. Unikalne doświadczenie kąpieli w tradycyjnym japońskim stylu.",
+      "gallery_images": [
+        "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774618098/wm-calculator/wm-calculator/7a1a2015dc7b48b69aaeb8ab8f98a07d.jpg",
+        "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774620275/wm-calculator/wm-calculator/d99cfcead3714834b75de5e8beaa35d6.jpg"
+      ],
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774618082/wm-calculator/wm-calculator/0f6c68a24dfb4b34a62eec1352c39e0a.jpg",
+      "name": "Ofuro",
+      "order": 7,
+      "price": "od 5 900 zł",
+      "tags": [
+        "Nowość",
+        "Japońska"
+      ],
+      "updated_at": "2026-03-27T18:06:54.239985+00:00"
+    }
+  ],
+  "balia_testimonials": [
+    {
+      "id": "t1",
+      "author_location": "Kraków",
+      "author_name": "Tomasz Wieliński",
+      "order": 1,
+      "product_name": "Balia Okrągła 200cm",
+      "rating": 5,
+      "text": "Balia przeszła nasze najśmielsze oczekiwania! Zdecydowaliśmy się na tradycyjny piec na drewno i to był strzał w dziesiątkę. Woda nagrzewa się bardzo sprawnie, a zapach palonego drewna tworzy niesamowity klimat wieczorem. Wykonanie jest niezwykle solidne, widać, że to produkt na lata. Cała rodzina jest zachwycona, nasze weekendy w ogrodzie nabrały zupełnie nowego wymiaru!"
+    },
+    {
+      "id": "t2",
+      "author_location": "Warszawa",
+      "author_name": "Kamil Szymański",
+      "order": 2,
+      "product_name": "Balia Kwadratowa",
+      "rating": 5,
+      "text": "Długo szukaliśmy idealnej balii do naszego ogrodu i w końcu trafiliśmy w punkt. Wybraliśmy model z obudową z termodrewna, która wygląda po prostu luksusowo i świetnie komponuje się z tarasem. System hydromasażu w połączeniu z oświetleniem LED robi niesamowite wrażenie po zmroku. Prawdziwe, prywatne SPA na wyciągnięcie ręki. Gorąco polecam każdemu!"
+    },
+    {
+      "id": "t3",
+      "author_location": "Gdańsk",
+      "author_name": "Michał Kowalczyk",
+      "order": 3,
+      "product_name": "Balia Okrągła 225cm",
+      "rating": 5,
+      "text": "Rewelacyjny sprzęt i świetny kontakt! Balia dotarła w idealnym stanie i od razu stała się główną atrakcją naszej działki. Konstrukcja jest bardzo stabilna, a dzięki odpowiedniej izolacji woda długo trzyma temperaturę. Kąpiele pod rozgwieżdżonym niebem, nawet w te chłodniejsze wieczory, to czysty relaks. To najlepiej zainwestowane pieniądze w nasz odpoczynek."
+    }
+  ],
+  "blog_articles": [
+    {
+      "slug": "sauna-beczka-do-ogrodu-jak-wybrac-ile-kosztuje",
+      "title": "Sauna beczka do ogrodu — jak wybrać i ile kosztuje w 2026?",
+      "meta_description": "Kompletny przewodnik po saunach beczkowych do ogrodu. Porównanie rozmiarów, materiałów, cen i kosztów eksploatacji. Dowiedz się, na co zwrócić uwagę przed zakupem.",
+      "category": "sauny",
+      "tags": [
+        "sauna beczka",
+        "sauna ogrodowa",
+        "cena sauny"
+      ],
+      "cover_image": "https://images.pexels.com/photos/11319254/pexels-photo-11319254.jpeg?auto=compress&w=800",
+      "excerpt": "Sauna beczka to najpopularniejszy typ sauny ogrodowej w Polsce. Sprawdź, jak wybrać odpowiedni model, z jakiego drewna powinna być wykonana i ile kosztuje w 2026 roku.",
+      "author": "WM Group",
+      "published": true,
+      "content": "## Dlaczego sauna beczka?\n\nSauna beczkowa (barrel sauna) to najczęściej wybierany model sauny ogrodowej w Polsce i Europie. Jej kształt nie jest przypadkowy — okrągła konstrukcja zapewnia lepszą cyrkulację ciepłego powietrza, szybsze nagrzewanie i mniejsze zużycie energii.\n\n### Kluczowe zalety sauny beczkowej:\n- **Szybkie nagrzewanie** — dzięki cylindrycznej formie powietrze krąży naturalnie, a sauna osiąga 80–90°C w 30–45 minut\n- **Efektywność energetyczna** — mniejsza kubatura do nagrzania w porównaniu z sauną prostokątną\n- **Estetyka** — nowoczesny design, który pasuje do każdego ogrodu\n- **Mobilność** — można ją przenosić bez fundamentu\n\n## Jak wybrać odpowiedni rozmiar?\n\nRozmiar sauny beczkowej zależy od liczby osób, które będą z niej korzystać jednocześnie:\n\n| Długość | Pojemność | Pomieszczenia | Idealna dla |\n|---------|-----------|---------------|-------------|\n| 2,0 m   | 2–3 osoby | Łaźnia | Par i małych rodzin |\n| 2,5 m   | 3–4 osoby | Łaźnia | Rodzin z dziećmi |\n| 3,0 m   | 4–6 osób  | Przebieralnia + łaźnia | Rodzin i spotkań |\n| 3,5 m   | 6–8 osób  | Przebieralnia + łaźnia | Większych grup |\n| 4,0+ m  | 8–10 osób | Przebieralnia + łaźnia + taras | Imprez i eventów |\n\n### Nasza rekomendacja\nDla typowej rodziny (2 dorosłych + 2 dzieci) zalecamy saunę o długości **3,0 metra** z przebieralnią. To najbardziej uniwersalny rozmiar — wystarczająco duży na komfortowe korzystanie, a jednocześnie nie zajmuje zbyt wiele miejsca w ogrodzie.\n\n## Jakie drewno wybrać?\n\nWybór drewna to jedna z najważniejszych decyzji przy zakupie sauny. Oto porównanie najpopularniejszych materiałów:\n\n### Świerk skandynawski\n- Jasny, ciepły kolor\n- Przyjemny zapach żywicy\n- Najlepszy stosunek jakości do ceny\n- Wymaga regularnej impregnacji (raz do roku)\n\n### Termodrewno (thermowood)\n- Ciemny, elegancki kolor\n- Odporność na wilgoć i szkodniki\n- Nie wymaga impregnacji\n- Wyższa cena, ale niższe koszty utrzymania\n\n### Modrzew syberyjski\n- Naturalna odporność na wodę\n- Piękna, ciepła barwa\n- Duża twardość i trwałość\n- Idealny do klimatu polskiego\n\n## Ile kosztuje sauna beczka w 2026 roku?\n\nCeny saun beczkowych w Polsce wahają się w zależności od rozmiaru, materiału i wyposażenia:\n\n| Model | Cena od | Cena z pełnym wyposażeniem |\n|-------|---------|---------------------------|\n| 2,0 m świerk | 12 000 zł | 18 000 zł |\n| 2,5 m świerk | 15 000 zł | 22 000 zł |\n| 3,0 m świerk | 18 000 zł | 27 000 zł |\n| 3,0 m termodrewno | 23 000 zł | 32 000 zł |\n| 4,0 m świerk | 25 000 zł | 38 000 zł |\n\n*Ceny zawierają piec, drzwi ze szkła hartowanego i podstawowe wyposażenie.*\n\n## Na co zwrócić uwagę przed zakupem?\n\n1. **Grubość ścian** — minimum 38 mm dla saun całorocznych, 44 mm dla klimatu polskiego to ideał\n2. **Rodzaj pieca** — piec na drewno daje tradycyjne doświadczenie, elektryczny jest wygodniejszy w obsłudze\n3. **Jakość drewna** — sprawdź, czy drewno jest suszone komorowo (wilgotność poniżej 12%)\n4. **Gwarancja** — minimum 24 miesiące na konstrukcję\n5. **Montaż** — czy producent oferuje montaż w cenie?\n6. **Transport** — darmowa dostawa to standard u renomowanych producentów\n\n## Podsumowanie\n\nSauna beczka to doskonała inwestycja w zdrowie i komfort całej rodziny. Przy wyborze kluczowe są: odpowiedni rozmiar, jakość drewna i solidna konstrukcja. W WM-Sauna oferujemy sauny beczkowe od 2,0 do 4,5 metra, wykonane z wyselekcjonowanego drewna skandynawskiego, z 24-miesięczną gwarancją i darmową dostawą na terenie całej Polski.",
+      "created_at": "2026-03-23T15:45:53.841324+00:00",
+      "updated_at": "2026-03-29T17:55:18.969483+00:00"
+    },
+    {
+      "slug": "balia-drewniana-z-piecem-wewnetrzny-czy-zewnetrzny",
+      "title": "Balia drewniana z piecem — wewnętrzny czy zewnętrzny? Porównanie",
+      "meta_description": "Porównanie pieców do balii drewnianych: wewnętrzny vs zewnętrzny. Czas nagrzewania, koszty, zalety i wady. Dowiedz się, który typ pieca jest lepszy.",
+      "category": "balie",
+      "tags": [
+        "balia drewniana",
+        "piec do balii",
+        "balia z piecem"
+      ],
+      "cover_image": "https://images.pexels.com/photos/30302449/pexels-photo-30302449.jpeg?auto=compress&w=800",
+      "excerpt": "Wybór pieca to kluczowa decyzja przy zakupie balii drewnianej. Porównujemy piec wewnętrzny i zewnętrzny — czas nagrzewania, wygoda, bezpieczeństwo i cena.",
+      "author": "WM Group",
+      "published": true,
+      "content": "## Piec do balii — od czego zależy wybór?\n\nPrzy zakupie balii drewnianej jedną z najważniejszych decyzji jest wybór typu pieca. To on decyduje o komforcie użytkowania, czasie nagrzewania i bezpieczeństwie. W tym artykule porównujemy dwa główne typy: **piec wewnętrzny** (zintegrowany) i **piec zewnętrzny** (z podwójnym obiegiem wody).\n\n## Piec wewnętrzny — kompaktowe rozwiązanie\n\nPiec wewnętrzny montowany jest wewnątrz misy balii, za ogrodzeniem ochronnym. Woda nagrzewa się przez bezpośredni kontakt z piecem.\n\n### Zalety pieca wewnętrznego:\n- **Szybsze nagrzewanie** — bezpośredni kontakt z wodą skraca czas o 20–30%\n- **Kompaktowa konstrukcja** — piec nie zajmuje dodatkowego miejsca na zewnątrz\n- **Niższa cena** — prostszy montaż oznacza niższy koszt\n- **Idealny dla małych ogrodów** — gdy liczy się każdy metr kwadratowy\n\n### Wady pieca wewnętrznego:\n- Zmniejsza przestrzeń kąpielową (piec zajmuje ok. 20–25% misy)\n- Trudniejszy dostęp do dołożenia drewna podczas kąpieli\n- Metalowa obudowa pieca wewnątrz balii wymaga ostrożności\n\n## Piec zewnętrzny — więcej komfortu\n\nPiec zewnętrzny montowany jest obok balii i połączony z nią systemem podwójnego obiegu wody. Zimna woda jest pobierana z dna balii, podgrzewana w piecu i wracana ciepła do balii.\n\n### Zalety pieca zewnętrznego:\n- **Pełna przestrzeń kąpielowa** — cała misa do dyspozycji\n- **Łatwiejsze dokładanie drewna** — bez wychylania się nad gorącą wodą\n- **Bezpieczniejszy** — brak gorących elementów wewnątrz balii\n- **Podwójny obieg** — równomierniejsze nagrzewanie wody\n\n### Wady pieca zewnętrznego:\n- Wymaga dodatkowego miejsca obok balii (ok. 50–70 cm)\n- Dłuższy czas nagrzewania o 20–30 minut\n- Wyższa cena (różnica ok. 1000–2000 zł)\n\n## Porównanie: piec wewnętrzny vs zewnętrzny\n\n| Parametr | Piec wewnętrzny | Piec zewnętrzny |\n|----------|----------------|-----------------|\n| Czas nagrzewania (do 38°C) | 1–2 godz. | 1,5–2,5 godz. |\n| Przestrzeń kąpielowa | Zmniejszona o ~20% | Pełna |\n| Bezpieczeństwo | Ogrodzenie ochronne | Brak gorących elementów w balii |\n| Dokładanie drewna | Utrudnione | Wygodne |\n| Cena | od 5 900 zł | od 8 900 zł |\n| Idealny dla | Małych ogrodów, budżet | Rodzin, komfort |\n\n## Nasza rekomendacja\n\nJeśli zależy Ci na **maksymalnym komforcie i bezpieczeństwie** — wybierz piec zewnętrzny. Jest to zdecydowanie lepsze rozwiązanie dla rodzin z dziećmi.\n\nJeśli masz **ograniczony budżet lub mało miejsca** — piec wewnętrzny to solidne i sprawdzone rozwiązanie.\n\nW WM-Balia oferujemy oba typy pieców. Każdy piec jest wykonany ze stali nierdzewnej o grubości 3 mm, z ochroną przed przegrzaniem i 24-miesięczną gwarancją.",
+      "created_at": "2026-03-24T15:45:53.856665+00:00",
+      "updated_at": "2026-03-29T17:55:20.338945+00:00"
+    },
+    {
+      "slug": "jak-przygotowac-podloze-pod-saune-ogrodowa",
+      "title": "Jak przygotować podłoże pod saunę ogrodową? Krok po kroku",
+      "meta_description": "Praktyczny poradnik przygotowania podłoża pod saunę ogrodową. Kostka brukowa, płyta betonowa, żwir — co wybrać? Wymiary, nośność, drenaż.",
+      "category": "sauny",
+      "tags": [
+        "podłoże pod saunę",
+        "montaż sauny",
+        "sauna ogrodowa"
+      ],
+      "cover_image": "https://images.unsplash.com/photo-1764942711945-32b66ef549cd?w=800&q=80",
+      "excerpt": "Prawidłowe podłoże to fundament długiej żywotności sauny. Sprawdź, jak krok po kroku przygotować podłoże pod saunę beczkową w swoim ogrodzie.",
+      "author": "WM Group",
+      "published": true,
+      "content": "## Dlaczego podłoże jest takie ważne?\n\nPrawidłowe podłoże pod saunę ogrodową to nie kwestia estetyki — to kwestia bezpieczeństwa i trwałości konstrukcji. Sauna beczkowa o długości 3 metrów waży ok. 800–1200 kg (bez osób wewnątrz), więc podłoże musi być:\n\n- **Poziome** — odchylenie max. 2 cm na całej długości\n- **Stabilne** — nie może się osiadać ani przesuwać\n- **Przepuszczalne** — woda z sauny musi mieć odpływ\n- **Wytrzymałe** — nośność min. 500 kg/m²\n\n## Opcje podłoża — porównanie\n\n### 1. Kostka brukowa (najczęściej wybierana)\n**Zalety:** trwała, estetyczna, łatwa w utrzymaniu\n**Wady:** wymaga przygotowania podbudowy\n**Koszt:** 80–150 zł/m²\n\nKostka brukowa to najczęściej wybierane podłoże pod sauny ogrodowe. Zapewnia stabilność, łatwy odpływ wody (przez szczeliny między kostkami) i estetyczny wygląd.\n\n### 2. Płyta betonowa\n**Zalety:** idealna równość, maksymalna stabilność\n**Wady:** wymaga odpływu wody, droższe wykonanie\n**Koszt:** 120–200 zł/m²\n\nIdealna dla saun ciężkich (4+ metrów). Wymaga wykonania spadku (1–2%) dla odpływu wody.\n\n### 3. Żwir/grys (najtańsza opcja)\n**Zalety:** tania, dobry drenaż, szybka realizacja\n**Wady:** może się osiadać, mniej estetyczna\n**Koszt:** 30–60 zł/m²\n\nWarstwa żwiru o grubości 15–20 cm na geowłókninie. Odpowiednia dla lżejszych saun (do 2,5 m).\n\n### 4. Deski tarasowe / WPC\n**Zalety:** elegancki wygląd, ciepłe pod stopami\n**Wady:** wymaga solidnej podkonstrukcji\n**Koszt:** 150–300 zł/m²\n\n## Krok po kroku: przygotowanie podłoża\n\n### Krok 1: Wyznacz miejsce\n- Odległość od ogrodzenia: min. 1 metr\n- Odległość od budynku: min. 2 metry (ze względu na komin)\n- Orientacja: wejście od strony domu (wygoda)\n- Podłoże: min. 50 cm większe niż sauna z każdej strony\n\n### Krok 2: Wyrównaj teren\n- Usuń warstwę humusu (15–20 cm)\n- Ubij grunt zagęszczarką płytową\n- Sprawdź poziom — max 2 cm odchylenia\n\n### Krok 3: Podbudowa\n- Warstwa geowłókniny\n- 10–15 cm żwiru / kruszywa (frakcja 0–31,5 mm)\n- Zagęszczenie zagęszczarką\n- 3–5 cm podsypki piaskowej (dla kostki brukowej)\n\n### Krok 4: Nawierzchnia\n- Ułóż kostki / wylej beton / wysyp żwir\n- Sprawdź poziom w wielu punktach\n- Zostaw szczeliny na odpływ wody\n\n### Krok 5: Podpory\nSauna beczkowa powinna stać na drewnianych lub metalowych podporach (kolebkach), a nie bezpośrednio na podłożu. To zapewnia cyrkulację powietrza pod sauną i chroni drewno przed wilgocią.\n\n## Najczęstsze błędy\n\n1. **Brak geowłókniny** — chwasty przerastają przez podłoże\n2. **Za cienka warstwa żwiru** — podłoże osiada po roku\n3. **Brak spadku** — woda stoi przy saunie\n4. **Zbyt blisko drzew** — korzenie mogą uszkodzić podłoże\n5. **Brak wentylacji od spodu** — drewno gnije szybciej\n\n## Podsumowanie\n\nPrzygotowanie podłoża zajmuje zazwyczaj 1–2 dni i kosztuje 500–2000 zł (w zależności od wybranego materiału i wielkości sauny). To stosunkowo niewielka inwestycja w porównaniu z ceną samej sauny, ale ma ogromny wpływ na jej trwałość i komfort użytkowania.",
+      "created_at": "2026-03-25T15:45:53.859281+00:00",
+      "updated_at": "2026-03-29T17:55:18.715720+00:00"
+    },
+    {
+      "slug": "termodrewno-vs-swierk-skandynawski-co-lepsze-do-sauny",
+      "title": "Termodrewno vs świerk skandynawski — co lepsze do sauny?",
+      "meta_description": "Porównanie termodrewna i świerku skandynawskiego do budowy saun ogrodowych. Trwałość, wygląd, cena, konserwacja — który materiał wybrać?",
+      "category": "sauny",
+      "tags": [
+        "termodrewno",
+        "świerk skandynawski",
+        "drewno do sauny"
+      ],
+      "cover_image": "https://images.pexels.com/photos/31092903/pexels-photo-31092903.jpeg?auto=compress&w=800",
+      "excerpt": "Termodrewno czy świerk skandynawski? To pytanie zadaje sobie każdy, kto planuje zakup sauny ogrodowej. Porównujemy oba materiały pod każdym kątem.",
+      "author": "WM Group",
+      "published": true,
+      "content": "## Drewno — serce każdej sauny\n\nDrewno to nie tylko materiał konstrukcyjny sauny — to element, który definiuje jej charakter, zapach i atmosferę. Wybór odpowiedniego gatunku wpływa na trwałość, wygląd i koszty utrzymania przez lata.\n\n## Świerk skandynawski — klasyka gatunku\n\nŚwierk skandynawski (Picea abies) to najpopularniejsze drewno do budowy saun w Skandynawii i Europie. Rośnie w surowym klimacie Finlandii i Szwecji, co nadaje mu wyjątkowe właściwości.\n\n### Charakterystyka:\n- **Kolor:** jasny, ciepły, złocisty\n- **Zapach:** delikatny, żywiczny — typowy \"zapach sauny\"\n- **Gęstość:** 430–470 kg/m³\n- **Wytrzymałość:** klasa 3–4 (umiarkowana)\n\n### Zalety:\n- Naturalny, przyjemny aromat podczas seansu\n- Jasny kolor rozjaśnia wnętrze sauny\n- Lekkie drewno — łatwiejszy transport\n- Niższa cena — najlepszy stosunek jakości do ceny\n- Tradycyjny, skandynawski charakter\n\n### Wady:\n- Wymaga corocznej impregnacji na zewnątrz\n- Z czasem może szarzeć bez ochrony\n- Mniejsza odporność na wilgoć niż termodrewno\n\n## Termodrewno — nowoczesna technologia\n\nTermodrewno (thermowood) to drewno poddane obróbce termicznej w temperaturze 180–215°C. Proces modyfikuje strukturę chemiczną drewna, drastycznie zwiększając jego odporność.\n\n### Charakterystyka:\n- **Kolor:** ciemny, brązowy, elegancki\n- **Zapach:** delikatny, karmelowy (po obróbce)\n- **Gęstość:** 390–420 kg/m³ (niższa po termoobróbce)\n- **Wytrzymałość:** klasa 1–2 (wysoka)\n\n### Zalety:\n- Nie wymaga impregnacji — praktycznie bezobsługowe\n- Wysoka odporność na wilgoć i grzyby\n- Stabilność wymiarowa — minimalne odkształcenia\n- Elegancki, ciemny kolor bez malowania\n- Klasa trwałości 1–2 (25+ lat)\n\n### Wady:\n- Wyższa cena (o 30–50% więcej)\n- Bardziej kruche — mniejsza odporność na uderzenia\n- Brak typowego zapachu żywicy\n- Ciemny kolor może nie pasować do każdego ogrodu\n\n## Porównanie\n\n| Parametr | Świerk skandynawski | Termodrewno |\n|----------|-------------------|-------------|\n| Cena (za saunę 3m) | od 18 000 zł | od 23 000 zł |\n| Trwałość | 15–20 lat | 25–30 lat |\n| Impregnacja | Co roku | Nie wymaga |\n| Odporność na wilgoć | Średnia | Wysoka |\n| Kolor | Jasny, złocisty | Ciemny, brązowy |\n| Zapach | Żywiczny | Neutralny |\n| Konserwacja roczna | ~200–400 zł | ~0 zł |\n| Waga (3m sauna) | ~700 kg | ~650 kg |\n\n## Kiedy wybrać świerk?\n\n- Lubisz **tradycyjny, skandynawski styl**\n- Zależy Ci na **niższej cenie zakupu**\n- Nie przeszkadza Ci **coroczna konserwacja**\n- Cenisz **naturalny zapach żywicy** w saunie\n\n## Kiedy wybrać termodrewno?\n\n- Wolisz **nowoczesny, elegancki wygląd**\n- Nie chcesz się martwić o **konserwację**\n- Planujesz korzystać z sauny przez **20+ lat**\n- Ważna jest **maksymalna odporność** na warunki atmosferyczne\n\n## Nasza rekomendacja\n\nW WM-Sauna używamy wyłącznie **drewna klasy A+**, suszonego komorowo do wilgotności poniżej 12%. Oferujemy sauny zarówno ze świerku skandynawskiego, jak i z termodrewna. Przy długofalowym porównaniu kosztów (zakup + konserwacja przez 15 lat), termodrewno wychodzi zaledwie o 10–15% drożej — a zapewnia spokój ducha i zero konserwacji.",
+      "created_at": "2026-03-26T15:45:53.860487+00:00",
+      "updated_at": "2026-03-29T17:55:18.470768+00:00"
+    },
+    {
+      "slug": "balia-ogrodowa-kompletny-przewodnik-kupujacego",
+      "title": "Balia ogrodowa — kompletny przewodnik kupującego 2026",
+      "meta_description": "Wszystko, co musisz wiedzieć przed zakupem balii ogrodowej. Rodzaje, rozmiary, materiały, piece, ceny i porady ekspertów. Kompletny poradnik.",
+      "category": "balie",
+      "tags": [
+        "balia ogrodowa",
+        "balia drewniana",
+        "hot tub",
+        "przewodnik"
+      ],
+      "cover_image": "https://images.pexels.com/photos/12748396/pexels-photo-12748396.jpeg?auto=compress&w=800",
+      "excerpt": "Planujesz zakup balii ogrodowej? Ten kompletny przewodnik pomoże Ci wybrać idealny model — od rozmiaru, przez materiały, po typ pieca i akcesoria.",
+      "author": "WM Group",
+      "published": true,
+      "content": "## Czym jest balia ogrodowa?\n\nBalia ogrodowa (hot tub) to drewniane naczynie do kąpieli na świeżym powietrzu, podgrzewane piecem na drewno lub elektrycznie. To tradycyjne rozwiązanie znane od wieków w Skandynawii, Japonii i krajach alpejskich, które w ostatnich latach zyskało ogromną popularność w Polsce.\n\n## Rodzaje balii ogrodowych\n\n### Balia okrągła (klasyczna)\n- Najpopularniejszy kształt\n- Pojemność: 4–8 osób\n- Średnica: 160–225 cm\n- Idealna do ogrodów i tarasów\n\n### Balia owalna / kwadratowa\n- Więcej miejsca na osobę\n- Ergonomiczne siedzenia\n- Nowoczesny design\n- Pojemność: 4–6 osób\n\n### Balia japońska (Ofuro)\n- Głębsza, mniejsza — dla 1–2 osób\n- Tradycyjny, medytacyjny charakter\n- Kompaktowa — idealna na balkony i małe tarasy\n- Wymiary: ok. 120x190 cm\n\n## Jaki rozmiar wybrać?\n\n| Model | Osoby | Średnica/wymiary | Pojemność wody |\n|-------|-------|-----------------|----------------|\n| Okrągła 160 | 2–4 | Ø 160 cm | ~800 L |\n| Okrągła 180 | 3–5 | Ø 180 cm | ~1100 L |\n| Okrągła 200 | 4–6 | Ø 200 cm | ~1500 L |\n| Okrągła 225 | 6–8 | Ø 225 cm | ~2000 L |\n| Kwadratowa 220 | 4–6 | 220x220 cm | ~1800 L |\n| Ofuro | 1–2 | 120x190 cm | ~900 L |\n\n## Materiały — z czego jest balia?\n\n### Misa (wnętrze)\n- **Polipropylene (PP)** — najtrwalszy, higieniczny, łatwy w czyszczeniu\n- **Akryl** — elegancki, różne kolory, odporny na UV\n- **Fiberglass (włókno szklane)** — lekki, wytrzymały\n\n### Obudowa zewnętrzna\n- **Modrzew syberyjski** — naturalny, ciepły wygląd\n- **Termodrewno** — bezobsługowe, eleganckie\n- **Świerk skandynawski** — klasyczny, przystępny cenowo\n- **Kompozyt WPC** — nowoczesny, zero konserwacji\n\n## Piec — serce balii\n\n### Piec na drewno (wewnętrzny)\n- Cena: od 5 900 zł\n- Tradycyjne doświadczenie\n- Bez kosztów prądu\n\n### Piec na drewno (zewnętrzny)\n- Cena: od 8 900 zł\n- Pełna przestrzeń kąpielowa\n- Wygodniejsza obsługa\n\n### Piec elektryczny\n- Cena: od 12 000 zł\n- Automatyczna regulacja temperatury\n- Najwygodniejszy w obsłudze\n- Wymaga przyłącza 380V\n\n## Akcesoria — co warto dołożyć?\n\n1. **Pokrywa termiczna** — utrzymuje ciepło, chroni przed liśćmi i deszczem\n2. **Hydromasaż** — system dysz masujących dla głębokiego relaksu\n3. **Aeromasaż** — delikatne bąbelki powietrza\n4. **Oświetlenie LED** — nastrojowa atmosfera wieczorami\n5. **Schody** — wygodne wchodzenie i wychodzenie\n6. **Filtr wody** — przedłuża czas między wymianami wody\n\n## Ile kosztuje balia ogrodowa?\n\n| Typ | Cena podstawowa | Z pełnym wyposażeniem |\n|-----|----------------|----------------------|\n| Okrągła 160, piec wewn. | od 5 900 zł | od 12 000 zł |\n| Okrągła 200, piec zewn. | od 11 000 zł | od 18 000 zł |\n| Okrągła 225, piec zewn. | od 14 000 zł | od 22 000 zł |\n| Kwadratowa 220, elektr. | od 18 000 zł | od 28 000 zł |\n\n## Podłoże i instalacja\n\nBalia wymaga płaskiego, stabilnego podłoża o nośności min. 1000 kg/m². Najlepsze opcje:\n- Płyta betonowa z odpływem\n- Kostka brukowa\n- Taras drewniany (wzmocniony)\n\n**Ważne:** pełna balia z wodą i osobami waży 2000–4000 kg!\n\n## Konserwacja\n\n- **Wymiana wody:** co 1–3 kąpiele (bez chemii) lub co 1–2 tygodnie (z uzdatnianiem)\n- **Zewnętrzna obudowa:** impregnacja raz w roku (drewno naturalne)\n- **Misa PP/akryl:** mycie środkiem do łazienki\n- **Piec:** czyszczenie popielnika po każdym użyciu\n\n## Podsumowanie\n\nBalia ogrodowa to inwestycja, która zwraca się w postaci zdrowia, relaksu i radości przez wiele lat. W WM-Balia oferujemy balie w 6 rozmiarach, z 3 typami pieców i szerokim wyborem kolorów misy i drewna. Każda balia jest wykonywana ręcznie w naszej pracowni w Polsce, z 24-miesięczną gwarancją.",
+      "created_at": "2026-03-27T15:45:53.861474+00:00",
+      "updated_at": "2026-03-29T17:55:20.117012+00:00"
+    },
+    {
+      "slug": "sauna-ogrodowa-a-pozwolenie-na-budowe",
+      "title": "Sauna ogrodowa a pozwolenie na budowę — co musisz wiedzieć?",
+      "meta_description": "Czy sauna ogrodowa wymaga pozwolenia na budowę? Przepisy, zgłoszenia, odległości — kompletny poradnik prawny dla właścicieli saun w Polsce.",
+      "category": "sauny",
+      "tags": [
+        "pozwolenie na budowę",
+        "prawo budowlane",
+        "sauna ogrodowa"
+      ],
+      "cover_image": "https://images.unsplash.com/photo-1764942225260-4bd3400d9eba?w=800&q=80",
+      "excerpt": "Czy na saunę ogrodową trzeba pozwolenie na budowę? Jakie są wymagane odległości? Kiedy wystarczy zgłoszenie? Odpowiadamy na wszystkie pytania prawne.",
+      "author": "WM Group",
+      "published": true,
+      "content": "## Czy na saunę ogrodową trzeba pozwolenie?\n\nTo jedno z najczęstszych pytań, które otrzymujemy od klientów. Odpowiedź brzmi: **w większości przypadków NIE** — ale diabeł tkwi w szczegółach.\n\n## Co mówi prawo budowlane?\n\nZgodnie z polskim Prawem budowlanym (art. 29 ust. 1 pkt 28), **nie wymaga pozwolenia na budowę ani zgłoszenia** budowa obiektów małej architektury, takich jak:\n- Altany\n- Pergole\n- Grille ogrodowe\n- **Sauny ogrodowe wolnostojące**\n\n### Warunek: powierzchnia zabudowy do 35 m²\nSauna ogrodowa musi mieć powierzchnię zabudowy **nieprzekraczającą 35 m²**. Typowa sauna beczkowa ma powierzchnię zabudowy 3–8 m², więc ten warunek jest zawsze spełniony.\n\n## Kiedy jest potrzebne zgłoszenie?\n\nZgłoszenie może być wymagane w następujących przypadkach:\n\n1. **Sauna z trwałym fundamentem** — jeśli planujesz betonowy fundament zamiast podkładów\n2. **Sauna połączona z budynkiem** — jako dobudówka do domu\n3. **Sauna na terenie objętym ochroną konserwatorską** — zabytki, strefy ochronne\n4. **Instalacja kominowa** — jeśli komin przekracza określoną wysokość\n\n## Odległości — na co uważać?\n\n### Odległość od granicy działki\n- **Brak przepisów specjalnych** dla obiektów małej architektury\n- Zalecamy min. **1 metr** od ogrodzenia (ze względu na komin i dym)\n- W przypadku wspólnot mieszkaniowych mogą obowiązywać regulaminy\n\n### Odległość od budynków\n- Min. **4 metry** od budynku drewnianego (ochrona pożarowa)\n- Min. **2 metry** od budynku murowanego\n- Min. **8 metrów** od budynku sąsiada (ze względu na komin)\n\n### Odległość od drzew\n- Min. **3 metry** od korony drzewa (ochrona przed iskrami)\n\n## Komin — ważny element\n\nPiec na drewno wymaga komina. Komin sauny ogrodowej:\n- Powinien wystawać **min. 50 cm** ponad dach sauny\n- Musi być wykonany ze **stali nierdzewnej** (dwuścienny)\n- Powinien mieć **iskrochronę** na szczycie\n- Nie podlega obowiązkowi przeglądów kominiarskich (obiekt nietrwały)\n\n## A co z balią?\n\nBalia drewniana to **element wyposażenia ogrodu**, nie obiekt budowlany. Nie wymaga:\n- Pozwolenia na budowę\n- Zgłoszenia\n- Żadnych formalności\n\nJedyne, o czym warto pamiętać, to odpowiedni odpływ wody i stabilne podłoże.\n\n## Praktyczne wskazówki\n\n1. **Sprawdź MPZP** — Miejscowy Plan Zagospodarowania Przestrzennego może zawierać dodatkowe ograniczenia\n2. **Poinformuj sąsiadów** — dym z pieca może być uciążliwy, lepiej uprzedzić\n3. **Zadbaj o bezpieczeństwo pożarowe** — gaśnica w pobliżu sauny to dobra praktyka\n4. **Dokumentacja** — zachowaj fakturę i kartę gwarancyjną (mogą być potrzebne do ubezpieczenia)\n\n## Podsumowanie\n\nW 99% przypadków sauna ogrodowa nie wymaga pozwolenia na budowę ani zgłoszenia. Wystarczy wybrać odpowiednie miejsce w ogrodzie (z zachowaniem bezpiecznych odległości) i cieszyć się relaksem. W razie wątpliwości skontaktuj się z lokalnym urzędem gminy — procedura jest szybka i bezpłatna.",
+      "created_at": "2026-03-28T15:45:53.862363+00:00",
+      "updated_at": "2026-03-29T17:55:18.252188+00:00"
+    },
+    {
+      "slug": "termodrewno-idealny-material-do-budowy-saun",
+      "title": "Termodrewno — idealny materiał do budowy saun ogrodowych",
+      "meta_description": "Termodrewno do saun ogrodowych — właściwości, zalety i porównanie z tradycyjnym drewnem.",
+      "category": "sauny",
+      "tags": [],
+      "cover_image": "https://images.pexels.com/photos/36077580/pexels-photo-36077580.jpeg?auto=compress&w=800",
+      "content": "# Termodrewno — idealny materiał do budowy saun ogrodowych\n\nSauny ogrodowe to nie tylko moda, ale świadomy wybór zdrowia, komfortu i estetyki. Aby mogły służyć przez lata, kluczowy jest dobór odpowiedniego materiału.\n\n## Czym jest termodrewno?\n\nTermodrewno to drewno poddane obróbce termicznej w temperaturze 180–230°C. Proces ten zmienia strukturę komórkową drewna, nadając mu wyjątkowe właściwości:\n\n| Cecha | Drewno zwykłe | Termodrewno |\n|-------|--------------|-------------|\n| Odporność na wilgoć | Niska | Bardzo wysoka |\n| Żywotność | 5–10 lat | 25+ lat |\n| Izolacja termiczna | Standardowa | O 20–30% lepsza |\n| Stabilność wymiarowa | Średnia | Doskonała |\n\n## Dlaczego termodrewno jest najlepsze do saun?\n\n### 1. Odporność na warunki atmosferyczne\nTermodrewno nie wchłania wilgoci, jest odporne na grzyby, pleśń i szkodniki. Idealnie sprawdza się w warunkach zewnętrznych przez cały rok.\n\n### 2. Doskonała izolacja termiczna\nSauna z termodrewna nagrzewa się szybciej i dłużej utrzymuje ciepło, co przekłada się na niższe zużycie energii.\n\n### 3. Naturalny, ciemny kolor\nObróbka termiczna nadaje drewnu piękny, ciemnobrązowy odcień bez potrzeby stosowania barwników czy impregnatów.\n\n### 4. Ekologia\nProces obróbki termicznej nie wymaga użycia żadnych chemikaliów. To w 100% naturalny i ekologiczny materiał.\n\n## Jakie gatunki drewna stosujemy?\n\nW WM Group używamy najwyższej jakości drewna skandynawskiego:\n\n- **Świerk skandynawski A+** — lekki, estetyczny, doskonały do wnętrz saun\n- **Modrzew syberyjski** — wyjątkowo twardy i odporny na wilgoć\n- **Termo-osika** — tradycyjny materiał saunowy o niskiej przewodności cieplnej\n\n## Podsumowanie\n\nTermodrewno to inwestycja na lata. Sauna wykonana z tego materiału zachowuje piękno i funkcjonalność przez minimum 25 lat, bez potrzeby częstej konserwacji.",
+      "excerpt": "Sauny ogrodowe to nie tylko moda, ale świadomy wybór zdrowia i komfortu. Kluczowy jest dobór odpowiedniego materiału — termodrewno to najlepszy wybór.",
+      "author": "WM Group",
+      "published": true,
+      "created_at": "2026-03-29T16:27:27.346138+00:00",
+      "updated_at": "2026-03-29T17:55:18.037461+00:00"
+    },
+    {
+      "slug": "jak-zwiekszyc-rentownosc-osrodka-wellness",
+      "title": "Jak zwiększyć rentowność ośrodka dzięki usługom wellness?",
+      "meta_description": "Jak sauna i wellness mogą zwiększyć rentowność hotelu lub pensjonatu?",
+      "category": "b2b",
+      "tags": [],
+      "cover_image": "https://images.pexels.com/photos/31234754/pexels-photo-31234754.jpeg?auto=compress&w=800",
+      "content": "# Jak zwiększyć rentowność ośrodka dzięki usługom wellness?\n\n## Potencjał wellness w branży hotelarskiej\n\nWellness to holistyczne podejście do zdrowia i dobrego samopoczucia, które staje się kluczowym elementem oferty hotelarskiej.\n\n## Dlaczego warto inwestować w saunę dla hotelu?\n\n### Wzrost rezerwacji o 15–25%\nTylko 15–20% ośrodków wypoczynkowych w Polsce oferuje saunę. Posiadanie jej jest istotnym wyróżnikiem na rynku.\n\n### Wydłużenie sezonu turystycznego\nSauny cieszą się ogromną popularnością jesienią i zimą. Goście przyjeżdżają nie tylko na relaks, ale także na zimowe kąpiele i morsowanie.\n\n### Podniesienie cen za wynajem\nObiekty oferujące dostęp do sauny mogą podnieść ceny wynajmu średnio o **100–150 zł za dobę**, co przekłada się na dodatkowy przychód rzędu **3000–4500 zł miesięcznie**.\n\n## Korzyści finansowe\n\n| Element | Bez sauny | Z sauną |\n|---------|----------|--------|\n| Średnia cena noclegu | 250 zł | 350–400 zł |\n| Obłożenie w sezonie | 70% | 85–90% |\n| Obłożenie poza sezonem | 30% | 50–60% |\n| Czas zwrotu inwestycji | — | 12–18 miesięcy |\n\n## Jakie sauny polecamy dla hoteli?\n\nDla obiektów B2B rekomendujemy sauny prostokątne z termodrewna — oferują najlepszą izolację, estetykę i trwałość.\n\n## Finansowanie — leasing\n\nZakup sauny można sfinansować za pomocą leasingu. Rata miesięczna przy inwestycji 60 000 zł wynosi ok. 1500–2000 zł.",
+      "excerpt": "Wellness w branży hotelarskiej zyskuje na popularności. Dowiedz się, jak sauna i strefa SPA mogą zwiększyć przychody Twojego obiektu.",
+      "author": "WM Group",
+      "published": true,
+      "created_at": "2026-03-29T16:27:27.512575+00:00",
+      "updated_at": "2026-03-29T17:55:19.652485+00:00"
+    },
+    {
+      "slug": "7-terapii-uzyskiwanych-w-saunie",
+      "title": "7 terapii uzyskiwanych w saunie — korzyści dla zdrowia",
+      "meta_description": "7 terapii dostępnych w saunie: termoterapia, aromaterapia, chromoterapia, haloterapia i więcej.",
+      "category": "sauny",
+      "tags": [],
+      "cover_image": "https://images.pexels.com/photos/32504769/pexels-photo-32504769.jpeg?auto=compress&w=800",
+      "content": "# 7 terapii uzyskiwanych w saunie — korzyści dla zdrowia\n\n## 1. Termoterapia\nWysokie temperatury (80–100°C) stymulują krążenie krwi, przyspieszają metabolizm i wspierają regenerację mięśni.\n\n## 2. Aromaterapia\nOlejki eteryczne (eukaliptus, lawenda, sosna) działają relaksacyjnie i wspomagają drogi oddechowe.\n\n## 3. Chromoterapia\nOświetlenie LED: czerwony pobudza, niebieski uspokaja, zielony relaksuje, żółty poprawia nastrój.\n\n## 4. Haloterapia\nPanele solne himalajskie jonizują powietrze, oczyszczają drogi oddechowe i poprawiają samopoczucie.\n\n## 5. Muzykoterapia\nOdpowiednia muzyka relaksacyjna wzmacnia efekt odprężenia.\n\n## 6. Terapia podczerwienią\nSauny IR nagrzewają bezpośrednio ciało w niższych temperaturach (40–60°C).\n\n## 7. Terapia drewnem\nNaturalne drewno wydziela fitoncydy wzmacniające układ odpornościowy.",
+      "excerpt": "Chromoterapia, haloterapia, aromaterapia i inne — odkryj, jakie terapie można uzyskać w nowoczesnej saunie ogrodowej.",
+      "author": "WM Group",
+      "published": false,
+      "created_at": "2026-03-29T16:27:27.631839+00:00",
+      "updated_at": "2026-03-29T16:27:27.631839+00:00"
+    },
+    {
+      "slug": "podloze-pod-saune-jak-sie-przygotowac",
+      "title": "Podłoże pod saunę ogrodową — jak się przygotować?",
+      "meta_description": "Jak przygotować podłoże pod saunę ogrodową? Kompletny poradnik.",
+      "category": "sauny",
+      "tags": [],
+      "cover_image": "https://images.unsplash.com/photo-1764942687962-83eeb7468d83?w=800&q=80",
+      "content": "# Podłoże pod saunę ogrodową — jak się przygotować?\n\nPrawidłowe przygotowanie podłoża to klucz do długiej żywotności sauny ogrodowej.\n\n## Jakie podłoże wybrać?\n\n### Kostka brukowa\nNajczęściej wybierane rozwiązanie. Grubość min. 6 cm na podsypce piaskowo-cementowej.\n\n### Płyta betonowa\nIdealna dla większych saun. Grubość min. 10 cm z odpowiednim zbrojeniem.\n\n### Fundamenty punktowe\nBetonowe bloczki (30x30 cm) — tańsza alternatywa z dobrą wentylacją.\n\n## Krok po kroku\n\n1. **Wybierz miejsce** — min. 1,5 m od ogrodzenia\n2. **Wyrównaj teren** — usuń humus (20–30 cm)\n3. **Zagęść podbudowę** — żwir lub tłuczeń (15–20 cm)\n4. **Ułóż nawierzchnię** — kostka, płyta lub bloczki\n5. **Sprawdź poziom** — użyj poziomnicy\n\n## Wymiary podłoża\n\nPodłoże powinno być o **20–30 cm większe** z każdej strony niż wymiary sauny.",
+      "excerpt": "Zanim zdecydujesz się na zakup sauny, poznaj tajniki wyboru najlepszego miejsca i fundamentu w Twoim ogrodzie.",
+      "author": "WM Group",
+      "published": false,
+      "created_at": "2026-03-29T16:27:27.738697+00:00",
+      "updated_at": "2026-03-29T17:55:20.756851+00:00"
+    },
+    {
+      "slug": "sauna-w-hotelu-praktyczny-przewodnik",
+      "title": "Sauna w hotelu — praktyczny przewodnik dla właścicieli",
+      "meta_description": "Praktyczny przewodnik po wyborze sauny do hotelu.",
+      "category": "b2b",
+      "tags": [],
+      "cover_image": "https://images.pexels.com/photos/31234753/pexels-photo-31234753.jpeg?auto=compress&w=800",
+      "content": "# Sauna w hotelu — praktyczny przewodnik dla właścicieli\n\n## Jak wybrać saunę do hotelu?\n\n### 1. Rozmiar i pojemność\n- Mały pensjonat (do 20 pokoi) — sauna na 4–6 osób\n- Średni hotel (20–50 pokoi) — sauna na 6–8 osób\n- Duży resort (50+) — kompleks saunowy\n\n### 2. Typ sauny\n| Typ | Temperatura | Dla kogo |\n|-----|------------|----------|\n| Fińska | 80–100°C | Doświadczeni saunowicze |\n| Parowa | 40–50°C | Początkujący |\n| Infrared | 40–60°C | Osoby wrażliwe na ciepło |\n| Beczka | 80–100°C | Element dekoracyjny |\n\n### 3. Materiały\nTermodrewno — najlepszy wybór dla obiektów komercyjnych.\n\n## Koszty\nŚredni koszt inwestycji: **30 000 – 120 000 zł**. WM Group oferuje elastyczne warunki B2B i leasing.",
+      "excerpt": "Na co zwrócić uwagę przy wyborze sauny do hotelu? Rozmiar, materiały, lokalizacja i koszty.",
+      "author": "WM Group",
+      "published": true,
+      "created_at": "2026-03-29T16:27:27.846057+00:00",
+      "updated_at": "2026-03-29T17:55:19.419308+00:00"
+    },
+    {
+      "slug": "romantyczne-wieczory-w-balii-spa",
+      "title": "Romantyczne wieczory w balii SPA — jak stworzyć niezapomniane chwile",
+      "meta_description": "Romantyczny wieczór w balii ogrodowej — kompletny przewodnik.",
+      "category": "balie",
+      "tags": [],
+      "cover_image": "https://images.pexels.com/photos/30302449/pexels-photo-30302449.jpeg?auto=compress&w=800",
+      "content": "# Romantyczne wieczory w balii SPA\n\n## Przygotowanie atmosfery\n\n### Oświetlenie\n- Świece w latarniach wokół balii\n- Lampki LED na sznurku\n- Podwodne oświetlenie LED\n\n### Temperatura\nOptymalna: **37–39°C** — komfortowa na dłuższą kąpiel.\n\n## Aromaterapia w balii\n- **Róża** — romantyczny zapach\n- **Ylang-ylang** — afrodyzjak\n- **Lawenda** — relaksuje\n- **Jaśmin** — podnosi nastrój\n\n## Przekąski\n- Owoce (truskawki, winogrona)\n- Ser i krakersy\n- Wino musujące lub herbata z miodem\n\n## Kiedy najlepiej?\nO zmierzchu, gdy niebo przybiera kolory zachodu słońca. Zimą balia pod gwiazdami tworzy niepowtarzalny klimat.",
+      "excerpt": "Balia ogrodowa to idealne miejsce na romantyczny wieczór we dwoje. Podpowiadamy, jak stworzyć magiczną atmosferę.",
+      "author": "WM Group",
+      "published": true,
+      "created_at": "2026-03-29T16:27:27.996790+00:00",
+      "updated_at": "2026-03-29T17:55:19.905635+00:00"
+    },
+    {
+      "slug": "rodzaje-saun-jak-wybrac-najlepsza",
+      "title": "Rodzaje saun — jak wybrać najlepszą saunę do swojego ogrodu?",
+      "meta_description": "Porównanie saun ogrodowych: beczka, kwadro, wiking. Który typ wybrać?",
+      "category": "sauny",
+      "tags": [],
+      "cover_image": "https://images.unsplash.com/photo-1764942687858-2ca9e5b29d97?w=800&q=80",
+      "content": "# Rodzaje saun — jak wybrać najlepszą?\n\n## Sauna beczka\nOkrągły kształt, szybkie nagrzewanie, kompaktowy rozmiar — idealna do małych ogrodów.\n\n## Sauna kwadro (prostokątna)\nKlasyczny kształt z maksymalną przestrzenią: przedsionek + część parna.\n\n## Sauna wiking\nStyl skandynawski z panoramicznymi oknami i charakterystycznym dachem.\n\n## Porównanie\n\n| Cecha | Beczka | Kwadro | Wiking |\n|-------|--------|--------|--------|\n| Nagrzewanie | 30–40 min | 40–60 min | 40–50 min |\n| Pojemność | 2–6 osób | 4–10 osób | 4–8 osób |\n| Cena od | 15 000 zł | 25 000 zł | 20 000 zł |\n\n## Na co zwrócić uwagę?\n1. Rozmiar ogrodu\n2. Liczba użytkowników\n3. Budżet\n4. Estetyka\n5. Przeznaczenie (prywatne vs komercyjne)",
+      "excerpt": "Sauna beczka, kwadro czy wiking? Porównujemy rodzaje saun ogrodowych i pomagamy wybrać idealną.",
+      "author": "WM Group",
+      "published": false,
+      "created_at": "2026-03-29T16:27:28.099308+00:00",
+      "updated_at": "2026-03-29T16:27:28.099308+00:00"
+    },
+    {
+      "slug": "zimowy-relaks-sauna-przyciaga-gosci",
+      "title": "Zimowy relaks — jak sauna przyciąga gości w najchłodniejszych miesiącach",
+      "meta_description": "Jak sauna zwiększa obłożenie hotelu zimą?",
+      "category": "b2b",
+      "tags": [],
+      "cover_image": "https://images.pexels.com/photos/31092926/pexels-photo-31092926.jpeg?auto=compress&w=800",
+      "content": "# Zimowy relaks — jak sauna przyciąga gości zimą\n\n## Morsowanie + sauna = idealny duet\nGoście szukają obiektów z sauną po lodowatej kąpieli. To wzmacnia odporność i tworzy niezapomniane wspomnienia.\n\n## Pakiety zimowe\n1. **Gorąca zima** — nocleg + sauna + gorąca czekolada\n2. **Morsowanie** — basen/jezioro + sauna + ognisko\n3. **Wellness weekend** — 2 noce + nielimitowana sauna\n\n## Korzyści finansowe zimą\n- 40–60% wyższe obłożenie niż bez sauny\n- Dłuższy średni pobyt (3 noce vs 1.5)\n- Wyższe wydatki per capita\n\n## Marketing zimowy\n- Instagram: zdjęcia sauny w śniegu = viral\n- Booking.com: filtr wellness używany przez 35% użytkowników\n- Google Ads: frazy 'weekend spa' peak w X–XII",
+      "excerpt": "Zima to idealny czas na saunowanie. Dowiedz się, jak sauna może zwiększyć obłożenie Twojego obiektu zimą.",
+      "author": "WM Group",
+      "published": false,
+      "created_at": "2026-03-29T16:27:28.207311+00:00",
+      "updated_at": "2026-03-29T16:27:28.207311+00:00"
+    },
+    {
+      "slug": "7-terapii-w-saunie-korzysci-zdrowotne",
+      "title": "7 terapii uzyskiwanych w saunie — korzyści dla zdrowia",
+      "meta_description": "",
+      "category": "sauny",
+      "tags": [],
+      "cover_image": "https://images.pexels.com/photos/32504769/pexels-photo-32504769.jpeg?auto=compress&w=800",
+      "content": "# 7 terapii w saunie — korzyści dla zdrowia\n\n## 1. Termoterapia\n80–100°C stymuluje krążenie i regenerację mięśni.\n\n## 2. Aromaterapia\nOlejki eteryczne: eukaliptus, lawenda, sosna.\n\n## 3. Chromoterapia\nLED: czerwony pobudza, niebieski uspokaja, zielony relaksuje.\n\n## 4. Haloterapia\nPanele solne himalajskie jonizują powietrze.\n\n## 5. Muzykoterapia\nMuzyka relaksacyjna wzmacnia odprężenie.\n\n## 6. Terapia podczerwienią\nSauny IR: 40–60°C, nagrzewają bezpośrednio ciało.\n\n## 7. Terapia drewnem\nFitoncydy z naturalnego drewna wzmacniają odporność.",
+      "excerpt": "Chromoterapia, haloterapia, aromaterapia — odkryj 7 terapii dostępnych w nowoczesnej saunie ogrodowej.",
+      "author": "WM Group",
+      "published": true,
+      "created_at": "2026-03-29T16:29:24.864341+00:00",
+      "updated_at": "2026-03-29T17:55:17.789277+00:00"
+    },
+    {
+      "slug": "rodzaje-saun-beczka-kwadro-wiking",
+      "title": "Rodzaje saun — beczka, kwadro czy wiking?",
+      "meta_description": "",
+      "category": "sauny",
+      "tags": [],
+      "cover_image": "https://images.unsplash.com/photo-1764942687858-2ca9e5b29d97?w=800&q=80",
+      "content": "# Rodzaje saun — jak wybrać?\n\n## Beczka\nOkrągła, szybkie nagrzewanie, kompaktowa.\n\n## Kwadro (prostokątna)\nMaks. przestrzeń, przedsionek + część parna.\n\n## Wiking\nStyl skandynawski, panoramiczne okna.\n\n| Cecha | Beczka | Kwadro | Wiking |\n|-------|--------|--------|--------|\n| Nagrzewanie | 30–40 min | 40–60 min | 40–50 min |\n| Pojemność | 2–6 os. | 4–10 os. | 4–8 os. |\n| Cena od | 15 000 zł | 25 000 zł | 20 000 zł |",
+      "excerpt": "Porównujemy rodzaje saun ogrodowych — beczka, kwadro i wiking. Który typ wybrać do swojego ogrodu?",
+      "author": "WM Group",
+      "published": true,
+      "created_at": "2026-03-29T16:29:25.260478+00:00",
+      "updated_at": "2026-03-29T17:55:17.555419+00:00"
+    },
+    {
+      "slug": "zimowy-relaks-sauna-przyciaga-gosci-zima",
+      "title": "Zimowy relaks — jak sauna przyciąga gości w chłodne miesiące",
+      "meta_description": "",
+      "category": "b2b",
+      "tags": [],
+      "cover_image": "https://images.pexels.com/photos/31092926/pexels-photo-31092926.jpeg?auto=compress&w=800",
+      "content": "# Zimowy relaks — sauna przyciąga gości zimą\n\n## Morsowanie + sauna\nPo lodowatej kąpieli — rozgrzewka w saunie. Wzmacnia odporność.\n\n## Pakiety zimowe\n1. **Gorąca zima** — nocleg + sauna + gorąca czekolada\n2. **Morsowanie** — basen + sauna + ognisko\n3. **Wellness weekend** — 2 noce + sauna bez limitu\n\n## Wyniki\n- 40–60% wyższe obłożenie\n- Dłuższy pobyt: 3 noce vs 1.5\n- Instagram: sauna w śniegu = viral",
+      "excerpt": "Zima to idealny czas na saunowanie. Sauna zwiększa obłożenie hotelu o 40–60% w sezonie zimowym.",
+      "author": "WM Group",
+      "published": true,
+      "created_at": "2026-03-29T16:29:25.363689+00:00",
+      "updated_at": "2026-03-29T17:55:19.172898+00:00"
+    },
+    {
+      "slug": "sauna-ekologiczny-hotel-termodrewno",
+      "title": "Sauna jako element ekologicznego hotelu — termodrewno w zgodzie z naturą",
+      "meta_description": "",
+      "category": "b2b",
+      "tags": [],
+      "cover_image": "https://images.pexels.com/photos/36077591/pexels-photo-36077591.jpeg?auto=compress&w=800",
+      "content": "# Sauna jako element ekologicznego hotelu\n\n## Eko-trend w hotelarstwie\nŚwiadomi goście szukają obiektów przyjaznych środowisku.\n\n## Termodrewno = ekologia\n- Obróbka bez chemikaliów\n- Żywotność 25+ lat (mniej odpadów)\n- Naturalna izolacja (mniej energii)\n- Estetyka natury bez sztucznych materiałów\n\n## Certyfikaty i marketing\nSauna z termodrewna to argument w komunikacji ekologicznej hotelu.\n\n## Korzyści dla gości\n- Kontakt z naturą\n- Czyste materiały\n- Zdrowy relaks bez sztucznych substancji",
+      "excerpt": "Ekologiczne podejście w hotelarstwie zyskuje popularność. Sauna z termodrewna to idealny element zielonego obiektu.",
+      "author": "WM Group",
+      "published": true,
+      "created_at": "2026-03-29T16:29:25.462827+00:00",
+      "updated_at": "2026-03-29T17:55:17.280865+00:00"
+    }
+  ],
+  "balia_colors": [
+    {
+      "id": "color_1774543926278",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774543932/wm-balia/colors/spruce/uyrgz93xlg4ynsjjmgme.png",
+      "name": "E0013",
+      "order": 0,
+      "public_id": "wm-balia/colors/spruce/uyrgz93xlg4ynsjjmgme"
+    },
+    {
+      "id": "color_1774543938027",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774543942/wm-balia/colors/spruce/rl79ql48aafwdwtmggf6.png",
+      "name": "E0021",
+      "order": 1,
+      "public_id": "wm-balia/colors/spruce/rl79ql48aafwdwtmggf6"
+    },
+    {
+      "id": "color_1774543947826",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774543951/wm-balia/colors/spruce/tiu6w9hi9cfrceu6ds1h.png",
+      "name": "E1000",
+      "order": 2,
+      "public_id": "wm-balia/colors/spruce/tiu6w9hi9cfrceu6ds1h"
+    },
+    {
+      "id": "color_1774543956693",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774543959/wm-balia/colors/spruce/p5agxnzfim4rigerr5cl.png",
+      "name": "E2000",
+      "order": 3,
+      "public_id": "wm-balia/colors/spruce/p5agxnzfim4rigerr5cl"
+    },
+    {
+      "id": "color_1774543967176",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774543970/wm-balia/colors/spruce/xxgrq44n7uftl6uqrfos.png",
+      "name": "E5000",
+      "order": 4,
+      "public_id": "wm-balia/colors/spruce/xxgrq44n7uftl6uqrfos"
+    },
+    {
+      "id": "color_1774543978259",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774543981/wm-balia/colors/spruce/gh2147eqg8hcncjf9ohi.png",
+      "name": "E6015",
+      "order": 5,
+      "public_id": "wm-balia/colors/spruce/gh2147eqg8hcncjf9ohi"
+    },
+    {
+      "id": "color_1774543989525",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774543994/wm-balia/colors/spruce/cwfflfo1ecaak5elelo6.png",
+      "name": "E6710",
+      "order": 6,
+      "public_id": "wm-balia/colors/spruce/cwfflfo1ecaak5elelo6"
+    },
+    {
+      "id": "color_1774544000792",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774544004/wm-balia/colors/spruce/fugzuwwpajlu5ncvak1o.png",
+      "name": "E6720",
+      "order": 7,
+      "public_id": "wm-balia/colors/spruce/fugzuwwpajlu5ncvak1o"
+    },
+    {
+      "id": "color_1774544010143",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774544013/wm-balia/colors/spruce/xxyyvp06tpjevbamztk0.png",
+      "name": "E6730",
+      "order": 8,
+      "public_id": "wm-balia/colors/spruce/xxyyvp06tpjevbamztk0"
+    },
+    {
+      "id": "color_1774544018407",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774544021/wm-balia/colors/spruce/x3qzvwyt3cvnfv3zmerz.png",
+      "name": "E7000",
+      "order": 9,
+      "public_id": "wm-balia/colors/spruce/x3qzvwyt3cvnfv3zmerz"
+    },
+    {
+      "id": "color_1774544027242",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774544031/wm-balia/colors/spruce/kv5jurpmfptp5q35yvdm.png",
+      "name": "E7712",
+      "order": 10,
+      "public_id": "wm-balia/colors/spruce/kv5jurpmfptp5q35yvdm"
+    },
+    {
+      "id": "color_1774544035560",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774544039/wm-balia/colors/spruce/vuw4awbqpivesbt5eyzc.png",
+      "name": "E CZARNY",
+      "order": 11,
+      "public_id": "wm-balia/colors/spruce/vuw4awbqpivesbt5eyzc"
+    },
+    {
+      "id": "color_1774544046508",
+      "category": "spruce",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774544050/wm-balia/colors/spruce/gixeta6bpxajhcttby76.png",
+      "name": "E DS",
+      "order": 12,
+      "public_id": "wm-balia/colors/spruce/gixeta6bpxajhcttby76"
+    },
+    {
+      "id": "color_1774599724453",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599744/wm-balia/colors/thermo/ogxyzhkzsxsf7n5bhl4k.png",
+      "name": "TERMO0012",
+      "order": 0,
+      "public_id": "wm-balia/colors/thermo/ogxyzhkzsxsf7n5bhl4k"
+    },
+    {
+      "id": "color_1774599749720",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599752/wm-balia/colors/thermo/gnydt53gxd0vsgizn7wc.png",
+      "name": "TERMO0013",
+      "order": 1,
+      "public_id": "wm-balia/colors/thermo/gnydt53gxd0vsgizn7wc"
+    },
+    {
+      "id": "color_1774599759053",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599762/wm-balia/colors/thermo/nmcbgidylv535tpi65xz.png",
+      "name": "TERMO0021",
+      "order": 2,
+      "public_id": "wm-balia/colors/thermo/nmcbgidylv535tpi65xz"
+    },
+    {
+      "id": "color_1774599769034",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599772/wm-balia/colors/thermo/rvsipihvxyvw4aublkxt.png",
+      "name": "TERMO1000",
+      "order": 3,
+      "public_id": "wm-balia/colors/thermo/rvsipihvxyvw4aublkxt"
+    },
+    {
+      "id": "color_1774599777269",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599779/wm-balia/colors/thermo/thxmxiuj3s13kwkzwac4.png",
+      "name": "TERMO2000",
+      "order": 4,
+      "public_id": "wm-balia/colors/thermo/thxmxiuj3s13kwkzwac4"
+    },
+    {
+      "id": "color_1774599784186",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599787/wm-balia/colors/thermo/dvtkgnwhl2eixndvanyt.png",
+      "name": "TERMO5000",
+      "order": 5,
+      "public_id": "wm-balia/colors/thermo/dvtkgnwhl2eixndvanyt"
+    },
+    {
+      "id": "color_1774599792417",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599796/wm-balia/colors/thermo/ndmxv5glj7f66ahsdagf.png",
+      "name": "TERMO6015",
+      "order": 6,
+      "public_id": "wm-balia/colors/thermo/ndmxv5glj7f66ahsdagf"
+    },
+    {
+      "id": "color_1774599801469",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599804/wm-balia/colors/thermo/tes3d79ybw4m8htzkdfz.png",
+      "name": "TERMO6710",
+      "order": 7,
+      "public_id": "wm-balia/colors/thermo/tes3d79ybw4m8htzkdfz"
+    },
+    {
+      "id": "color_1774599810370",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599816/wm-balia/colors/thermo/eb4g87guopjltr1bvbtr.png",
+      "name": "TERMO6720",
+      "order": 8,
+      "public_id": "wm-balia/colors/thermo/eb4g87guopjltr1bvbtr"
+    },
+    {
+      "id": "color_1774599823185",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599826/wm-balia/colors/thermo/uesp4bpym2dixbquiu6p.png",
+      "name": "TERMO6730",
+      "order": 9,
+      "public_id": "wm-balia/colors/thermo/uesp4bpym2dixbquiu6p"
+    },
+    {
+      "id": "color_1774599832269",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599836/wm-balia/colors/thermo/r6besc4kzokl5j3fwb5y.png",
+      "name": "TERMO7000",
+      "order": 10,
+      "public_id": "wm-balia/colors/thermo/r6besc4kzokl5j3fwb5y"
+    },
+    {
+      "id": "color_1774599841419",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599845/wm-balia/colors/thermo/ur2pvfpdrddsyqnvy054.png",
+      "name": "TERMO7712",
+      "order": 11,
+      "public_id": "wm-balia/colors/thermo/ur2pvfpdrddsyqnvy054"
+    },
+    {
+      "id": "color_1774599850469",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599859/wm-balia/colors/thermo/mg6ybvveinyfvidc4xk1.png",
+      "name": "TERMO CZARNY",
+      "order": 12,
+      "public_id": "wm-balia/colors/thermo/mg6ybvveinyfvidc4xk1"
+    },
+    {
+      "id": "color_1774599866385",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599870/wm-balia/colors/thermo/qlkoretlyvvfavag0jex.png",
+      "name": "TERMO DS",
+      "order": 13,
+      "public_id": "wm-balia/colors/thermo/qlkoretlyvvfavag0jex"
+    },
+    {
+      "id": "color_1774599876285",
+      "category": "thermo",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774599885/wm-balia/colors/thermo/tede7jp7cjx3vownpc9g.png",
+      "name": "TERMO ANTRACITO",
+      "order": 14,
+      "public_id": "wm-balia/colors/thermo/tede7jp7cjx3vownpc9g"
+    },
+    {
+      "id": "color_1774600141134",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600150/wm-balia/colors/fiberglass/txqymcxhjm96ww5fbeti.png",
+      "name": "Czarny z różowym brokatem",
+      "order": 0,
+      "public_id": "wm-balia/colors/fiberglass/txqymcxhjm96ww5fbeti"
+    },
+    {
+      "id": "color_1774600141634",
+      "category": "fiberglass",
+      "image": "",
+      "name": "Multi",
+      "order": 1,
+      "public_id": ""
+    },
+    {
+      "id": "color_1774600142351",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600154/wm-balia/colors/fiberglass/kzmwzvvijy3kcsbgqlzk.png",
+      "name": "Czarny ze złotym brokatem",
+      "order": 2,
+      "public_id": "wm-balia/colors/fiberglass/kzmwzvvijy3kcsbgqlzk"
+    },
+    {
+      "id": "color_1774600142984",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600157/wm-balia/colors/fiberglass/svsf8gmrrx3fzys5xeq0.png",
+      "name": "Perłowy niebieski",
+      "order": 3,
+      "public_id": "wm-balia/colors/fiberglass/svsf8gmrrx3fzys5xeq0"
+    },
+    {
+      "id": "color_1774600143501",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600159/wm-balia/colors/fiberglass/j4usn6tadqablzq5xhxd.png",
+      "name": "Perłowy szary",
+      "order": 4,
+      "public_id": "wm-balia/colors/fiberglass/j4usn6tadqablzq5xhxd"
+    },
+    {
+      "id": "color_1774600144085",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600161/wm-balia/colors/fiberglass/petarbtprz859vdzgkuz.png",
+      "name": "Niebieski",
+      "order": 5,
+      "public_id": "wm-balia/colors/fiberglass/petarbtprz859vdzgkuz"
+    },
+    {
+      "id": "color_1774600144932",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600167/wm-balia/colors/fiberglass/xybstt6pizxyabz3qyyh.png",
+      "name": "Czarny z złotym i różowym brokatem",
+      "order": 6,
+      "public_id": "wm-balia/colors/fiberglass/xybstt6pizxyabz3qyyh"
+    },
+    {
+      "id": "color_1774600145468",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600169/wm-balia/colors/fiberglass/guax0ojwy1dbba39bxtg.png",
+      "name": "Perłowy biały",
+      "order": 7,
+      "public_id": "wm-balia/colors/fiberglass/guax0ojwy1dbba39bxtg"
+    },
+    {
+      "id": "color_1774600145699",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600171/wm-balia/colors/fiberglass/xhd8whwecuxukwvgraxh.png",
+      "name": "Galaktyka",
+      "order": 8,
+      "public_id": "wm-balia/colors/fiberglass/xhd8whwecuxukwvgraxh"
+    },
+    {
+      "id": "color_1774600145897",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600173/wm-balia/colors/fiberglass/zlso0ynoftyjm9zoo8ir.png",
+      "name": "Czarny z fioletowym brokatem",
+      "order": 9,
+      "public_id": "wm-balia/colors/fiberglass/zlso0ynoftyjm9zoo8ir"
+    },
+    {
+      "id": "color_1774600146091",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600175/wm-balia/colors/fiberglass/hfkpjtnj6xqi1oovoo3h.png",
+      "name": "Czarny ze srebrnym brokatem",
+      "order": 10,
+      "public_id": "wm-balia/colors/fiberglass/hfkpjtnj6xqi1oovoo3h"
+    },
+    {
+      "id": "color_1774600146601",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600177/wm-balia/colors/fiberglass/qavsbaj4x57ukykl6p6m.png",
+      "name": "Kremowy z srebrem",
+      "order": 11,
+      "public_id": "wm-balia/colors/fiberglass/qavsbaj4x57ukykl6p6m"
+    },
+    {
+      "id": "color_1774600147268",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600181/wm-balia/colors/fiberglass/pw1w7t2mhjk7qqywcwjn.png",
+      "name": "Szmaragd",
+      "order": 12,
+      "public_id": "wm-balia/colors/fiberglass/pw1w7t2mhjk7qqywcwjn"
+    },
+    {
+      "id": "color_1774600147448",
+      "category": "fiberglass",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600183/wm-balia/colors/fiberglass/murjuy5rikyrekc3hzst.png",
+      "name": "Śnieżynka",
+      "order": 13,
+      "public_id": "wm-balia/colors/fiberglass/murjuy5rikyrekc3hzst"
+    },
+    {
+      "id": "color_1774600421849",
+      "category": "acrylic",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600427/wm-balia/colors/acrylic/ks3msrlsqx9exbaetjcl.png",
+      "name": "Biały",
+      "order": 0,
+      "public_id": "wm-balia/colors/acrylic/ks3msrlsqx9exbaetjcl"
+    },
+    {
+      "id": "color_1774600422549",
+      "category": "acrylic",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600431/wm-balia/colors/acrylic/nbo1amhpfxdfdfmfdpcc.png",
+      "name": "Brązowy marmur",
+      "order": 2,
+      "public_id": "wm-balia/colors/acrylic/nbo1amhpfxdfdfmfdpcc"
+    },
+    {
+      "id": "color_1774600423331",
+      "category": "acrylic",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600434/wm-balia/colors/acrylic/zk7jqrccrr4x7mujzwtg.png",
+      "name": "Biały marmur",
+      "order": 4,
+      "public_id": "wm-balia/colors/acrylic/zk7jqrccrr4x7mujzwtg"
+    },
+    {
+      "id": "color_1774600423699",
+      "category": "acrylic",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600435/wm-balia/colors/acrylic/fkz7enl3hzhonke5ybps.png",
+      "name": "Kawowy marmur",
+      "order": 5,
+      "public_id": "wm-balia/colors/acrylic/fkz7enl3hzhonke5ybps"
+    },
+    {
+      "id": "color_1774600424081",
+      "category": "acrylic",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600437/wm-balia/colors/acrylic/posibu7qgez7nur3tf2t.png",
+      "name": "Czarny marmur",
+      "order": 6,
+      "public_id": "wm-balia/colors/acrylic/posibu7qgez7nur3tf2t"
+    },
+    {
+      "id": "color_1774600495899",
+      "category": "acrylic",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600499/wm-balia/colors/acrylic/oinkxjfdxrhoa4lsitmc.png",
+      "name": "Zielony marmur",
+      "order": 5,
+      "public_id": "wm-balia/colors/acrylic/oinkxjfdxrhoa4lsitmc"
+    },
+    {
+      "id": "color_1774600502650",
+      "category": "acrylic",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600505/wm-balia/colors/acrylic/mhzhhe8ua4negbuxa2u1.png",
+      "name": "Niebieski marmur",
+      "order": 6,
+      "public_id": "wm-balia/colors/acrylic/mhzhhe8ua4negbuxa2u1"
+    },
+    {
+      "id": "color_1774600635948",
+      "category": "wpc",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774600640/wm-balia/colors/wpc/slcavvz0p8lobjkgbydu.png",
+      "name": "WPC BLACK",
+      "order": 0,
+      "public_id": "wm-balia/colors/wpc/slcavvz0p8lobjkgbydu"
+    }
+  ],
+  "stock_saunas": [
+    {
+      "id": "sauna_import_1774279333064",
+      "name": "Sauna Wiking",
+      "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1773685097/wm-calculator/wm-calculator/37b1d90368b048e784cbcf1cecb83c7e.jpg",
+      "price": 11000.0,
+      "discount": 10,
+      "capacity": "2-3",
+      "steam_room_size": "189 cm",
+      "relax_room_size": "",
+      "features": [],
+      "active": true,
+      "sort_order": 2
+    }
+  ],
+  "balia_content": [
+    {
+      "type": "main",
+      "hero": {
+        "badge": "",
+        "headline": "",
+        "subheadline": "",
+        "cta_primary": "",
+        "cta_secondary": "",
+        "stats": [
+          {
+            "value": "",
+            "label": ""
+          },
+          {
+            "value": "",
+            "label": ""
+          },
+          {
+            "value": "",
+            "label": ""
+          }
+        ],
+        "bg_mode": "video",
+        "background_video": "/api/videos/5af6c2ef-6e89-4b9d-8369-041e071ea74e.mp4",
+        "background_image": "/api/images/cd889312-b946-422e-80d9-c80485dbf96d"
+      },
+      "promo_blocks": {
+        "features": {
+          "enabled": true
+        },
+        "installment": {
+          "enabled": true
+        },
+        "schematic": {
+          "enabled": true
+        },
+        "stove": {
+          "enabled": true
+        },
+        "about": {
+          "enabled": true
+        }
+      },
+      "promo_badges": [
+        {
+          "icon": "Truck",
+          "title": "Dostawa w całej Polsce",
+          "active": true
+        },
+        {
+          "icon": "Wrench",
+          "title": "Montaż w cenie",
+          "active": true
+        },
+        {
+          "icon": "Award",
+          "title": "Certyfikat FSC",
+          "active": true
+        },
+        {
+          "icon": "Flag",
+          "title": "Made in Poland",
+          "active": true
+        }
+      ],
+      "promo_features": [
+        {
+          "icon": "Leaf",
+          "title": "Głęboka regeneracja fizyczna i zdrowotna",
+          "desc": "Gorąca woda naturalnie rozluźnia napięte mięśnie, łagodzi bóle stawów i zauważalnie poprawia krążenie krwi. To idealne narzędzie do odnowy biologicznej organizmu – niezależnie od tego, czy chcesz zregenerować siły po intensywnym treningu, ciężkim dniu pracy fizycznej, czy po wielu godzinach spędzonych w pozycji siedzącej za biurkiem.",
+          "active": true
+        },
+        {
+          "icon": "Waves",
+          "title": "Skuteczna redukcja stresu i lepszy sen",
+          "desc": "Kąpiel w balii na świeżym powietrzu to najszybszy sposób na wyciszenie przebodźcowanego układu nerwowego. Połączenie ciepła, szumu wody i zapachu natury sprawia, że poziom kortyzolu (hormonu stresu) drastycznie spada. Regularne wieczorne seanse pomagają w walce z bezsennością i gwarantują znacznie głębszy, zdrowszy sen.",
+          "active": true
+        },
+        {
+          "icon": "Lightbulb",
+          "title": "Przestrzeń do budowania prawdziwych relacji",
+          "desc": "Balia tworzy unikalną strefę całkowicie wolną od smartfonów, telewizorów i codziennych rozpraszaczy. To doskonałe miejsce, by zatrzymać się na chwilę i spędzić wartościowy czas z bliskimi. Sprawdza się równie wspaniale podczas romantycznych wieczorów we dwoje, jak i w trakcie wesołych spotkań z przyjaciółmi pod gołym niebem.",
+          "active": true
+        }
+      ],
+      "promo_options": [
+        {
+          "icon": "Waves",
+          "title": "Hydromasaż",
+          "desc": "System dysz masujacych",
+          "active": false
+        },
+        {
+          "icon": "Wind",
+          "title": "Aeromasaż",
+          "desc": "Delikatne babelki powietrza",
+          "active": false
+        },
+        {
+          "icon": "Lightbulb",
+          "title": "Oświetlenie LED",
+          "desc": "Nastrojowe światła",
+          "active": false
+        },
+        {
+          "icon": "ThermometerSun",
+          "title": "Pokrywa termiczna",
+          "desc": "Utrzymuje temperature",
+          "active": false
+        }
+      ],
+      "section_order": [
+        "hero",
+        "features",
+        "products",
+        "installment",
+        "colors",
+        "options",
+        "schematic",
+        "stove",
+        "about",
+        "gallery",
+        "configurator",
+        "faq",
+        "testimonials",
+        "contact"
+      ],
+      "schematic": {
+        "title": "Budowa Balii",
+        "subtitle": "Informacje na temat zasady działania balii z piecem",
+        "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774611159/wm-balia/schematic/zwly5catd111x8tjkjxu.png",
+        "parts": [
+          {
+            "id": "test_part_1",
+            "label": "Drewniana obudowa",
+            "desc": ""
+          },
+          {
+            "id": "test_part_2",
+            "label": "Wanna",
+            "desc": ""
+          },
+          {
+            "id": "part_1774611298395",
+            "label": "System poboru i podgrzewania wody",
+            "desc": ""
+          },
+          {
+            "id": "part_1774611305266",
+            "label": "Rura odprowadzająca dym",
+            "desc": ""
+          },
+          {
+            "id": "part_1774611348299",
+            "label": "Piec na drewno",
+            "desc": ""
+          }
+        ],
+        "svg_style": "minimal"
+      },
+      "stove_scheme": {
+        "title": "Jak dziala piec?",
+        "subtitle": "Informacje dotyczące działania pieca, rodzaje pieców, zalety i wady",
+        "types": [
+          {
+            "id": "internal",
+            "title": "Piec wewnętrzny",
+            "subtitle": "Minimalizm i elegancja w jednym. Balia ze zintegrowanym piecem to doskonałe rozwiązanie dla osób, które cenią nowoczesny, zwarty design i chcą maksymalnie zaoszczędzić przestrzeń na swoim tarasie lub w ogrodzie. Piec jest dyskretnie wkomponowany w bryłę balii, tworząc spójną i estetyczną całość.",
+            "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774602888/wm-balia/schematic/c88i1hdeebipqgzsfmhy.png",
+            "features": [],
+            "pros": [
+              "Oszczędność miejsca",
+              "Nowoczesna estetyka",
+              "Szybkie nagrzewanie"
+            ],
+            "cons": [
+              "Mniej miejsca wewnątrz",
+              "Kwestia bezpieczeństwa",
+              "Trudniejsze czyszczenie"
+            ],
+            "svg_style": "detailed"
+          },
+          {
+            "id": "external",
+            "title": "Piec zewnętrzny",
+            "subtitle": "Klasyczne i niezwykle wygodne rozwiązanie, które idealnie sprawdzi się w przestronnych ogrodach. Oddzielenie pieca od niecki to gwarancja maksymalnej pojemności balii i najwyższego poziomu bezpieczeństwa podczas kąpieli.",
+            "image": "https://res.cloudinary.com/dhyj13jgs/image/upload/v1774602771/wm-balia/schematic/bbrgfwaa8q80guirgu5p.png",
+            "features": [],
+            "pros": [
+              "więcej miejsca w środku dla kąpiących się",
+              "bardzo łatwe czyszczenie i usuwanie popiołu",
+              "100% bezpieczeństwa przed poparzeniem w wodzie",
+              "prosty serwis"
+            ],
+            "cons": [
+              "wymaga więcej miejsca obok balii na tarasie",
+              "widoczne węże przyłączeniowe",
+              "nieco dłuższy czas nagrzewania wody ze względu na oddawanie ciepła na zewnątrz."
+            ],
+            "svg_style": "detailed"
+          }
+        ]
+      }
+    }
+  ]
+}
