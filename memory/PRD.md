@@ -2,7 +2,7 @@
 
 ## Architecture
 - Frontend: React + TailwindCSS + Framer Motion + Shadcn UI
-- Backend: FastAPI + MongoDB + Emergent Object Storage + GPT-4.1-nano (translation)
+- Backend: FastAPI + MongoDB + Emergent Object Storage + Pillow (image optimization) + GPT-4.1-nano
 - Admin: Basic Auth (admin / 220066)
 
 ## Implemented Features
@@ -14,47 +14,40 @@
 
 ### Object Storage & Media
 - Emergent Object Storage (36 фото + 46 видео + каталоги PDF + 65 миграций Cloudinary)
-- Все картинки купелей в Object Storage, 0 внешних зависимостей
 
-### Performance (Mar 2026) — OPTIMIZED
-- Sauna Bulk: GET /api/settings/bulk — 1 запрос (кэш 30 сек), включает _stock_saunas и _catalog_available
-- Balie Bulk: GET /api/balia/bulk — 1 запрос (кэш 30 сек)
-- External API Proxy Cache: /api/sauna/public-models и /api/sauna/prices — in-memory кэш 5 мин (1016ms → 104ms)
-- In-memory ImageCache (200 items, 1h TTL) — кэш картинок из Object Storage
-- BulkCache с поддержкой per-key TTL
-- Preload всех картинок: купелей (цвета, продукты, галерея) в BalieContext, моделей саун в Models.jsx
-- Skeleton-анимация в BalieColors при загрузке картинок
-- Cache-Control: public, max-age=604800, immutable на /api/images/{id}
-- StockSaunas и catalogAvailable из SettingsContext (0 дополнительных запросов)
-- GZip, BalieContext.js + SettingsContext.js
+### Performance (Mar 2026) — FULLY OPTIMIZED
+- **Server-side image optimization**: /api/images/{id}?w=500&q=75 — Pillow resize + WebP conversion (1.5MB → 51KB = 30x меньше)
+- In-memory ImageCache (200 items, 1h TTL) — кэш оптимизированных + оригинальных картинок
+- External API Proxy Cache: /api/sauna/public-models и /api/sauna/prices — 5 мин TTL (1s → 100ms)
+- Sauna Bulk: /api/settings/bulk (cached 30s) includes _stock_saunas + _catalog_available (минус 2 запроса)
+- Balie Bulk: /api/balia/bulk (cached 30s)
+- Preload всех картинок (оптимизированных) в BalieContext при загрузке
+- Skeleton-анимация в BalieColors
+- optimizedImg() хелпер для всех фронтенд-компонентов
+- GZip middleware
 
-### Data Migration (Mar 2026) — COMPLETE
-- GET /api/admin/export — экспорт всех данных
-- POST /api/admin/import — импорт с upsert
-- Вкладка "Система → Экспорт/Импорт" в админке — TESTED, WORKING
-
-### Catalog Storage — COMPLETE
-- PDF каталоги в Object Storage, авто-восстановление при деплое
-- createPortal для модального окна каталога
+### Data Migration — COMPLETE
+- GET /api/admin/export, POST /api/admin/import — TESTED
 
 ### Bug Fixes (Mar 2026)
-- SeoHead.jsx: Fixed TDZ error (canonical used before declaration in production build)
+- SeoHead.jsx: Fixed TDZ error (canonical before initialization)
+- CORS: Fixed allow_credentials=True + wildcard origin conflict
+- /api/content/calculator: Added endpoint (was 404)
 
-### Other Completed
+### Other
 - Google Maps, SEO OG Image, Floating Contact, Analytics, GDPR/RODO, AmoCRM, Multilingual
 
 ## Key API Endpoints
-- GET /api/settings/bulk — Настройки саун + stock_saunas + catalog_available (cached 30s)
-- GET /api/balia/bulk — Данные купелей (cached 30s)
-- GET /api/sauna/public-models — Модели (cached 5min in-memory)
-- GET /api/sauna/prices — Цены (cached 5min in-memory)
-- GET /api/images/{id} — Картинки с ImageCache + Cache-Control
-- GET /api/admin/export — Экспорт данных
-- POST /api/admin/import — Импорт данных
+- GET /api/settings/bulk — cached 30s, includes stock_saunas + catalog
+- GET /api/balia/bulk — cached 30s
+- GET /api/images/{id}?w=&q= — server-side resize + WebP via Pillow
+- GET /api/sauna/public-models — cached 5min in-memory
+- GET /api/sauna/prices — cached 5min in-memory
+- GET /api/content/calculator — calculator section content
+- GET /api/admin/export, POST /api/admin/import
 
 ## Backlog
 - P2: Toast обработка ошибок
 - P3: A/B тестирование CTA
-- P4: Рефакторинг server.py -> модули
+- P4: Рефакторинг server.py → модули
 - P4: Декомпозиция Calculator.jsx
-- Minor: /api/content/calculator endpoint 404 (pre-existing, silently caught)
