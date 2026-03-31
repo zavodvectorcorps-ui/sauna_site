@@ -72,6 +72,11 @@ export const SaunaIntegrationsAdmin = ({ authHeader, showMessage }) => {
     return pipeline?.statuses || [];
   };
 
+  const getCatalogPipelineStatuses = () => {
+    const pipeline = amoPipelines.find(p => p.id === integrationSettings?.amocrm_catalog_pipeline_id);
+    return pipeline?.statuses || [];
+  };
+
   if (loading || !integrationSettings) return <div className="flex items-center justify-center py-12"><div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" /></div>;
 
   return (
@@ -146,6 +151,22 @@ export const SaunaIntegrationsAdmin = ({ authHeader, showMessage }) => {
                   <div><label className="block text-xs text-[#8C8C8C] mb-1">ID ответственного</label><input type="number" value={integrationSettings.amocrm_responsible_user_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_responsible_user_id: parseInt(e.target.value) || 0 })} placeholder="ID" className="w-full p-2 border border-black/10 text-sm" /></div>
                 </div>
               </>
+            )}
+          </div>
+          {/* Step 2b: Catalog pipeline */}
+          <div className="p-4 bg-[#F9F9F7] border border-black/5">
+            <h4 className="text-sm font-semibold mb-1">Воронка для скачивания каталога</h4>
+            <p className="text-[10px] text-[#8C8C8C] mb-3">Отдельная воронка AMO CRM для заявок на скачивание каталога. Если не указана, заявки пойдут в основную воронку.</p>
+            {amoConnected && amoPipelines.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-xs text-[#8C8C8C] mb-1">Воронка (каталог)</label><select value={integrationSettings.amocrm_catalog_pipeline_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_catalog_pipeline_id: parseInt(e.target.value) || 0, amocrm_catalog_status_id: 0 })} className="w-full p-2 border border-black/10 text-sm bg-white" data-testid="amo-catalog-pipeline-select"><option value="">-- основная воронка --</option>{amoPipelines.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></div>
+                <div><label className="block text-xs text-[#8C8C8C] mb-1">Этап (каталог)</label><select value={integrationSettings.amocrm_catalog_status_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_catalog_status_id: parseInt(e.target.value) || 0 })} className="w-full p-2 border border-black/10 text-sm bg-white" disabled={!integrationSettings.amocrm_catalog_pipeline_id} data-testid="amo-catalog-status-select"><option value="">-- выберите --</option>{getCatalogPipelineStatuses().map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-xs text-[#8C8C8C] mb-1">ID воронки (каталог)</label><input type="number" value={integrationSettings.amocrm_catalog_pipeline_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_catalog_pipeline_id: parseInt(e.target.value) || 0 })} placeholder="ID или оставьте пустым" className="w-full p-2 border border-black/10 text-sm" /></div>
+                <div><label className="block text-xs text-[#8C8C8C] mb-1">ID этапа (каталог)</label><input type="number" value={integrationSettings.amocrm_catalog_status_id || ''} onChange={(e) => setIntegrationSettings({ ...integrationSettings, amocrm_catalog_status_id: parseInt(e.target.value) || 0 })} placeholder="ID или оставьте пустым" className="w-full p-2 border border-black/10 text-sm" /></div>
+              </div>
             )}
           </div>
           {/* Step 3 */}

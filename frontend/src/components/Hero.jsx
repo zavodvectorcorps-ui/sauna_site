@@ -12,7 +12,8 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const Hero = () => {
   const { language, t } = useLanguage();
   const { tr } = useAutoTranslate();
-  const { heroSettings } = useSettings();
+  const { heroSettings, getSetting } = useSettings();
+  const buttonConfig = getSetting('button_config');
   const [hasCatalog, setHasCatalog] = useState(false);
   const videoRef = useRef(null);
   const [videoReady, setVideoReady] = useState(false);
@@ -23,9 +24,32 @@ export const Hero = () => {
 
   const scrollToSection = (href) => {
     const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (element) element.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleButtonAction = (buttonId, fallbackAnchor) => {
+    const btn = buttonConfig?.buttons?.[buttonId];
+    const action = btn?.action || 'anchor';
+    const target = btn?.target || fallbackAnchor;
+
+    if (action === 'link' && target) {
+      window.open(target, '_blank');
+    } else if (action === 'form') {
+      const el = document.getElementById(target === 'inquiry' ? 'calculator' : 'contact');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      scrollToSection(target);
     }
+  };
+
+  const getButtonText = (buttonId, fallbackKey) => {
+    const btn = buttonConfig?.buttons?.[buttonId];
+    if (btn) {
+      const lang = language.toLowerCase();
+      if (lang === 'en' && btn.text_en) return btn.text_en;
+      if (btn.text_pl) return btn.text_pl;
+    }
+    return t(fallbackKey);
   };
 
   const defaultFeatures = ['Polska produkcja', 'Gotowe w 5-10 dni', 'Gwarancja 24 miesiące'];
@@ -153,10 +177,10 @@ export const Hero = () => {
           >
             <button
               data-testid="hero-cta-primary"
-              onClick={() => scrollToSection('#calculator')}
+              onClick={() => handleButtonAction('hero_primary', '#calculator')}
               className="btn-primary flex items-center gap-2 group"
             >
-              {t('hero.cta_primary')}
+              {getButtonText('hero_primary', 'hero.cta_primary')}
               <ArrowRight
                 size={18}
                 className="group-hover:translate-x-1 transition-transform duration-200"
@@ -164,10 +188,10 @@ export const Hero = () => {
             </button>
             <button
               data-testid="hero-cta-secondary"
-              onClick={() => scrollToSection('#stock')}
+              onClick={() => handleButtonAction('hero_secondary', '#stock')}
               className="bg-[#1A1A1A] text-white px-8 py-4 text-sm font-semibold uppercase tracking-wider hover:bg-[#333] transition-colors"
             >
-              {t('hero.cta_secondary')}
+              {getButtonText('hero_secondary', 'hero.cta_secondary')}
             </button>
             {hasCatalog && (
               <CatalogFormGate

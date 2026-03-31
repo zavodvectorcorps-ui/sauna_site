@@ -3,6 +3,7 @@ from fastapi.responses import Response, FileResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
@@ -482,6 +483,9 @@ class IntegrationSettings(BaseModel):
     amocrm_field_model: int = 0
     amocrm_field_price: int = 0
     amocrm_field_message: int = 0
+    # AMO CRM Catalog download pipeline (separate funnel)
+    amocrm_catalog_pipeline_id: int = 0
+    amocrm_catalog_status_id: int = 0
 
 class BaliaIntegrationSettings(BaseModel):
     id: str = "balia_integration_settings"
@@ -537,6 +541,13 @@ async def send_telegram_notification(data: dict):
             )
             if data.get("message"):
                 text += f"<b>Комментарий:</b> {data['message']}\n"
+        elif msg_type == "catalog_request":
+            text = (
+                f"📋 <b>Скачивание каталога</b>\n\n"
+                f"<b>Имя:</b> {data.get('name', '—')}\n"
+                f"<b>Телефон:</b> {data.get('phone', '—')}\n"
+                f"<b>Email:</b> {data.get('email', '—')}\n"
+            )
         else:
             text = (
                 f"📩 <b>Сообщение с сайта</b>\n\n"
@@ -676,6 +687,8 @@ async def send_amocrm_lead(data: dict):
             lead_name = f"WM-Sauna: {data.get('model', 'Калькулятор')}{variant_info}"
         elif msg_type == "model_inquiry":
             lead_name = f"WM-Sauna: {data.get('model', 'Запрос')}"
+        elif msg_type == "catalog_request":
+            lead_name = "WM-Sauna: Скачивание каталога"
         else:
             lead_name = "WM-Sauna: Запрос с сайта"
         
@@ -735,10 +748,16 @@ async def send_amocrm_lead(data: dict):
         
         if lead_custom_fields:
             lead_data[0]["custom_fields_values"] = lead_custom_fields
-        if settings.get("amocrm_pipeline_id"):
-            lead_data[0]["pipeline_id"] = settings["amocrm_pipeline_id"]
-        if settings.get("amocrm_status_id"):
-            lead_data[0]["status_id"] = settings["amocrm_status_id"]
+        # Use catalog-specific pipeline for catalog download requests
+        if msg_type == "catalog_request" and settings.get("amocrm_catalog_pipeline_id"):
+            lead_data[0]["pipeline_id"] = settings["amocrm_catalog_pipeline_id"]
+            if settings.get("amocrm_catalog_status_id"):
+                lead_data[0]["status_id"] = settings["amocrm_catalog_status_id"]
+        else:
+            if settings.get("amocrm_pipeline_id"):
+                lead_data[0]["pipeline_id"] = settings["amocrm_pipeline_id"]
+            if settings.get("amocrm_status_id"):
+                lead_data[0]["status_id"] = settings["amocrm_status_id"]
         if settings.get("amocrm_responsible_user_id"):
             lead_data[0]["responsible_user_id"] = settings["amocrm_responsible_user_id"]
         
@@ -2761,6 +2780,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(GZipMiddleware, minimum_size=500)
 
 # Configure logging
 logging.basicConfig(

@@ -1,0 +1,82 @@
+{
+  "summary": "Iteration 23: Tested 4 fixes for WM Group platform. All features working correctly. 1) Hero buttons read config from buttonConfig DB setting via getSetting('button_config'). 2) CatalogFormGate modal has z-[9999] and overflow-y-auto classes. 3) IntegrationSettings model includes amocrm_catalog_pipeline_id and amocrm_catalog_status_id fields with UI in admin panel. 4) GZip compression working via GZipMiddleware (content-encoding: gzip header present).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/settings/bulk",
+        "issue": "button_config not included in bulk settings response when not saved to DB yet. Individual endpoint /api/settings/buttons works correctly with defaults.",
+        "priority": "LOW"
+      },
+      {
+        "endpoint": "/api/admin/settings/integrations",
+        "issue": "amocrm_catalog_pipeline_id and amocrm_catalog_status_id fields not returned in response because they don't exist in DB yet. Pydantic model has defaults but raw DB query doesn't include them.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration23_fixes.py",
+    "/app/test_reports/pytest/pytest_iteration23.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "The bulk settings endpoint returns only what's in the database. Settings that haven't been saved yet (like button_config) won't appear in the bulk response. The individual endpoints return Pydantic model defaults.",
+    "IntegrationSettings in DB doesn't have the new catalog pipeline fields yet. They exist in the Pydantic model but the GET endpoint returns raw DB data without merging defaults."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration23_fixes.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "100%"
+  },
+  "test_credentials": "Admin: username=admin, password=220066, URL=/admin",
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "4 fixes verified: 1) Hero.jsx uses getSetting('button_config') to read button configuration. handleButtonAction() and getButtonText() functions handle action/target/text from config. 2) CatalogFormGate.jsx has z-[9999] and overflow-y-auto classes on line 51. 3) IntegrationSettings Pydantic model has amocrm_catalog_pipeline_id and amocrm_catalog_status_id fields (lines 487-488). Admin UI shows 'Воронка для скачивания каталога' section with data-testid='amo-catalog-pipeline-select' and 'amo-catalog-status-select'. 4) GZipMiddleware is imported and used in server.py. Response headers include content-encoding: gzip when Accept-Encoding: gzip is sent.",
+  "features_tested": {
+    "button_config_endpoint": {
+      "status": "PASS",
+      "details": "GET /api/settings/buttons returns button_config with hero_primary and hero_secondary buttons including action, target, text_pl, text_en"
+    },
+    "gzip_compression": {
+      "status": "PASS",
+      "details": "Response has content-encoding: gzip header when Accept-Encoding: gzip is sent"
+    },
+    "sauny_page": {
+      "status": "PASS",
+      "details": "Hero section with 2 CTA buttons (OBLICZ CENĘ, ZOBACZ OFERTĘ) visible and working"
+    },
+    "balie_page": {
+      "status": "PASS",
+      "details": "Page loads with WM-Balia branding and all sections visible"
+    },
+    "catalog_form_gate_classes": {
+      "status": "PASS",
+      "details": "CatalogFormGate.jsx has z-[9999] and overflow-y-auto classes in modal overlay"
+    },
+    "integration_settings_catalog_fields": {
+      "status": "PASS",
+      "details": "IntegrationSettings Pydantic model has amocrm_catalog_pipeline_id and amocrm_catalog_status_id fields"
+    },
+    "admin_integrations_catalog_ui": {
+      "status": "PASS",
+      "details": "Admin panel Integrations tab shows 'Воронка для скачивания каталога' section with pipeline and status selects"
+    },
+    "hero_button_config_usage": {
+      "status": "PASS",
+      "details": "Hero.jsx uses getSetting('button_config') and has handleButtonAction/getButtonText functions"
+    },
+    "amocrm_catalog_pipeline_logic": {
+      "status": "PASS",
+      "details": "server.py send_amocrm_lead function checks for catalog_request type and uses catalog pipeline settings"
+    }
+  }
+}
