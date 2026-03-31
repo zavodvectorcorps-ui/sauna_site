@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Users, Check, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
+import { optimizedImg } from '../lib/utils';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -89,7 +90,7 @@ export const StockSaunas = () => {
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden bg-[#F2F2F0]">
         <img
-          src={sauna.image}
+          src={optimizedImg(sauna.image, { w: 500, q: 75 })}
           alt={sauna.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"

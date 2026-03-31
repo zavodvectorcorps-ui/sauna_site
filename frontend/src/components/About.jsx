@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Factory, TreePine, Shield, Truck } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
+import { optimizedImg } from '../lib/utils';
 
 export const About = () => {
   const { language, t } = useLanguage();
@@ -123,7 +124,7 @@ export const About = () => {
           >
             <div className="aspect-[4/5] overflow-hidden">
               <img
-                src={aboutImage}
+                src={optimizedImg(aboutImage, { w: 600, q: 80 })}
                 alt="WM-Sauna production"
                 className="w-full h-full object-cover"
               />

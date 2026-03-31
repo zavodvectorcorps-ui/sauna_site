@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
+import { optimizedImg } from '../lib/utils';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -208,7 +209,7 @@ export const Gallery = () => {
                   >
                     <div className="relative aspect-[4/3] overflow-hidden bg-[#F2F2F0]">
                       <img
-                        src={image.url}
+                        src={optimizedImg(image.url, { w: 500, q: 75 })}
                         alt={image.alt}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
@@ -287,7 +288,7 @@ export const Gallery = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              src={visibleImages[currentImageIndex]?.url}
+              src={optimizedImg(visibleImages[currentImageIndex]?.url, { w: 1200, q: 85 })}
               alt={visibleImages[currentImageIndex]?.alt}
               className="max-w-[90vw] max-h-[85vh] object-contain"
               onClick={(e) => e.stopPropagation()}

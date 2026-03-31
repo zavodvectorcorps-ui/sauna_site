@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
 import { useSettings } from '../context/SettingsContext';
+import { optimizedImg } from '../lib/utils';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -47,7 +48,7 @@ const AnimatedImage = ({ src, alt, className }) => {
       transition={{ duration: 0.7, delay: 0.1 }}
       className={className}
     >
-      <img src={src} alt={alt} className="w-full h-auto object-contain drop-shadow-xl" loading="lazy" />
+      <img src={optimizedImg(src, { w: 800, q: 80 })} alt={alt} className="w-full h-auto object-contain drop-shadow-xl" loading="lazy" />
     </motion.div>
   );
 };

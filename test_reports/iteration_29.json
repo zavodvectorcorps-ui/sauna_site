@@ -1,0 +1,66 @@
+{
+  "summary": "Iteration 29: Tested SEO admin stale closure bug fix and image optimization in Gallery component. All features working correctly. Backend: 13/13 tests passed. Frontend: Admin SEO settings correctly save both title_pl and og_image together (stale closure fix verified), /sauny Gallery shows 15 images, /balie page loads with products.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration29_seo_image_optimization.py",
+    "/app/test_reports/pytest/pytest_iteration29.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "SaunaSeoAdmin.jsx: handleImageUpload now uses setSeoSettings(prev => ({...prev, [field]: url})) - functional update avoids stale closure",
+    "All onChange handlers in SaunaSeoAdmin.jsx use functional updates: setSeoSettings(prev => ({...prev, field: value}))",
+    "Gallery.jsx uses optimizedImg(url, {w: 500, q: 75}) for thumbnails and {w: 1200, q: 85} for lightbox",
+    "optimizedImg() in utils.js correctly only adds ?w=&q= params to /api/images/ URLs, not external URLs",
+    "Image optimization endpoint returns WebP: original 1.5MB → w=500,q=75: 51KB (30x compression)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration29_seo_image_optimization.py"
+  ],
+  "success_rate": {
+    "backend": "100% (13/13 tests passed)",
+    "frontend": "100% (all features working)"
+  },
+  "test_credentials": "Admin: username=admin, password=220066",
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "SEO admin stale closure bug is fixed - handleImageUpload uses functional setState with field name parameter. Image optimization working via Pillow. GET /api/images/{id}?w=500&q=75 returns WebP. Gallery images from external sources (Cloudinary) don't get optimization params (correct behavior). /balie page loads slowly but works.",
+  "features_tested": {
+    "seo_settings_get_api": {
+      "status": "PASS",
+      "details": "GET /api/settings/seo returns all SEO fields including og_image"
+    },
+    "seo_settings_put_api": {
+      "status": "PASS",
+      "details": "PUT /api/admin/settings/seo saves og_image and title_pl together without overwriting"
+    },
+    "seo_admin_stale_closure_fix": {
+      "status": "PASS",
+      "details": "Changed title_pl to TEST_SEO_Iteration29_Title and og_image to /api/images/b8ba1a99-40b7-4174-bac4-a7a955d5c1b3, both persisted after save and page refresh"
+    },
+    "image_optimization_w500_q75": {
+      "status": "PASS",
+      "details": "GET /api/images/{id}?w=500&q=75 returns WebP image 51KB (original 1.5MB). 30x compression."
+    },
+    "gallery_section_sauny": {
+      "status": "PASS",
+      "details": "/sauny page Gallery section shows 15 images. Images from Cloudinary (external) correctly don't get optimization params."
+    },
+    "balie_page_loads": {
+      "status": "PASS",
+      "details": "/balie page loads with hero section, product collection, and product cards visible."
+    },
+    "about_section_image": {
+      "status": "PASS",
+      "details": "About section uses optimizedImg(aboutImage, {w: 600, q: 80}) for image optimization."
+    }
+  }
+}

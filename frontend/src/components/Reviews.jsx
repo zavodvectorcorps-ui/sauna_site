@@ -4,6 +4,7 @@ import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
 import { useAutoScroll } from '../hooks/useAutoScroll';
+import { optimizedImg } from '../lib/utils';
 
 export const Reviews = () => {
   const { language, t } = useLanguage();
@@ -36,7 +37,7 @@ export const Reviews = () => {
         "{getReviewText(review)}"
       </p>
       <div className="flex items-center gap-4">
-        <img src={review.image} alt={review.name} className="w-12 h-12 object-cover" />
+        <img src={optimizedImg(review.image, { w: 80, q: 70 })} alt={review.name} className="w-12 h-12 object-cover" />
         <div>
           <p className="font-semibold text-[#1A1A1A]">{review.name}</p>
           <p className="text-sm text-[#8C8C8C]">{review.location} • {review.sauna}</p>
