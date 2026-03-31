@@ -22,14 +22,8 @@ export const BalieCatalogGate = ({ onClose }) => {
         }),
       });
       setDone(true);
-      // Trigger download
-      const link = document.createElement('a');
-      link.href = `${API}/api/balia-catalog/download`;
-      link.download = 'katalog-balie.pdf';
-      link.target = '_blank';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Use location.href instead of programmatic link.click — mobile browsers block it in async callbacks
+      window.location.href = `${API}/api/balia-catalog/download`;
     } catch {}
     setSending(false);
   };

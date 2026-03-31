@@ -1,0 +1,70 @@
+{
+  "summary": "Iteration 33: Verified mobile catalog download fix. Both CatalogFormGate.jsx and BalieCatalogGate.jsx now use window.location.href instead of window.open/link.click() to avoid popup blocking on mobile browsers. Backend endpoints /api/catalog/download and /api/balia-catalog/download return PDF with Content-Disposition: attachment header. All 5 backend tests passed. Frontend mobile viewport tests (375x812) confirmed both /sauny and /balie pages load correctly and catalog forms display properly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration33_catalog_download.py",
+    "/app/test_reports/pytest/pytest_iteration33.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "CatalogFormGate.jsx (line 31): Correctly uses window.location.href instead of window.open() - fix for mobile popup blocking",
+    "BalieCatalogGate.jsx (line 26): Correctly uses window.location.href instead of link.click() - fix for mobile popup blocking",
+    "Backend /api/catalog/download: Returns Content-Type: application/pdf with Content-Disposition: attachment header",
+    "Backend /api/balia-catalog/download: Returns Content-Type: application/pdf with Content-Disposition: attachment header",
+    "Both forms have proper data-testid attributes for testing (catalog-gate-name, catalog-gate-phone, catalog-gate-email, catalog-gate-submit)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration33_catalog_download.py"
+  ],
+  "success_rate": {
+    "backend": "100% (5/5 tests passed)",
+    "frontend": "100% (mobile viewport tests passed)"
+  },
+  "test_credentials": "Admin: username=admin, password=220066",
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Mobile catalog download fix verified. CatalogFormGate.jsx and BalieCatalogGate.jsx now use window.location.href for downloads instead of window.open/link.click which were blocked by mobile browsers in async callbacks. Backend returns PDF with Content-Disposition: attachment header which triggers browser download. Catalog PDFs exist in preview environment (both return 200).",
+  "features_tested": {
+    "catalog_form_gate_mobile_viewport": {
+      "status": "PASS",
+      "details": "/sauny page loads on mobile (375x812), 'Pobierz katalog' button visible, form modal opens with all fields (Imię, Telefon, Email)"
+    },
+    "balie_catalog_gate_mobile_viewport": {
+      "status": "PASS",
+      "details": "/balie page loads on mobile (375x812), 'Pobierz katalog PDF' button visible, BalieCatalogGate modal opens with all fields"
+    },
+    "catalog_form_gate_uses_location_href": {
+      "status": "PASS",
+      "details": "CatalogFormGate.jsx line 31 uses window.location.href (NOT window.open)"
+    },
+    "balie_catalog_gate_uses_location_href": {
+      "status": "PASS",
+      "details": "BalieCatalogGate.jsx line 26 uses window.location.href (NOT link.click)"
+    },
+    "backend_catalog_download_endpoint": {
+      "status": "PASS",
+      "details": "GET /api/catalog/download returns 200 with Content-Type: application/pdf and Content-Disposition: attachment"
+    },
+    "backend_balia_catalog_download_endpoint": {
+      "status": "PASS",
+      "details": "GET /api/balia-catalog/download returns 200 with Content-Type: application/pdf and Content-Disposition: attachment"
+    },
+    "backend_catalog_info_endpoint": {
+      "status": "PASS",
+      "details": "GET /api/catalog/info returns {available: true/false}"
+    },
+    "backend_balia_catalog_info_endpoint": {
+      "status": "PASS",
+      "details": "GET /api/balia-catalog/info returns {available: true/false}"
+    }
+  }
+}

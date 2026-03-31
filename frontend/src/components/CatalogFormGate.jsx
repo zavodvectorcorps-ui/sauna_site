@@ -27,8 +27,8 @@ export const CatalogFormGate = ({ children, className, testId }) => {
         }),
       });
     } catch {}
-    // Download regardless
-    window.open(`${BACKEND_URL}/api/catalog/download`, '_blank');
+    // Use location.href instead of window.open — mobile browsers block popups from async callbacks
+    window.location.href = `${BACKEND_URL}/api/catalog/download`;
     trackEvent('catalog_download', { name: formData.name });
     setShowForm(false);
     setSubmitting(false);
