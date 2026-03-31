@@ -6,6 +6,7 @@ import { useAutoTranslate } from '../context/AutoTranslateContext';
 import { useSettings } from '../context/SettingsContext';
 import { CatalogFormGate } from './CatalogFormGate';
 import { resolveMediaUrl } from '../lib/utils';
+import { trackEvent } from '../lib/analytics';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -40,6 +41,7 @@ export const Hero = () => {
     } else {
       scrollToSection(target);
     }
+    trackEvent('click_cta', { button: buttonId, action, target });
   };
 
   const getButtonText = (buttonId, fallbackKey) => {

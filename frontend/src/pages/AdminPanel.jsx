@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Settings, Users, Image, MessageSquare, LayoutGrid, LogOut, 
-  Eye, GripVertical, Phone, FileText, Star, ChevronDown, Droplets, Flame, CreditCard, Gift
+  Eye, GripVertical, Phone, FileText, Star, ChevronDown, Droplets, Flame, CreditCard, Gift, BarChart3
 } from 'lucide-react';
 import { BaliaProductsAdmin } from '../components/admin/BaliaProductsAdmin';
 import { BaliaTestimonialsAdmin } from '../components/admin/BaliaTestimonialsAdmin';
@@ -38,6 +38,7 @@ import { BalieContactAdmin } from '../components/admin/BalieContactAdmin';
 import { ContactAdmin } from '../components/admin/ContactAdmin';
 import { BalieInstallmentAdmin } from '../components/admin/BalieInstallmentAdmin';
 import { BalieGalleryAdmin } from '../components/admin/BalieGalleryAdmin';
+import { AnalyticsAdmin } from '../components/admin/AnalyticsAdmin';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -220,6 +221,16 @@ const AdminPanel = () => {
         { id: 'whatsapp', label: 'WhatsApp', icon: MessageSquare },
       ],
     },
+    {
+      id: 'analytics_group',
+      label: 'Аналитика',
+      icon: BarChart3,
+      color: '#7C3AED',
+      tabs: [
+        { id: 'analytics_dashboard', label: 'Дашборд', icon: BarChart3 },
+        { id: 'tracking', label: 'Коды трекинга', icon: Settings },
+      ],
+    },
   ];
 
   // Map tab IDs to components
@@ -308,6 +319,9 @@ const AdminPanel = () => {
         return <OrderProcessAdmin {...props} type="sauna" />;
       case 'order_process_balia':
         return <OrderProcessAdmin {...props} type="balia" />;
+      case 'analytics_dashboard':
+      case 'tracking':
+        return <AnalyticsAdmin {...props} activeSubTab={activeTab} />;
       default:
         return null;
     }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -36,8 +36,20 @@ import MainLanding from "./pages/MainLanding";
 import B2BPage from "./pages/B2BPage";
 import { BalieLandingPage } from "./components/balie/BalieLandingPage";
 import { BalieConfigurator } from "./components/balie/BalieConfigurator";
+import { TrackingScripts, useAnalytics } from "./lib/analytics";
+import { useLocation } from "react-router-dom";
 
 const OrderProcessSauna = () => <OrderProcess type="sauna" />;
+
+// Auto page view tracker
+const PageTracker = () => {
+  const location = useLocation();
+  const { trackEvent: track } = useAnalytics();
+  useEffect(() => {
+    track('page_view', { path: location.pathname });
+  }, [location.pathname]);
+  return null;
+};
 
 const sectionComponents = {
   hero: Hero,
@@ -146,6 +158,8 @@ function App() {
         <AutoTranslateProvider>
         <SettingsProvider>
           <BrowserRouter>
+            <PageTracker />
+            <TrackingScripts />
             <Routes>
               {/* Main landing - choose Sauny or Balie */}
               <Route path="/" element={<MainLanding />} />

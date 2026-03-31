@@ -462,6 +462,17 @@ class BaliaOrderProcessSettings(BaseModel):
         {"id": "bs5", "number": "5", "title": "Dostarczymy i gotowe!", "desc": "Dostawa pod wskazany adres. Napełniasz wodę, rozpalasz piec — i cieszysz się relaksem!"},
     ]
 
+class TrackingSettings(BaseModel):
+    id: str = "tracking_settings"
+    gtm_id: str = ""
+    ga4_id: str = ""
+    google_ads_id: str = ""
+    google_ads_conversion_label: str = ""
+    facebook_pixel_id: str = ""
+    custom_head_code: str = ""
+
+
+
 class IntegrationSettings(BaseModel):
     id: str = "integration_settings"
     # Telegram
@@ -918,6 +929,7 @@ async def get_all_settings_bulk():
     default_models = {
         "button_config": ButtonConfig,
         "integration_settings": IntegrationSettings,
+        "tracking_settings": TrackingSettings,
     }
     for sid, model_cls in default_models.items():
         if sid not in settings_map:
@@ -2775,6 +2787,103 @@ async def translate_texts(req: TranslateRequest):
             result[text] = text
 
     return {"translations": result}
+
+
+# ============= Analytics & Tracking =============
+
+@api_router.post("/analytics/event")
+async def track_analytics_event(request: Request):
+    body = await request.json()
+    event = {
+        "event": body.get("event", "page_view"),
+        "page": body.get("page", ""),
+        "referrer": body.get("referrer", ""),
+        "utm_source": body.get("utm_source", ""),
+        "utm_medium": body.get("utm_medium", ""),
+        "utm_campaign": body.get("utm_campaign", ""),
+        "utm_term": body.get("utm_term", ""),
+        "utm_content": body.get("utm_content", ""),
+        "meta": body.get("meta", {}),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "user_agent": request.headers.get("user-agent", ""),
+    }
+    await db.analytics_events.insert_one(event)
+    return {"ok": True}
+
+
+@api_router.get("/settings/tracking")
+async def get_tracking_settings_public():
+    doc = await db.settings.find_one({"id": "tracking_settings"}, {"_id": 0})
+    return doc or TrackingSettings().model_dump()
+
+
+@api_router.put("/admin/settings/tracking")
+async def update_tracking_settings(request: Request, username: str = Depends(verify_admin)):
+    body = await request.json()
+    body["id"] = "tracking_settings"
+    await db.settings.update_one({"id": "tracking_settings"}, {"$set": body}, upsert=True)
+    return body
+
+
+@api_router.get("/admin/analytics/summary")
+async def get_analytics_summary(days: int = 30, username: str = Depends(verify_admin)):
+    from_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    pipeline_total = [
+        {"$match": {"timestamp": {"$gte": from_date}}},
+        {"$group": {"_id": "$event", "count": {"$sum": 1}}},
+    ]
+    totals_cursor = db.analytics_events.aggregate(pipeline_total)
+    totals = {}
+    async for doc in totals_cursor:
+        totals[doc["_id"]] = doc["count"]
+
+    # Daily breakdown
+    pipeline_daily = [
+        {"$match": {"timestamp": {"$gte": from_date}}},
+        {"$addFields": {"day": {"$substr": ["$timestamp", 0, 10]}}},
+        {"$group": {"_id": {"day": "$day", "event": "$event"}, "count": {"$sum": 1}}},
+        {"$sort": {"_id.day": 1}},
+    ]
+    daily_cursor = db.analytics_events.aggregate(pipeline_daily)
+    daily = {}
+    async for doc in daily_cursor:
+        day = doc["_id"]["day"]
+        event = doc["_id"]["event"]
+        if day not in daily:
+            daily[day] = {}
+        daily[day][event] = doc["count"]
+
+    # UTM sources
+    pipeline_utm = [
+        {"$match": {"timestamp": {"$gte": from_date}, "utm_source": {"$ne": ""}}},
+        {"$group": {"_id": {"source": "$utm_source", "medium": "$utm_medium", "campaign": "$utm_campaign"}, "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 20},
+    ]
+    utm_cursor = db.analytics_events.aggregate(pipeline_utm)
+    utm_sources = []
+    async for doc in utm_cursor:
+        utm_sources.append({"source": doc["_id"]["source"], "medium": doc["_id"]["medium"], "campaign": doc["_id"]["campaign"], "count": doc["count"]})
+
+    # Form submissions from contact_forms collection
+    forms_count = await db.contact_forms.count_documents({})
+    catalog_count = await db.contact_forms.count_documents({"type": "catalog_request"})
+    calculator_count = await db.contact_forms.count_documents({"type": "calculator_order"})
+    model_inquiry_count = await db.contact_forms.count_documents({"type": "model_inquiry"})
+    contact_count = forms_count - catalog_count - calculator_count - model_inquiry_count
+
+    return {
+        "totals": totals,
+        "daily": daily,
+        "utm_sources": utm_sources,
+        "forms": {
+            "total": forms_count,
+            "contact": contact_count,
+            "catalog_request": catalog_count,
+            "calculator_order": calculator_count,
+            "model_inquiry": model_inquiry_count,
+        },
+    }
 
 
 # Include the router

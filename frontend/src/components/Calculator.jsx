@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Check, FileText, Send, Loader2, ChevronDown, Download, CheckCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
+import { trackEvent } from '../lib/analytics';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -155,6 +156,7 @@ export const Calculator = () => {
         }),
       });
       setSubmitted(true);
+      trackEvent('generate_lead', { type: 'calculator_order', model: selectedModel?.name, total: calculateTotal() });
       setFormData({ name: '', phone: '', email: '', message: '' });
     } catch (error) {
       console.error('Error submitting inquiry:', error);

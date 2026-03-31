@@ -4,6 +4,7 @@ import { Users, ChevronLeft, ChevronRight, X, Send, Loader2, CheckCircle, GitCom
 import { useLanguage } from '../context/LanguageContext';
 import { SaunaInstallment } from './SaunaInstallment';
 import { useSettings } from '../context/SettingsContext';
+import { trackEvent } from '../lib/analytics';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -136,7 +137,7 @@ export const Models = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, model: selectedModel.name, total: selectedModel.basePrice, type: 'model_inquiry' }),
       });
-      if (res.ok) { setSubmitted(true); setFormData({ name: '', phone: '', email: '', message: '' }); }
+      if (res.ok) { setSubmitted(true); trackEvent('generate_lead', { type: 'model_inquiry', model: selectedModel?.name }); setFormData({ name: '', phone: '', email: '', message: '' }); }
     } catch (err) { console.error(err); }
     setSubmitting(false);
   };

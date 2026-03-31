@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Send, Loader2, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { trackEvent } from '../lib/analytics';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -27,6 +28,7 @@ export const CatalogFormGate = ({ children, className, testId }) => {
     } catch {}
     // Download regardless
     window.open(`${BACKEND_URL}/api/catalog/download`, '_blank');
+    trackEvent('catalog_download', { name: formData.name });
     setShowForm(false);
     setSubmitting(false);
     setFormData({ name: '', phone: '', email: '' });

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Send, CheckCircle, MapPin, Phone, Mail, FileDown } from 'lucide-react';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
 import { useSettings } from '../../context/SettingsContext';
+import { trackEvent } from '../../lib/analytics';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -28,6 +29,7 @@ export const BalieContact = () => {
         body: JSON.stringify({ ...form, type: 'balia_contact' }),
       });
       setSubmitted(true);
+      trackEvent('generate_lead', { type: 'balia_contact' });
     } catch (err) { console.error(err); }
     setSubmitting(false);
   };

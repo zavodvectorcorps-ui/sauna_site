@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, Send, Loader2, CheckCircle, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
+import { trackEvent } from '../lib/analytics';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -38,6 +39,7 @@ export const Contact = () => {
 
       if (response.ok) {
         setSubmitted(true);
+        trackEvent('generate_lead', { type: 'contact' });
         setFormData({ name: '', email: '', phone: '', message: '' });
       } else {
         alert(t('contact.form_error'));
