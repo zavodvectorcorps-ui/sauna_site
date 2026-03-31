@@ -14,12 +14,18 @@
 
 ### Performance — FULLY OPTIMIZED
 - **Server-side image optimization**: /api/images/{id}?w=500&q=75 — Pillow resize + WebP (30x compression)
-- **Applied to ALL components**: Gallery, Products, Colors, About, FAQ, Reviews, StockSaunas, SaunaAdvantages, BalieSchematic, BalieStoveScheme
+- **Applied to ALL components**: Gallery, Products, Colors, About, FAQ, Reviews, StockSaunas, SaunaAdvantages, BalieSchematic, BalieStoveScheme, **Models, Hero, BalieHero** (Mar 31 2026)
 - In-memory ImageCache (200 items, 1h TTL)
 - External API Proxy Cache: models/prices — 5 мин TTL
 - Settings bulk includes stock_saunas + catalog_available
 - Preload all balie images in BalieContext
 - GZip middleware
+- **Mobile-optimized preloading**: Models.jsx preloads only card-size (w=500) instead of full-size images
+
+### SEO / OG — FIXED (Mar 31 2026)
+- OG-картинка в index.html теперь использует ?w=1200&q=80 (вместо сырого 7MB PNG)
+- twitter:image также оптимизирован
+- Хардкод OG-тегов в public/index.html для корректного чтения краулерами
 
 ### SEO Admin — FIXED
 - Stale closure bug: handleImageUpload uses functional setState (prev => ...)
