@@ -24,7 +24,6 @@
 - Горизонтальный скролл для: Спецпредложение, Видео-обзоры, Отзывы, Преимущества/PromoFeatures
 - Peek-эффект: видны краешки соседних карточек
 - Автоскролл: карточки переключаются каждые 3.5-5 сек
-- Хук `useAutoScroll` с querySelectorAll
 
 ### Section Visibility System (Mar 2026)
 - Тумблеры Desktop/Mobile в админке для саун (17 блоков) и купелей (15 блоков)
@@ -38,24 +37,28 @@
 
 ### Multilingual UI (Mar 2026) — COMPLETE
 - **4 языка**: Польский (PL, по умолчанию), Английский (EN), Немецкий (DE), Чешский (CS)
-- **Статический UI**: навигация, герой, калькулятор, галерея, склад, отзывы, о компании, контакт, футер — переводы из словаря `LanguageContext.js`
-- **Переключатель языков** на всех страницах: MainLanding, Sauny, Balie, Blog, B2B
-- **Общий компонент** `LanguageSwitcher.jsx` (dropdown с Globe иконкой)
+- **Переключатель языков** на всех страницах
 
 ### Auto-Translation of All Content (Mar 2026) — COMPLETE
-- **GPT-4.1-nano** для автоматического перевода ВСЕГО контента на страницах
-- **Бэкенд API**: `POST /api/translate` — принимает массив текстов + target_lang, возвращает переводы
-- **MongoDB кэш**: коллекция `translations_cache` — повторные запросы мгновенные
-- **Frontend кэш**: `localStorage` ключ `wm-translations-cache`
-- **tr() функция** из `AutoTranslateContext.js` — оборачивает любой текст, автоматически отправляет на перевод при переключении языка
-- **Покрытие**: MainLanding, Hero, PromoBanner, PromoFeatures, SpecialOffer, SaunaAdvantages, SaunaVideoReviews, OrderProcess, SaunaInstallment, SocialProof, FAQ, BalieHero, BalieProducts, BalieFeatures, BalieAbout, BalieContact, BalieGallery, BalieTestimonials, BalieInstallment, BalieFaq, BalieLandingPage nav
+- **GPT-4.1-nano** для автоматического перевода ВСЕГО контента
+- **tr() функция** из `AutoTranslateContext.js`
+- **MongoDB кэш**: коллекция `translations_cache`
+
+### Hero Badges Admin (Mar 2026) — COMPLETE
+- 3 текстовых бейджа ("Polska produkcja", "Gotowe w 5-10 dni", "Gwarancja 24 miesiące") редактируются в админке
+- Секция "Преимущества (бейджи на Hero)" в разделе Сауны > Hero
+
+### Performance Optimization (Mar 2026) — COMPLETE
+- **Bulk Settings Endpoint**: `GET /api/settings/bulk` — возвращает все 32+ настроек + отзывы одним запросом
+- **SettingsContext**: 1 запрос вместо 8 при инициализации
+- **21 компонент** обновлены: используют `getSetting()` из контекста вместо индивидуальных fetch-запросов
+- **Устранено ~30 HTTP запросов** при загрузке каждой страницы
 
 ## Key API Endpoints
+- `GET /api/settings/bulk` — Все настройки одним запросом (MAIN)
 - `POST /api/translate` — Auto-translation via GPT с MongoDB кэшированием
-- `GET/PUT /api/settings/promo-banner`
-- `GET/PUT /api/settings/balie-about`
-- `GET/PUT /api/settings/balie-contact`
-- `GET/PUT /api/settings/section_visibility`
+- `GET/PUT /api/settings/hero` (with features array)
+- `GET/PUT /api/settings/site`
 
 ## Backlog
 - P2: Toast обработка ошибок (глобальная)
