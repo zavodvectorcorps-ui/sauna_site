@@ -15,12 +15,35 @@ from datetime import datetime, timezone, timedelta
 import httpx
 import secrets
 import base64
+import json as json_module
+import time as time_module
 import cloudinary
 import cloudinary.uploader
 from object_storage import init_storage, put_object, get_object, get_mime_type
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+
+# In-memory cache for bulk endpoints
+class BulkCache:
+    def __init__(self, ttl=30):
+        self._data = {}
+        self._ttl = ttl
+    def get(self, key):
+        entry = self._data.get(key)
+        if entry and time_module.time() - entry['ts'] < self._ttl:
+            return entry['data']
+        return None
+    def set(self, key, data):
+        self._data[key] = {'data': data, 'ts': time_module.time()}
+    def invalidate(self, key=None):
+        if key:
+            self._data.pop(key, None)
+        else:
+            self._data.clear()
+
+bulk_cache = BulkCache(ttl=30)
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
@@ -920,13 +943,15 @@ async def generate_sauna_pdf(request: Request):
 # Bulk settings endpoint — returns all settings in ONE query
 @api_router.get("/settings/bulk")
 async def get_all_settings_bulk():
+    cached = bulk_cache.get("settings_bulk")
+    if cached:
+        return cached
     all_docs = await db.settings.find({}, {"_id": 0}).to_list(500)
     settings_map = {}
     for doc in all_docs:
         sid = doc.get("id")
         if sid:
             settings_map[sid] = doc
-    # Add defaults for settings not yet saved to DB
     default_models = {
         "button_config": ButtonConfig,
         "integration_settings": IntegrationSettings,
@@ -939,10 +964,10 @@ async def get_all_settings_bulk():
     if not reviews:
         reviews = get_default_reviews()
     settings_map["_reviews"] = reviews
-    # Include balia hero from balia_content collection
     balia_content = await db.balia_content.find_one({"type": "main"}, {"_id": 0})
     if balia_content and "hero" in balia_content:
         settings_map["balia_hero_settings"] = balia_content["hero"]
+    bulk_cache.set("settings_bulk", settings_map)
     return settings_map
 
 
@@ -2489,6 +2514,9 @@ async def delete_balia_testimonial(testimonial_id: str, username: str = Depends(
 @api_router.get("/balia/bulk")
 async def get_balia_bulk():
     """Single endpoint returning all public balie data for fast page load."""
+    cached = bulk_cache.get("balia_bulk")
+    if cached:
+        return cached
     import asyncio
 
     # Fire all DB queries + external API in parallel
@@ -2532,7 +2560,7 @@ async def get_balia_bulk():
         check_catalog("balia_catalog_settings", "balia-catalog.pdf"),
     )
 
-    return {
+    result = {
         "content": content or {},
         "products": products or [],
         "testimonials": testimonials or [],
@@ -2544,6 +2572,8 @@ async def get_balia_bulk():
         "catalog_info": catalog_info,
         "balia_catalog_info": balia_catalog_info,
     }
+    bulk_cache.set("balia_bulk", result)
+    return result
 
 
 # Balia content (hero, features, etc.)
@@ -3008,6 +3038,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(GZipMiddleware, minimum_size=500)
+
+# Invalidate bulk cache on admin write operations
+@app.middleware("http")
+async def cache_invalidation_middleware(request, call_next):
+    response = await call_next(request)
+    if request.method in ("PUT", "POST", "DELETE") and "/api/admin" in str(request.url):
+        bulk_cache.invalidate()
+    return response
+
 
 # Configure logging
 logging.basicConfig(

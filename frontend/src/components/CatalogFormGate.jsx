@@ -45,22 +45,23 @@ export const CatalogFormGate = ({ children, className, testId }) => {
         {children}
       </button>
 
-      <AnimatePresence>
-        {showForm && createPortal(
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 overflow-y-auto"
-            onClick={() => setShowForm(false)}
-          >
+      {createPortal(
+        <AnimatePresence>
+          {showForm && (
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white p-6 max-w-sm w-full relative my-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 overflow-y-auto"
+              onClick={() => setShowForm(false)}
             >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white p-6 max-w-sm w-full relative my-auto"
+              >
               <button onClick={() => setShowForm(false)} className="absolute top-3 right-3 text-[#8C8C8C] hover:text-[#1A1A1A]"><X size={18} /></button>
               <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">{labels.title}</h3>
               <p className="text-sm text-[#595959] mb-4">{labels.subtitle}</p>
@@ -77,10 +78,11 @@ export const CatalogFormGate = ({ children, className, testId }) => {
                 </p>
               </form>
             </motion.div>
-          </motion.div>,
-          document.body
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 };
