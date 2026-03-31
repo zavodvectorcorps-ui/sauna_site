@@ -8,22 +8,35 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const StockSaunas = () => {
   const { t, language } = useLanguage();
-  const { getSetting } = useSettings();
+  const { getSetting, stockSaunas: contextSaunas } = useSettings();
   const [saunas, setSaunas] = useState([]);
   const [loading, setLoading] = useState(true);
   const sectionContent = getSetting('stock_settings');
   const sliderRef = useRef(null);
 
   useEffect(() => {
-    fetchSaunas();
-  }, []);
+    if (contextSaunas?.length) {
+      const stockItems = contextSaunas.map((sauna) => ({
+        id: sauna.id,
+        name: sauna.name,
+        image: sauna.image,
+        price: sauna.price,
+        discount: sauna.discount,
+        capacity: sauna.capacity,
+        steamRoomSize: sauna.steam_room_size,
+        relaxRoomSize: sauna.relax_room_size,
+      }));
+      setSaunas(stockItems);
+      setLoading(false);
+    } else {
+      fetchSaunas();
+    }
+  }, [contextSaunas]);
 
   const fetchSaunas = async () => {
     try {
       const saunasRes = await fetch(`${BACKEND_URL}/api/stock-saunas`);
       const saunasData = await saunasRes.json();
-
-      // Map data to expected format
       const stockItems = saunasData.map((sauna) => ({
         id: sauna.id,
         name: sauna.name,
@@ -34,7 +47,6 @@ export const StockSaunas = () => {
         steamRoomSize: sauna.steam_room_size,
         relaxRoomSize: sauna.relax_room_size,
       }));
-
       setSaunas(stockItems);
       setLoading(false);
     } catch (error) {

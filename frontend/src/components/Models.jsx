@@ -25,7 +25,7 @@ const getModelType = (model) => {
 
 export const Models = () => {
   const { language } = useLanguage();
-  const { getSetting } = useSettings();
+  const { getSetting, catalogAvailable: ctxCatalog } = useSettings();
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(true);
   const sectionContent = getSetting('models_settings');
@@ -39,7 +39,7 @@ export const Models = () => {
   const [activeVariantIdx, setActiveVariantIdx] = useState(0);
   const [compareList, setCompareList] = useState([]);
   const [showCompare, setShowCompare] = useState(false);
-  const [hasCatalog, setHasCatalog] = useState(false);
+  const [hasCatalog, setHasCatalog] = useState(ctxCatalog || false);
   const [activeFilter, setActiveFilter] = useState('all');
   const [heaterPrices, setHeaterPrices] = useState({ electric: 2600, wood: 3600 });
   const [showAll, setShowAll] = useState(false);
@@ -50,7 +50,9 @@ export const Models = () => {
   useEffect(() => {
     fetchModels();
     fetchHeaterPrices();
-    fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
+    if (!ctxCatalog) {
+      fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
+    }
   }, []);
 
   const fetchHeaterPrices = async () => {
@@ -97,6 +99,12 @@ export const Models = () => {
         adminDesc_en: config.descriptions?.[model.id]?.description_en || '',
         modelType: getModelType(model),
       }));
+
+      // Preload all model images in background
+      processedModels.forEach(m => {
+        if (m.mainImage) { const img = new Image(); img.src = m.mainImage; }
+        (m.galleryImages || []).forEach(url => { const img = new Image(); img.src = url; });
+      });
 
       setModels(processedModels);
       setLoading(false);

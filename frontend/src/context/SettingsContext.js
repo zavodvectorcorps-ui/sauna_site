@@ -34,6 +34,8 @@ export const SettingsProvider = ({ children }) => {
   const sectionOrder = allSettings['section_order'] || null;
   const sectionVisibility = allSettings['section_visibility'] || null;
   const reviews = allSettings['_reviews'] || [];
+  const stockSaunas = allSettings['_stock_saunas'] || [];
+  const catalogAvailable = allSettings['_catalog_available'] || false;
   const baliaHero = (() => {
     // baliaHero was previously extracted from /api/balia/content
     // Try to get it from balia content settings if available
@@ -53,6 +55,8 @@ export const SettingsProvider = ({ children }) => {
       sectionOrder,
       sectionVisibility,
       reviews,
+      stockSaunas,
+      catalogAvailable,
       baliaHero,
       loading,
       allSettings,

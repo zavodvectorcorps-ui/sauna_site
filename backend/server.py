@@ -32,11 +32,16 @@ class BulkCache:
         self._ttl = ttl
     def get(self, key):
         entry = self._data.get(key)
-        if entry and time_module.time() - entry['ts'] < self._ttl:
+        if not entry:
+            return None
+        ttl = entry.get('_ttl', self._ttl)
+        if time_module.time() - entry['ts'] < ttl:
             return entry['data']
         return None
-    def set(self, key, data):
+    def set(self, key, data, ttl=None):
         self._data[key] = {'data': data, 'ts': time_module.time()}
+        if ttl:
+            self._data[key]['_ttl'] = ttl
     def invalidate(self, key=None):
         if key:
             self._data.pop(key, None)
@@ -871,62 +876,64 @@ async def submit_contact_form(form_data: ContactFormCreate):
 # Proxy endpoints for calculator API with caching
 @api_router.get("/sauna/prices")
 async def get_sauna_prices():
+    # In-memory cache first (5 min TTL)
+    mem_cached = bulk_cache.get("sauna_prices")
+    if mem_cached:
+        return mem_cached
+
     cache_key = "sauna_prices_cache"
     
     try:
-        # Try to fetch from external API
         async with httpx.AsyncClient(timeout=15.0) as http_client:
             response = await http_client.get(f"{CALCULATOR_API_URL}/api/sauna/prices")
             response.raise_for_status()
             data = response.json()
             
-            # Save to cache on success
+            bulk_cache._data["sauna_prices"] = {'data': data, 'ts': time_module.time()}
+            bulk_cache._data["sauna_prices"]['_ttl'] = 300  # 5 min
+            
             await db.cache.update_one(
                 {"id": cache_key},
-                {
-                    "$set": {
-                        "id": cache_key,
-                        "data": data,
-                        "updated_at": datetime.now(timezone.utc).isoformat()
-                    }
-                },
+                {"$set": {"id": cache_key, "data": data, "updated_at": datetime.now(timezone.utc).isoformat()}},
                 upsert=True
             )
-            logger.info("Sauna prices fetched from API and cached")
             return data
             
     except (httpx.HTTPError, Exception) as e:
         logger.warning(f"External API unavailable: {e}. Trying cache...")
-        
-        # Try to get from cache
         cached = await db.cache.find_one({"id": cache_key}, {"_id": 0})
         if cached and cached.get("data"):
-            logger.info(f"Returning cached data from {cached.get('updated_at', 'unknown')}")
+            bulk_cache._data["sauna_prices"] = {'data': cached["data"], 'ts': time_module.time()}
             return cached["data"]
-        
-        # No cache available
-        logger.error("No cached data available")
         raise HTTPException(status_code=502, detail="Calculator API unavailable and no cached data")
 
 @api_router.get("/sauna/public-models")
 async def get_public_models(lang: str = "pl"):
+    mem_key = f"sauna_models_{lang}"
+    mem_cached = bulk_cache.get(mem_key)
+    if mem_cached:
+        return mem_cached
+
     cache_key = f"sauna_public_models_{lang}"
     try:
         async with httpx.AsyncClient(timeout=15.0) as http_client:
             response = await http_client.get(f"{CALCULATOR_API_URL}/api/sauna/public/models", params={"lang": lang})
             response.raise_for_status()
             data = response.json()
+            
+            bulk_cache._data[mem_key] = {'data': data, 'ts': time_module.time()}
+            
             await db.cache.update_one(
                 {"id": cache_key},
                 {"$set": {"id": cache_key, "data": data, "updated_at": datetime.now(timezone.utc).isoformat()}},
                 upsert=True
             )
-            logger.info(f"Public models fetched and cached (lang={lang})")
             return data
     except (httpx.HTTPError, Exception) as e:
         logger.warning(f"Public models API unavailable: {e}. Trying cache...")
         cached = await db.cache.find_one({"id": cache_key}, {"_id": 0})
         if cached and cached.get("data"):
+            bulk_cache._data[mem_key] = {'data': cached["data"], 'ts': time_module.time()}
             return cached["data"]
         raise HTTPException(status_code=502, detail="Public models API unavailable and no cached data")
 
@@ -988,6 +995,14 @@ async def get_all_settings_bulk():
     balia_content = await db.balia_content.find_one({"type": "main"}, {"_id": 0})
     if balia_content and "hero" in balia_content:
         settings_map["balia_hero_settings"] = balia_content["hero"]
+
+    # Include stock saunas and catalog info to reduce client-side requests
+    stock_saunas = await db.stock_saunas.find({"active": True}, {"_id": 0}).sort("sort_order", 1).to_list(100)
+    settings_map["_stock_saunas"] = stock_saunas
+
+    catalog_path = CATALOG_DIR / "catalog.pdf"
+    settings_map["_catalog_available"] = catalog_path.exists()
+
     bulk_cache.set("settings_bulk", settings_map)
     return settings_map
 

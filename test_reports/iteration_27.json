@@ -1,0 +1,76 @@
+{
+  "summary": "Iteration 27: Tested in-memory caching for external API proxy endpoints (sauna/public-models, sauna/prices) with 5-min TTL, settings/bulk endpoint enhancements (_stock_saunas, _catalog_available), and SeoHead.jsx TDZ fix. All features working correctly. Backend: 11/11 tests passed. Frontend: /sauny and /balie pages load without critical errors, model cards display correctly, color tabs switch properly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Calculator section content fetch",
+        "issue": "Legacy endpoint /api/content/calculator returns 404 - pre-existing issue, not related to current changes. Error is silently caught so no functional impact.",
+        "affected_selectors": []
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration27_caching.py",
+    "/app/test_reports/pytest/pytest_iteration27.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "BulkCache implementation in server.py (lines 29-49) correctly supports per-key TTL via _ttl field",
+    "Cached proxy endpoints (lines 877-938) properly implement 5-min TTL for external API calls",
+    "settings/bulk endpoint (line 999-1006) correctly includes _stock_saunas and _catalog_available",
+    "SeoHead.jsx TDZ fix verified - canonical variable now declared before ogImage which uses it",
+    "Models.jsx image preloading (lines 104-107) implemented correctly for background loading"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration27_caching.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "100% (all features working)"
+  },
+  "test_credentials": "Admin: username=admin, password=220066",
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "In-memory caching for external API proxy endpoints working with 5-min TTL. BulkCache class supports per-key TTL via _ttl field in entry dict. settings/bulk now returns _stock_saunas array and _catalog_available boolean. StockSaunas.jsx uses stockSaunas from SettingsContext instead of separate fetch. SeoHead.jsx TDZ bug fixed (canonical moved before ogImage). Models.jsx preloads model images in background. Minor pre-existing issue: /api/content/calculator endpoint returns 404 but error is silently caught.",
+  "features_tested": {
+    "sauna_public_models_caching": {
+      "status": "PASS",
+      "details": "GET /api/sauna/public-models returns models data. Second call uses in-memory cache (5-min TTL). Response includes models array with id, name, imageUrl, variants, etc."
+    },
+    "sauna_prices_caching": {
+      "status": "PASS",
+      "details": "GET /api/sauna/prices returns prices data. Second call uses in-memory cache (5-min TTL). Response includes categories with options and prices."
+    },
+    "settings_bulk_stock_saunas": {
+      "status": "PASS",
+      "details": "GET /api/settings/bulk includes _stock_saunas array. StockSaunas.jsx component uses this data from SettingsContext instead of making separate API call."
+    },
+    "settings_bulk_catalog_available": {
+      "status": "PASS",
+      "details": "GET /api/settings/bulk includes _catalog_available boolean indicating if catalog.pdf exists."
+    },
+    "sauny_page_loading": {
+      "status": "PASS",
+      "details": "/sauny page loads correctly with hero section, models section with 3 category cards (Beczki, Kwadro, Wiking). Page title renders correctly via SeoHead.jsx."
+    },
+    "balie_page_loading": {
+      "status": "PASS",
+      "details": "/balie page loads without console errors. All 5 color tabs (Fiberglass, Acrylic, Spruce, Thermo, WPC) present and switch correctly."
+    },
+    "seohead_tdz_fix": {
+      "status": "PASS",
+      "details": "No ReferenceError about 'h' before initialization. SeoHead.jsx renders correctly on both /sauny and /balie pages."
+    },
+    "admin_export_auth": {
+      "status": "PASS",
+      "details": "GET /api/admin/export returns 401 without auth, 200 with valid Basic auth (admin/220066)."
+    }
+  }
+}
