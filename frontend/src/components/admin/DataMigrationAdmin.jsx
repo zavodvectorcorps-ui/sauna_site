@@ -3,7 +3,7 @@ import { Download, Upload, Loader2, CheckCircle, AlertCircle } from 'lucide-reac
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-export const DataMigrationAdmin = ({ fetchWithAuth, showMessage }) => {
+export const DataMigrationAdmin = ({ authHeader, showMessage }) => {
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState(null);
@@ -11,7 +11,9 @@ export const DataMigrationAdmin = ({ fetchWithAuth, showMessage }) => {
   const handleExport = async () => {
     setExporting(true);
     try {
-      const res = await fetchWithAuth(`${API}/api/admin/export`);
+      const res = await fetch(`${API}/api/admin/export`, {
+        headers: { 'Authorization': authHeader },
+      });
       const data = await res.json();
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -35,9 +37,9 @@ export const DataMigrationAdmin = ({ fetchWithAuth, showMessage }) => {
     try {
       const text = await file.text();
       const data = JSON.parse(text);
-      const res = await fetchWithAuth(`${API}/api/admin/import`, {
+      const res = await fetch(`${API}/api/admin/import`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
         body: JSON.stringify(data),
       });
       const result = await res.json();
