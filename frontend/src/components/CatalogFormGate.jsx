@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Send, Loader2, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -45,7 +46,7 @@ export const CatalogFormGate = ({ children, className, testId }) => {
       </button>
 
       <AnimatePresence>
-        {showForm && (
+        {showForm && createPortal(
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -76,7 +77,8 @@ export const CatalogFormGate = ({ children, className, testId }) => {
                 </p>
               </form>
             </motion.div>
-          </motion.div>
+          </motion.div>,
+          document.body
         )}
       </AnimatePresence>
     </>
