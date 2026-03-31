@@ -13,36 +13,35 @@
 - Блог, B2B, WhatsApp, видео-обзоры, FAQ, процесс заказа
 
 ### Object Storage & Media
-- Emergent Object Storage (36 фото + 46 видео + каталоги PDF)
-- Каталоги в Object Storage с локальным кешем и авто-восстановлением
-
-### Multilingual (4 языка)
-- PL, EN, DE, CS. GPT-4.1-nano автоперевод с MongoDB кэшем
+- Emergent Object Storage (36 фото + 46 видео + каталоги PDF + 65 миграций Cloudinary)
+- Все картинки купелей в Object Storage, 0 внешних зависимостей
 
 ### Performance (Mar 2026) — OPTIMIZED
 - Sauna Bulk: GET /api/settings/bulk — 1 запрос (кэш 30 сек)
-- Balie Bulk: GET /api/balia/bulk — 1 запрос вместо 10+ (кэш 30 сек, 684ms->177ms)
-- In-memory BulkCache с автоинвалидацией при admin write операциях
-- GZip: 52KB -> 21KB
-- BalieContext.js + SettingsContext.js — глобальные стейты
+- Balie Bulk: GET /api/balia/bulk — 1 запрос вместо 12+ (кэш 30 сек, 684ms->177ms)
+- In-memory BulkCache с автоинвалидацией
+- GZip, BalieContext.js + SettingsContext.js
 
-### AmoCRM
-- Отдельная воронка для каталога
+### Data Migration (Mar 2026) — COMPLETE
+- GET /api/admin/export — экспорт всех данных (268 docs, 162 KB)
+- POST /api/admin/import — импорт с upsert (не дублирует)
+- Вкладка "Система → Экспорт/Импорт" в админке
 
-### Analytics & Ads
-- Дашборд, GTM/GA4/FB Pixel, consent-gated
+### Catalog Storage — COMPLETE
+- PDF каталоги в Object Storage, авто-восстановление при деплое
+- createPortal для модального окна каталога (центрирование)
 
-### GDPR/RODO — COMPLETE
-### Floating Contact — COMPLETE
-### Google Maps — COMPLETE
-### SEO OG Image — COMPLETE
-### Catalog Modal (createPortal) — COMPLETE
+### Other Completed
+- Google Maps (главная + сауны, автопарсинг iframe)
+- SEO OG Image (relative path + canonical_url)
+- Floating Contact (WhatsApp + Позвонить, глобально)
+- Analytics, GDPR/RODO, AmoCRM, Multilingual
 
 ## Key API Endpoints
-- GET /api/settings/bulk — Все настройки саун (cached 30s)
-- GET /api/balia/bulk — Все данные купелей (cached 30s)
-- POST /api/analytics/event — Аналитика
-- GET /api/catalog/info — Каталог (Object Storage fallback)
+- GET /api/settings/bulk — Настройки саун (cached)
+- GET /api/balia/bulk — Данные купелей (cached)
+- GET /api/admin/export — Экспорт данных
+- POST /api/admin/import — Импорт данных
 
 ## Backlog
 - P2: Toast обработка ошибок

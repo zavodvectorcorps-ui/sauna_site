@@ -39,6 +39,7 @@ import { ContactAdmin } from '../components/admin/ContactAdmin';
 import { BalieInstallmentAdmin } from '../components/admin/BalieInstallmentAdmin';
 import { BalieGalleryAdmin } from '../components/admin/BalieGalleryAdmin';
 import { AnalyticsAdmin } from '../components/admin/AnalyticsAdmin';
+import { DataMigrationAdmin } from '../components/admin/DataMigrationAdmin';
 import { useSettings } from '../context/SettingsContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -237,6 +238,15 @@ const AdminPanel = () => {
         { id: 'tracking', label: 'Коды трекинга', icon: Settings },
       ],
     },
+    {
+      id: 'system_group',
+      label: 'Система',
+      icon: Settings,
+      color: '#6B7280',
+      tabs: [
+        { id: 'data_migration', label: 'Экспорт/Импорт', icon: Settings },
+      ],
+    },
   ];
 
   // Map tab IDs to components
@@ -328,6 +338,8 @@ const AdminPanel = () => {
       case 'analytics_dashboard':
       case 'tracking':
         return <AnalyticsAdmin {...props} activeSubTab={activeTab} />;
+      case 'data_migration':
+        return <DataMigrationAdmin {...props} />;
       default:
         return null;
     }

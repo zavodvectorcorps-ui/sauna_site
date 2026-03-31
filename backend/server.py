@@ -2401,6 +2401,79 @@ async def delete_balia_catalog(username: str = Depends(verify_admin)):
     return {"status": "deleted"}
 
 
+# ===== DATA EXPORT / IMPORT =====
+@api_router.get("/admin/export")
+async def export_all_data(username: str = Depends(verify_admin)):
+    """Export all content data as JSON for migration between environments."""
+    export_data = {}
+    
+    # Export all collections that contain user content
+    collections_to_export = [
+        "settings", "balia_content", "balia_products", "balia_colors",
+        "balia_gallery", "balia_testimonials", "reviews", "blog_articles",
+        "uploads", "video_uploads", "stock_saunas",
+    ]
+    for coll_name in collections_to_export:
+        docs = await db[coll_name].find({}, {"_id": 0}).to_list(5000)
+        if docs:
+            export_data[coll_name] = docs
+    
+    return export_data
+
+
+@api_router.post("/admin/import")
+async def import_all_data(request: Request, username: str = Depends(verify_admin)):
+    """Import content data from JSON export. Merges with existing data."""
+    import_data = await request.json()
+    results = {}
+    
+    safe_collections = [
+        "settings", "balia_content", "balia_products", "balia_colors",
+        "balia_gallery", "balia_testimonials", "reviews", "blog_articles",
+        "uploads", "video_uploads", "stock_saunas",
+    ]
+    
+    for coll_name, docs in import_data.items():
+        if coll_name not in safe_collections:
+            results[coll_name] = "skipped (not in safe list)"
+            continue
+        if not isinstance(docs, list) or not docs:
+            results[coll_name] = "skipped (empty or invalid)"
+            continue
+        
+        inserted = 0
+        updated = 0
+        for doc in docs:
+            # Determine unique key for upsert
+            if "id" in doc:
+                key = {"id": doc["id"]}
+            elif "type" in doc:
+                key = {"type": doc["type"]}
+            elif "slug" in doc:
+                key = {"slug": doc["slug"]}
+            elif "name" in doc:
+                key = {"name": doc["name"]}
+            else:
+                # Insert without dedup
+                await db[coll_name].insert_one(doc)
+                inserted += 1
+                continue
+            
+            result = await db[coll_name].update_one(key, {"$set": doc}, upsert=True)
+            if result.upserted_id:
+                inserted += 1
+            else:
+                updated += 1
+        
+        results[coll_name] = f"{inserted} inserted, {updated} updated"
+    
+    # Invalidate cache
+    bulk_cache.invalidate()
+    
+    return {"status": "success", "results": results}
+
+
+
 # Helper functions
 def get_default_reviews():
     return [
