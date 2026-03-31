@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useBalieData } from '../../context/BalieContext';
+import { resolveMediaUrl } from '../../lib/utils';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -130,18 +132,17 @@ export const BalieSchematic = () => {
   const [parts, setParts] = useState(defaultParts);
   const [image, setImage] = useState(null);
   const [svgStyle, setSvgStyle] = useState('default');
+  const { data: balieData } = useBalieData();
 
   useEffect(() => {
-    fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
-      if (data?.schematic) {
-        if (data.schematic.title) setTitle(data.schematic.title);
-        if (data.schematic.subtitle) setSubtitle(data.schematic.subtitle);
-        if (data.schematic.parts?.length) setParts(data.schematic.parts);
-        if (data.schematic.image) setImage(data.schematic.image);
-        if (data.schematic.svg_style) setSvgStyle(data.schematic.svg_style);
-      }
-    }).catch(() => {});
-  }, []);
+    if (!balieData?.content?.schematic) return;
+    const s = balieData.content.schematic;
+    if (s.title) setTitle(s.title);
+    if (s.subtitle) setSubtitle(s.subtitle);
+    if (s.parts?.length) setParts(s.parts);
+    if (s.image) setImage(resolveMediaUrl(s.image));
+    if (s.svg_style) setSvgStyle(s.svg_style);
+  }, [balieData]);
 
   return (
     <section id="budowa" className="py-20 bg-[#0A0D12]" data-testid="balie-schematic">

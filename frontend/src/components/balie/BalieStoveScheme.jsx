@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Flame, ArrowRight } from 'lucide-react';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { useBalieData } from '../../context/BalieContext';
+import { resolveMediaUrl } from '../../lib/utils';
 
 const defaultStoveTypes = [
   {
@@ -204,18 +204,21 @@ export const BalieStoveScheme = () => {
   const [stoveTypes, setStoveTypes] = useState(defaultStoveTypes);
   const [sectionTitle, setSectionTitle] = useState('Jak dziala piec?');
   const [sectionSubtitle, setSectionSubtitle] = useState('Oferujemy dwa typy piecow na drewno ze stali nierdzewnej V4A. Kazdy nagrzeje wode w 1-2 godziny, nawet przy -20°C.');
+  const { data: balieData } = useBalieData();
 
   useEffect(() => {
-    fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
-      if (data?.stove_scheme) {
-        if (data.stove_scheme.title) setSectionTitle(data.stove_scheme.title);
-        if (data.stove_scheme.subtitle) setSectionSubtitle(data.stove_scheme.subtitle);
-        if (data.stove_scheme.types?.length) {
-          setStoveTypes(prev => data.stove_scheme.types.map((t, i) => ({ ...prev[i], ...t })));
-        }
-      }
-    }).catch(() => {});
-  }, []);
+    if (!balieData?.content?.stove_scheme) return;
+    const ss = balieData.content.stove_scheme;
+    if (ss.title) setSectionTitle(ss.title);
+    if (ss.subtitle) setSectionSubtitle(ss.subtitle);
+    if (ss.types?.length) {
+      setStoveTypes(prev => ss.types.map((t, i) => ({
+        ...prev[i],
+        ...t,
+        image: t.image ? resolveMediaUrl(t.image) : prev[i]?.image
+      })));
+    }
+  }, [balieData]);
 
   const active = stoveTypes.find(s => s.id === activeStove) || stoveTypes[0];
 
