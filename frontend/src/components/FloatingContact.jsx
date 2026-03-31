@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, X, MessageCircle } from 'lucide-react';
+import { Phone, X } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
 
 export const FloatingContact = () => {
-  const [open, setOpen] = useState(false);
+  const [phoneOpen, setPhoneOpen] = useState(false);
   const { siteSettings, getSetting } = useSettings();
   const phone = siteSettings?.phone || '+48 732 099 201';
   const phoneClean = phone.replace(/\s/g, '');
@@ -15,43 +15,26 @@ export const FloatingContact = () => {
 
   return (
     <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-40 flex flex-col items-end gap-3" data-testid="floating-contact">
+      {/* Expanded phone number */}
       <AnimatePresence>
-        {open && (
-          <>
-            {waEnabled && (
-              <motion.a
-                initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 20, scale: 0.8 }}
-                transition={{ duration: 0.2, delay: 0.05 }}
-                href={`https://wa.me/${waPhone}?text=${waMessage}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-[#25D366] text-white pl-4 pr-5 py-3 shadow-lg hover:bg-[#1fba57] transition-colors"
-                data-testid="floating-whatsapp"
-              >
-                <MessageCircle size={20} />
-                <span className="text-sm font-medium whitespace-nowrap">WhatsApp</span>
-              </motion.a>
-            )}
-            <motion.a
-              initial={{ opacity: 0, y: 20, scale: 0.8 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.8 }}
-              transition={{ duration: 0.2 }}
-              href={`tel:${phoneClean}`}
-              className="flex items-center gap-3 bg-[#1A1A1A] text-white pl-4 pr-5 py-3 shadow-lg hover:bg-[#333] transition-colors"
-              data-testid="floating-phone"
-            >
-              <Phone size={20} />
-              <span className="text-sm font-medium whitespace-nowrap">{phone}</span>
-            </motion.a>
-          </>
+        {phoneOpen && (
+          <motion.a
+            initial={{ opacity: 0, y: 20, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            href={`tel:${phoneClean}`}
+            className="flex items-center gap-3 bg-[#1A1A1A] text-white pl-4 pr-5 py-3 shadow-lg rounded-xl hover:bg-[#333] transition-colors"
+            data-testid="floating-phone-number"
+          >
+            <Phone size={20} />
+            <span className="text-sm font-medium whitespace-nowrap">{phone}</span>
+          </motion.a>
         )}
       </AnimatePresence>
 
-      {/* WhatsApp button — always visible above the phone toggle */}
-      {waEnabled && !open && (
+      {/* WhatsApp icon button */}
+      {waEnabled && (
         <motion.a
           href={`https://wa.me/${waPhone}?text=${waMessage}`}
           target="_blank"
@@ -71,15 +54,24 @@ export const FloatingContact = () => {
         </motion.a>
       )}
 
+      {/* Phone icon button — same style as WhatsApp */}
       <motion.button
-        onClick={() => setOpen(!open)}
-        className={`w-14 h-14 flex items-center justify-center shadow-xl transition-colors ${
-          open ? 'bg-[#1A1A1A] hover:bg-[#333]' : 'bg-[#C6A87C] hover:bg-[#B09060]'
+        onClick={() => setPhoneOpen(!phoneOpen)}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 1.7, type: 'spring', stiffness: 260, damping: 20 }}
+        className={`group relative w-14 h-14 flex items-center justify-center shadow-xl transition-colors rounded-[14px] ${
+          phoneOpen ? 'bg-[#1A1A1A] hover:bg-[#333]' : 'bg-[#C6A87C] hover:bg-[#B09060]'
         }`}
         whileTap={{ scale: 0.9 }}
         data-testid="floating-contact-toggle"
       >
-        {open ? <X size={24} className="text-white" /> : <Phone size={24} className="text-white" />}
+        {phoneOpen ? <X size={24} className="text-white" /> : <Phone size={24} className="text-white" />}
+        {!phoneOpen && (
+          <span className="absolute right-full mr-3 bg-white text-[#1A1A1A] text-xs font-semibold px-3 py-1.5 shadow-lg rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+            Zadzwoń
+          </span>
+        )}
       </motion.button>
     </div>
   );

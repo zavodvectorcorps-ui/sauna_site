@@ -37,15 +37,15 @@
 - Consent-gated: скрипты грузятся только при согласии
 
 ### GDPR/RODO Compliance (Mar 2026) — COMPLETE
-- Polityka prywatności (/privacy), Polityka cookies (/cookies)
+- Polityka prywatnosci (/privacy), Polityka cookies (/cookies)
 - Cookie Consent Banner, RODO notice под формами
 - Consent-gated analytics: GA/GTM/FB Pixel только с согласия
 
 ### Floating Contact (Mar 2026) — COMPLETE
-- WhatsApp иконка (квадратная, стиль iPhone) + тултип при наведении
-- Кнопка звонка (золотая) — ниже WhatsApp
-- При клике на телефон: разворачивается панель с WhatsApp и номером
-- Глобально на всех страницах (FloatingContact.jsx)
+- WhatsApp + Позвонить — квадратные иконки (стиль iPhone app), закруглённые углы
+- Тултипы при наведении: "WhatsApp" / "Zadzwon"
+- Клик по телефону — только номер (без дублирования WhatsApp)
+- Глобально на всех страницах: главная, сауны, купели, блог, B2B
 
 ## Key API Endpoints
 - GET /api/settings/bulk — Все настройки
@@ -56,5 +56,5 @@
 ## Backlog
 - P2: Toast обработка ошибок
 - P3: A/B тестирование CTA
-- P4: Рефакторинг server.py → роуты
+- P4: Рефакторинг server.py -> роуты
 - P4: Декомпозиция Calculator.jsx
