@@ -939,6 +939,10 @@ async def get_all_settings_bulk():
     if not reviews:
         reviews = get_default_reviews()
     settings_map["_reviews"] = reviews
+    # Include balia hero from balia_content collection
+    balia_content = await db.balia_content.find_one({"type": "main"}, {"_id": 0})
+    if balia_content and "hero" in balia_content:
+        settings_map["balia_hero_settings"] = balia_content["hero"]
     return settings_map
 
 
