@@ -46,6 +46,11 @@
 - **Consent-gated analytics**: GA/GTM/FB Pixel загружаются ТОЛЬКО с согласия
 - Данные компании (company_name, address, NIP, email) из siteSettings
 
+### WhatsApp Button (Mar 2026) — COMPLETE
+- Квадратная иконка (стиль iPhone app icon) с закруглёнными углами
+- Надпись "WhatsApp" всегда видна рядом с иконкой
+- Пульсирующая анимация при загрузке
+
 ## Key API Endpoints
 - GET /api/settings/bulk — Все настройки
 - POST /api/analytics/event — Аналитика

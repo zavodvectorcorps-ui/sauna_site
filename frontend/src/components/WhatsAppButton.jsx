@@ -40,7 +40,7 @@ export const WhatsAppButton = () => {
             </svg>
           </div>
         </div>
-        <span className="bg-white text-[#1A1A1A] text-xs font-semibold px-3 py-1.5 shadow-lg rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+        <span className="bg-white text-[#1A1A1A] text-xs font-semibold px-3 py-1.5 shadow-lg rounded-lg whitespace-nowrap" data-testid="whatsapp-label">
           WhatsApp
         </span>
       </motion.a>
