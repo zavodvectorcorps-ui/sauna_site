@@ -13,13 +13,12 @@ export const SeoHead = () => {
   const title = seo[`title_${lang}`] || seo.title_pl || 'WM-Sauna';
   const description = seo[`description_${lang}`] || seo.description_pl || '';
   const keywords = seo[`keywords_${lang}`] || seo.keywords_pl || '';
+  const canonical = seo.canonical_url || '';
   const ogImageRaw = seo.og_image || '';
   // Resolve OG image to absolute production URL
   const ogImage = (() => {
     if (!ogImageRaw) return '';
-    // Already absolute URL on correct domain
     if (ogImageRaw.startsWith('http')) {
-      // Strip Emergent preview host and rebuild with canonical/current origin
       try {
         const u = new URL(ogImageRaw);
         if (u.pathname.startsWith('/api/')) {
@@ -29,14 +28,12 @@ export const SeoHead = () => {
       } catch {}
       return ogImageRaw;
     }
-    // Relative path like /api/images/...
     if (ogImageRaw.startsWith('/')) {
       const base = canonical || (typeof window !== 'undefined' ? window.location.origin : '');
       return base ? `${base.replace(/\/$/, '')}${ogImageRaw}` : ogImageRaw;
     }
     return ogImageRaw;
   })();
-  const canonical = seo.canonical_url || '';
 
   const structuredData = JSON.stringify({
     "@context": "https://schema.org",
