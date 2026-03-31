@@ -13,7 +13,7 @@ import requests
 import os
 import base64
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://wm-content-sync.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://webp-deploy.preview.emergentagent.com')
 
 # Admin credentials
 ADMIN_USER = "admin"
