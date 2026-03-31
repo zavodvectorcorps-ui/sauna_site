@@ -30,7 +30,8 @@ export const SaunaSeoAdmin = ({ authHeader, showMessage }) => {
     try {
       const response = await fetchWithAuth(`${API}/api/admin/upload`, { method: 'POST', body: formData });
       const data = await response.json();
-      callback(`${API}${data.url}`);
+      // Save relative path only — SeoHead will resolve to production domain
+      callback(data.url);
       showMessage('success', 'Фото загружено');
     } catch { showMessage('error', 'Ошибка загрузки'); }
   };
@@ -78,7 +79,7 @@ export const SaunaSeoAdmin = ({ authHeader, showMessage }) => {
                 <input type="url" value={seoSettings.og_image} onChange={(e) => setSeoSettings({ ...seoSettings, og_image: e.target.value })} className="flex-1 p-2 border border-black/10 text-sm" placeholder="https://example.com/image.jpg" />
                 <label className="flex items-center gap-2 px-4 py-2 bg-[#1A1A1A] text-white cursor-pointer hover:bg-black text-sm"><Upload size={14} /><input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e.target.files[0], (url) => setSeoSettings({ ...seoSettings, og_image: url }))} /></label>
               </div>
-              {seoSettings.og_image && <img src={seoSettings.og_image} alt="OG Preview" className="mt-2 h-24 object-cover border" />}
+              {seoSettings.og_image && <img src={seoSettings.og_image.startsWith('/') ? `${API}${seoSettings.og_image}` : seoSettings.og_image} alt="OG Preview" className="mt-2 h-24 object-cover border" />}
             </div>
             <div>
               <label className="block text-xs text-[#8C8C8C] mb-1">Canonical URL</label>
