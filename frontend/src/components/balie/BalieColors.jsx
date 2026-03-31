@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Palette } from 'lucide-react';
 import { useBalieData } from '../../context/BalieContext';
+
+const API = process.env.REACT_APP_BACKEND_URL;
 
 // Fallback color data (CSS gradients) used when no photos uploaded
 const fallbackSwatches = {
@@ -50,14 +52,69 @@ const categories = [
   { id: 'wpc', title: 'Kompozyt WPC', subtitle: 'Kompozyt drewno-plastik: nowoczesny wygląd, nie wymaga konserwacji, odporny na wilgoć' },
 ];
 
+// Resolve image URL helper
+const resolveUrl = (src) => {
+  if (!src) return '';
+  if (src.startsWith('http')) return src;
+  return `${API}${src}`;
+};
+
+// Single color swatch with loading state
+const ColorSwatch = ({ src, name }) => {
+  const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    // Check if already cached by browser
+    if (imgRef.current?.complete && imgRef.current?.naturalWidth > 0) {
+      setLoaded(true);
+    }
+  }, []);
+
+  return (
+    <div className="group text-center">
+      <div className="aspect-square border-2 border-white/10 group-hover:border-[#D4AF37]/50 transition-colors overflow-hidden relative bg-[#1A1E27]">
+        {!loaded && (
+          <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-white/5 to-white/[0.02]" />
+        )}
+        <img
+          ref={imgRef}
+          src={resolveUrl(src)}
+          alt={name}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          loading="eager"
+          decoding="async"
+          onLoad={() => setLoaded(true)}
+        />
+      </div>
+      <p className="text-white/50 text-[10px] mt-1.5 group-hover:text-white/80 transition-colors">{name}</p>
+    </div>
+  );
+};
+
 export const BalieColors = () => {
   const [activeCategory, setActiveCategory] = useState('fiberglass');
   const [apiColors, setApiColors] = useState([]);
   const { data: balieData } = useBalieData();
+  const preloadedRef = useRef(false);
 
   useEffect(() => {
     if (balieData?.colors) setApiColors(balieData.colors);
   }, [balieData]);
+
+  // Preload ALL color images when data arrives (runs once)
+  const preloadAll = useCallback(() => {
+    if (preloadedRef.current || !apiColors.length) return;
+    preloadedRef.current = true;
+    apiColors.forEach(c => {
+      if (c.image) {
+        const img = new Image();
+        img.src = resolveUrl(c.image);
+      }
+    });
+  }, [apiColors]);
+
+  useEffect(() => { preloadAll(); }, [preloadAll]);
 
   const getSwatches = (catId) => {
     const fromApi = apiColors.filter(c => c.category === catId && c.image);
@@ -111,12 +168,7 @@ export const BalieColors = () => {
           {swatches.type === 'api' ? (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
               {swatches.items.map((c) => (
-                <div key={c.id} className="group text-center">
-                  <div className="aspect-square border-2 border-white/10 group-hover:border-[#D4AF37]/50 transition-colors overflow-hidden">
-                    <img src={c.image} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
-                  </div>
-                  <p className="text-white/50 text-[10px] mt-1.5 group-hover:text-white/80 transition-colors">{c.name}</p>
-                </div>
+                <ColorSwatch key={c.id} src={c.image} name={c.name} />
               ))}
             </div>
           ) : (

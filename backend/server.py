@@ -45,6 +45,27 @@ class BulkCache:
 
 bulk_cache = BulkCache(ttl=30)
 
+# In-memory image cache (LRU-like) for Object Storage images
+class ImageCache:
+    def __init__(self, max_items=200, ttl=3600):
+        self._data = {}
+        self._max = max_items
+        self._ttl = ttl
+    def get(self, key):
+        entry = self._data.get(key)
+        if entry and time_module.time() - entry['ts'] < self._ttl:
+            return entry['data'], entry['ct']
+        if entry:
+            del self._data[key]
+        return None, None
+    def set(self, key, data, content_type):
+        if len(self._data) >= self._max:
+            oldest = min(self._data, key=lambda k: self._data[k]['ts'])
+            del self._data[oldest]
+        self._data[key] = {'data': data, 'ct': content_type, 'ts': time_module.time()}
+
+image_cache = ImageCache(max_items=200, ttl=3600)
+
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
@@ -2163,11 +2184,18 @@ async def upload_image(
 
 @api_router.get("/images/{image_id}")
 async def get_uploaded_image(image_id: str):
+    cache_headers = {"Cache-Control": "public, max-age=604800, immutable"}
+
     # Static asset fallback
     if image_id == "sauna-cutaway-7facts":
         static_path = Path("/app/backend/uploads/sauna-cutaway.webp")
         if static_path.exists():
-            return FileResponse(static_path, media_type="image/webp")
+            return FileResponse(static_path, media_type="image/webp", headers=cache_headers)
+
+    # Check in-memory image cache first
+    cached_data, cached_ct = image_cache.get(image_id)
+    if cached_data:
+        return Response(content=cached_data, media_type=cached_ct, headers=cache_headers)
 
     image = await db.uploads.find_one({"id": image_id})
     if not image:
@@ -2177,14 +2205,18 @@ async def get_uploaded_image(image_id: str):
     if image.get("storage_path"):
         try:
             data, ct = get_object(image["storage_path"])
-            return Response(content=data, media_type=image.get("content_type", ct))
+            content_type = image.get("content_type", ct)
+            image_cache.set(image_id, data, content_type)
+            return Response(content=data, media_type=content_type, headers=cache_headers)
         except Exception as e:
             logger.warning(f"Object storage fetch failed for {image_id}: {e}")
 
     # Fallback to MongoDB base64
     if image.get("data"):
         image_data = base64.b64decode(image["data"])
-        return Response(content=image_data, media_type=image["content_type"])
+        content_type = image["content_type"]
+        image_cache.set(image_id, image_data, content_type)
+        return Response(content=image_data, media_type=content_type, headers=cache_headers)
 
     raise HTTPException(status_code=404, detail="Image data not found")
 
