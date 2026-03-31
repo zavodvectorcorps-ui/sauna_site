@@ -48,6 +48,21 @@
 
 ## Backlog
 - P2: Toast обработка ошибок
-- P3: A/B тестирование CTA
 - P4: Рефакторинг server.py → модули
 - P4: Декомпозиция Calculator.jsx
+
+## Changelog (Mar 31 2026)
+### A/B Testing System — COMPLETE
+- Backend: CRUD API for tests (`/api/admin/ab/tests`), public endpoints for active tests and event tracking
+- Frontend: ABTestContext + useABTest hook (cookie-based visitor assignment, deterministic variant allocation)
+- Applied to 6 CTA buttons: Hero primary/secondary, Balie primary/secondary, Model details, Model configure
+- Admin UI: полноценная панель во вкладке "A/B Тесты" с формой создания, управлением (пауза/запуск/удаление) и статистикой конверсий
+- MongoDB collections: `ab_tests`, `ab_events`
+
+### OG Image Fix — COMPLETE
+- Added ?w=1200&q=80 to og:image and twitter:image in index.html (7MB PNG → optimized WebP)
+
+### Mobile Image Optimization — COMPLETE
+- Models.jsx: 9+ locations optimized (category cards, model cards, modals, compare, thumbnails, variants)
+- Preloading reduced from full-size + all galleries → card-size only (w=500)
+- Hero.jsx, BalieHero.jsx: background images now use server-side resize
