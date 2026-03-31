@@ -35,6 +35,7 @@ import { MainLandingAdmin } from '../components/admin/MainLandingAdmin';
 import { PromoBannerAdmin } from '../components/admin/PromoBannerAdmin';
 import { BalieAboutAdmin } from '../components/admin/BalieAboutAdmin';
 import { BalieContactAdmin } from '../components/admin/BalieContactAdmin';
+import { ContactAdmin } from '../components/admin/ContactAdmin';
 import { BalieInstallmentAdmin } from '../components/admin/BalieInstallmentAdmin';
 import { BalieGalleryAdmin } from '../components/admin/BalieGalleryAdmin';
 
@@ -133,6 +134,7 @@ const AdminPanel = () => {
       color: '#595959',
       tabs: [
         { id: 'contacts', label: 'Сообщения', icon: MessageSquare },
+        { id: 'contact_settings', label: 'Контакты', icon: Phone },
         { id: 'main_landing', label: 'Главная', icon: Image },
         { id: 'integrations', label: 'Интеграции', icon: Settings },
       ],
@@ -227,6 +229,8 @@ const AdminPanel = () => {
     switch (activeTab) {
       case 'contacts':
         return <SaunaMessagesAdmin {...props} />;
+      case 'contact_settings':
+        return <ContactAdmin {...props} />;
       case 'site':
       case 'layout':
       case 'buttons':
