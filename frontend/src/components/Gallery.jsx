@@ -2,19 +2,21 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const Gallery = () => {
   const { t, language } = useLanguage();
+  const { getSetting } = useSettings();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const [failedUrls, setFailedUrls] = useState(new Set());
   const [loading, setLoading] = useState(true);
-  const [galleryConfig, setGalleryConfig] = useState({ hidden_api_images: [], show_api_images: true });
-  const [sectionContent, setSectionContent] = useState(null);
+  const galleryConfig = getSetting('gallery_config') || { hidden_api_images: [], show_api_images: true };
+  const sectionContent = getSetting('gallery_settings');
   const sliderRef = useRef(null);
 
   useEffect(() => {
@@ -23,18 +25,8 @@ export const Gallery = () => {
 
   const fetchGalleryData = async () => {
     try {
-      // Fetch gallery config, custom images and section content
-      const [configRes, customRes, contentRes] = await Promise.all([
-        fetch(`${BACKEND_URL}/api/settings/gallery`),
-        fetch(`${BACKEND_URL}/api/gallery`),
-        fetch(`${BACKEND_URL}/api/settings/gallery-content`)
-      ]);
-      
-      const config = await configRes.json();
+      const customRes = await fetch(`${BACKEND_URL}/api/gallery`);
       const customImages = await customRes.json();
-      const content = await contentRes.json();
-      setGalleryConfig(config);
-      setSectionContent(content);
 
       // Start with custom images
       const allImages = customImages.map(img => ({
@@ -45,7 +37,7 @@ export const Gallery = () => {
       }));
 
       // Only fetch API images if enabled
-      if (config.show_api_images) {
+      if (galleryConfig.show_api_images) {
         try {
           const response = await fetch(`${BACKEND_URL}/api/sauna/prices`);
           const data = await response.json();
@@ -60,7 +52,7 @@ export const Gallery = () => {
                 : `${CALCULATOR_API_URL}${model.imageUrl}`;
               
               // Check if image is hidden
-              if (!config.hidden_api_images?.includes(imageUrl)) {
+              if (!galleryConfig.hidden_api_images?.includes(imageUrl)) {
                 apiImages.push({
                   url: imageUrl,
                   alt: model.name,
@@ -73,7 +65,7 @@ export const Gallery = () => {
             // Gallery images from model
             model.galleryImages?.forEach((img) => {
               const imgUrl = img.startsWith('http') ? img : `${CALCULATOR_API_URL}${img}`;
-              if (!config.hidden_api_images?.includes(imgUrl)) {
+              if (!galleryConfig.hidden_api_images?.includes(imgUrl)) {
                 apiImages.push({
                   url: imgUrl,
                   alt: model.name,
@@ -91,7 +83,7 @@ export const Gallery = () => {
                 const imgUrl = option.imageUrl.startsWith('http')
                   ? option.imageUrl
                   : `${CALCULATOR_API_URL}${option.imageUrl}`;
-                if (!config.hidden_api_images?.includes(imgUrl)) {
+                if (!galleryConfig.hidden_api_images?.includes(imgUrl)) {
                   apiImages.push({
                     url: imgUrl,
                     alt: option.name || option.namePl,

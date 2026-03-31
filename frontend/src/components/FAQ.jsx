@@ -1,24 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../context/LanguageContext';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+import { useSettings } from '../context/SettingsContext';
 
 export const FAQ = () => {
   const { language } = useLanguage();
   const { tr } = useAutoTranslate();
-  const [settings, setSettings] = useState(null);
+  const { getSetting } = useSettings();
+  const settings = getSetting('faq_settings');
   const [openId, setOpenId] = useState(null);
-
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/api/settings/faq`)
-      .then(r => r.json())
-      .then(setSettings)
-      .catch(console.error);
-  }, []);
 
   if (!settings) return null;
 

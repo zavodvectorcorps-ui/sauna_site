@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { CreditCard, Calendar, Percent, Truck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { resolveMediaUrl } from '../lib/utils';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+import { useSettings } from '../context/SettingsContext';
 
 export const SaunaInstallment = ({ variant = 'full' }) => {
-  const [logoUrl, setLogoUrl] = useState('');
   const { tr } = useAutoTranslate();
+  const { getSetting } = useSettings();
+  const installData = getSetting('installment_settings');
+  const logoUrl = installData?.sauna_logo_url ? resolveMediaUrl(installData.sauna_logo_url) : '';
 
   const defaultItems = [
     { icon: Calendar, title: tr('Od 4 do 20 miesięcy'), desc: tr('Elastyczny okres spłaty') },
@@ -16,13 +17,6 @@ export const SaunaInstallment = ({ variant = 'full' }) => {
     { icon: CreditCard, title: tr('Rata od 500 zl/mc'), desc: tr('Przystępna miesięczna rata') },
     { icon: Truck, title: tr('Darmowa dostawa'), desc: tr('Na terenie całej Polski') },
   ];
-
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/api/settings/installment`)
-      .then(r => r.json())
-      .then(d => { if (d.sauna_logo_url) setLogoUrl(resolveMediaUrl(d.sauna_logo_url)); })
-      .catch(() => {});
-  }, []);
 
   if (variant === 'compact') {
     return (

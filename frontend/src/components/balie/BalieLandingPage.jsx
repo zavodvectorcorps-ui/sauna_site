@@ -48,12 +48,11 @@ export const BalieLandingPage = () => {
   const { tr } = useAutoTranslate();
   const [promoBlocks, setPromoBlocks] = useState(null);
   const [sectionOrder, setSectionOrder] = useState(DEFAULT_ORDER);
-  const [baliePhone, setBaliePhone] = useState('+48 515 995 190');
+  const { getSetting } = useSettings();
+  const contactData = getSetting('balie_contact');
+  const baliePhone = contactData?.phone || '+48 515 995 190';
 
   useEffect(() => {
-    fetch(`${API}/api/settings/balie-contact`).then(r => r.json()).then(d => {
-      if (d?.phone) setBaliePhone(d.phone);
-    }).catch(() => {});
     fetch(`${API}/api/balia/content`).then(r => r.json()).then(data => {
       setPromoBlocks(data?.promo_blocks || null);
       if (data?.section_order?.length) {

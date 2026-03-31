@@ -1,21 +1,11 @@
-import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-
 export const SeoHead = () => {
   const { language } = useLanguage();
-  const { siteSettings } = useSettings();
-  const [seo, setSeo] = useState(null);
-
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/api/settings/seo`)
-      .then(res => res.json())
-      .then(data => setSeo(data))
-      .catch(err => console.error('Error loading SEO settings:', err));
-  }, []);
+  const { siteSettings, getSetting } = useSettings();
+  const seo = getSetting('seo_settings');
 
   if (!seo) return null;
 

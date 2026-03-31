@@ -1,21 +1,14 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Award, Users, MapPin } from 'lucide-react';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
+import { useSettings } from '../../context/SettingsContext';
 
-const API = process.env.REACT_APP_BACKEND_URL;
 const STAT_ICONS = { Users, Award, Heart, MapPin };
 
 export const BalieAbout = () => {
-  const [data, setData] = useState(null);
   const { tr } = useAutoTranslate();
-
-  useEffect(() => {
-    fetch(`${API}/api/settings/balie-about`)
-      .then(r => r.json())
-      .then(d => setData(d))
-      .catch(() => {});
-  }, []);
+  const { getSetting } = useSettings();
+  const data = getSetting('balie_about');
 
   if (!data) return null;
 

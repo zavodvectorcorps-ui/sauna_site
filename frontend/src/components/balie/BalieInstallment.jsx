@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
 import { CreditCard, Calendar, Percent, Truck } from 'lucide-react';
 import { resolveMediaUrl } from '../../lib/utils';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
+import { useSettings } from '../../context/SettingsContext';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const ICONS = { CreditCard, Calendar, Percent, Truck };
 
 const DEFAULT_ITEMS = [
@@ -14,19 +13,11 @@ const DEFAULT_ITEMS = [
 ];
 
 export const BalieInstallment = ({ variant = 'full' }) => {
-  const [logoUrl, setLogoUrl] = useState('');
-  const [data, setData] = useState(null);
   const { tr } = useAutoTranslate();
-
-  useEffect(() => {
-    Promise.all([
-      fetch(`${BACKEND_URL}/api/settings/installment`).then(r => r.json()).catch(() => ({})),
-      fetch(`${BACKEND_URL}/api/settings/balie-installment`).then(r => r.json()).catch(() => null),
-    ]).then(([installment, balieData]) => {
-      if (installment.balia_logo_url) setLogoUrl(resolveMediaUrl(installment.balia_logo_url));
-      setData(balieData);
-    });
-  }, []);
+  const { getSetting } = useSettings();
+  const installData = getSetting('installment_settings');
+  const data = getSetting('balie_installment');
+  const logoUrl = installData?.balia_logo_url ? resolveMediaUrl(installData.balia_logo_url) : '';
 
   const items = data?.items?.length ? data.items : DEFAULT_ITEMS;
   const title = data?.title || 'Komfort dostępny od razu!';

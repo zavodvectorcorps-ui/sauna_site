@@ -1,51 +1,48 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const SettingsContext = createContext();
 
 export const SettingsProvider = ({ children }) => {
-  const [siteSettings, setSiteSettings] = useState(null);
-  const [heroSettings, setHeroSettings] = useState(null);
-  const [aboutSettings, setAboutSettings] = useState(null);
-  const [calculatorConfig, setCalculatorConfig] = useState(null);
-  const [sectionOrder, setSectionOrder] = useState(null);
-  const [sectionVisibility, setSectionVisibility] = useState(null);
-  const [reviews, setReviews] = useState([]);
-  const [baliaHero, setBaliaHero] = useState(null);
+  const [allSettings, setAllSettings] = useState({});
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchAllSettings();
-  }, []);
-
-  const fetchAllSettings = async () => {
+  const fetchAllSettings = useCallback(async () => {
     try {
-      const [siteRes, heroRes, aboutRes, calcRes, sectionsRes, visRes, reviewsRes, baliaRes] = await Promise.all([
-        fetch(`${API_URL}/api/settings/site`),
-        fetch(`${API_URL}/api/settings/hero`),
-        fetch(`${API_URL}/api/settings/about`),
-        fetch(`${API_URL}/api/settings/calculator`),
-        fetch(`${API_URL}/api/settings/sections`),
-        fetch(`${API_URL}/api/settings/visibility`),
-        fetch(`${API_URL}/api/reviews`),
-        fetch(`${API_URL}/api/balia/content`),
-      ]);
-
-      setSiteSettings(await siteRes.json());
-      setHeroSettings(await heroRes.json());
-      setAboutSettings(await aboutRes.json());
-      setCalculatorConfig(await calcRes.json());
-      setSectionOrder(await sectionsRes.json());
-      setSectionVisibility(await visRes.json());
-      setReviews(await reviewsRes.json());
-      const baliaData = await baliaRes.json();
-      setBaliaHero(baliaData?.hero || null);
+      const res = await fetch(`${API_URL}/api/settings/bulk`);
+      const data = await res.json();
+      setAllSettings(data);
     } catch (error) {
       console.error('Error fetching settings:', error);
     }
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchAllSettings();
+  }, [fetchAllSettings]);
+
+  // Helper to get any setting by its DB id
+  const getSetting = useCallback((id) => allSettings[id] || null, [allSettings]);
+
+  // Named accessors for backward compatibility
+  const siteSettings = allSettings['site_settings'] || null;
+  const heroSettings = allSettings['hero_settings'] || null;
+  const aboutSettings = allSettings['about_settings'] || null;
+  const calculatorConfig = allSettings['calculator_config'] || null;
+  const sectionOrder = allSettings['section_order'] || null;
+  const sectionVisibility = allSettings['section_visibility'] || null;
+  const reviews = allSettings['_reviews'] || [];
+  const baliaHero = (() => {
+    // baliaHero was previously extracted from /api/balia/content
+    // Try to get it from balia content settings if available
+    const baliaContent = allSettings['balia_hero_settings'];
+    return baliaContent || null;
+  })();
+
+  // Component-level settings available via getSetting()
+  // e.g. getSetting('faq_settings'), getSetting('promo_banner'), etc.
 
   return (
     <SettingsContext.Provider value={{
@@ -58,6 +55,8 @@ export const SettingsProvider = ({ children }) => {
       reviews,
       baliaHero,
       loading,
+      allSettings,
+      getSetting,
       refreshSettings: fetchAllSettings,
     }}>
       {loading ? (

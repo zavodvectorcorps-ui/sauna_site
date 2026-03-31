@@ -8,8 +8,8 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const Contact = () => {
   const { t, language } = useLanguage();
-  const { siteSettings } = useSettings();
-  const [sectionContent, setSectionContent] = useState(null);
+  const { siteSettings, getSetting } = useSettings();
+  const sectionContent = getSetting('contact_settings');
   const [hasCatalog, setHasCatalog] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -21,19 +21,8 @@ export const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    fetchContent();
     fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
   }, []);
-
-  const fetchContent = async () => {
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/settings/contact`);
-      const content = await response.json();
-      setSectionContent(content);
-    } catch (error) {
-      console.error('Error fetching contact content:', error);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

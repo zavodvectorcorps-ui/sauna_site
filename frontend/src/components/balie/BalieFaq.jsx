@@ -1,22 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { useSettings } from '../../context/SettingsContext';
 
 export const BalieFaq = () => {
-  const [settings, setSettings] = useState(null);
-  const [openId, setOpenId] = useState(null);
   const { tr } = useAutoTranslate();
-
-  useEffect(() => {
-    fetch(`${API}/api/settings/balia-faq`)
-      .then(r => r.json())
-      .then(setSettings)
-      .catch(() => {});
-  }, []);
+  const { getSetting } = useSettings();
+  const settings = getSetting('balia_faq_settings');
+  const [openId, setOpenId] = useState(null);
 
   if (!settings) return null;
 

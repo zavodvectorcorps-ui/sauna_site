@@ -1,22 +1,15 @@
-import { useState, useEffect } from 'react';
 import { Truck, TreePine, ShieldCheck, Headphones, Flame, Droplets, Wrench, Clock, Award, Star, Heart, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAutoScroll } from '../hooks/useAutoScroll';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { useSettings } from '../context/SettingsContext';
 
 const ICONS = { Truck, TreePine, ShieldCheck, Headphones, Flame, Droplets, Wrench, Clock, Award, Star, Heart, Zap };
 
 export const PromoFeatures = () => {
-  const [features, setFeatures] = useState([]);
   const { tr } = useAutoTranslate();
-
-  useEffect(() => {
-    fetch(`${API}/api/settings/promo-features`)
-      .then(r => r.json())
-      .then(d => { if (d?.items?.length) setFeatures(d.items); })
-      .catch(() => {});
-  }, []);
+  const { getSetting } = useSettings();
+  const promoData = getSetting('promo_features_settings');
+  const features = promoData?.items?.length ? promoData.items : [];
 
   const { scrollRef, currentIndex, scrollDir, onTouchStart, onTouchEnd } = useAutoScroll({ itemCount: features.length, intervalMs: 3500 });
 

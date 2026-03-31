@@ -1,20 +1,12 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calculator, Percent } from 'lucide-react';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { useSettings } from '../context/SettingsContext';
 
 export const PromoBanner = () => {
-  const [data, setData] = useState(null);
   const { tr } = useAutoTranslate();
-
-  useEffect(() => {
-    fetch(`${API}/api/settings/promo-banner`)
-      .then(r => r.json())
-      .then(d => setData(d))
-      .catch(() => {});
-  }, []);
+  const { getSetting } = useSettings();
+  const data = getSetting('promo_banner');
 
   const scrollToCalc = () => {
     const el = document.getElementById('calculator');

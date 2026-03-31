@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
+import { useSettings } from '../context/SettingsContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -54,15 +55,12 @@ const AnimatedImage = ({ src, alt, className }) => {
 export const SaunaAdvantages = () => {
   const headerRef = useRef(null);
   const headerInView = useInView(headerRef, { once: true, margin: '-40px' });
-  const [data, setData] = useState(null);
   const { tr } = useAutoTranslate();
-
-  useEffect(() => {
-    fetch(`${API}/api/settings/sauna-advantages`)
-      .then(r => r.json())
-      .then(d => { if (d?.items?.length) setData(d); })
-      .catch(() => {});
-  }, []);
+  const { getSetting } = useSettings();
+  const data = (() => {
+    const d = getSetting('sauna_advantages_settings');
+    return d?.items?.length ? d : null;
+  })();
 
   if (!data) return null;
 

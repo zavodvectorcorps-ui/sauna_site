@@ -1,19 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { useSettings } from '../context/SettingsContext';
 
 export const WhatsAppButton = () => {
-  const [settings, setSettings] = useState(null);
+  const { getSetting } = useSettings();
+  const settings = getSetting('whatsapp_settings');
   const [pulse, setPulse] = useState(true);
-
-  useEffect(() => {
-    fetch(`${API}/api/settings/whatsapp`)
-      .then(r => r.json())
-      .then(d => setSettings(d))
-      .catch(() => {});
-  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setPulse(false), 4000);

@@ -1,31 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../context/SettingsContext';
 import { useAutoScroll } from '../hooks/useAutoScroll';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-
 export const Reviews = () => {
   const { language, t } = useLanguage();
-  const { reviews } = useSettings();
-  const [sectionContent, setSectionContent] = useState(null);
+  const { reviews, getSetting } = useSettings();
+  const sectionContent = getSetting('reviews_settings');
   const { scrollRef, currentIndex, scrollDir, onTouchStart, onTouchEnd } = useAutoScroll({ itemCount: reviews?.length || 0, intervalMs: 5000 });
-
-  useEffect(() => {
-    fetchContent();
-  }, []);
-
-  const fetchContent = async () => {
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/settings/reviews-content`);
-      const content = await response.json();
-      setSectionContent(content);
-    } catch (error) {
-      console.error('Error fetching reviews content:', error);
-    }
-  };
 
   const getReviewText = (review) => {
     const key = `text_${language}`;

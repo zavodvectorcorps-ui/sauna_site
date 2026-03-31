@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAutoScroll } from '../hooks/useAutoScroll';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
+import { useSettings } from '../context/SettingsContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -71,15 +72,10 @@ const VideoCard = ({ item, index, isMobile }) => {
 };
 
 export const SaunaVideoReviews = () => {
-  const [data, setData] = useState(null);
   const { tr } = useAutoTranslate();
-
-  useEffect(() => {
-    fetch(`${API}/api/settings/video-reviews`)
-      .then(r => r.json())
-      .then(d => { if (d?.items?.length) setData(d); })
-      .catch(() => {});
-  }, []);
+  const { getSetting } = useSettings();
+  const rawData = getSetting('sauna_video_reviews_settings');
+  const data = rawData?.items?.length ? rawData : null;
 
   const sortedItems = data ? [...data.items].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)) : [];
   const { scrollRef, currentIndex, scrollDir, onTouchStart, onTouchEnd } = useAutoScroll({ itemCount: sortedItems.length, intervalMs: 5000 });

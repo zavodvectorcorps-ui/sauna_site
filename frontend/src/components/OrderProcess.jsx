@@ -52,17 +52,15 @@ export const OrderProcess = ({ type = 'sauna' }) => {
   const headerInView = useInView(headerRef, { once: true, margin: '-40px' });
   const dark = type === 'balia';
   const { tr } = useAutoTranslate();
-  const { siteSettings } = useSettings();
+  const { siteSettings, getSetting } = useSettings();
   const phone = siteSettings?.phone || '+48 732 099 201';
 
-  const endpoint = type === 'balia' ? 'balia-order-process' : 'order-process';
+  const settingId = type === 'balia' ? 'balia_order_process_settings' : 'order_process_settings';
 
   useEffect(() => {
-    fetch(`${API}/api/settings/${endpoint}`)
-      .then(r => r.json())
-      .then(d => setData(d))
-      .catch(() => {});
-  }, [endpoint]);
+    const d = getSetting(settingId);
+    if (d) setData(d);
+  }, [settingId, getSetting]);
 
   if (!data) return null;
   if (type === 'sauna' && data.show_on_sauny === false) return null;

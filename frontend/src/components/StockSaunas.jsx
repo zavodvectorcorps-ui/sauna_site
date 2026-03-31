@@ -2,14 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Users, Check, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const StockSaunas = () => {
   const { t, language } = useLanguage();
+  const { getSetting } = useSettings();
   const [saunas, setSaunas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sectionContent, setSectionContent] = useState(null);
+  const sectionContent = getSetting('stock_settings');
   const sliderRef = useRef(null);
 
   useEffect(() => {
@@ -18,13 +20,8 @@ export const StockSaunas = () => {
 
   const fetchSaunas = async () => {
     try {
-      const [saunasRes, contentRes] = await Promise.all([
-        fetch(`${BACKEND_URL}/api/stock-saunas`),
-        fetch(`${BACKEND_URL}/api/settings/stock`)
-      ]);
+      const saunasRes = await fetch(`${BACKEND_URL}/api/stock-saunas`);
       const saunasData = await saunasRes.json();
-      const content = await contentRes.json();
-      setSectionContent(content);
 
       // Map data to expected format
       const stockItems = saunasData.map((sauna) => ({

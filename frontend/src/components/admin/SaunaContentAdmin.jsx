@@ -294,6 +294,30 @@ export const SaunaContentAdmin = ({ authHeader, showMessage, activeSubTab }) => 
             <div><label className="block text-sm font-medium mb-1">Подзаголовок (PL)</label><textarea value={heroSettings.subtitle_pl} onChange={(e) => setHeroSettings({ ...heroSettings, subtitle_pl: e.target.value })} className="w-full p-2 border border-black/10 h-20" /></div>
             <div><label className="block text-sm font-medium mb-1">Подзаголовок (EN)</label><textarea value={heroSettings.subtitle_en} onChange={(e) => setHeroSettings({ ...heroSettings, subtitle_en: e.target.value })} className="w-full p-2 border border-black/10 h-20" /></div>
           </div>
+          {/* Hero Features / Badges */}
+          <div className="border border-black/5 p-4">
+            <label className="block text-sm font-medium mb-3">Преимущества (бейджи на Hero)</label>
+            <p className="text-xs text-[#8C8C8C] mb-4">3 коротких текста с галочками, отображаемые под заголовком. Переводятся автоматически.</p>
+            <div className="space-y-3">
+              {(heroSettings.features || ['Polska produkcja', 'Gotowe w 5-10 dni', 'Gwarancja 24 miesiące']).map((feature, idx) => (
+                <div key={idx} className="flex items-center gap-3">
+                  <span className="text-xs text-[#8C8C8C] w-4 shrink-0">{idx + 1}.</span>
+                  <input
+                    type="text"
+                    value={feature}
+                    onChange={(e) => {
+                      const updated = [...(heroSettings.features || ['Polska produkcja', 'Gotowe w 5-10 dni', 'Gwarancja 24 miesiące'])];
+                      updated[idx] = e.target.value;
+                      setHeroSettings({ ...heroSettings, features: updated });
+                    }}
+                    className="flex-1 p-2 border border-black/10 text-sm"
+                    placeholder={`Преимущество ${idx + 1}`}
+                    data-testid={`hero-feature-input-${idx}`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );

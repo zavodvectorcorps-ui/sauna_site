@@ -885,6 +885,23 @@ async def generate_sauna_pdf(request: Request):
         raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
 
 
+
+# Bulk settings endpoint — returns all settings in ONE query
+@api_router.get("/settings/bulk")
+async def get_all_settings_bulk():
+    all_docs = await db.settings.find({}, {"_id": 0}).to_list(500)
+    settings_map = {}
+    for doc in all_docs:
+        sid = doc.get("id")
+        if sid:
+            settings_map[sid] = doc
+    reviews = await db.reviews.find({"active": True}, {"_id": 0}).to_list(100)
+    if not reviews:
+        reviews = get_default_reviews()
+    settings_map["_reviews"] = reviews
+    return settings_map
+
+
 # Public settings endpoints
 @api_router.get("/settings/site")
 async def get_site_settings_public():

@@ -3,8 +3,7 @@ import { motion, useInView } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 
 import { useAutoTranslate } from '../context/AutoTranslateContext';
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+import { useSettings } from '../context/SettingsContext';
 
 const AnimatedCounter = ({ value }) => {
   const [count, setCount] = useState(0);
@@ -53,14 +52,8 @@ const AnimatedCounter = ({ value }) => {
 export const SocialProof = () => {
   const { language } = useLanguage();
   const { tr } = useAutoTranslate();
-  const [settings, setSettings] = useState(null);
-
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/api/settings/social-proof`)
-      .then(r => r.json())
-      .then(setSettings)
-      .catch(console.error);
-  }, []);
+  const { getSetting } = useSettings();
+  const settings = getSetting('social_proof_settings');
 
   if (!settings?.show_section) return null;
 

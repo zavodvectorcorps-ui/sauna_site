@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, ChevronLeft, ChevronRight, X, Send, Loader2, CheckCircle, GitCompareArrows, Ruler, Maximize2, Download, Flame, Zap, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { SaunaInstallment } from './SaunaInstallment';
+import { useSettings } from '../context/SettingsContext';
 
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -23,10 +24,11 @@ const getModelType = (model) => {
 
 export const Models = () => {
   const { language } = useLanguage();
+  const { getSetting } = useSettings();
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sectionContent, setSectionContent] = useState(null);
-  const [modelsConfig, setModelsConfig] = useState(null);
+  const sectionContent = getSetting('models_settings');
+  const modelsConfig = getSetting('models_config');
   const [selectedModel, setSelectedModel] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showInquiryForm, setShowInquiryForm] = useState(false);
@@ -74,16 +76,9 @@ export const Models = () => {
 
   const fetchModels = async () => {
     try {
-      const [publicRes, configRes, contentRes] = await Promise.all([
-        fetch(`${BACKEND_URL}/api/sauna/public-models?lang=${lang}`),
-        fetch(`${BACKEND_URL}/api/settings/models`),
-        fetch(`${BACKEND_URL}/api/settings/models-content`)
-      ]);
+      const publicRes = await fetch(`${BACKEND_URL}/api/sauna/public-models?lang=${lang}`);
       const publicData = await publicRes.json();
-      const config = await configRes.json();
-      const content = await contentRes.json();
-      setModelsConfig(config);
-      setSectionContent(content);
+      const config = modelsConfig || {};
 
       let apiModels = publicData.models || [];
       if (config.enabled_models?.length > 0) {

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Gift, Lightbulb, DoorOpen, Bath, ArrowRight, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAutoScroll } from '../hooks/useAutoScroll';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
+import { useSettings } from '../context/SettingsContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -40,19 +41,16 @@ export const SpecialOffer = () => {
   const [formData, setFormData] = useState({ name: '', phone: '', size: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const { getSetting } = useSettings();
   const [gifts, setGifts] = useState(defaultGifts);
   const { tr } = useAutoTranslate();
 
   const { scrollRef, currentIndex, scrollDir, onTouchStart, onTouchEnd } = useAutoScroll({ itemCount: gifts.length, intervalMs: 4500 });
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/api/settings/special-offer`)
-      .then(r => r.json())
-      .then(d => {
-        if (d.cards?.length > 0) setGifts(d.cards);
-      })
-      .catch(() => {});
-  }, []);
+    const d = getSetting('special_offer_settings');
+    if (d?.cards?.length > 0) setGifts(d.cards);
+  }, [getSetting]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
