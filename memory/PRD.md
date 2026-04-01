@@ -24,6 +24,7 @@
 - **Mobile-optimized preloading**: Models.jsx preloads only card-size (w=500) instead of full-size images
 - **Video streaming optimization** (Apr 1 2026): Disk caching + Range requests (HTTP 206) for progressive playback. Mobile lazy-load via IntersectionObserver, preload="metadata"
 - **Video preloading on MainLanding** (Apr 1 2026): `preload="auto"` + programmatic `el.load()` on mount + `<link rel="preload" as="video">` injection + Cloudinary poster (first frame as JPG via `so_0` transformation). Instant playback on hover/tap.
+- **Adaptive video quality** (Apr 1 2026): Cloudinary CDN transformations per device — Desktop: `w_1280,q_auto,f_auto` (1280p, auto quality, WebM/MP4 auto-format). Mobile: `w_720,q_auto,f_auto` (720p). Applied to MainLanding.jsx, Hero.jsx, BalieHero.jsx. Utility functions `optimizedVideo()` and `videoPoster()` in utils.js.
 
 ### Cloudinary CDN — COMPLETE
 - All images and videos migrated to Cloudinary CDN
