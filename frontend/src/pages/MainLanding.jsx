@@ -209,7 +209,7 @@ const MainLanding = () => {
       .finally(() => setImagesReady(true));
   }, []);
 
-  // Preload adaptive video files via <link rel="preload"> for instant playback
+  // Prefetch adaptive video files for instant playback on hover
   useEffect(() => {
     const urls = [saunaVideo, baliaVideo]
       .filter(Boolean)
@@ -217,8 +217,7 @@ const MainLanding = () => {
     const links = [];
     urls.forEach(url => {
       const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'video';
+      link.rel = 'prefetch';
       link.href = url;
       link.crossOrigin = 'anonymous';
       document.head.appendChild(link);

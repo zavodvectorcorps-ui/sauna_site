@@ -1,8 +1,8 @@
 # WM Group — PRD
 
 ## Architecture
-- Frontend: React + TailwindCSS + Framer Motion + Shadcn UI
-- Backend: FastAPI + MongoDB + **Cloudinary CDN** (images + videos) + Pillow (fallback image optimization) + GPT-4.1-nano
+- Frontend: React 19 + react-scripts 5 + CRACO + TailwindCSS 3 + Framer Motion + Shadcn UI
+- Backend: FastAPI + MongoDB + **Cloudinary CDN** + Pillow + GPT-4.1-nano
 - Media: **Cloudinary** (primary, CDN delivery) + Emergent Object Storage (legacy fallback)
 - Admin: Basic Auth (admin / 220066)
 
@@ -13,78 +13,55 @@
 - Главная WM Group, "7 фактов", админ-панель (40+ вкладок)
 - Блог, B2B, WhatsApp, видео-обзоры, FAQ, процесс заказа
 
-### Performance — FULLY OPTIMIZED
-- **Server-side image optimization**: /api/images/{id}?w=500&q=75 — Pillow resize + WebP (30x compression)
-- **Applied to ALL components**: Gallery, Products, Colors, About, FAQ, Reviews, StockSaunas, SaunaAdvantages, BalieSchematic, BalieStoveScheme, **Models, Hero, BalieHero** (Mar 31 2026)
-- In-memory ImageCache (200 items, 1h TTL)
-- External API Proxy Cache: models/prices — 5 мин TTL
-- Settings bulk includes stock_saunas + catalog_available
-- Preload all balie images in BalieContext
-- GZip middleware
-- **Mobile-optimized preloading**: Models.jsx preloads only card-size (w=500) instead of full-size images
-- **Video streaming optimization** (Apr 1 2026): Disk caching + Range requests (HTTP 206) for progressive playback. Mobile lazy-load via IntersectionObserver, preload="metadata"
-- **Video preloading on MainLanding** (Apr 1 2026): `preload="auto"` + programmatic `el.load()` on mount + `<link rel="preload" as="video">` injection + Cloudinary poster (first frame as JPG via `so_0` transformation). Instant playback on hover/tap.
-- **Adaptive video quality** (Apr 1 2026): Cloudinary CDN transformations per device — Desktop: `w_1280,q_auto,f_auto` (1280p, auto quality, WebM/MP4 auto-format). Mobile: `w_720,q_auto,f_auto` (720p). Applied to MainLanding.jsx, Hero.jsx, BalieHero.jsx. Utility functions `optimizedVideo()` and `videoPoster()` in utils.js.
-- **PageSpeed Insights optimization** (Apr 1 2026):
-  - MainLanding product card images now use Cloudinary transforms (`w_1200,q_auto,f_auto` desktop, `w_800` mobile). Balia PNG: 1684KB → 137KB (-91.8%). Sauny JPG: 278KB → 148KB (-46.8%).
-  - LCP image: `fetchpriority="high"`, `loading="eager"`
-  - `<link rel="preconnect">` to `res.cloudinary.com` and backend
-  - **Google Fonts non-render-blocking**: `media="print" onload="this.media='all'"` trick saves ~1500ms render-blocking
-  - **font-display: optional**: eliminates CLS from font swap (no layout shift on first load)
-  - **Code splitting**: AdminPanel, PipelineView via `React.lazy()` — reduces public page bundle
-  - **Cookie banner delayed 3.5s**: prevents it from becoming LCP element
-  - Static `robots.txt` in `public/` for SEO
-  - Default Unsplash images compressed (q=70)
+### Performance — FULLY OPTIMIZED (Apr 1 2026)
+- **Server-side image optimization**: Pillow resize + WebP
+- **Cloudinary CDN**: All images/videos, auto-migration on startup
+- **Adaptive video quality**: Desktop w_1280, Mobile w_720, q_auto, f_auto
+- **Video preloading**: programmatic el.load(), Cloudinary poster frames
+- In-memory ImageCache (200 items, 1h TTL), GZip middleware
 
-### Cloudinary CDN — COMPLETE
-- All images and videos migrated to Cloudinary CDN
-- Admin uploads go directly to Cloudinary
-- Old `/api/images/{id}` and `/api/videos/{filename}` do 302 redirects to Cloudinary URLs
-- **Auto-migration on startup** (Apr 1 2026): `_auto_cloudinary_migration()` runs as background task in `startup_init`, non-blocking. Migrates any remaining Object Storage media to Cloudinary automatically on deployment.
+### PageSpeed Critical Path Optimization (Apr 1 2026)
+- **SettingsProvider**: Removed full-screen loading spinner — children render IMMEDIATELY with defaults
+- **React.lazy ALL below-fold sections**: SocialProof, Models, Calculator, Gallery, StockSaunas, Reviews, FAQ, About, Contact, PromoFeatures, PromoBanner, SpecialOffer, SaunaInstallment, SaunaAdvantages, SaunaVideoReviews, OrderProcess, WhatsAppButton, CookieConsentBanner
+- **Route-level code splitting**: MainLanding, BlogPage, BlogArticlePage, B2BPage, BalieLandingPage, BalieConfigurator, AdminPanel, PipelineView, PrivacyPolicyPage, CookiePolicyPage
+- **Suspense fallback skeletons**: Fixed-height divs prevent CLS during lazy load
+- **PostHog deferred**: requestIdleCallback — no longer blocks LCP
+- **Google Fonts async**: media="print" onload="this.media='all'" + font-display: optional
+- **Layout settings non-blocking**: Applied via requestIdleCallback, CSS defaults pre-set in :root
+- **Cookie banner delayed 3.5s**: Prevents it from becoming LCP element
+- **Webpack splitChunks**: react-vendor, ui-vendor (framer-motion, radix, recharts) separate chunks
+- **Preconnect**: res.cloudinary.com, fonts.googleapis.com, wm-sauna-balia.emergent.host
+- **LCP image**: fetchpriority="high", loading="eager", preload in HTML
+- **ProductCard**: aspect-ratio instead of min-height for CLS stability
+- **Hero animations disabled on first paint**: initial={false} on ProductCard
+- **Playfair Display font removed**: Reduced font weight
+- **Semantic HTML**: <main> landmark added
 
-### SEO / OG — FIXED (Mar 31 2026)
-- OG-картинка в index.html теперь использует ?w=1200&q=80 (вместо сырого 7MB PNG)
-- twitter:image также оптимизирован
-- Хардкод OG-тегов в public/index.html для корректного чтения краулерами
-- **Sitemap.xml** (Apr 1 2026): Динамический `GET /api/sitemap.xml` — 8 статических + все блог-статьи из БД. `GET /api/robots.txt` указывает на sitemap. Домен: `https://wm-spa.pl`
+### SEO
+- Dynamic sitemap.xml: GET /api/sitemap.xml (8 static + 14 blog articles)
+- robots.txt (static in public/)
+- OG-картинка optimized (w=1200, q=80)
 
-### A/B Testing System — COMPLETE (Mar 31 2026)
-- Backend: CRUD API for tests (`/api/admin/ab/tests`), public endpoints for active tests and event tracking
-- Frontend: ABTestContext + useABTest hook (cookie-based visitor assignment, deterministic variant allocation)
-- Applied to 6 CTA buttons: Hero primary/secondary, Balie primary/secondary, Model details, Model configure
-- Admin UI: полноценная панель во вкладке "A/B Тесты" с формой создания, управлением (пауза/запуск/удаление) и статистикой конверсий
-- **Z-test статистическая значимость**: автоматический расчёт p-value, z-score, уверенности (%)
-- **Кнопка "Применить победителя"**: обновляет button_config текстом/цветом победителя, завершает тест
-
-### Bug Fixes (Mar-Apr 2026)
-- SeoHead.jsx TDZ error, CORS analytics, /api/content/calculator 404
-- **Mobile catalog download**: Заменён window.open/link.click на window.location.href (popup blocking fix)
-- **PDF Polish chars**: Шрифт Helvetica → Inter TTF (полная поддержка ł, ą, ę, ż, ź, ć, ń)
-- **Admin upload URL fix** (Apr 1 2026): Исправлен двойной домен в URL при загрузке через админку (14 мест в 10 компонентах)
+### A/B Testing System — COMPLETE
+- Backend CRUD, Z-test statistical significance, apply winner button
 
 ### Stock Sauna Product Cards — COMPLETE (Apr 1 2026)
-- Карточки саун в наличии открываются как полноценное модальное окно (галерея, описание, характеристики, цена)
-- Бейдж "Promocja -X%" вместо цены со скидкой
-- Кнопка "Kup teraz" → форма заказа (имя, телефон, email) → отправка в `/api/contact`
-- Кнопка "Skonfiguruj saunę" → переход к калькулятору
-- Админ: описание, галерея доп. фото, настройка CTA кнопки (5 действий: форма, калькулятор, WhatsApp, звонок, ссылка)
-- API: `GET /api/settings/stock-cta-config`, `PUT /api/admin/settings/stock-cta-config`
+- Modal with gallery, description, specs, price, "Promocja" badge
+- Configurable CTA button (5 action types) + order form
+
+### Bug Fixes
+- Mobile catalog download, PDF Polish chars, Admin upload URL double domain
 
 ## Key API Endpoints
-- GET /api/images/{id}?w=&q= — server-side resize + WebP via Pillow (302 redirect to Cloudinary if available)
-- GET /api/videos/{filename} — 302 redirect to Cloudinary if available
-- GET /api/settings/bulk — cached, includes stock_saunas + catalog
-- GET /api/settings/main-landing — returns sauna/balia images, videos, positions
-- GET /api/balia/bulk — cached
-- GET /api/sauna/public-models — cached 5min
-- GET /api/settings/seo — SEO settings
-- POST /api/admin/run-cloudinary-migration — manual migration trigger
-- POST /api/admin/ab/tests/{test_id}/apply-winner — apply A/B test winner
+- GET /api/images/{id}?w=&q= — resize + WebP (302 to Cloudinary)
+- GET /api/settings/bulk — all settings in one request
+- GET /api/sitemap.xml — dynamic sitemap
+- POST /api/admin/settings/stock-cta-config — stock CTA config
 
 ## Backlog
 - P2: Toast обработка ошибок
-- P4: Рефакторинг server.py → модули (3800+ строк)
+- P4: Рефакторинг server.py → модули (3900+ строк)
 - P4: Декомпозиция Calculator.jsx
 
 ## Known Issues
-- 6 видео не мигрировали в Cloudinary (2 слишком больших — 413, 4 невалидных формата). Требуется ручная загрузка через панель Cloudinary.
+- 6 видео не мигрировали в Cloudinary (2 слишком больших, 4 невалидных)
