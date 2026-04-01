@@ -3740,6 +3740,70 @@ async def startup_init():
     # Pre-warm image cache in background
     asyncio.create_task(_prewarm_image_cache())
 
+    # Auto-migrate Object Storage media to Cloudinary (background, non-blocking)
+    if CLOUDINARY_CONFIGURED:
+        asyncio.create_task(_auto_cloudinary_migration())
+
+
+async def _auto_cloudinary_migration():
+    """Background task: migrate any remaining Object Storage media to Cloudinary on startup."""
+    try:
+        img_pending = await db.uploads.count_documents({"cloudinary_url": {"$exists": False}})
+        vid_pending = await db.video_uploads.count_documents({"cloudinary_url": {"$exists": False}})
+        if img_pending == 0 and vid_pending == 0:
+            logger.info("Cloudinary auto-migration: nothing to migrate (all media already on CDN)")
+            return
+        logger.info(f"Cloudinary auto-migration: {img_pending} images, {vid_pending} videos pending...")
+
+        results = {"images": {"migrated": 0, "errors": 0, "skipped": 0}, "videos": {"migrated": 0, "errors": 0, "skipped": 0}}
+
+        # Migrate images
+        async for img in db.uploads.find({"cloudinary_url": {"$exists": False}}):
+            data = None
+            if img.get("storage_path"):
+                try:
+                    data, _ = get_object(img["storage_path"])
+                except Exception:
+                    pass
+            if data is None and img.get("data"):
+                data = base64.b64decode(img["data"])
+            if data is None:
+                results["images"]["skipped"] += 1
+                continue
+            try:
+                res = cloudinary.uploader.upload(data, folder="wm-group/images", public_id=img["id"], resource_type="image", overwrite=True)
+                await db.uploads.update_one({"_id": img["_id"]}, {"$set": {"cloudinary_url": res["secure_url"], "cloudinary_public_id": res["public_id"]}})
+                results["images"]["migrated"] += 1
+            except Exception as e:
+                logger.warning(f"Cloudinary auto-migration image error {img.get('id')}: {e}")
+                results["images"]["errors"] += 1
+
+        # Migrate videos
+        async for vid in db.video_uploads.find({"cloudinary_url": {"$exists": False}}):
+            data = None
+            fs_path = VIDEO_DIR / f"{vid['id']}.mp4"
+            if fs_path.exists():
+                data = fs_path.read_bytes()
+            elif vid.get("storage_path"):
+                try:
+                    data, _ = get_object(vid["storage_path"])
+                except Exception:
+                    pass
+            if data is None:
+                results["videos"]["skipped"] += 1
+                continue
+            try:
+                res = cloudinary.uploader.upload(data, folder="wm-group/videos", public_id=vid["id"], resource_type="video", overwrite=True, timeout=300)
+                await db.video_uploads.update_one({"_id": vid["_id"]}, {"$set": {"cloudinary_url": res["secure_url"], "cloudinary_public_id": res["public_id"]}})
+                results["videos"]["migrated"] += 1
+            except Exception as e:
+                logger.warning(f"Cloudinary auto-migration video error {vid.get('id')}: {e}")
+                results["videos"]["errors"] += 1
+
+        logger.info(f"Cloudinary auto-migration complete: {results}")
+    except Exception as e:
+        logger.error(f"Cloudinary auto-migration failed: {e}")
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

@@ -13,12 +13,34 @@ const DEFAULT_SAUNA_IMG = 'https://images.unsplash.com/photo-1759302354886-f2c37
 const DEFAULT_BALIA_IMG = 'https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=80';
 
 /* Parallax card with all effects */
+/* Generate Cloudinary poster (first frame as jpg) from video URL */
+const getVideoPoster = (videoUrl) => {
+  if (!videoUrl) return '';
+  if (videoUrl.includes('res.cloudinary.com') && videoUrl.includes('/video/upload/')) {
+    return videoUrl
+      .replace('/video/upload/', '/video/upload/so_0,w_800,q_auto,f_jpg/')
+      .replace(/\.(mp4|webm|mov)$/i, '.jpg');
+  }
+  return '';
+};
+
 const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title, desc, cta, onClick, direction, testId }) => {
   const cardRef = useRef(null);
   const videoRef = useRef(null);
   const [transform, setTransform] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
   const touchStartRef = useRef({ x: 0, y: 0 });
+  const [videoReady, setVideoReady] = useState(false);
+
+  // Eagerly load video as soon as component mounts
+  useEffect(() => {
+    if (!video || !videoRef.current) return;
+    const el = videoRef.current;
+    el.load();
+    const onCanPlay = () => setVideoReady(true);
+    el.addEventListener('canplaythrough', onCanPlay);
+    return () => el.removeEventListener('canplaythrough', onCanPlay);
+  }, [video]);
 
   const playVideo = useCallback(() => {
     if (videoRef.current) {
@@ -112,7 +134,7 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
           transform: !video && hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.1)` : 'translate(0,0) scale(1)',
         }}
       />
-      {/* Video */}
+      {/* Video — preloaded eagerly with poster for instant playback */}
       {video && (
         <video
           ref={videoRef}
@@ -121,6 +143,7 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
           loop
           playsInline
           preload="auto"
+          poster={getVideoPoster(video)}
           className={`absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-opacity duration-700 ${hovered ? 'opacity-100' : 'opacity-0'}`}
           style={{
             transform: hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.05)` : 'translate(0,0) scale(1)',
@@ -190,6 +213,22 @@ const MainLanding = () => {
       })
       .finally(() => setImagesReady(true));
   }, []);
+
+  // Preload video files via <link rel="preload"> for instant playback
+  useEffect(() => {
+    const urls = [saunaVideo, baliaVideo].filter(Boolean);
+    const links = [];
+    urls.forEach(url => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'video';
+      link.href = url;
+      link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+      links.push(link);
+    });
+    return () => links.forEach(l => l.remove());
+  }, [saunaVideo, baliaVideo]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
