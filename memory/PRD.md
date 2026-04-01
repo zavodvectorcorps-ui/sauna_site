@@ -35,9 +35,11 @@
 ### Data Migration — COMPLETE
 - Export/Import in admin panel — TESTED
 
-### Bug Fixes (Mar 2026)
+### Bug Fixes (Mar-Apr 2026)
 - SeoHead.jsx TDZ error, CORS analytics, /api/content/calculator 404
-- **Mobile catalog download**: Заменён window.open/link.click на window.location.href в CatalogFormGate и BalieCatalogGate (мобильные браузеры блокировали popup в async-колбэках)
+- **Mobile catalog download**: Заменён window.open/link.click на window.location.href (popup blocking fix)
+- **PDF Polish chars**: Шрифт Helvetica → Inter TTF (полная поддержка ł, ą, ę, ż, ź, ć, ń). Дизайн PDF переделан: современный, чистый, читаемый
+- **PDF filename encoding**: RFC 5987 для Content-Disposition с Unicode-именами файлов
 
 ## Key API Endpoints
 - GET /api/images/{id}?w=&q= — server-side resize + WebP via Pillow
