@@ -36,6 +36,7 @@
 - OG-картинка в index.html теперь использует ?w=1200&q=80 (вместо сырого 7MB PNG)
 - twitter:image также оптимизирован
 - Хардкод OG-тегов в public/index.html для корректного чтения краулерами
+- **Sitemap.xml** (Apr 1 2026): Динамический `GET /api/sitemap.xml` — 8 статических + все блог-статьи из БД. `GET /api/robots.txt` указывает на sitemap. Домен: `https://wm-spa.pl`
 
 ### A/B Testing System — COMPLETE (Mar 31 2026)
 - Backend: CRUD API for tests (`/api/admin/ab/tests`), public endpoints for active tests and event tracking

@@ -3071,6 +3071,68 @@ def slugify(text: str) -> str:
     return _re.sub(r'-+', '-', text).strip('-')
 
 
+# ═══════════════════════════════════════════
+# Sitemap XML
+# ═══════════════════════════════════════════
+
+SITE_DOMAIN = "https://wm-spa.pl"
+
+@api_router.get("/sitemap.xml")
+async def sitemap_xml():
+    """Dynamic sitemap.xml for search engine indexing."""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    static_pages = [
+        {"loc": "/",                   "priority": "1.0", "changefreq": "weekly"},
+        {"loc": "/sauny",              "priority": "0.9", "changefreq": "weekly"},
+        {"loc": "/balie",              "priority": "0.9", "changefreq": "weekly"},
+        {"loc": "/balie/konfigurator", "priority": "0.8", "changefreq": "monthly"},
+        {"loc": "/blog",               "priority": "0.8", "changefreq": "daily"},
+        {"loc": "/b2b",                "priority": "0.7", "changefreq": "monthly"},
+        {"loc": "/privacy",            "priority": "0.2", "changefreq": "yearly"},
+        {"loc": "/cookies",            "priority": "0.2", "changefreq": "yearly"},
+    ]
+
+    urls_xml = ""
+    for p in static_pages:
+        urls_xml += f"""  <url>
+    <loc>{SITE_DOMAIN}{p["loc"]}</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>{p["changefreq"]}</changefreq>
+    <priority>{p["priority"]}</priority>
+  </url>\n"""
+
+    # Blog articles
+    async for article in db.blog_articles.find({"published": True}, {"_id": 0, "slug": 1, "updated_at": 1, "created_at": 1}).sort("created_at", -1):
+        slug = article.get("slug", "")
+        lastmod = (article.get("updated_at") or article.get("created_at") or today)
+        if isinstance(lastmod, str) and "T" in lastmod:
+            lastmod = lastmod[:10]
+        urls_xml += f"""  <url>
+    <loc>{SITE_DOMAIN}/blog/{slug}</loc>
+    <lastmod>{lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>\n"""
+
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{urls_xml}</urlset>"""
+
+    return Response(content=xml, media_type="application/xml", headers={"Cache-Control": "public, max-age=3600"})
+
+
+@api_router.get("/robots.txt")
+async def robots_txt():
+    """robots.txt pointing to sitemap."""
+    content = f"""User-agent: *
+Allow: /
+
+Sitemap: {SITE_DOMAIN}/api/sitemap.xml
+"""
+    return Response(content=content, media_type="text/plain")
+
+
 @api_router.get("/blog/articles")
 async def get_blog_articles(category: Optional[str] = None):
     query = {"published": True}
