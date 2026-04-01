@@ -197,12 +197,23 @@ const MainLanding = () => {
         {/* Scroll sentinel — triggers below-fold loading */}
         <div ref={sentinelRef} style={{ height: '1px' }} />
 
-        {/* Below fold — loads on scroll or after 10s. No skeleton → no CLS */}
-        {showBelowFold && (
-          <Suspense fallback={null}>
+        {/* Below fold — loads on scroll or after 10s.
+            Skeleton reserves ~1500px so footer inside BelowFold doesn't cause shift. */}
+        {showBelowFold ? (
+          <Suspense fallback={
+            <div data-testid="below-fold-skeleton" style={{ minHeight: '1500px', background: '#0C0C0C' }}>
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '60px 16px' }}>
+                <div style={{ maxWidth: 640, margin: '0 auto' }}>
+                  <div style={{ width: 200, height: 14, background: '#1a1a1a', borderRadius: 4, marginBottom: 12 }} />
+                  <div style={{ width: '100%', height: 8, background: '#141414', borderRadius: 4, marginBottom: 8 }} />
+                  <div style={{ width: '80%', height: 8, background: '#141414', borderRadius: 4 }} />
+                </div>
+              </div>
+            </div>
+          }>
             <BelowFoldSections />
           </Suspense>
-        )}
+        ) : null}
       </main>
     </div>
   );
