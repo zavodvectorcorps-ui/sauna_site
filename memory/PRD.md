@@ -1,7 +1,7 @@
 # WM Group — PRD
 
 ## Architecture
-- Frontend: React 19 + react-scripts 5 + CRACO + TailwindCSS 3 + Framer Motion + Shadcn UI
+- Frontend: React 19 + react-scripts 5 + CRACO + TailwindCSS 3 + Framer Motion (lazy only) + Shadcn UI
 - Backend: FastAPI + MongoDB + **Cloudinary CDN** + Pillow + GPT-4.1-nano
 - Media: **Cloudinary** (primary, CDN delivery) + Emergent Object Storage (legacy fallback)
 - Admin: Basic Auth (admin / 220066)
@@ -20,22 +20,23 @@
 - **Video preloading**: programmatic el.load(), Cloudinary poster frames
 - In-memory ImageCache (200 items, 1h TTL), GZip middleware
 
-### PageSpeed Critical Path Optimization (Apr 1 2026)
-- **SettingsProvider**: Removed full-screen loading spinner — children render IMMEDIATELY with defaults
-- **React.lazy ALL below-fold sections**: SocialProof, Models, Calculator, Gallery, StockSaunas, Reviews, FAQ, About, Contact, PromoFeatures, PromoBanner, SpecialOffer, SaunaInstallment, SaunaAdvantages, SaunaVideoReviews, OrderProcess, WhatsAppButton, CookieConsentBanner
-- **Route-level code splitting**: MainLanding, BlogPage, BlogArticlePage, B2BPage, BalieLandingPage, BalieConfigurator, AdminPanel, PipelineView, PrivacyPolicyPage, CookiePolicyPage
-- **Suspense fallback skeletons**: Fixed-height divs prevent CLS during lazy load
-- **PostHog deferred**: requestIdleCallback — no longer blocks LCP
+### PageSpeed Critical Path Optimization — DEEP REFACTOR (Apr 1 2026)
+- **App.js**: ALL routes lazy-loaded via React.lazy — ZERO synchronous heavy imports
+- **SaunaHomePage extracted**: Header, Hero, Footer moved to `/pages/SaunaHomePage.jsx` (lazy chunk)
+- **Hero.jsx**: framer-motion REMOVED — pure CSS animations, explicit width/height on bg image, fetchPriority="high"
+- **CookieConsentBanner**: framer-motion REMOVED — CSS transitions only
+- **MainLanding BelowFold**: IntersectionObserver scroll-triggered loading — NO skeleton mismatch CLS
+- **Footer inside BelowFold**: Prevents CLS (no element shifts below fold content)
+- **LCP image preload**: Added in index.html for default sauna hero image
+- **SettingsProvider**: Children render IMMEDIATELY with defaults
+- **PostHog deferred**: requestIdleCallback
 - **Google Fonts async**: media="print" onload="this.media='all'" + font-display: optional
 - **Layout settings non-blocking**: Applied via requestIdleCallback, CSS defaults pre-set in :root
 - **Cookie banner delayed 3.5s**: Prevents it from becoming LCP element
 - **Webpack splitChunks**: react-vendor, ui-vendor (framer-motion, radix, recharts) separate chunks
-- **Preconnect**: res.cloudinary.com, fonts.googleapis.com, wm-sauna-balia.emergent.host
-- **LCP image**: fetchpriority="high", loading="eager", preload in HTML
-- **ProductCard**: aspect-ratio instead of min-height for CLS stability
-- **Hero animations disabled on first paint**: initial={false} on ProductCard
-- **Playfair Display font removed**: Reduced font weight
-- **Semantic HTML**: <main> landmark added
+- **Preconnect**: res.cloudinary.com, fonts.googleapis.com
+- **ProductCard**: aspect-ratio 4/5 for CLS stability
+- **Semantic HTML**: <main> landmark
 
 ### SEO
 - Dynamic sitemap.xml: GET /api/sitemap.xml (8 static + 14 blog articles)
@@ -62,6 +63,7 @@
 - P2: Toast обработка ошибок
 - P4: Рефакторинг server.py → модули (3900+ строк)
 - P4: Декомпозиция Calculator.jsx
+- P5: Tailwind warning `duration-[1.2s]` → `duration-[1200ms]`
 
 ## Known Issues
 - 6 видео не мигрировали в Cloudinary (2 слишком больших, 4 невалидных)
