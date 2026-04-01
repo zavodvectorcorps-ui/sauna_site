@@ -52,6 +52,14 @@
 - **PDF Polish chars**: Шрифт Helvetica → Inter TTF (полная поддержка ł, ą, ę, ż, ź, ć, ń)
 - **Admin upload URL fix** (Apr 1 2026): Исправлен двойной домен в URL при загрузке через админку (14 мест в 10 компонентах)
 
+### Stock Sauna Product Cards — COMPLETE (Apr 1 2026)
+- Карточки саун в наличии открываются как полноценное модальное окно (галерея, описание, характеристики, цена)
+- Бейдж "Promocja -X%" вместо цены со скидкой
+- Кнопка "Kup teraz" → форма заказа (имя, телефон, email) → отправка в `/api/contact`
+- Кнопка "Skonfiguruj saunę" → переход к калькулятору
+- Админ: описание, галерея доп. фото, настройка CTA кнопки (5 действий: форма, калькулятор, WhatsApp, звонок, ссылка)
+- API: `GET /api/settings/stock-cta-config`, `PUT /api/admin/settings/stock-cta-config`
+
 ## Key API Endpoints
 - GET /api/images/{id}?w=&q= — server-side resize + WebP via Pillow (302 redirect to Cloudinary if available)
 - GET /api/videos/{filename} — 302 redirect to Cloudinary if available
