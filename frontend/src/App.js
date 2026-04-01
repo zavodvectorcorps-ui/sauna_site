@@ -9,12 +9,13 @@ import { SeoHead } from "./components/SeoHead";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
 import { Footer } from "./components/Footer";
-import { TrackingScripts, useAnalytics } from "./lib/analytics";
-import { ABTestProvider } from "./context/ABTestContext";
 import { useLocation } from "react-router-dom";
 
-// Critical above-fold components loaded sync: Header, Hero, Footer (shell)
-// Everything else is lazy — below-fold sections, full pages, admin
+// ── EVERYTHING except Header + Hero + Footer is lazy ──
+
+// Analytics — deferred, not in initial bundle
+const TrackingScripts = React.lazy(() => import("./lib/analytics").then(m => ({ default: m.TrackingScripts })));
+const ABTestProvider = React.lazy(() => import("./context/ABTestContext").then(m => ({ default: m.ABTestProvider })));
 
 // Below-fold sauna sections
 const SocialProof = React.lazy(() => import("./components/SocialProof").then(m => ({ default: m.SocialProof })));
@@ -50,147 +51,72 @@ const PipelineView = React.lazy(() => import("./pages/PipelineView"));
 const PrivacyPolicyPage = React.lazy(() => import("./pages/PrivacyPolicyPage"));
 const CookiePolicyPage = React.lazy(() => import("./pages/CookiePolicyPage"));
 
-// Minimal skeleton fallback with fixed height to prevent CLS
-const SectionSkeleton = ({ height = '400px' }) => (
-  <div style={{ minHeight: height, background: '#F9F9F7' }} />
-);
+// Fixed-height skeleton to prevent CLS during lazy load
+const Skel = ({ h = '400px' }) => <div style={{ minHeight: h, background: '#F9F9F7' }} />;
+const PageSkel = () => <div style={{ minHeight: '100vh', background: '#F9F9F7' }} />;
+const Lazy = ({ children, h = '400px' }) => <Suspense fallback={<Skel h={h} />}>{children}</Suspense>;
 
-const PageSkeleton = () => (
-  <div style={{ minHeight: '100vh', background: '#F9F9F7' }} />
-);
-
-// Wrap lazy section with Suspense + fixed-height skeleton
-const LazySection = ({ children, height = '400px' }) => (
-  <Suspense fallback={<SectionSkeleton height={height} />}>
-    {children}
-  </Suspense>
-);
-
-// Auto page view tracker
-const PageTracker = () => {
-  const location = useLocation();
-  const { trackEvent: track } = useAnalytics();
-  useEffect(() => {
-    track('page_view', { path: location.pathname });
-  }, [location.pathname]);
-  return null;
-};
-
-// Map section keys to lazy components
-const sectionComponentMap = {
-  hero: null, // Hero is rendered sync, not via lazy map
-  models: Models,
-  calculator: Calculator,
-  gallery: Gallery,
-  stock: StockSaunas,
-  reviews: Reviews,
-  faq: FAQ,
-  orderprocess: null, // handled specially
-  about: About,
-  contact: Contact,
-};
-
-const sectionHeights = {
-  models: '800px',
-  calculator: '600px',
-  gallery: '500px',
-  stock: '400px',
-  reviews: '400px',
-  faq: '400px',
-  orderprocess: '300px',
-  about: '400px',
-  contact: '500px',
-};
+// Section map + heights for sauna page
+const sectionMap = { models: Models, calculator: Calculator, gallery: Gallery, stock: StockSaunas, reviews: Reviews, faq: FAQ, about: About, contact: Contact };
+const sectionH = { models: '800px', calculator: '600px', gallery: '500px', stock: '400px', reviews: '400px', faq: '400px', orderprocess: '300px', about: '400px', contact: '500px' };
 
 const MainContent = () => {
-  const { sectionOrder, sectionVisibility, loading } = useSettings();
+  const { sectionOrder, sectionVisibility } = useSettings();
 
-  // Apply layout settings AFTER first paint — non-blocking
+  // Layout settings: apply only to NON-first-screen sections via requestIdleCallback
   useEffect(() => {
-    // Use requestIdleCallback to avoid blocking main thread
-    const applyLayout = () => {
+    const apply = () => {
       fetch(`${process.env.REACT_APP_BACKEND_URL}/api/settings/layout`)
-        .then(res => res.json())
+        .then(r => r.json())
         .then(data => {
-          const paddingMap = {
-            small: { top: 40, bottom: 40 },
-            medium: { top: 60, bottom: 60 },
-            large: { top: 80, bottom: 80 },
-          };
-          const padding = paddingMap[data.section_spacing] || { top: data.section_padding_top || 80, bottom: data.section_padding_bottom || 80 };
-          document.documentElement.style.setProperty('--section-padding-top', `${padding.top}px`);
-          document.documentElement.style.setProperty('--section-padding-bottom', `${padding.bottom}px`);
+          const pm = { small: 40, medium: 60, large: 80 };
+          const t = pm[data.section_spacing] || data.section_padding_top || 80;
+          const b = pm[data.section_spacing] || data.section_padding_bottom || 80;
+          document.documentElement.style.setProperty('--section-padding-top', `${t}px`);
+          document.documentElement.style.setProperty('--section-padding-bottom', `${b}px`);
         })
         .catch(() => {});
     };
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(applyLayout);
-    } else {
-      setTimeout(applyLayout, 2000);
-    }
+    if ('requestIdleCallback' in window) requestIdleCallback(apply);
+    else setTimeout(apply, 3000);
   }, []);
 
   const sections = sectionOrder?.sections || ['hero', 'models', 'calculator', 'gallery', 'stock', 'reviews', 'faq', 'orderprocess', 'about', 'contact'];
   const vis = sectionVisibility?.sauna || {};
-
-  const getVisClass = (key) => {
+  const vc = (key) => {
     const v = vis[key];
     if (!v) return '';
-    const desktop = v.desktop !== false;
-    const mobile = v.mobile !== false;
-    if (!desktop && !mobile) return 'hidden';
-    if (!desktop && mobile) return 'block md:hidden';
-    if (desktop && !mobile) return 'hidden md:block';
+    const d = v.desktop !== false, m = v.mobile !== false;
+    if (!d && !m) return 'hidden';
+    if (!d && m) return 'block md:hidden';
+    if (d && !m) return 'hidden md:block';
     return '';
   };
 
   return (
     <>
-      {sections.map((sectionKey) => {
-        const visClass = getVisClass(sectionKey);
-
-        // Hero is rendered synchronously (above-fold critical path)
-        if (sectionKey === 'hero') {
-          return (
-            <React.Fragment key="hero">
-              <div className={visClass}>
-                <Hero />
-              </div>
-              <LazySection height="200px">
-                <div className={getVisClass('specialoffer')}><SpecialOffer /></div>
-              </LazySection>
-              <LazySection height="100px">
-                <div className={getVisClass('socialproof')}><SocialProof /></div>
-              </LazySection>
-            </React.Fragment>
-          );
-        }
-
-        // OrderProcess special case
-        if (sectionKey === 'orderprocess') {
-          return (
-            <LazySection key="orderprocess" height="300px">
-              <div className={visClass}><OrderProcess type="sauna" /></div>
-            </LazySection>
-          );
-        }
-
-        const Component = sectionComponentMap[sectionKey];
-        if (!Component) return null;
-
+      {sections.map((k) => {
+        if (k === 'hero') return (
+          <React.Fragment key="hero">
+            <div className={vc('hero')}><Hero /></div>
+            <Lazy h="200px"><div className={vc('specialoffer')}><SpecialOffer /></div></Lazy>
+            <Lazy h="100px"><div className={vc('socialproof')}><SocialProof /></div></Lazy>
+          </React.Fragment>
+        );
+        if (k === 'orderprocess') return <Lazy key="op" h="300px"><div className={vc(k)}><OrderProcess type="sauna" /></div></Lazy>;
+        const C = sectionMap[k];
+        if (!C) return null;
         return (
-          <React.Fragment key={sectionKey}>
-            <LazySection height={sectionHeights[sectionKey] || '400px'}>
-              <div className={visClass}><Component /></div>
-            </LazySection>
-            {sectionKey === 'models' && (
-              <LazySection height="800px">
-                <div className={getVisClass('promofeatures')}><PromoFeatures /></div>
-                <div className={getVisClass('advantages')}><SaunaAdvantages /></div>
-                <div className={getVisClass('videoreviews')}><SaunaVideoReviews /></div>
-                <div className={getVisClass('promobanner')}><PromoBanner /></div>
-                <div className={getVisClass('installment')}><SaunaInstallment /></div>
-              </LazySection>
+          <React.Fragment key={k}>
+            <Lazy h={sectionH[k] || '400px'}><div className={vc(k)}><C /></div></Lazy>
+            {k === 'models' && (
+              <Lazy h="800px">
+                <div className={vc('promofeatures')}><PromoFeatures /></div>
+                <div className={vc('advantages')}><SaunaAdvantages /></div>
+                <div className={vc('videoreviews')}><SaunaVideoReviews /></div>
+                <div className={vc('promobanner')}><PromoBanner /></div>
+                <div className={vc('installment')}><SaunaInstallment /></div>
+              </Lazy>
             )}
           </React.Fragment>
         );
@@ -203,9 +129,7 @@ const SaunaHomePage = () => (
   <div className="min-h-screen bg-[#F9F9F7]">
     <SeoHead />
     <Header />
-    <main>
-      <MainContent />
-    </main>
+    <main><MainContent /></main>
     <Footer />
     <Suspense fallback={null}><StickyCTA /></Suspense>
   </div>
@@ -217,47 +141,25 @@ function App() {
       <LanguageProvider>
         <AutoTranslateProvider>
         <SettingsProvider>
-          <ABTestProvider>
           <BrowserRouter>
-            <PageTracker />
-            <TrackingScripts />
+            {/* Analytics deferred — not in critical path */}
+            <Suspense fallback={null}><TrackingScripts /></Suspense>
             <Routes>
-              <Route path="/" element={
-                <Suspense fallback={<PageSkeleton />}><MainLanding /></Suspense>
-              } />
+              <Route path="/" element={<Suspense fallback={<PageSkel />}><MainLanding /></Suspense>} />
               <Route path="/sauny" element={<SaunaHomePage />} />
-              <Route path="/balie" element={
-                <Suspense fallback={<PageSkeleton />}><BalieLandingPage /></Suspense>
-              } />
-              <Route path="/balie/konfigurator" element={
-                <Suspense fallback={<PageSkeleton />}><BalieConfigurator /></Suspense>
-              } />
-              <Route path="/blog" element={
-                <Suspense fallback={<PageSkeleton />}><BlogPage /></Suspense>
-              } />
-              <Route path="/blog/:slug" element={
-                <Suspense fallback={<PageSkeleton />}><BlogArticlePage /></Suspense>
-              } />
-              <Route path="/b2b" element={
-                <Suspense fallback={<PageSkeleton />}><B2BPage /></Suspense>
-              } />
-              <Route path="/privacy" element={
-                <Suspense fallback={<PageSkeleton />}><PrivacyPolicyPage /></Suspense>
-              } />
-              <Route path="/cookies" element={
-                <Suspense fallback={<PageSkeleton />}><CookiePolicyPage /></Suspense>
-              } />
-              <Route path="/admin" element={
-                <Suspense fallback={<PageSkeleton />}><AdminPanel /></Suspense>
-              } />
-              <Route path="/admin/pipeline" element={
-                <Suspense fallback={<PageSkeleton />}><PipelineView /></Suspense>
-              } />
+              <Route path="/balie" element={<Suspense fallback={<PageSkel />}><BalieLandingPage /></Suspense>} />
+              <Route path="/balie/konfigurator" element={<Suspense fallback={<PageSkel />}><BalieConfigurator /></Suspense>} />
+              <Route path="/blog" element={<Suspense fallback={<PageSkel />}><BlogPage /></Suspense>} />
+              <Route path="/blog/:slug" element={<Suspense fallback={<PageSkel />}><BlogArticlePage /></Suspense>} />
+              <Route path="/b2b" element={<Suspense fallback={<PageSkel />}><B2BPage /></Suspense>} />
+              <Route path="/privacy" element={<Suspense fallback={<PageSkel />}><PrivacyPolicyPage /></Suspense>} />
+              <Route path="/cookies" element={<Suspense fallback={<PageSkel />}><CookiePolicyPage /></Suspense>} />
+              <Route path="/admin" element={<Suspense fallback={<PageSkel />}><AdminPanel /></Suspense>} />
+              <Route path="/admin/pipeline" element={<Suspense fallback={<PageSkel />}><PipelineView /></Suspense>} />
             </Routes>
             <Suspense fallback={null}><FloatingContact /></Suspense>
             <Suspense fallback={null}><CookieConsentBanner /></Suspense>
           </BrowserRouter>
-          </ABTestProvider>
         </SettingsProvider>
         </AutoTranslateProvider>
       </LanguageProvider>

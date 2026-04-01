@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowRight, Flame, Droplets, MapPin, ShieldCheck, Leaf, Heart, Phone, Mail, Send, CheckCircle } from 'lucide-react';
+import { ArrowRight, Flame, Droplets } from 'lucide-react';
 import { resolveMediaUrl, optimizedImg, optimizedVideo, videoPoster } from '../lib/utils';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
@@ -10,31 +9,18 @@ import { useSettings } from '../context/SettingsContext';
 const API = process.env.REACT_APP_BACKEND_URL;
 const isMobile = window.innerWidth < 768;
 
+// Default hero images — render immediately, no API wait
 const DEFAULT_SAUNA_IMG = 'https://images.unsplash.com/photo-1759302354886-f2c37dd3dd8c?auto=format&fit=crop&w=800&q=70';
 const DEFAULT_BALIA_IMG = 'https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=70';
 
-/* Parallax card with all effects */
-const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title, desc, cta, onClick, direction, testId, isLCP }) => {
+// Below-fold sections: lazy loaded AFTER first paint
+const BelowFoldSections = lazy(() => import('../components/MainLandingBelowFold'));
+
+/* Product card — NO framer-motion, plain CSS transitions only */
+const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title, desc, cta, onClick, testId, isLCP }) => {
   const cardRef = useRef(null);
   const videoRef = useRef(null);
-  const [transform, setTransform] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
-  const touchStartRef = useRef({ x: 0, y: 0 });
-  const [videoReady, setVideoReady] = useState(false);
-
-  // Adaptive video: mobile gets 720p, desktop gets 1280p
-  const adaptiveVideo = video ? optimizedVideo(video, { mobile: isMobile }) : '';
-  const poster = video ? videoPoster(video, { mobile: isMobile }) : '';
-
-  // Eagerly load video as soon as component mounts
-  useEffect(() => {
-    if (!adaptiveVideo || !videoRef.current) return;
-    const el = videoRef.current;
-    el.load();
-    const onCanPlay = () => setVideoReady(true);
-    el.addEventListener('canplaythrough', onCanPlay);
-    return () => el.removeEventListener('canplaythrough', onCanPlay);
-  }, [adaptiveVideo]);
 
   const playVideo = useCallback(() => {
     if (videoRef.current) {
@@ -50,109 +36,54 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
     }
   }, []);
 
-  const handleMouseMove = useCallback((e) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    setTransform({ x: x * -12, y: y * -8 });
-  }, []);
-
-  const handleMouseEnter = useCallback(() => {
-    setHovered(true);
-    playVideo();
-  }, [playVideo]);
-
-  const handleMouseLeave = useCallback(() => {
-    setHovered(false);
-    setTransform({ x: 0, y: 0 });
-    stopVideo();
-  }, [stopVideo]);
-
-  // Touch events for mobile
-  const handleTouchStart = useCallback((e) => {
-    const touch = e.touches[0];
-    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-    setHovered(true);
-    playVideo();
-  }, [playVideo]);
-
-  const handleTouchMove = useCallback((e) => {
-    if (!cardRef.current) return;
-    const touch = e.touches[0];
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = ((touch.clientX - rect.left) / rect.width - 0.5) * 2;
-    const y = ((touch.clientY - rect.top) / rect.height - 0.5) * 2;
-    setTransform({ x: x * -12, y: y * -8 });
-  }, []);
-
-  const handleTouchEnd = useCallback((e) => {
-    setHovered(false);
-    setTransform({ x: 0, y: 0 });
-    stopVideo();
-    // Only navigate if not a drag (small movement)
-    const touch = e.changedTouches[0];
-    const dx = Math.abs(touch.clientX - touchStartRef.current.x);
-    const dy = Math.abs(touch.clientY - touchStartRef.current.y);
-    if (dx < 10 && dy < 10) onClick();
-  }, [stopVideo, onClick]);
-
   const isSauna = testId === 'card-sauny';
   const glowColor = isSauna ? 'rgba(198,168,124' : 'rgba(212,175,55';
 
   return (
-    <motion.div
+    <div
       ref={cardRef}
-      initial={false}
       onClick={onClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      className="group relative overflow-hidden cursor-pointer aspect-[4/5] md:aspect-[3/4] flex flex-col justify-end"
+      onMouseEnter={() => { setHovered(true); playVideo(); }}
+      onMouseLeave={() => { setHovered(false); stopVideo(); }}
+      className="group relative overflow-hidden cursor-pointer flex flex-col justify-end"
+      style={{ aspectRatio: '4/5' }}
       data-testid={testId}
     >
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90 z-10 group-hover:to-black/80 transition-all duration-700" />
-      {/* Parallax image */}
+
+      {/* Hero image — explicit dimensions, fetchpriority, decoding */}
       <img
         src={img}
         alt={title}
+        width={800}
+        height={1000}
         fetchPriority={isLCP ? 'high' : 'auto'}
         loading={isLCP ? 'eager' : 'lazy'}
-        className={`absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-all duration-[1.2s] ease-out ${video ? (hovered ? 'opacity-0' : 'opacity-100') : 'group-hover:scale-110'}`}
-        style={{
-          objectPosition: imgPos,
-          transform: !video && hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.1)` : 'translate(0,0) scale(1)',
-        }}
+        decoding="async"
+        className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${video ? (hovered ? 'opacity-0' : 'opacity-100') : 'group-hover:scale-105'}`}
+        style={{ objectPosition: imgPos }}
       />
-      {/* Video — preloaded eagerly with poster for instant playback */}
-      {adaptiveVideo && (
+
+      {/* Video — only on desktop, preload="none" until hover */}
+      {video && !isMobile && (
         <video
           ref={videoRef}
-          src={adaptiveVideo}
+          src={video}
           muted
           loop
           playsInline
-          preload="auto"
-          poster={poster}
-          className={`absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-opacity duration-700 ${hovered ? 'opacity-100' : 'opacity-0'}`}
-          style={{
-            transform: hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.05)` : 'translate(0,0) scale(1)',
-            transition: 'transform 1.2s ease-out, opacity 0.7s ease',
-          }}
+          preload="none"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${hovered ? 'opacity-100' : 'opacity-0'}`}
         />
       )}
-      {/* Golden glow */}
-      <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ boxShadow: `inset 0 0 40px ${glowColor},0.15), inset 0 0 80px ${glowColor},0.05)` }} />
-      {/* Light streak */}
-      <div className="absolute inset-0 z-[12] pointer-events-none overflow-hidden">
-        <div className="card-streak absolute -top-full -left-1/2 w-[200%] h-[200%]" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 55%, transparent 60%)' }} />
-      </div>
-      {/* Vignette */}
-      <div className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)' }} />
+
+      {/* Golden glow on hover */}
+      <div
+        className="absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{ boxShadow: `inset 0 0 40px ${glowColor},0.15), inset 0 0 80px ${glowColor},0.05)` }}
+      />
+
       {/* Content */}
       <div className="relative z-20 p-8 transition-transform duration-500 ease-out group-hover:-translate-y-2">
         <div className="flex items-center gap-2 mb-3">
@@ -160,89 +91,52 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
           <span style={{ color: accentColor }} className="text-xs font-semibold tracking-[0.2em] uppercase">{brand}</span>
         </div>
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">{title}</h2>
-        <p className="text-white/60 text-sm mb-6 max-w-sm transition-opacity duration-500 group-hover:text-white/80">{desc}</p>
-        <div className="flex items-center gap-2 text-white font-medium transition-all duration-300" style={{ '--hover-color': accentColor }}>
+        <p className="text-white/60 text-sm mb-6 max-w-sm group-hover:text-white/80 transition-opacity duration-500">{desc}</p>
+        <div className="flex items-center gap-2 text-white font-medium" style={{ '--hover-color': accentColor }}>
           <span className="group-hover:text-[--hover-color] transition-colors duration-300">{cta}</span>
           <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-2" />
         </div>
       </div>
+
       {/* Bottom accent line */}
       <div className="absolute bottom-0 left-0 right-0 h-[2px] z-20 scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left" style={{ background: accentColor }} />
-    </motion.div>
+    </div>
   );
 };
 
 const MainLanding = () => {
   const navigate = useNavigate();
   const { tr } = useAutoTranslate();
-  const { siteSettings } = useSettings();
-  const phone = siteSettings?.phone || '+48 732 099 201';
-  const email = siteSettings?.email || 'wmsauna@gmail.com';
-  const address = siteSettings?.address || 'Warszawa, Polska';
-  const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [saunaImg, setSaunaImg] = useState('');
-  const [baliaImg, setBaliaImg] = useState('');
+
+  // Render cards IMMEDIATELY with defaults — update when API responds
+  const [saunaImg, setSaunaImg] = useState(DEFAULT_SAUNA_IMG);
+  const [baliaImg, setBaliaImg] = useState(DEFAULT_BALIA_IMG);
   const [saunaPos, setSaunaPos] = useState('center');
   const [baliaPos, setBaliaPos] = useState('center');
   const [saunaVideo, setSaunaVideo] = useState('');
   const [baliaVideo, setBaliaVideo] = useState('');
-  const [imagesReady, setImagesReady] = useState(false);
 
+  // Fetch settings in background — no blocking
   useEffect(() => {
     const imgW = isMobile ? 800 : 1200;
     fetch(`${API}/api/settings/main-landing`)
       .then(r => r.json())
       .then(d => {
-        setSaunaImg(optimizedImg(resolveMediaUrl(d.sauna_image), { w: imgW, q: 'auto' }) || DEFAULT_SAUNA_IMG);
-        setBaliaImg(optimizedImg(resolveMediaUrl(d.balia_image), { w: imgW, q: 'auto' }) || DEFAULT_BALIA_IMG);
+        const si = optimizedImg(resolveMediaUrl(d.sauna_image), { w: imgW, q: 'auto' });
+        const bi = optimizedImg(resolveMediaUrl(d.balia_image), { w: imgW, q: 'auto' });
+        if (si) setSaunaImg(si);
+        if (bi) setBaliaImg(bi);
         if (d.sauna_image_position) setSaunaPos(d.sauna_image_position);
         if (d.balia_image_position) setBaliaPos(d.balia_image_position);
         if (d.sauna_video) setSaunaVideo(resolveMediaUrl(d.sauna_video));
         if (d.balia_video) setBaliaVideo(resolveMediaUrl(d.balia_video));
       })
-      .catch(() => {
-        setSaunaImg(DEFAULT_SAUNA_IMG);
-        setBaliaImg(DEFAULT_BALIA_IMG);
-      })
-      .finally(() => setImagesReady(true));
+      .catch(() => {});
   }, []);
-
-  // Prefetch adaptive video files for instant playback on hover
-  useEffect(() => {
-    const urls = [saunaVideo, baliaVideo]
-      .filter(Boolean)
-      .map(url => optimizedVideo(url, { mobile: isMobile }));
-    const links = [];
-    urls.forEach(url => {
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.href = url;
-      link.crossOrigin = 'anonymous';
-      document.head.appendChild(link);
-      links.push(link);
-    });
-    return () => links.forEach(l => l.remove());
-  }, [saunaVideo, baliaVideo]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    try {
-      await fetch(`${API}/api/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, type: 'main_landing' }),
-      });
-      setSubmitted(true);
-    } catch {}
-    setSubmitting(false);
-  };
 
   return (
     <div className="min-h-screen bg-[#0C0C0C]" data-testid="main-landing">
-      {/* Header */}
+      {/* Header — minimal, above fold */}
       <header className="py-8 px-6" data-testid="main-landing-header">
         <div className="flex items-center justify-between max-w-5xl mx-auto mb-4">
           <div />
@@ -256,125 +150,41 @@ const MainLanding = () => {
           <button onClick={() => navigate('/sauny')} className="text-white/50 hover:text-[#C6A87C] text-sm transition-colors">{tr('Sauny')}</button>
           <button onClick={() => navigate('/balie')} className="text-white/50 hover:text-[#D4AF37] text-sm transition-colors">{tr('Balie')}</button>
           <button onClick={() => navigate('/blog')} className="text-white/50 hover:text-white text-sm transition-colors">Blog</button>
-          <button onClick={() => navigate('/b2b')} className="text-[#34D399] hover:text-[#6EE7B7] text-sm font-semibold transition-colors" data-testid="nav-b2b">B2B <span className="text-[#34D399]/60">({tr('Dla hoteli i pensjonatów')})</span></button>
+          <button onClick={() => navigate('/b2b')} className="text-[#34D399] hover:text-[#6EE7B7] text-sm font-semibold transition-colors" data-testid="nav-b2b">B2B</button>
         </nav>
       </header>
 
-      {/* Product cards */}
+      {/* Product cards — RENDER IMMEDIATELY with default images */}
       <main>
-      <section className="px-4 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          {imagesReady && (
-            <>
-              <ProductCard
-                img={saunaImg} imgPos={saunaPos} video={saunaVideo} accentColor="#C6A87C"
-                icon={Flame} brand="WM-Sauna" title={tr("Sauny ogrodowe")}
-                desc={tr("Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5-10 dni.")}
-                cta={tr("Zobacz sauny")} onClick={() => navigate('/sauny')}
-                direction="left" testId="card-sauny" isLCP={true}
-              />
-              <ProductCard
-                img={baliaImg} imgPos={baliaPos} video={baliaVideo} accentColor="#D4AF37"
-                icon={Droplets} brand="WM-Balia" title={tr("Balie i jacuzzi")}
-                desc={tr("Ręcznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyższa jakość.")}
-                cta={tr("Zobacz balie")} onClick={() => navigate('/balie')}
-                direction="right" testId="card-balie"
-              />
-            </>
-          )}
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section className="relative py-20 border-t border-white/5" data-testid="about-section">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <div className="flex items-center gap-2 mb-4">
-                <MapPin size={16} className="text-[#C6A87C]" />
-                <span className="text-[#C6A87C] text-xs font-semibold tracking-[0.15em] uppercase">Warszawa, Polska</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 leading-tight">
-                {tr('Polski producent saun i balii')}<br />
-                <span className="text-[#C6A87C]">{tr('od 2015 roku')}</span>
-              </h2>
-              <div className="space-y-4 text-white/50 text-sm leading-relaxed">
-                <p>{tr('WM Group to polska firma z siedzibą w Warszawie, specjalizująca się w produkcji premium saun ogrodowych i drewnianych balii. Tworzymy produkty, które zmieniają Twój ogród w prywatną strefę relaksu i zdrowia.')}</p>
-                <p>{tr('Każdy nasz produkt powstaje z najlepszych, naturalnych materiałów — skandynawskiego drewna iglastego klasy A+, suszonego komorowo. Dbamy o każdy detal, bo wierzymy, że Twój odpoczynek zasługuje na najwyższą jakość.')}</p>
-                <p>{tr('Wszystkie nasze sauny i balie spełniają rygorystyczne normy bezpasieczeństwa i komfortu. Przed wysyłką każdy produkt przechodzi kontrolę w ponad 30 punktach — dostajesz gotowe, w pełni zmontowane rozwiązanie, gotowe do użycia od pierwszego dnia.')}</p>
-              </div>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }} className="space-y-5 md:pt-12">
-              {[
-                { icon: Heart, title: tr('Z troską o zdrowie i odpoczynek'), desc: tr('Sauna i balia to nie tylko luksus — to zdrowie, regeneracja i chwile spokoju dla całej rodziny.') },
-                { icon: Leaf, title: tr('Naturalne, ekologiczne materiały'), desc: tr('Używamy wyłącznie drewna z certyfikowanych, zrównoważonych źródeł. Bez plastiku, bez kompromisów.') },
-                { icon: ShieldCheck, title: tr('Bezpieczeństwo i komfort klienta'), desc: tr('Każdy produkt spełnia normy bezpieczeństwa. 24 miesiące gwarancji i dedykowany serwis posprzedażowy.') },
-              ].map((v, i) => (
-                <div key={i} className="flex gap-4 p-5 border border-white/5 hover:border-[#C6A87C]/20 transition-colors">
-                  <div className="w-10 h-10 flex items-center justify-center border border-[#C6A87C]/30 flex-shrink-0"><v.icon size={20} className="text-[#C6A87C]" /></div>
-                  <div><h4 className="text-white font-semibold text-sm mb-1">{v.title}</h4><p className="text-white/40 text-xs leading-relaxed">{v.desc}</p></div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section className="py-20 border-t border-white/5" data-testid="contact-section">
-        <div className="max-w-5xl mx-auto px-4">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">{tr('Masz pytania?')} <span className="text-[#C6A87C]">{tr('Napisz do nas')}</span></h2>
-            <p className="text-white/40 text-sm max-w-md mx-auto">{tr('Nasz doradca odpowie na każde pytanie dotyczące saun, balii lub konfiguracji zamówienia.')}</p>
-          </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
-            <div className="md:col-span-2 space-y-6">
-              <div className="flex items-start gap-4"><Phone size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">{tr('Telefon')}</div><a href={`tel:${phone.replace(/\s/g, '')}`} className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">{phone}</a></div></div>
-              <div className="flex items-start gap-4"><Mail size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">Email</div><a href={`mailto:${email}`} className="text-white/50 text-sm hover:text-[#C6A87C] transition-colors">{email}</a></div></div>
-              <div className="flex items-start gap-4"><MapPin size={18} className="text-[#C6A87C] mt-0.5 flex-shrink-0" /><div><div className="text-white font-medium text-sm">{tr('Adres')}</div><p className="text-white/50 text-sm">{tr(address)}</p></div></div>
-            </div>
-            <div className="md:col-span-3">
-              {submitted ? (
-                <div className="text-center py-10 border border-white/5">
-                  <CheckCircle size={40} className="mx-auto text-green-400 mb-3" />
-                  <h3 className="text-white text-lg font-semibold mb-2">{tr('Dziękujemy!')}</h3>
-                  <p className="text-white/50 text-sm">{tr('Nasz doradca skontaktuje się z Tobą wkrótce.')}</p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <input type="text" placeholder={tr("Imię *")} required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" data-testid="landing-contact-name" />
-                    <input type="tel" placeholder={tr("Telefon *")} required value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" data-testid="landing-contact-phone" />
-                  </div>
-                  <input type="email" placeholder="Email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25" />
-                  <textarea placeholder={tr("Twoja wiadomość")} rows={4} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))} className="w-full p-3 bg-white/5 border border-white/10 text-white text-sm focus:border-[#C6A87C] outline-none placeholder-white/25 resize-none" />
-                  <button type="submit" disabled={submitting} className="w-full py-3 bg-[#C6A87C] text-white font-semibold hover:bg-[#B09060] transition-colors disabled:opacity-50 flex items-center justify-center gap-2" data-testid="landing-contact-submit">
-                    <Send size={16} /> {submitting ? tr('Wysyłanie...') : tr('Wyślij wiadomość')}
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-          {/* Map */}
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-12">
-            <iframe
-              title="WM Group Location"
-              src={siteSettings?.map_embed_url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2446.237789917054!2d20.94916221172422!3d52.184550271858335!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47193321efe2d2cd%3A0xe02bd55a82f8973!2sW.M.%20Group%20%E2%80%93%20Sauny%2C%20Balie%2C%20Jacuzzi%20Ogrodowe%20od%20producenta%20Wm-sauna.pl!5e0!3m2!1sru!2spl!4v1774963768524!5m2!1sru!2spl"}
-              width="100%"
-              height="350"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="w-full"
-              data-testid="main-landing-map"
+        <section className="px-4 pb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <ProductCard
+              img={saunaImg} imgPos={saunaPos}
+              video={!isMobile ? (saunaVideo ? optimizedVideo(saunaVideo, { mobile: false }) : '') : ''}
+              accentColor="#C6A87C"
+              icon={Flame} brand="WM-Sauna" title={tr("Sauny ogrodowe")}
+              desc={tr("Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5-10 dni.")}
+              cta={tr("Zobacz sauny")} onClick={() => navigate('/sauny')}
+              testId="card-sauny" isLCP={true}
             />
-          </motion.div>
-        </div>
-      </section>
+            <ProductCard
+              img={baliaImg} imgPos={baliaPos}
+              video={!isMobile ? (baliaVideo ? optimizedVideo(baliaVideo, { mobile: false }) : '') : ''}
+              accentColor="#D4AF37"
+              icon={Droplets} brand="WM-Balia" title={tr("Balie i jacuzzi")}
+              desc={tr("Ręcznie robione drewniane balie, jacuzzi i akcesoria SPA. Naturalne drewno, najwyższa jakość.")}
+              cta={tr("Zobacz balie")} onClick={() => navigate('/balie')}
+              testId="card-balie"
+            />
+          </div>
+        </section>
 
-      {/* Footer */}
+        {/* Everything below fold — lazy loaded */}
+        <Suspense fallback={<div style={{ minHeight: '800px' }} />}>
+          <BelowFoldSections />
+        </Suspense>
       </main>
+
       <footer className="py-8 text-center border-t border-white/5">
         <p className="text-white/20 text-xs">{tr('© 2025 WM Group. Polski producent saun i balii premium. Warszawa.')}</p>
       </footer>

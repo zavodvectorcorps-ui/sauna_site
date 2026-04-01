@@ -37,7 +37,7 @@
     "Frontend: Telegram 'Отправить тестовое сообщение' button present",
     "Frontend: AMO CRM section displays with 'Выключено' toggle",
     "Frontend: Step 1 'Данные интеграции' shows Redirect URI, Domain, Client ID, Client Secret fields",
-    "Frontend: Redirect URI shows correct callback URL: https://media-optimize-2.preview.emergentagent.com/api/admin/amocrm/callback",
+    "Frontend: Redirect URI shows correct callback URL: https://perf-refactor.preview.emergentagent.com/api/admin/amocrm/callback",
     "Frontend: 'Копировать' button present for Redirect URI",
     "Frontend: Step 2 'Авторизация' shows 'Авторизовать в AMO CRM' button (disabled when domain/client_id empty)",
     "Frontend: Step 2 shows 'Проверить подключение' button (disabled when no token)",
