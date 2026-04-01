@@ -16,8 +16,8 @@ export const CookieConsentBanner = () => {
   useEffect(() => {
     const consent = getConsent();
     if (!consent) {
-      // Show banner after short delay
-      const timer = setTimeout(() => setVisible(true), 1500);
+      // Defer banner to avoid it becoming the LCP element
+      const timer = setTimeout(() => setVisible(true), 3500);
       return () => clearTimeout(timer);
     }
   }, []);

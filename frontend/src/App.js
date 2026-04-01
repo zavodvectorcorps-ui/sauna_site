@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -30,8 +30,6 @@ import { SaunaAdvantages } from "./components/SaunaAdvantages";
 import { SaunaVideoReviews } from "./components/SaunaVideoReviews";
 import { OrderProcess } from "./components/OrderProcess";
 import { WhatsAppButton } from "./components/WhatsAppButton";
-import AdminPanel from "./pages/AdminPanel";
-import PipelineView from "./pages/PipelineView";
 import MainLanding from "./pages/MainLanding";
 import B2BPage from "./pages/B2BPage";
 import { BalieLandingPage } from "./components/balie/BalieLandingPage";
@@ -41,6 +39,9 @@ import { ABTestProvider } from "./context/ABTestContext";
 import { useLocation } from "react-router-dom";
 import { CookieConsentBanner } from "./components/CookieConsentBanner";
 
+// Lazy-loaded: admin + heavy pages (not needed on initial public page load)
+const AdminPanel = React.lazy(() => import("./pages/AdminPanel"));
+const PipelineView = React.lazy(() => import("./pages/PipelineView"));
 const PrivacyPolicyPage = React.lazy(() => import("./pages/PrivacyPolicyPage"));
 const CookiePolicyPage = React.lazy(() => import("./pages/CookiePolicyPage"));
 
@@ -191,9 +192,17 @@ function App() {
                 </React.Suspense>
               } />
 
-              {/* Admin */}
-              <Route path="/admin" element={<AdminPanel />} />
-              <Route path="/admin/pipeline" element={<PipelineView />} />
+              {/* Admin — lazy loaded (not needed on public pages) */}
+              <Route path="/admin" element={
+                <Suspense fallback={<div className="min-h-screen bg-[#FAFAF8]" />}>
+                  <AdminPanel />
+                </Suspense>
+              } />
+              <Route path="/admin/pipeline" element={
+                <Suspense fallback={<div className="min-h-screen bg-[#FAFAF8]" />}>
+                  <PipelineView />
+                </Suspense>
+              } />
             </Routes>
             <FloatingContact />
             <CookieConsentBanner />
