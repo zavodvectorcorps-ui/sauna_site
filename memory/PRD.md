@@ -2,7 +2,8 @@
 
 ## Architecture
 - Frontend: React + TailwindCSS + Framer Motion + Shadcn UI
-- Backend: FastAPI + MongoDB + Emergent Object Storage + Pillow (image optimization) + GPT-4.1-nano
+- Backend: FastAPI + MongoDB + **Cloudinary CDN** (images + videos) + Pillow (fallback image optimization) + GPT-4.1-nano
+- Media: **Cloudinary** (primary, CDN delivery) + Emergent Object Storage (legacy fallback)
 - Admin: Basic Auth (admin / 220066)
 
 ## Implemented Features
