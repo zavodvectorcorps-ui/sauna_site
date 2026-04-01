@@ -5,8 +5,16 @@ const API = process.env.REACT_APP_BACKEND_URL;
 const CALCULATOR_API_URL = 'https://wm-kalkulator.pl';
 
 const StockSaunaEditor = ({ sauna, onSave, onDelete, onImageUpload }) => {
-  const [data, setData] = useState(sauna);
+  const [data, setData] = useState({ ...sauna, gallery: sauna.gallery || [], description: sauna.description || '' });
   const [expanded, setExpanded] = useState(false);
+
+  const addGalleryImage = (url) => {
+    setData(prev => ({ ...prev, gallery: [...prev.gallery, url] }));
+  };
+  const removeGalleryImage = (idx) => {
+    setData(prev => ({ ...prev, gallery: prev.gallery.filter((_, i) => i !== idx) }));
+  };
+
   return (
     <div className="border border-black/5 p-4">
       <div className="flex items-center justify-between mb-4">
@@ -16,7 +24,7 @@ const StockSaunaEditor = ({ sauna, onSave, onDelete, onImageUpload }) => {
           </div>
           <div>
             <h4 className="font-medium">{data.name}</h4>
-            <p className="text-sm text-[#C6A87C]">{data.discount > 0 ? (<><span className="line-through text-[#8C8C8C] mr-2">{data.price?.toLocaleString()} PLN</span>{Math.round(data.price * (1 - data.discount / 100)).toLocaleString()} PLN</>) : <>{data.price?.toLocaleString()} PLN</>}</p>
+            <p className="text-sm text-[#C6A87C]">{data.price?.toLocaleString()} PLN {data.discount > 0 && <span className="text-red-500 text-xs ml-1">-{data.discount}%</span>}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -35,13 +43,35 @@ const StockSaunaEditor = ({ sauna, onSave, onDelete, onImageUpload }) => {
             <div><label className="text-xs text-[#8C8C8C]">Вместимость</label><input value={data.capacity} onChange={(e) => setData({ ...data, capacity: e.target.value })} className="w-full p-2 border border-black/10 text-sm" placeholder="2-4" /></div>
             <div><label className="text-xs text-[#8C8C8C]">Парилка (м²)</label><input value={data.steam_room_size} onChange={(e) => setData({ ...data, steam_room_size: e.target.value })} className="w-full p-2 border border-black/10 text-sm" placeholder="2.5" /></div>
           </div>
+          {/* Description */}
           <div>
-            <label className="text-xs text-[#8C8C8C]">URL изображения</label>
+            <label className="text-xs text-[#8C8C8C]">Описание</label>
+            <textarea value={data.description} onChange={(e) => setData({ ...data, description: e.target.value })} className="w-full p-2 border border-black/10 text-sm h-20 resize-none" placeholder="Описание сауны для карточки товара..." />
+          </div>
+          {/* Main image */}
+          <div>
+            <label className="text-xs text-[#8C8C8C]">Главное фото</label>
             <div className="flex gap-2">
               <input value={data.image} onChange={(e) => setData({ ...data, image: e.target.value })} className="flex-1 p-2 border border-black/10 text-sm" />
               <label className="flex items-center gap-1 px-3 py-2 bg-[#1A1A1A] text-white text-sm cursor-pointer"><Upload size={14} /><input type="file" accept="image/*" className="hidden" onChange={(e) => onImageUpload(e.target.files[0], (url) => setData({ ...data, image: url }))} /></label>
             </div>
             {data.image && <img src={data.image} alt="Preview" className="mt-2 h-24 object-cover" />}
+          </div>
+          {/* Gallery */}
+          <div>
+            <label className="text-xs text-[#8C8C8C]">Галерея (доп. фото)</label>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {data.gallery.map((img, idx) => (
+                <div key={idx} className="relative group">
+                  <img src={img} alt="" className="w-20 h-20 object-cover border border-black/10" />
+                  <button onClick={() => removeGalleryImage(idx)} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"><X size={12} /></button>
+                </div>
+              ))}
+              <label className="w-20 h-20 border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer hover:border-[#C6A87C] transition-colors">
+                <Upload size={20} className="text-[#8C8C8C]" />
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => onImageUpload(e.target.files[0], addGalleryImage)} />
+              </label>
+            </div>
           </div>
         </div>
       )}
@@ -57,6 +87,7 @@ export const SaunaModelsStockAdmin = ({ authHeader, showMessage, activeSubTab })
   const [socialProofSettings, setSocialProofSettings] = useState(null);
   const [showImportModal, setShowImportModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [stockCtaConfig, setStockCtaConfig] = useState({ button_text: 'Kup teraz', action: 'form', action_value: '' });
 
   const fetchWithAuth = useCallback(async (url, options = {}) => {
     const response = await fetch(url, { ...options, headers: { ...options.headers, 'Authorization': authHeader } });
@@ -67,18 +98,20 @@ export const SaunaModelsStockAdmin = ({ authHeader, showMessage, activeSubTab })
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [mcRes, msRes, apiRes, ssRes, spRes] = await Promise.all([
+      const [mcRes, msRes, apiRes, ssRes, spRes, ctaRes] = await Promise.all([
         fetch(`${API}/api/settings/models`),
         fetch(`${API}/api/settings/models-content`),
         fetch(`${API}/api/sauna/prices`),
         fetchWithAuth(`${API}/api/admin/stock-saunas`),
         fetch(`${API}/api/settings/social-proof`),
+        fetch(`${API}/api/settings/stock-cta-config`),
       ]);
       setModelsConfig(await mcRes.json());
       setModelsSettings(await msRes.json());
       if (apiRes.ok) setApiData(await apiRes.json());
       setStockSaunas(await ssRes.json());
       setSocialProofSettings(await spRes.json());
+      if (ctaRes.ok) { const ctaData = await ctaRes.json(); if (ctaData?.button_text) setStockCtaConfig(ctaData); }
     } catch (e) { console.error(e); }
     setLoading(false);
   }, [fetchWithAuth]);
@@ -110,11 +143,14 @@ export const SaunaModelsStockAdmin = ({ authHeader, showMessage, activeSubTab })
 
   // Stock functions
   const addStockSauna = async () => {
-    const newSauna = { id: `sauna_${Date.now()}`, name: 'Новая сауна', image: '', price: 0, discount: 0, capacity: '2-4', steam_room_size: '', relax_room_size: '', features: [], active: true, sort_order: stockSaunas.length };
+    const newSauna = { id: `sauna_${Date.now()}`, name: 'Новая сауна', image: '', gallery: [], description: '', price: 0, discount: 0, capacity: '2-4', steam_room_size: '', relax_room_size: '', features: [], active: true, sort_order: stockSaunas.length };
     try { await fetchWithAuth(`${API}/api/admin/stock-saunas`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newSauna) }); showMessage('success', 'Сауна добавлена'); fetchData(); } catch { showMessage('error', 'Ошибка добавления'); }
   };
   const saveStockSauna = async (sauna) => {
     try { await fetchWithAuth(`${API}/api/admin/stock-saunas/${sauna.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sauna) }); showMessage('success', 'Сауна сохранена'); } catch { showMessage('error', 'Ошибка сохранения'); }
+  };
+  const saveStockCtaConfig = async () => {
+    try { await fetchWithAuth(`${API}/api/admin/settings/stock-cta-config`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(stockCtaConfig) }); showMessage('success', 'Настройки кнопки сохранены'); } catch { showMessage('error', 'Ошибка сохранения'); }
   };
   const deleteStockSauna = async (id) => {
     if (!window.confirm('Вы уверены, что хотите удалить эту сауну?')) return;
@@ -242,6 +278,36 @@ export const SaunaModelsStockAdmin = ({ authHeader, showMessage, activeSubTab })
         ) : (
           <div className="space-y-4">{stockSaunas.map((sauna) => <StockSaunaEditor key={sauna.id} sauna={sauna} onSave={saveStockSauna} onDelete={() => deleteStockSauna(sauna.id)} onImageUpload={handleImageUpload} />)}</div>
         )}
+
+        {/* CTA Button Config */}
+        <div className="mt-8 p-6 border border-black/5 bg-[#F9F9F7]">
+          <h3 className="text-lg font-bold text-[#1A1A1A] mb-4">Настройка кнопки "Купить"</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="text-xs text-[#8C8C8C] mb-1 block">Текст кнопки</label>
+              <input value={stockCtaConfig.button_text} onChange={(e) => setStockCtaConfig({ ...stockCtaConfig, button_text: e.target.value })} className="w-full p-2 border border-black/10 text-sm" placeholder="Kup teraz" />
+            </div>
+            <div>
+              <label className="text-xs text-[#8C8C8C] mb-1 block">Действие</label>
+              <select value={stockCtaConfig.action} onChange={(e) => setStockCtaConfig({ ...stockCtaConfig, action: e.target.value })} className="w-full p-2 border border-black/10 text-sm bg-white">
+                <option value="form">Форма заказа</option>
+                <option value="calculator">Перейти к калькулятору</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="phone">Звонок</option>
+                <option value="link">Ссылка</option>
+              </select>
+            </div>
+            {(stockCtaConfig.action === 'whatsapp' || stockCtaConfig.action === 'phone' || stockCtaConfig.action === 'link') && (
+              <div>
+                <label className="text-xs text-[#8C8C8C] mb-1 block">
+                  {stockCtaConfig.action === 'whatsapp' ? 'Номер WhatsApp' : stockCtaConfig.action === 'phone' ? 'Номер телефона' : 'URL ссылки'}
+                </label>
+                <input value={stockCtaConfig.action_value || ''} onChange={(e) => setStockCtaConfig({ ...stockCtaConfig, action_value: e.target.value })} className="w-full p-2 border border-black/10 text-sm" placeholder={stockCtaConfig.action === 'link' ? 'https://...' : '+48...'} />
+              </div>
+            )}
+          </div>
+          <button onClick={saveStockCtaConfig} className="flex items-center gap-2 bg-[#C6A87C] text-white px-4 py-2 hover:bg-[#B09060] text-sm"><Save size={16} /> Сохранить настройки кнопки</button>
+        </div>
       </div>
     );
   }

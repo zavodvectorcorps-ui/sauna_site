@@ -255,6 +255,8 @@ class StockSauna(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     image: str
+    gallery: List[str] = []
+    description: str = ""
     price: float
     discount: int = 0
     capacity: str = "2-4"
@@ -1132,6 +1134,13 @@ async def get_stock_settings_public():
         return StockSettings().model_dump()
     return settings
 
+@api_router.get("/settings/stock-cta-config")
+async def get_stock_cta_config():
+    settings = await db.settings.find_one({"id": "stock_cta_config"}, {"_id": 0})
+    if not settings:
+        return {"button_text": "Kup teraz", "action": "form", "action_value": ""}
+    return settings
+
 @api_router.get("/settings/reviews-content")
 async def get_reviews_settings_public():
     settings = await db.settings.find_one({"id": "reviews_settings"}, {"_id": 0})
@@ -1539,6 +1548,17 @@ async def update_stock_settings(settings: StockSettings, username: str = Depends
     await db.settings.update_one(
         {"id": "stock_settings"},
         {"$set": settings.model_dump()},
+        upsert=True
+    )
+    return {"status": "success"}
+
+@api_router.put("/admin/settings/stock-cta-config")
+async def update_stock_cta_config(request: Request, username: str = Depends(verify_admin)):
+    data = await request.json()
+    data["id"] = "stock_cta_config"
+    await db.settings.update_one(
+        {"id": "stock_cta_config"},
+        {"$set": data},
         upsert=True
     )
     return {"status": "success"}

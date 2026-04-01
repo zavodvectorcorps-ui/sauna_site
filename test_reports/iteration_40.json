@@ -1,0 +1,115 @@
+{
+  "summary": "Iteration 40: Stock sauna product cards feature fully tested. All features working: stock section renders on /sauny, clicking cards opens detailed modal with gallery, specs, description, price, Promocja badge for discounts, 'Kup teraz' and 'Skonfiguruj saunę' buttons, order form submits to /api/contact, modal closes via X or overlay. Admin panel stock tab has CTA config with all action types (form, calculator, whatsapp, phone, link).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration40_stock_features.py",
+    "/app/test_reports/pytest/pytest_iteration40.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "StockSaunas.jsx correctly implements modal with gallery navigation, specs grid, description display, and order form",
+    "StockSauna model in server.py includes gallery (List[str]) and description (str) fields",
+    "GET /api/settings/stock-cta-config returns default config with button_text, action, action_value",
+    "PUT /api/admin/settings/stock-cta-config requires admin auth and saves config correctly",
+    "Order form submits to /api/contact with type='stock_sauna_order'",
+    "Admin panel SaunaModelsStockAdmin.jsx has CTA config UI with all 5 action types"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration40_stock_features.py"
+  ],
+  "success_rate": {
+    "backend": "100% (14/14 tests passed)",
+    "frontend": "100% (all stock features verified via Playwright)"
+  },
+  "test_credentials": "Admin: username=admin, password=220066",
+  "seed_data_creation": "Created test contact form submissions: TEST_StockOrder40, TEST_StockOrder40_API. Updated existing stock sauna with description field.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Stock sauna feature is fully implemented. Stock section on /sauny page shows product cards with Promocja badge for discounts. Clicking card opens modal with image gallery, title, price, specs, description, and two CTA buttons. 'Kup teraz' opens order form that submits to /api/contact. Admin panel at /admin -> 'В наличии' tab has stock sauna management and CTA button config with 5 action types: form, calculator, whatsapp, phone, link.",
+  "features_tested": {
+    "stock_section_renders": {
+      "status": "PASS",
+      "details": "Stock section with data-testid='stock-section' renders on /sauny page"
+    },
+    "stock_cards_display": {
+      "status": "PASS",
+      "details": "Stock cards with data-testid='stock-card-{id}' display product info"
+    },
+    "promocja_badge": {
+      "status": "PASS",
+      "details": "Discount saunas show 'Promocja -10%' badge (no discounted price shown)"
+    },
+    "modal_opens_on_click": {
+      "status": "PASS",
+      "details": "Clicking stock card opens modal with data-testid='stock-modal'"
+    },
+    "modal_gallery": {
+      "status": "PASS",
+      "details": "Modal shows main image with gallery navigation arrows and thumbnails"
+    },
+    "modal_specs": {
+      "status": "PASS",
+      "details": "Modal shows specs: capacity (2-3 os.), steam room size (189 cm)"
+    },
+    "modal_description": {
+      "status": "PASS",
+      "details": "Modal shows description in styled box with border-l-4"
+    },
+    "modal_price": {
+      "status": "PASS",
+      "details": "Modal shows price (11,000 PLN) with data-testid='stock-modal-price'"
+    },
+    "modal_cta_buttons": {
+      "status": "PASS",
+      "details": "'Kup teraz' and 'Skonfiguruj saunę' buttons present with correct data-testid"
+    },
+    "order_form_opens": {
+      "status": "PASS",
+      "details": "Clicking 'Kup teraz' opens order form with name, phone, email fields"
+    },
+    "order_form_submits": {
+      "status": "PASS",
+      "details": "Order form submits to /api/contact, shows 'Dziękujemy!' success message"
+    },
+    "modal_close_x": {
+      "status": "PASS",
+      "details": "Modal closes when clicking X button"
+    },
+    "modal_close_overlay": {
+      "status": "PASS",
+      "details": "Modal closes when clicking overlay background"
+    },
+    "api_stock_cta_config_get": {
+      "status": "PASS",
+      "details": "GET /api/settings/stock-cta-config returns default config"
+    },
+    "api_stock_cta_config_put": {
+      "status": "PASS",
+      "details": "PUT /api/admin/settings/stock-cta-config saves config (requires admin auth)"
+    },
+    "api_stock_saunas_gallery_field": {
+      "status": "PASS",
+      "details": "GET /api/stock-saunas returns gallery field (List[str])"
+    },
+    "api_stock_saunas_description_field": {
+      "status": "PASS",
+      "details": "GET /api/stock-saunas returns description field (str)"
+    },
+    "admin_stock_tab": {
+      "status": "PASS",
+      "details": "Admin panel 'В наличии' tab loads without errors, shows stock saunas list"
+    },
+    "admin_cta_config_ui": {
+      "status": "PASS",
+      "details": "Admin CTA config has button text input and action dropdown with 5 options"
+    }
+  }
+}
