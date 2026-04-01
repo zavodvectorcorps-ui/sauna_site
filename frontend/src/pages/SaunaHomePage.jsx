@@ -37,6 +37,7 @@ const MainContent = () => {
   const { sectionOrder, sectionVisibility } = useSettings();
 
   // Layout settings: apply only to NON-first-screen sections via requestIdleCallback
+  // NEVER changes first-screen height. Only applies if values differ from CSS defaults (80px).
   useEffect(() => {
     const apply = () => {
       fetch(`${process.env.REACT_APP_BACKEND_URL}/api/settings/layout`)
@@ -45,8 +46,9 @@ const MainContent = () => {
           const pm = { small: 40, medium: 60, large: 80 };
           const t = pm[data.section_spacing] || data.section_padding_top || 80;
           const b = pm[data.section_spacing] || data.section_padding_bottom || 80;
-          document.documentElement.style.setProperty('--section-padding-top', `${t}px`);
-          document.documentElement.style.setProperty('--section-padding-bottom', `${b}px`);
+          // Only mutate DOM if values actually differ from defaults to avoid CLS
+          if (t !== 80) document.documentElement.style.setProperty('--section-padding-top', `${t}px`);
+          if (b !== 80) document.documentElement.style.setProperty('--section-padding-bottom', `${b}px`);
         })
         .catch(() => {});
     };

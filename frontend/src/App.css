@@ -1,5 +1,10 @@
 /* WM-Sauna Global Styles */
 
+/* Font display: prevent FOIT, show fallback immediately then swap */
+@font-face {
+  font-display: swap;
+}
+
 /* Prevent horizontal overflow on mobile */
 html, body {
   overflow-x: hidden;
