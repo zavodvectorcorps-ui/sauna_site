@@ -36,3 +36,25 @@ export function optimizedImg(url, { w, q } = {}) {
   if (q) params.push(`q=${q}`);
   return params.length ? `${resolved}?${params.join('&')}` : resolved;
 }
+
+// Adaptive video URL: Cloudinary transformations for fast loading
+// mobile=true → 720p, desktop → 1280p, auto quality + auto format (WebM/MP4)
+export function optimizedVideo(url, { mobile } = {}) {
+  const resolved = resolveMediaUrl(url);
+  if (!resolved) return resolved;
+  if (!resolved.includes('res.cloudinary.com') || !resolved.includes('/video/upload/')) return resolved;
+  const w = mobile ? 720 : 1280;
+  const transforms = `w_${w},q_auto,f_auto`;
+  return resolved.replace('/video/upload/', `/video/upload/${transforms}/`);
+}
+
+// Cloudinary poster: first frame of video as optimized JPG
+export function videoPoster(url, { mobile } = {}) {
+  const resolved = resolveMediaUrl(url);
+  if (!resolved) return '';
+  if (!resolved.includes('res.cloudinary.com') || !resolved.includes('/video/upload/')) return '';
+  const w = mobile ? 720 : 1280;
+  return resolved
+    .replace('/video/upload/', `/video/upload/so_0,w_${w},q_auto,f_jpg/`)
+    .replace(/\.(mp4|webm|mov)$/i, '.jpg');
+}

@@ -2,28 +2,18 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Flame, Droplets, MapPin, ShieldCheck, Leaf, Heart, Phone, Mail, Send, CheckCircle } from 'lucide-react';
-import { resolveMediaUrl } from '../lib/utils';
+import { resolveMediaUrl, optimizedVideo, videoPoster } from '../lib/utils';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
 import { useSettings } from '../context/SettingsContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
+const isMobile = window.innerWidth < 768;
 
 const DEFAULT_SAUNA_IMG = 'https://images.unsplash.com/photo-1759302354886-f2c37dd3dd8c?auto=format&fit=crop&w=800&q=80';
 const DEFAULT_BALIA_IMG = 'https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=80';
 
 /* Parallax card with all effects */
-/* Generate Cloudinary poster (first frame as jpg) from video URL */
-const getVideoPoster = (videoUrl) => {
-  if (!videoUrl) return '';
-  if (videoUrl.includes('res.cloudinary.com') && videoUrl.includes('/video/upload/')) {
-    return videoUrl
-      .replace('/video/upload/', '/video/upload/so_0,w_800,q_auto,f_jpg/')
-      .replace(/\.(mp4|webm|mov)$/i, '.jpg');
-  }
-  return '';
-};
-
 const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title, desc, cta, onClick, direction, testId }) => {
   const cardRef = useRef(null);
   const videoRef = useRef(null);
@@ -32,15 +22,19 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
   const touchStartRef = useRef({ x: 0, y: 0 });
   const [videoReady, setVideoReady] = useState(false);
 
+  // Adaptive video: mobile gets 720p, desktop gets 1280p
+  const adaptiveVideo = video ? optimizedVideo(video, { mobile: isMobile }) : '';
+  const poster = video ? videoPoster(video, { mobile: isMobile }) : '';
+
   // Eagerly load video as soon as component mounts
   useEffect(() => {
-    if (!video || !videoRef.current) return;
+    if (!adaptiveVideo || !videoRef.current) return;
     const el = videoRef.current;
     el.load();
     const onCanPlay = () => setVideoReady(true);
     el.addEventListener('canplaythrough', onCanPlay);
     return () => el.removeEventListener('canplaythrough', onCanPlay);
-  }, [video]);
+  }, [adaptiveVideo]);
 
   const playVideo = useCallback(() => {
     if (videoRef.current) {
@@ -135,15 +129,15 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
         }}
       />
       {/* Video — preloaded eagerly with poster for instant playback */}
-      {video && (
+      {adaptiveVideo && (
         <video
           ref={videoRef}
-          src={video}
+          src={adaptiveVideo}
           muted
           loop
           playsInline
           preload="auto"
-          poster={getVideoPoster(video)}
+          poster={poster}
           className={`absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-opacity duration-700 ${hovered ? 'opacity-100' : 'opacity-0'}`}
           style={{
             transform: hovered ? `translate(${transform.x}px, ${transform.y}px) scale(1.05)` : 'translate(0,0) scale(1)',
@@ -214,9 +208,11 @@ const MainLanding = () => {
       .finally(() => setImagesReady(true));
   }, []);
 
-  // Preload video files via <link rel="preload"> for instant playback
+  // Preload adaptive video files via <link rel="preload"> for instant playback
   useEffect(() => {
-    const urls = [saunaVideo, baliaVideo].filter(Boolean);
+    const urls = [saunaVideo, baliaVideo]
+      .filter(Boolean)
+      .map(url => optimizedVideo(url, { mobile: isMobile }));
     const links = [];
     urls.forEach(url => {
       const link = document.createElement('link');

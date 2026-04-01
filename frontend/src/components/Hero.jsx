@@ -5,7 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
 import { useSettings } from '../context/SettingsContext';
 import { CatalogFormGate } from './CatalogFormGate';
-import { resolveMediaUrl, optimizedImg } from '../lib/utils';
+import { resolveMediaUrl, optimizedImg, optimizedVideo, videoPoster } from '../lib/utils';
 import { trackEvent } from '../lib/analytics';
 import { useABTest } from '../context/ABTestContext';
 
@@ -107,19 +107,21 @@ export const Hero = () => {
 
   const bgMode = heroSettings?.bg_mode || 'photo';
   const backgroundVideo = resolveMediaUrl(heroSettings?.background_video);
+  const adaptiveVideo = backgroundVideo ? optimizedVideo(backgroundVideo, { mobile: isMobile }) : '';
+  const heroPoster = backgroundVideo ? videoPoster(backgroundVideo, { mobile: isMobile }) : '';
   const useVideo = bgMode === 'video' && backgroundVideo;
 
   // Lazy-load video: on mobile, load only when Hero is in viewport
   useEffect(() => {
     if (!useVideo) return;
-    if (!isMobile) { setVideoSrc(backgroundVideo); return; }
+    if (!isMobile) { setVideoSrc(adaptiveVideo); return; }
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setVideoSrc(backgroundVideo); observer.disconnect(); }
+      if (entry.isIntersecting) { setVideoSrc(adaptiveVideo); observer.disconnect(); }
     }, { threshold: 0.1 });
     const section = document.querySelector('[data-testid="hero-section"]');
     if (section) observer.observe(section);
     return () => observer.disconnect();
-  }, [useVideo, backgroundVideo, isMobile]);
+  }, [useVideo, adaptiveVideo, isMobile]);
 
   return (
     <section
@@ -135,7 +137,7 @@ export const Hero = () => {
           className={`w-full h-full object-cover transition-opacity duration-1000 ${useVideo && videoReady ? 'opacity-0 absolute inset-0' : ''}`}
           style={{ objectPosition: bgPosition }}
         />
-        {/* Video overlay — lazy loaded */}
+        {/* Video overlay — lazy loaded, adaptive quality */}
         {useVideo && videoSrc && (
           <video
             ref={videoRef}
@@ -145,6 +147,7 @@ export const Hero = () => {
             loop
             playsInline
             preload="metadata"
+            poster={heroPoster}
             onCanPlay={() => setVideoReady(true)}
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
             style={{ objectPosition: bgPosition }}

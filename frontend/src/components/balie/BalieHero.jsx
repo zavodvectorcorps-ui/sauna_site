@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, FileDown } from 'lucide-react';
 import { BalieCatalogGate } from './BalieCatalogGate';
 import { useSettings } from '../../context/SettingsContext';
-import { resolveMediaUrl, optimizedImg } from '../../lib/utils';
+import { resolveMediaUrl, optimizedImg, optimizedVideo, videoPoster } from '../../lib/utils';
 import { useAutoTranslate } from '../../context/AutoTranslateContext';
 import { useBalieData } from '../../context/BalieContext';
 import { useABTest } from '../../context/ABTestContext';
@@ -58,19 +58,21 @@ export const BalieHero = () => {
 
   const bgImage = optimizedImg(resolveMediaUrl(content.background_image), { w: 1200, q: 80 }) || DEFAULT_IMAGE;
   const bgVideo = resolveMediaUrl(content.background_video);
+  const adaptiveBgVideo = bgVideo ? optimizedVideo(bgVideo, { mobile: isMobile }) : '';
+  const bgPoster = bgVideo ? videoPoster(bgVideo, { mobile: isMobile }) : '';
   const useVideo = content.bg_mode === 'video' && bgVideo;
 
   // Lazy-load video on mobile
   useEffect(() => {
     if (!useVideo) return;
-    if (!isMobile) { setVideoSrc(bgVideo); return; }
+    if (!isMobile) { setVideoSrc(adaptiveBgVideo); return; }
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setVideoSrc(bgVideo); observer.disconnect(); }
+      if (entry.isIntersecting) { setVideoSrc(adaptiveBgVideo); observer.disconnect(); }
     }, { threshold: 0.1 });
     const section = document.querySelector('[data-testid="balie-hero"]');
     if (section) observer.observe(section);
     return () => observer.disconnect();
-  }, [useVideo, bgVideo, isMobile]);
+  }, [useVideo, adaptiveBgVideo, isMobile]);
 
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -90,6 +92,7 @@ export const BalieHero = () => {
               ref={videoRef}
               src={videoSrc}
               autoPlay muted loop playsInline preload="metadata"
+              poster={bgPoster}
               onCanPlay={() => setVideoReady(true)}
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
               data-testid="balie-hero-bg-video"
