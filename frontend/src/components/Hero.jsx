@@ -21,6 +21,8 @@ export const Hero = () => {
   const [hasCatalog, setHasCatalog] = useState(false);
   const videoRef = useRef(null);
   const [videoReady, setVideoReady] = useState(false);
+  const [isMobile] = useState(() => window.innerWidth < 768);
+  const [videoSrc, setVideoSrc] = useState(null);
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/catalog/info`).then(r => r.json()).then(d => setHasCatalog(d.available)).catch(() => {});
@@ -107,6 +109,18 @@ export const Hero = () => {
   const backgroundVideo = resolveMediaUrl(heroSettings?.background_video);
   const useVideo = bgMode === 'video' && backgroundVideo;
 
+  // Lazy-load video: on mobile, load only when Hero is in viewport
+  useEffect(() => {
+    if (!useVideo) return;
+    if (!isMobile) { setVideoSrc(backgroundVideo); return; }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVideoSrc(backgroundVideo); observer.disconnect(); }
+    }, { threshold: 0.1 });
+    const section = document.querySelector('[data-testid="hero-section"]');
+    if (section) observer.observe(section);
+    return () => observer.disconnect();
+  }, [useVideo, backgroundVideo, isMobile]);
+
   return (
     <section
       data-testid="hero-section"
@@ -121,16 +135,16 @@ export const Hero = () => {
           className={`w-full h-full object-cover transition-opacity duration-1000 ${useVideo && videoReady ? 'opacity-0 absolute inset-0' : ''}`}
           style={{ objectPosition: bgPosition }}
         />
-        {/* Video overlay */}
-        {useVideo && (
+        {/* Video overlay — lazy loaded */}
+        {useVideo && videoSrc && (
           <video
             ref={videoRef}
-            src={backgroundVideo}
+            src={videoSrc}
             autoPlay
             muted
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             onCanPlay={() => setVideoReady(true)}
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
             style={{ objectPosition: bgPosition }}

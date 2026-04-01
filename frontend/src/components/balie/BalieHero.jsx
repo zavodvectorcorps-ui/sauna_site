@@ -32,6 +32,8 @@ export const BalieHero = () => {
   const [showCatalogGate, setShowCatalogGate] = useState(false);
   const videoRef = useRef(null);
   const [videoReady, setVideoReady] = useState(false);
+  const [isMobile] = useState(() => window.innerWidth < 768);
+  const [videoSrc, setVideoSrc] = useState(null);
   const { data: balieData } = useBalieData();
 
   useEffect(() => {
@@ -58,6 +60,18 @@ export const BalieHero = () => {
   const bgVideo = resolveMediaUrl(content.background_video);
   const useVideo = content.bg_mode === 'video' && bgVideo;
 
+  // Lazy-load video on mobile
+  useEffect(() => {
+    if (!useVideo) return;
+    if (!isMobile) { setVideoSrc(bgVideo); return; }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVideoSrc(bgVideo); observer.disconnect(); }
+    }, { threshold: 0.1 });
+    const section = document.querySelector('[data-testid="balie-hero"]');
+    if (section) observer.observe(section);
+    return () => observer.disconnect();
+  }, [useVideo, bgVideo, isMobile]);
+
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
@@ -71,11 +85,11 @@ export const BalieHero = () => {
       <section className="relative min-h-screen flex items-center justify-center pt-16" data-testid="balie-hero">
         <div className="absolute inset-0">
           <img src={bgImage} alt="Balia" className={`w-full h-full object-cover transition-opacity duration-1000 ${useVideo && videoReady ? 'opacity-0' : 'opacity-100'}`} />
-          {useVideo && (
+          {useVideo && videoSrc && (
             <video
               ref={videoRef}
-              src={bgVideo}
-              autoPlay muted loop playsInline preload="auto"
+              src={videoSrc}
+              autoPlay muted loop playsInline preload="metadata"
               onCanPlay={() => setVideoReady(true)}
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
               data-testid="balie-hero-bg-video"

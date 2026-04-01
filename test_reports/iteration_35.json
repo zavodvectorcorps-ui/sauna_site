@@ -1,0 +1,101 @@
+{
+  "summary": "Iteration 35: Video streaming optimization testing complete. Backend Range request support verified (HTTP 206 with Content-Range). Frontend lazy loading with IntersectionObserver and preload='metadata' confirmed. Fixed edge case: Range request beyond file size now returns 416 instead of 500.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/videos/{filename}",
+        "issue": "Cache-Control header 'public, max-age=86400' is overwritten by CDN/proxy to 'no-store, no-cache, must-revalidate'. This is infrastructure behavior, not backend code issue.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration35_video_range.py",
+    "/app/test_reports/pytest/pytest_iteration35.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Hero.jsx: Correctly implements IntersectionObserver lazy loading (lines 112-122) and preload='metadata' (line 147)",
+    "BalieHero.jsx: Correctly implements IntersectionObserver lazy loading (lines 63-73) and preload='metadata' (line 92)",
+    "server.py: Video endpoint (lines 2338-2406) correctly supports Range requests with HTTP 206 and Content-Range header",
+    "server.py: Fixed edge case - Range request beyond file size now returns 416 Range Not Satisfiable instead of 500",
+    "Video caching: First request downloads from Object Storage and caches to disk, subsequent requests served via FileResponse"
+  ],
+  "updated_files": [
+    "/app/backend/server.py",
+    "/app/backend/tests/test_iteration35_video_range.py"
+  ],
+  "success_rate": {
+    "backend": "100% (9/9 tests passed)",
+    "frontend": "100% (/sauny and /balie pages load correctly on mobile)"
+  },
+  "test_credentials": "Admin: username=admin, password=220066",
+  "seed_data_creation": "Created test video file: /app/backend/uploads/videos/test-vid.mp4 (50KB random data for Range request testing)",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Video streaming optimization is complete. Backend supports Range requests (HTTP 206) for progressive download. Frontend uses IntersectionObserver to lazy-load videos on mobile and preload='metadata' instead of 'auto'. Cache-Control headers are set by backend but may be overwritten by CDN layer. Test video at /api/videos/test-vid.mp4 can be used for Range request testing.",
+  "features_tested": {
+    "backend_range_request_206": {
+      "status": "PASS",
+      "details": "GET /api/videos/{filename} with Range header returns HTTP 206 with Content-Range header"
+    },
+    "backend_full_file_accept_ranges": {
+      "status": "PASS",
+      "details": "GET /api/videos/{filename} without Range returns full file with Accept-Ranges: bytes header"
+    },
+    "backend_range_middle_chunk": {
+      "status": "PASS",
+      "details": "Range request for middle chunk (bytes=10000-19999) returns correct partial content"
+    },
+    "backend_range_end_of_file": {
+      "status": "PASS",
+      "details": "Range request for end of file (bytes=50000-) returns correct partial content"
+    },
+    "backend_404_nonexistent": {
+      "status": "PASS",
+      "details": "GET /api/videos/nonexistent.mp4 returns 404"
+    },
+    "backend_range_beyond_file_size": {
+      "status": "PASS",
+      "details": "Range request beyond file size returns 416 Range Not Satisfiable (fixed from 500)"
+    },
+    "frontend_hero_preload_metadata": {
+      "status": "PASS",
+      "details": "Hero.jsx video element has preload='metadata' (line 147)"
+    },
+    "frontend_balie_hero_preload_metadata": {
+      "status": "PASS",
+      "details": "BalieHero.jsx video element has preload='metadata' (line 92), verified on /balie page"
+    },
+    "frontend_hero_intersection_observer": {
+      "status": "PASS",
+      "details": "Hero.jsx implements IntersectionObserver for lazy loading on mobile (lines 112-122)"
+    },
+    "frontend_balie_intersection_observer": {
+      "status": "PASS",
+      "details": "BalieHero.jsx implements IntersectionObserver for lazy loading on mobile (lines 63-73)"
+    },
+    "frontend_sauny_mobile_load": {
+      "status": "PASS",
+      "details": "/sauny page loads correctly on mobile viewport (390x844)"
+    },
+    "frontend_balie_mobile_load": {
+      "status": "PASS",
+      "details": "/balie page loads correctly on mobile viewport (390x844) with video playing"
+    }
+  },
+  "rca_of_the_issue": {
+    "root_cause": "Video optimization was needed for mobile: 1) Backend was loading entire video into memory from Object Storage (no streaming), 2) Frontend was loading videos immediately with preload='auto'",
+    "fix_applied": [
+      "Backend: Added disk caching for videos + Range request support (HTTP 206) for progressive streaming",
+      "Frontend: Changed preload='auto' to preload='metadata' + added IntersectionObserver to defer video loading on mobile until component is in viewport",
+      "Edge case fix: Range request beyond file size now returns 416 instead of 500"
+    ]
+  }
+}

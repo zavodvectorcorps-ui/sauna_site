@@ -2336,23 +2336,75 @@ async def upload_video(file: UploadFile = File(...), username: str = Depends(ver
         raise HTTPException(status_code=500, detail="Error uploading video")
 
 @api_router.get("/videos/{filename}")
-async def get_video(filename: str):
+async def get_video(filename: str, request: Request):
     video_id = filename.replace(".mp4", "")
-
-    # Try object storage via DB metadata
-    video_doc = await db.video_uploads.find_one({"id": video_id})
-    if video_doc and video_doc.get("storage_path"):
-        try:
-            data, ct = get_object(video_doc["storage_path"])
-            return Response(content=data, media_type="video/mp4")
-        except Exception as e:
-            logger.warning(f"Object storage fetch failed for video {video_id}: {e}")
-
-    # Fallback to filesystem
     filepath = VIDEO_DIR / filename
-    if filepath.exists():
-        return FileResponse(filepath, media_type="video/mp4")
-    raise HTTPException(status_code=404, detail="Video not found")
+
+    # If not cached locally, download from Object Storage and cache
+    if not filepath.exists():
+        video_doc = await db.video_uploads.find_one({"id": video_id})
+        if video_doc and video_doc.get("storage_path"):
+            try:
+                data, ct = get_object(video_doc["storage_path"])
+                filepath.write_bytes(data)
+                logger.info(f"Video {video_id} cached locally ({len(data) // 1024}KB)")
+            except Exception as e:
+                logger.warning(f"Object storage fetch failed for video {video_id}: {e}")
+                raise HTTPException(status_code=404, detail="Video not found")
+        else:
+            raise HTTPException(status_code=404, detail="Video not found")
+
+    # Serve with FileResponse (supports Range requests = instant streaming)
+    file_size = filepath.stat().st_size
+    range_header = request.headers.get("range")
+
+    if range_header:
+        # Parse Range: bytes=start-end
+        range_str = range_header.replace("bytes=", "")
+        parts = range_str.split("-")
+        start = int(parts[0]) if parts[0] else 0
+        end = int(parts[1]) if len(parts) > 1 and parts[1] else file_size - 1
+        
+        # Handle range beyond file size
+        if start >= file_size:
+            return Response(
+                content=b"",
+                status_code=416,
+                media_type="video/mp4",
+                headers={
+                    "Content-Range": f"bytes */{file_size}",
+                    "Accept-Ranges": "bytes",
+                },
+            )
+        
+        end = min(end, file_size - 1)
+        length = end - start + 1
+
+        with open(filepath, "rb") as f:
+            f.seek(start)
+            chunk = f.read(length)
+
+        return Response(
+            content=chunk,
+            status_code=206,
+            media_type="video/mp4",
+            headers={
+                "Content-Range": f"bytes {start}-{end}/{file_size}",
+                "Accept-Ranges": "bytes",
+                "Content-Length": str(length),
+                "Cache-Control": "public, max-age=86400",
+            },
+        )
+
+    # No range — send full file with caching headers
+    return FileResponse(
+        filepath,
+        media_type="video/mp4",
+        headers={
+            "Accept-Ranges": "bytes",
+            "Cache-Control": "public, max-age=86400",
+        },
+    )
 
 
 CATALOG_DIR = Path("/app/backend/uploads")
