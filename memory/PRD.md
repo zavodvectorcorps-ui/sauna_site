@@ -41,7 +41,7 @@
 - SeoHead.jsx TDZ error, CORS analytics, /api/content/calculator 404
 - **Mobile catalog download**: Заменён window.open/link.click на window.location.href (popup blocking fix)
 - **PDF Polish chars**: Шрифт Helvetica → Inter TTF (полная поддержка ł, ą, ę, ż, ź, ć, ń). Дизайн PDF переделан: современный, чистый, читаемый
-- **PDF filename encoding**: RFC 5987 для Content-Disposition с Unicode-именами файлов
+- **Admin upload URL fix** (Apr 1 2026): Исправлен двойной домен в URL при загрузке через админку (14 мест в 10 компонентах). Cloudinary URL теперь проходят напрямую без добавления backend prefix.
 
 ## Key API Endpoints
 - GET /api/images/{id}?w=&q= — server-side resize + WebP via Pillow
