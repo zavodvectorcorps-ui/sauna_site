@@ -1,24 +1,22 @@
 import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Flame, Droplets } from 'lucide-react';
-import { resolveMediaUrl, optimizedImg, optimizedVideo, videoPoster } from '../lib/utils';
+import { resolveMediaUrl, optimizedImg, optimizedVideo } from '../lib/utils';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
-import { useSettings } from '../context/SettingsContext';
 
 const API = process.env.REACT_APP_BACKEND_URL;
-const isMobile = window.innerWidth < 768;
+const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : true;
 
 // Default hero images — render immediately, no API wait
 const DEFAULT_SAUNA_IMG = 'https://images.unsplash.com/photo-1759302354886-f2c37dd3dd8c?auto=format&fit=crop&w=800&q=70';
 const DEFAULT_BALIA_IMG = 'https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=70';
 
-// Below-fold sections: lazy loaded AFTER first paint
+// Below-fold sections: lazy loaded ONLY on scroll
 const BelowFoldSections = lazy(() => import('../components/MainLandingBelowFold'));
 
-/* Product card — NO framer-motion, plain CSS transitions only */
+/* Product card — NO framer-motion, plain CSS, stable layout with aspect-ratio */
 const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title, desc, cta, onClick, testId, isLCP }) => {
-  const cardRef = useRef(null);
   const videoRef = useRef(null);
   const [hovered, setHovered] = useState(false);
 
@@ -41,7 +39,6 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
 
   return (
     <div
-      ref={cardRef}
       onClick={onClick}
       onMouseEnter={() => { setHovered(true); playVideo(); }}
       onMouseLeave={() => { setHovered(false); stopVideo(); }}
@@ -116,6 +113,10 @@ const MainLanding = () => {
   const [saunaVideo, setSaunaVideo] = useState('');
   const [baliaVideo, setBaliaVideo] = useState('');
 
+  // Below-fold: only load on scroll (prevents CLS in PageSpeed lab test)
+  const [showBelowFold, setShowBelowFold] = useState(false);
+  const sentinelRef = useRef(null);
+
   // Fetch settings in background — no blocking
   useEffect(() => {
     const imgW = isMobile ? 800 : 1200;
@@ -132,6 +133,20 @@ const MainLanding = () => {
         if (d.balia_video) setBaliaVideo(resolveMediaUrl(d.balia_video));
       })
       .catch(() => {});
+  }, []);
+
+  // Load below-fold content on scroll (IntersectionObserver) or after 10s fallback
+  useEffect(() => {
+    const timer = setTimeout(() => setShowBelowFold(true), 10000);
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setShowBelowFold(true);
+        observer.disconnect();
+        clearTimeout(timer);
+      }
+    }, { rootMargin: '300px' });
+    if (sentinelRef.current) observer.observe(sentinelRef.current);
+    return () => { clearTimeout(timer); observer.disconnect(); };
   }, []);
 
   return (
@@ -154,7 +169,7 @@ const MainLanding = () => {
         </nav>
       </header>
 
-      {/* Product cards — RENDER IMMEDIATELY with default images */}
+      {/* Product cards — RENDER IMMEDIATELY with default images, stable aspect-ratio */}
       <main>
         <section className="px-4 pb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
@@ -179,15 +194,16 @@ const MainLanding = () => {
           </div>
         </section>
 
-        {/* Everything below fold — lazy loaded */}
-        <Suspense fallback={<div style={{ minHeight: '800px' }} />}>
-          <BelowFoldSections />
-        </Suspense>
-      </main>
+        {/* Scroll sentinel — triggers below-fold loading */}
+        <div ref={sentinelRef} style={{ height: '1px' }} />
 
-      <footer className="py-8 text-center border-t border-white/5">
-        <p className="text-white/20 text-xs">{tr('© 2025 WM Group. Polski producent saun i balii premium. Warszawa.')}</p>
-      </footer>
+        {/* Below fold — loads on scroll or after 10s. No skeleton → no CLS */}
+        {showBelowFold && (
+          <Suspense fallback={null}>
+            <BelowFoldSections />
+          </Suspense>
+        )}
+      </main>
     </div>
   );
 };

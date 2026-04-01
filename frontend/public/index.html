@@ -34,6 +34,9 @@
         <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
         <link rel="preconnect" href="https://wm-sauna-balia.emergent.host" crossorigin />
 
+        <!-- Preload LCP image for main landing page -->
+        <link rel="preload" as="image" href="https://images.unsplash.com/photo-1759302354886-f2c37dd3dd8c?auto=format&fit=crop&w=800&q=70" fetchpriority="high" />
+
         <!-- Non-render-blocking fonts: media="print" swaps to "all" on load -->
         <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Lato:wght@300;400;500;700&display=optional" />
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Lato:wght@300;400;500;700&display=optional" rel="stylesheet" media="print" onload="this.media='all'" />

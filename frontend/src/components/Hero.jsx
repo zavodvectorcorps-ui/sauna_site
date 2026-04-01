@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { ArrowRight, Check, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
@@ -47,13 +46,11 @@ export const Hero = () => {
       scrollToSection(target);
     }
     trackEvent('click_cta', { button: buttonId, action, target });
-    // Track A/B click
     if (buttonId === 'hero_primary') abPrimary.trackClick();
     if (buttonId === 'hero_secondary') abSecondary.trackClick();
   };
 
   const getButtonText = (buttonId, fallbackKey) => {
-    // A/B test override
     if (buttonId === 'hero_primary' && abPrimary.variant) {
       const lang = language.toLowerCase();
       return (lang === 'en' && abPrimary.variant.text_en) ? abPrimary.variant.text_en : (abPrimary.variant.text_pl || t(fallbackKey));
@@ -83,14 +80,12 @@ export const Hero = () => {
   const getTitle = () => {
     if (!heroSettings) return t('hero.title');
     const key = `title_${language}`;
-    // Use language-specific title from settings, or fall back to translation
     return heroSettings[key] || t('hero.title');
   };
 
   const getSubtitle = () => {
     if (!heroSettings) return t('hero.subtitle');
     const key = `subtitle_${language}`;
-    // Use language-specific subtitle from settings, or fall back to translation
     return heroSettings[key] || t('hero.subtitle');
   };
 
@@ -126,16 +121,21 @@ export const Hero = () => {
   return (
     <section
       data-testid="hero-section"
-      className="relative min-h-screen flex items-center pt-20 overflow-hidden"
+      className="relative flex items-center pt-20 overflow-hidden"
+      style={{ minHeight: '100vh', aspectRatio: '16/9' }}
     >
-      {/* Background */}
+      {/* Background — explicit dimensions, fetchpriority=high */}
       <div className="absolute inset-0 z-0">
-        {/* Photo (always rendered as fallback) */}
         <img
           src={backgroundImage}
           alt="Luxury wooden sauna"
-          className={`w-full h-full object-cover transition-opacity duration-1000 ${useVideo && videoReady ? 'opacity-0 absolute inset-0' : ''}`}
-          style={{ objectPosition: bgPosition }}
+          width={1200}
+          height={800}
+          fetchPriority="high"
+          loading="eager"
+          decoding="async"
+          className={`w-full h-full object-cover ${useVideo && videoReady ? 'opacity-0 absolute inset-0' : ''}`}
+          style={{ objectPosition: bgPosition, transition: 'opacity 1s' }}
         />
         {/* Video overlay — lazy loaded, adaptive quality */}
         {useVideo && videoSrc && (
@@ -149,8 +149,8 @@ export const Hero = () => {
             preload="metadata"
             poster={heroPoster}
             onCanPlay={() => setVideoReady(true)}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
-            style={{ objectPosition: bgPosition }}
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: bgPosition, opacity: videoReady ? 1 : 0, transition: 'opacity 1s' }}
             data-testid="hero-bg-video"
           />
         )}
@@ -163,40 +163,26 @@ export const Hero = () => {
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/40 to-transparent" />
       </div>
 
-      {/* Content */}
+      {/* Content — NO framer-motion, renders immediately */}
       <div className="container-main relative z-10">
         <div className="max-w-2xl">
-          {/* Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+          <h1
             className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6"
             style={{ color: textColor }}
             data-testid="hero-title"
           >
             {getTitle()}
-          </motion.h1>
+          </h1>
 
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+          <p
             className="text-lg mb-8 leading-relaxed"
             style={{ color: textColor, opacity: 0.75 }}
             data-testid="hero-subtitle"
           >
             {getSubtitle()}
-          </motion.p>
+          </p>
 
-          {/* Features */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-wrap gap-4 mb-10"
-          >
+          <div className="flex flex-wrap gap-4 mb-10">
             {features.map((feature, index) => (
               <div key={index} className="flex items-center gap-2">
                 <div className="w-5 h-5 bg-[#C6A87C] flex items-center justify-center">
@@ -207,15 +193,9 @@ export const Hero = () => {
                 </span>
               </div>
             ))}
-          </motion.div>
+          </div>
 
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-wrap gap-4"
-          >
+          <div className="flex flex-wrap gap-4">
             <button
               data-testid="hero-cta-primary"
               onClick={() => handleButtonAction('hero_primary', '#calculator')}
@@ -245,28 +225,19 @@ export const Hero = () => {
                 {language === 'EN' ? 'Download catalog' : 'Pobierz katalog'}
               </CatalogFormGate>
             )}
-          </motion.div>
+          </div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.6 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-      >
+      {/* Scroll indicator — pure CSS animation, no framer-motion */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 hero-scroll-indicator">
         <span className="text-xs uppercase tracking-wider" style={{ color: textColor, opacity: 0.5 }}>
           Scroll
         </span>
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5 }}
-          className="w-6 h-10 border-2 border-[#C6A87C] rounded-full flex justify-center pt-2"
-        >
+        <div className="w-6 h-10 border-2 border-[#C6A87C] rounded-full flex justify-center pt-2 hero-scroll-bounce">
           <div className="w-1 h-2 bg-[#C6A87C] rounded-full" />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   );
 };
