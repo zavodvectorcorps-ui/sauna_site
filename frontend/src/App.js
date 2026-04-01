@@ -44,79 +44,22 @@ const CookieConsentBanner = React.lazy(() =>
 
 function PageSkel() {
   return (
-    <div
-      data-testid="page-skeleton-dark"
-      style={{
-        minHeight: "100vh",
-        background: "#0C0C0C"
-      }}
-    >
-      <div
-        style={{
-          padding: "32px 24px",
-          maxWidth: "640px",
-          margin: "0 auto",
-          textAlign: "center"
-        }}
-      >
-        <div
-          style={{
-            width: 120,
-            height: 14,
-            background: "#1a1a1a",
-            borderRadius: 4,
-            margin: "0 auto 8px"
-          }}
-        />
-        <div
-          style={{
-            width: 180,
-            height: 8,
-            background: "#141414",
-            borderRadius: 4,
-            margin: "0 auto"
-          }}
-        />
-      </div>
-    </div>
+    <div style={{ minHeight: "100vh", background: "#0C0C0C" }} />
   );
 }
 
 function LightSkel() {
   return (
-    <div
-      data-testid="page-skeleton-light"
-      style={{
-        minHeight: "100vh",
-        background: "#F9F9F7"
-      }}
-    >
-      <div
-        style={{
-          padding: "16px 24px",
-          borderBottom: "1px solid #eee"
-        }}
-      >
-        <div
-          style={{
-            width: 140,
-            height: 14,
-            background: "#e8e5e0",
-            borderRadius: 4,
-            margin: "0 auto"
-          }}
-        />
-      </div>
-    </div>
+    <div style={{ minHeight: "100vh", background: "#F9F9F7" }} />
   );
 }
 
 function App() {
   return (
     <HelmetProvider>
-      <LanguageProvider>
-        <AutoTranslateProvider>
-          <SettingsProvider>
+      <SettingsProvider>
+        <LanguageProvider>
+          <AutoTranslateProvider>
             <BrowserRouter>
               <Suspense fallback={null}>
                 <TrackingScripts />
@@ -220,9 +163,9 @@ function App() {
                 <CookieConsentBanner />
               </Suspense>
             </BrowserRouter>
-          </SettingsProvider>
-        </AutoTranslateProvider>
-      </LanguageProvider>
+          </AutoTranslateProvider>
+        </LanguageProvider>
+      </SettingsProvider>
     </HelmetProvider>
   );
 }

@@ -30,7 +30,7 @@ export const CookieConsentBanner = () => {
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-[9998] p-4 transition-all duration-400 ease-out ${visible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'}`}
+      className={`fixed bottom-0 left-0 right-0 z-[9999] p-4 transition-all duration-400 ease-out ${visible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'}`}
       data-testid="cookie-consent-banner"
     >
       <div className="max-w-3xl mx-auto bg-[#1A1A1A] border border-white/10 p-5 shadow-2xl">
