@@ -28,10 +28,13 @@
 - **PageSpeed Insights optimization** (Apr 1 2026):
   - MainLanding product card images now use Cloudinary transforms (`w_1200,q_auto,f_auto` desktop, `w_800` mobile). Balia PNG: 1684KB → 137KB (-91.8%). Sauny JPG: 278KB → 148KB (-46.8%).
   - LCP image: `fetchpriority="high"`, `loading="eager"`
-  - `<link rel="preconnect">` to `res.cloudinary.com`
-  - Fonts moved from `@import` CSS to `<link>` HTML for parallel loading
-  - Inline `font-family` in `<style>` for CLS prevention
+  - `<link rel="preconnect">` to `res.cloudinary.com` and backend
+  - **Google Fonts non-render-blocking**: `media="print" onload="this.media='all'"` trick saves ~1500ms render-blocking
+  - **font-display: optional**: eliminates CLS from font swap (no layout shift on first load)
+  - **Code splitting**: AdminPanel, PipelineView via `React.lazy()` — reduces public page bundle
+  - **Cookie banner delayed 3.5s**: prevents it from becoming LCP element
   - Static `robots.txt` in `public/` for SEO
+  - Default Unsplash images compressed (q=70)
 
 ### Cloudinary CDN — COMPLETE
 - All images and videos migrated to Cloudinary CDN
