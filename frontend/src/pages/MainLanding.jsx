@@ -103,9 +103,7 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, x: direction === 'left' ? -30 : 30 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: direction === 'left' ? 0.2 : 0.35 }}
+      initial={false}
       onClick={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
@@ -113,7 +111,7 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="group relative overflow-hidden cursor-pointer min-h-[400px] md:min-h-[480px] flex flex-col justify-end"
+      className="group relative overflow-hidden cursor-pointer aspect-[4/5] md:aspect-[3/4] flex flex-col justify-end"
       data-testid={testId}
     >
       {/* Gradient overlay */}
@@ -264,6 +262,7 @@ const MainLanding = () => {
       </header>
 
       {/* Product cards */}
+      <main>
       <section className="px-4 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {imagesReady && (
@@ -376,6 +375,7 @@ const MainLanding = () => {
       </section>
 
       {/* Footer */}
+      </main>
       <footer className="py-8 text-center border-t border-white/5">
         <p className="text-white/20 text-xs">{tr('© 2025 WM Group. Polski producent saun i balii premium. Warszawa.')}</p>
       </footer>

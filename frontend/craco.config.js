@@ -65,6 +65,34 @@ const webpackConfig = {
       if (config.enableHealthCheck && healthPluginInstance) {
         webpackConfig.plugins.push(healthPluginInstance);
       }
+
+      // Production: optimize chunk splitting for better caching and smaller initial bundle
+      if (process.env.NODE_ENV === 'production') {
+        webpackConfig.optimization = {
+          ...webpackConfig.optimization,
+          splitChunks: {
+            ...webpackConfig.optimization?.splitChunks,
+            cacheGroups: {
+              ...webpackConfig.optimization?.splitChunks?.cacheGroups,
+              // Vendor chunk: react core
+              react: {
+                test: /[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom)[\\/]/,
+                name: 'react-vendor',
+                chunks: 'all',
+                priority: 30,
+              },
+              // UI libs chunk: framer-motion, radix, recharts
+              ui: {
+                test: /[\\/]node_modules[\\/](framer-motion|@radix-ui|recharts|d3-|embla-carousel)[\\/]/,
+                name: 'ui-vendor',
+                chunks: 'all',
+                priority: 20,
+              },
+            },
+          },
+        };
+      }
+
       return webpackConfig;
     },
   },
