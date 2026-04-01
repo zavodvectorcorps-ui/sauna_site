@@ -21,22 +21,24 @@
 - In-memory ImageCache (200 items, 1h TTL), GZip middleware
 
 ### PageSpeed Critical Path Optimization — DEEP REFACTOR (Apr 1 2026)
-- **App.js**: ALL routes lazy-loaded via React.lazy — ZERO synchronous heavy imports
-- **SaunaHomePage extracted**: Header, Hero, Footer moved to `/pages/SaunaHomePage.jsx` (lazy chunk)
-- **Hero.jsx**: framer-motion REMOVED — pure CSS, explicit width/height on bg image, fetchPriority="high"
-- **CookieConsentBanner**: framer-motion REMOVED — CSS transitions only
-- **MainLanding BelowFold**: IntersectionObserver scroll-triggered loading — NO skeleton mismatch CLS
-- **Footer inside BelowFold**: Prevents CLS (no element shifts below fold content)
-- **LCP image preload**: Cloudinary URL preloaded in index.html
-- **Default images**: Cloudinary production URLs (no Unsplash fallbacks)
-- **Production data imported**: All 37 settings, reviews, blog, stock saunas, uploads from export
-- **SettingsProvider**: Children render IMMEDIATELY with defaults
-- **PostHog deferred**: requestIdleCallback
-- **Google Fonts async**: media="print" onload="this.media='all'" + font-display: optional
-- **Layout settings non-blocking**: Applied via requestIdleCallback, CSS defaults pre-set in :root
-- **Cookie banner delayed 3.5s**: Prevents it from becoming LCP element
-- **Webpack splitChunks**: react-vendor, ui-vendor (framer-motion, radix, recharts) separate chunks
-- **Preconnect**: res.cloudinary.com, fonts.googleapis.com
+**App.js** (clean, validated):
+- ALL 14 routes lazy-loaded via React.lazy
+- Only 7 sync imports: React, CSS, Router, Helmet, 3 context providers
+- PageSkel (dark) + LightSkel (light) — valid JSX with data-testid, fixed minHeight
+- AdminPanel, BlogPage, B2BPage — strictly lazy, never in initial bundle
+
+**index.html** (production-clean):
+- REMOVED: debug-monitor.js, cdn.tailwindcss.com, iframe detection code
+- KEPT: emergent-main.js (platform required), PostHog via requestIdleCallback
+- LCP image preloaded (Cloudinary CDN URL)
+- Fonts async (media="print" trick, font-display: optional)
+- CSS variables for layout spacing pre-set in :root
+
+**Hero.jsx**: framer-motion REMOVED — pure CSS, fetchPriority="high", width/height on bg image
+**CookieConsentBanner**: framer-motion REMOVED — CSS transitions (translate-y + opacity)
+**MainLanding BelowFold**: IntersectionObserver scroll-triggered, 1500px skeleton fallback
+**Footer inside BelowFold**: Prevents CLS (no element shifts below fold content)
+**Default images**: Cloudinary production URLs (no Unsplash fallbacks)
 
 ### SEO
 - Dynamic sitemap.xml: GET /api/sitemap.xml (8 static + 14 blog articles)
@@ -44,22 +46,13 @@
 - OG-картинка optimized (w=1200, q=80)
 
 ### A/B Testing System — COMPLETE
-- Backend CRUD, Z-test statistical significance, apply winner button
-
-### Stock Sauna Product Cards — COMPLETE (Apr 1 2026)
-- Modal with gallery, description, specs, price, "Promocja" badge
-- Configurable CTA button (5 action types) + order form
-
-### Bug Fixes
-- Mobile catalog download, PDF Polish chars, Admin upload URL double domain
-- Unsplash fallback images replaced with Cloudinary production URLs
+### Stock Sauna Product Cards — COMPLETE
 
 ## Key API Endpoints
 - GET /api/images/{id}?w=&q= — resize + WebP (302 to Cloudinary)
 - GET /api/settings/bulk — all settings in one request
 - GET /api/settings/main-landing — main page images/videos
 - GET /api/sitemap.xml — dynamic sitemap
-- POST /api/admin/settings/stock-cta-config — stock CTA config
 
 ## Backlog
 - P2: Toast обработка ошибок
