@@ -6,75 +6,91 @@
         <meta name="theme-color" content="#0C0C0C" />
         <meta name="description" content="WM-Sauna - polski producent premium saun ogrodowych i drewnianych balii" />
 
-        <!-- Open Graph / Facebook / Telegram -->
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://wm-spa.pl" />
-        <meta property="og:title" content="WM GROUP - SAUNY &bull; BALIE &bull; SPA" />
+        <meta property="og:title" content="WM GROUP - SAUNY &#8226; BALIE &#8226; SPA" />
         <meta property="og:description" content="WM-Sauna - polski producent premium saun ogrodowych i drewnianych balii" />
-        <meta property="og:image" content="https://wm-spa.pl/api/images/e39b4dcb-520d-45c8-b504-cdbe65d9f5ca?w=1200&q=80" />
+        <meta property="og:image" content="https://wm-spa.pl/api/images/e39b4dcb-520d-45c8-b504-cdbe65d9f5ca?w=1200&amp;q=80" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:locale" content="pl_PL" />
         <meta property="og:site_name" content="WM Group" />
 
-        <!-- Twitter Card -->
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="WM GROUP - SAUNY &bull; BALIE &bull; SPA" />
+        <meta name="twitter:title" content="WM GROUP - SAUNY &#8226; BALIE &#8226; SPA" />
         <meta name="twitter:description" content="WM-Sauna - polski producent premium saun ogrodowych i drewnianych balii" />
-        <meta name="twitter:image" content="https://wm-spa.pl/api/images/e39b4dcb-520d-45c8-b504-cdbe65d9f5ca?w=1200&q=80" />
+        <meta name="twitter:image" content="https://wm-spa.pl/api/images/e39b4dcb-520d-45c8-b504-cdbe65d9f5ca?w=1200&amp;q=80" />
 
         <meta name="keywords" content="sauna drewniana, producent saun, sauna beczka, balia ogrodowa, sauna finska, WM-Sauna, WM Group" />
         <link rel="canonical" href="https://wm-spa.pl" />
         <link rel="icon" type="image/x-icon" href="%PUBLIC_URL%/favicon.ico" />
         <link rel="icon" type="image/png" href="%PUBLIC_URL%/favicon.png" />
 
-        <!-- Preconnect to critical third-party origins -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
 
-        <!-- Preload LCP image for main landing page (Cloudinary CDN) -->
-        <link rel="preload" as="image" href="https://res.cloudinary.com/dhyj13jgs/image/upload/w_800,q_auto,f_auto/v1775044580/wm-group/images/dd98a6c6-2434-43fb-b335-d3d390742ae4.jpg" fetchpriority="high" />
+        <link
+            rel="preload"
+            as="image"
+            href="https://res.cloudinary.com/dhyj13jgs/image/upload/w_800,q_auto,f_auto/v1775044580/wm-group/images/dd98a6c6-2434-43fb-b335-d3d390742ae4.jpg"
+            fetchpriority="high"
+        />
 
-        <!-- Non-render-blocking fonts: load async via media="print" trick -->
-        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Lato:wght@300;400;500;700&display=swap" />
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+        <link
+            rel="preload"
+            as="style"
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Lato:wght@300;400;500;700&display=swap"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Lato:wght@300;400;500;700&display=swap"
+            rel="stylesheet"
+            media="print"
+            onload="this.media='all'"
+        />
         <noscript>
-          <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet" />
+            <link
+                href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Lato:wght@300;400;500;700&display=swap"
+                rel="stylesheet"
+            />
         </noscript>
 
-        <!-- CLS prevention: stable font stack + default CSS variables for layout -->
         <style>
-          body {
-            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            margin: 0;
-          }
-          :root {
-            --section-padding-top: 80px;
-            --section-padding-bottom: 80px;
-          }
+            body {
+                font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                margin: 0;
+            }
+            :root {
+                --section-padding-top: 80px;
+                --section-padding-bottom: 80px;
+            }
         </style>
 
-        <title>WM GROUP - SAUNY &bull; BALIE &bull; SPA</title>
+        <title>WM GROUP - SAUNY &#8226; BALIE &#8226; SPA</title>
 
-        <!-- Emergent platform script — must stay in head -->
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
 
-        <!-- PostHog: deferred via requestIdleCallback, never blocks render or LCP -->
         <script>
-          function initPostHog() {
-            !function(t,e){var o,n,p,r;e.__SV||((window.posthog=e),(e._i=[]),(e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&((t=t[o[0]]),(e=o[1])),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}((p=t.createElement("script")).type="text/javascript"),(p.crossOrigin="anonymous"),(p.async=!0),(p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js"),(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?(u=e[a]=[]):a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags identify setPersonProperties group resetGroups setPersonPropertiesForFlags reset get_distinct_id getGroups get_session_id alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug getPageViewId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])}),(e.__SV=1))}(document,window.posthog||[]);
-            posthog.init("phc_xAvL2Iq4tFmANRE7kzbKwaSqp1HJjN7x48s3vr0CMjs",{api_host:"https://us.i.posthog.com",person_profiles:"identified_only",session_recording:{recordCrossOriginIframes:true,capturePerformance:false}});
-          }
-          if ('requestIdleCallback' in window) {
-            requestIdleCallback(initPostHog);
-          } else {
-            setTimeout(initPostHog, 3000);
-          }
+            function initPostHog() {
+                !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags identify setPersonProperties group resetGroups setPersonPropertiesForFlags reset get_distinct_id getGroups get_session_id alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug getPageViewId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+                posthog.init("phc_xAvL2Iq4tFmANRE7kzbKwaSqp1HJjN7x48s3vr0CMjs", {
+                    api_host: "https://us.i.posthog.com",
+                    person_profiles: "identified_only",
+                    session_recording: {
+                        recordCrossOriginIframes: true,
+                        capturePerformance: false
+                    }
+                });
+            }
+            if ("requestIdleCallback" in window) {
+                requestIdleCallback(initPostHog);
+            } else {
+                setTimeout(initPostHog, 3000);
+            }
         </script>
     </body>
 </html>
