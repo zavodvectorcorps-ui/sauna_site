@@ -51,7 +51,7 @@ export const MainLandingAdmin = ({ authHeader, showMessage }) => {
     try {
       const res = await fetchWithAuth(`${API}/api/admin/upload`, { method: 'POST', body: formData });
       const data = await res.json();
-      setSettings(prev => ({ ...prev, [field]: `${API}${data.url}` }));
+      setSettings(prev => ({ ...prev, [field]: data.url.startsWith('http') ? data.url : `${API}${data.url}` }));
       showMessage('success', 'Фото загружено');
     } catch { showMessage('error', 'Ошибка загрузки'); }
   };
@@ -63,7 +63,7 @@ export const MainLandingAdmin = ({ authHeader, showMessage }) => {
     try {
       const res = await fetchWithAuth(`${API}/api/admin/upload-video`, { method: 'POST', body: formData });
       const data = await res.json();
-      setSettings(prev => ({ ...prev, [field]: `${API}${data.url}` }));
+      setSettings(prev => ({ ...prev, [field]: data.url.startsWith('http') ? data.url : `${API}${data.url}` }));
       const msg = data.original_kb && data.compressed_kb
         ? `Видео загружено и сжато: ${data.original_kb} КБ → ${data.compressed_kb} КБ`
         : 'Видео загружено';

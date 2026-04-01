@@ -27,7 +27,7 @@ export const InstallmentAdmin = ({ authHeader, showMessage }) => {
     try {
       const res = await fetchWithAuth(`${API}/api/admin/upload`, { method: 'POST', body: formData });
       const data = await res.json();
-      setSettings(prev => ({ ...prev, [field]: `${API}${data.url}` }));
+      setSettings(prev => ({ ...prev, [field]: data.url.startsWith('http') ? data.url : `${API}${data.url}` }));
       showMessage('success', 'Логотип загружен');
     } catch { showMessage('error', 'Ошибка загрузки'); }
   };

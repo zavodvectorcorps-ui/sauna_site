@@ -33,7 +33,7 @@ export const SaunaFaqAdmin = ({ authHeader, showMessage }) => {
     try {
       const res = await fetchWithAuth(`${API}/api/admin/upload`, { method: 'POST', body: formData });
       const data = await res.json();
-      const url = `${API}${data.url}`;
+      const url = data.url.startsWith('http') ? data.url : `${API}${data.url}`;
       setFaqSettings(prev => ({
         ...prev,
         items: prev.items.map((it, i) => i === idx ? { ...it, image_url: url } : it)

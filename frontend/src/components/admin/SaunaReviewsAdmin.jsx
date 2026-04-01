@@ -78,7 +78,7 @@ export const SaunaReviewsAdmin = ({ authHeader, showMessage }) => {
     try {
       const response = await fetchWithAuth(`${API}/api/admin/upload`, { method: 'POST', body: formData });
       const data = await response.json();
-      callback(`${API}${data.url}`);
+      callback(data.url.startsWith('http') ? data.url : `${API}${data.url}`);
       showMessage('success', 'Фото загружено');
     } catch { showMessage('error', 'Ошибка загрузки'); }
   };

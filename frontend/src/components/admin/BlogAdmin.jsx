@@ -66,7 +66,7 @@ export const BlogAdmin = ({ authHeader, showMessage }) => {
       const res = await fetch(`${API}/api/admin/upload`, { method: 'POST', headers: { Authorization: authHeader }, body: fd });
       const data = await res.json();
       if (data.url) {
-        setEditing(prev => ({ ...prev, cover_image: `${API}${data.url}` }));
+        setEditing(prev => ({ ...prev, cover_image: data.url.startsWith('http') ? data.url : `${API}${data.url}` }));
         showMessage('success', 'Обложка загружена');
       }
     } catch { showMessage('error', 'Ошибка загрузки обложки'); }

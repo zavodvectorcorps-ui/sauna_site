@@ -155,7 +155,7 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
     try {
       const res = await fetch(`${API}/api/admin/upload`, { method: 'POST', body: formData, headers: { 'Authorization': authHeader } });
       const data = await res.json();
-      callback(`${API}${data.url}`);
+      callback(data.url.startsWith('http') ? data.url : `${API}${data.url}`);
       showMessage('success', 'Фото загружено');
     } catch { showMessage('error', 'Ошибка загрузки'); }
   };
@@ -166,7 +166,7 @@ export const BaliaContentAdmin = ({ authHeader, showMessage }) => {
     try {
       const res = await fetch(`${API}/api/admin/upload-video`, { method: 'POST', body: formData, headers: { 'Authorization': authHeader } });
       const data = await res.json();
-      callback(`${API}${data.url}`);
+      callback(data.url.startsWith('http') ? data.url : `${API}${data.url}`);
       const msg = data.original_kb && data.compressed_kb
         ? `Видео сжато: ${data.original_kb} КБ → ${data.compressed_kb} КБ`
         : 'Видео загружено';

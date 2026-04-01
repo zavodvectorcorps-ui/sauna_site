@@ -1,0 +1,74 @@
+{
+  "summary": "Iteration 37: Double-domain URL bug fix verified. All 14 upload handlers in 10 admin components now correctly check if URL starts with 'http' before prepending API base URL. Backend upload endpoints return Cloudinary URLs correctly. Frontend pages /sauny and /balie load without double-domain issues.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_upload_url_fix.py",
+    "/app/test_reports/pytest/pytest_iteration37.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "All 10 admin components correctly implement the fix: `data.url.startsWith('http') ? data.url : ${API}${data.url}`",
+    "SaunaContentAdmin.jsx: lines 86, 99 - image and video upload handlers fixed",
+    "MainLandingAdmin.jsx: lines 54, 66 - image and video upload handlers fixed",
+    "BaliaContentAdmin.jsx: lines 158, 169 - hero image and video upload handlers fixed",
+    "SaunaGalleryAdmin.jsx: line 82 - gallery image upload handler fixed",
+    "SpecialOfferAdmin.jsx: line 38 - special offer image upload handler fixed",
+    "BlogAdmin.jsx: line 69 - blog cover image upload handler fixed",
+    "BaliaFaqAdmin.jsx: line 36 - FAQ image upload handler fixed",
+    "InstallmentAdmin.jsx: line 30 - installment logo upload handler fixed",
+    "SaunaModelsStockAdmin.jsx: line 94 - stock sauna image upload handler fixed",
+    "SaunaFaqAdmin.jsx: line 36 - FAQ image upload handler fixed",
+    "SaunaReviewsAdmin.jsx: line 81 - review image upload handler fixed",
+    "resolveMediaUrl in utils.js correctly passes Cloudinary URLs unchanged (line 13)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_upload_url_fix.py"
+  ],
+  "success_rate": {
+    "backend": "100% (7/7 tests passed)",
+    "frontend": "100% (/sauny and /balie pages load correctly, no double-domain URLs)"
+  },
+  "test_credentials": "Admin: username=admin, password=220066",
+  "seed_data_creation": "Created test images via POST /api/admin/upload during testing",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Double-domain URL bug is fixed. The bug was: when uploading media via admin panel, URLs were formed as 'https://domain.comhttps://res.cloudinary.com/...' because handlers concatenated API base URL with Cloudinary URL without checking if URL was already absolute. Fix: all 14 upload handlers now check `data.url.startsWith('http')` before prepending API base URL. Cloudinary integration is fully working.",
+  "features_tested": {
+    "backend_image_upload_cloudinary_url": {
+      "status": "PASS",
+      "details": "POST /api/admin/upload returns Cloudinary URL starting with https://res.cloudinary.com/"
+    },
+    "backend_video_upload_cloudinary_url": {
+      "status": "PASS",
+      "details": "POST /api/admin/upload-video returns Cloudinary URL"
+    },
+    "backend_url_format_no_double_domain": {
+      "status": "PASS",
+      "details": "Returned URLs don't contain 'hosthttps' or other double-domain patterns"
+    },
+    "frontend_sauny_page": {
+      "status": "PASS",
+      "details": "/sauny loads without errors, 17 Cloudinary URLs, no double-domain issues"
+    },
+    "frontend_balie_page": {
+      "status": "PASS",
+      "details": "/balie loads without errors, 25 Cloudinary URLs, 1 Cloudinary video, no double-domain issues"
+    },
+    "frontend_resolveMediaUrl": {
+      "status": "PASS",
+      "details": "resolveMediaUrl passes Cloudinary URLs unchanged (verified in utils.js code)"
+    },
+    "admin_upload_handlers_fixed": {
+      "status": "PASS",
+      "details": "All 14 upload handlers in 10 admin components use data.url.startsWith('http') check"
+    }
+  }
+}

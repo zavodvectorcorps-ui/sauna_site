@@ -35,7 +35,7 @@ export const SpecialOfferAdmin = ({ authHeader, showMessage }) => {
     try {
       const res = await fetchWithAuth(`${API}/api/admin/upload`, { method: 'POST', body: formData });
       const data = await res.json();
-      updateCard(index, 'image', `${API}${data.url}`);
+      updateCard(index, 'image', data.url.startsWith('http') ? data.url : `${API}${data.url}`);
       showMessage('success', 'Фото загружено');
     } catch { showMessage('error', 'Ошибка загрузки'); }
   };
