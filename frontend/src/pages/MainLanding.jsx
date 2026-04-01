@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Flame, Droplets, MapPin, ShieldCheck, Leaf, Heart, Phone, Mail, Send, CheckCircle } from 'lucide-react';
-import { resolveMediaUrl, optimizedVideo, videoPoster } from '../lib/utils';
+import { resolveMediaUrl, optimizedImg, optimizedVideo, videoPoster } from '../lib/utils';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { useAutoTranslate } from '../context/AutoTranslateContext';
 import { useSettings } from '../context/SettingsContext';
@@ -14,7 +14,7 @@ const DEFAULT_SAUNA_IMG = 'https://images.unsplash.com/photo-1759302354886-f2c37
 const DEFAULT_BALIA_IMG = 'https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=80';
 
 /* Parallax card with all effects */
-const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title, desc, cta, onClick, direction, testId }) => {
+const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title, desc, cta, onClick, direction, testId, isLCP }) => {
   const cardRef = useRef(null);
   const videoRef = useRef(null);
   const [transform, setTransform] = useState({ x: 0, y: 0 });
@@ -122,6 +122,8 @@ const ProductCard = ({ img, imgPos, video, accentColor, icon: Icon, brand, title
       <img
         src={img}
         alt={title}
+        fetchPriority={isLCP ? 'high' : 'auto'}
+        loading={isLCP ? 'eager' : 'lazy'}
         className={`absolute inset-[-16px] w-[calc(100%+32px)] h-[calc(100%+32px)] object-cover transition-all duration-[1.2s] ease-out ${video ? (hovered ? 'opacity-0' : 'opacity-100') : 'group-hover:scale-110'}`}
         style={{
           objectPosition: imgPos,
@@ -191,11 +193,12 @@ const MainLanding = () => {
   const [imagesReady, setImagesReady] = useState(false);
 
   useEffect(() => {
+    const imgW = isMobile ? 800 : 1200;
     fetch(`${API}/api/settings/main-landing`)
       .then(r => r.json())
       .then(d => {
-        setSaunaImg(resolveMediaUrl(d.sauna_image) || DEFAULT_SAUNA_IMG);
-        setBaliaImg(resolveMediaUrl(d.balia_image) || DEFAULT_BALIA_IMG);
+        setSaunaImg(optimizedImg(resolveMediaUrl(d.sauna_image), { w: imgW, q: 'auto' }) || DEFAULT_SAUNA_IMG);
+        setBaliaImg(optimizedImg(resolveMediaUrl(d.balia_image), { w: imgW, q: 'auto' }) || DEFAULT_BALIA_IMG);
         if (d.sauna_image_position) setSaunaPos(d.sauna_image_position);
         if (d.balia_image_position) setBaliaPos(d.balia_image_position);
         if (d.sauna_video) setSaunaVideo(resolveMediaUrl(d.sauna_video));
@@ -270,7 +273,7 @@ const MainLanding = () => {
                 icon={Flame} brand="WM-Sauna" title={tr("Sauny ogrodowe")}
                 desc={tr("Gotowe, zmontowane sauny beczki, kwadro i wiking. Skandynawskie drewno klasy A+. Dostawa w 5-10 dni.")}
                 cta={tr("Zobacz sauny")} onClick={() => navigate('/sauny')}
-                direction="left" testId="card-sauny"
+                direction="left" testId="card-sauny" isLCP={true}
               />
               <ProductCard
                 img={baliaImg} imgPos={baliaPos} video={baliaVideo} accentColor="#D4AF37"
