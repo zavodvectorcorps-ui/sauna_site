@@ -25,6 +25,13 @@
 - **Video streaming optimization** (Apr 1 2026): Disk caching + Range requests (HTTP 206) for progressive playback. Mobile lazy-load via IntersectionObserver, preload="metadata"
 - **Video preloading on MainLanding** (Apr 1 2026): `preload="auto"` + programmatic `el.load()` on mount + `<link rel="preload" as="video">` injection + Cloudinary poster (first frame as JPG via `so_0` transformation). Instant playback on hover/tap.
 - **Adaptive video quality** (Apr 1 2026): Cloudinary CDN transformations per device — Desktop: `w_1280,q_auto,f_auto` (1280p, auto quality, WebM/MP4 auto-format). Mobile: `w_720,q_auto,f_auto` (720p). Applied to MainLanding.jsx, Hero.jsx, BalieHero.jsx. Utility functions `optimizedVideo()` and `videoPoster()` in utils.js.
+- **PageSpeed Insights optimization** (Apr 1 2026):
+  - MainLanding product card images now use Cloudinary transforms (`w_1200,q_auto,f_auto` desktop, `w_800` mobile). Balia PNG: 1684KB → 137KB (-91.8%). Sauny JPG: 278KB → 148KB (-46.8%).
+  - LCP image: `fetchpriority="high"`, `loading="eager"`
+  - `<link rel="preconnect">` to `res.cloudinary.com`
+  - Fonts moved from `@import` CSS to `<link>` HTML for parallel loading
+  - Inline `font-family` in `<style>` for CLS prevention
+  - Static `robots.txt` in `public/` for SEO
 
 ### Cloudinary CDN — COMPLETE
 - All images and videos migrated to Cloudinary CDN
