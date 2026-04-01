@@ -24,6 +24,15 @@ from object_storage import init_storage, put_object, get_object, get_mime_type
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# ── Cloudinary config ──
+cloudinary.config(
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+    secure=True,
+)
+CLOUDINARY_CONFIGURED = bool(os.environ.get("CLOUDINARY_CLOUD_NAME"))
+
 
 # In-memory cache for bulk endpoints
 class BulkCache:
@@ -2210,14 +2219,34 @@ async def upload_image(
         image_id = str(uuid.uuid4())
         ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else "jpg"
         content_type = file.content_type or get_mime_type(file.filename)
-        storage_path = f"wm-group/images/{image_id}.{ext}"
 
-        try:
-            result = put_object(storage_path, contents, content_type)
-            storage_path = result.get("path", storage_path)
-        except Exception as e:
-            logger.warning(f"Object storage upload failed, falling back to MongoDB: {e}")
-            storage_path = None
+        cloudinary_url = None
+        storage_path = None
+
+        # Try Cloudinary first
+        if CLOUDINARY_CONFIGURED:
+            try:
+                result = cloudinary.uploader.upload(
+                    contents,
+                    folder="wm-group/images",
+                    public_id=image_id,
+                    resource_type="image",
+                    overwrite=True,
+                )
+                cloudinary_url = result.get("secure_url", "")
+                logger.info(f"Image {image_id} uploaded to Cloudinary")
+            except Exception as e:
+                logger.warning(f"Cloudinary upload failed, falling back to Object Storage: {e}")
+
+        # Fallback to Object Storage
+        if not cloudinary_url:
+            storage_path = f"wm-group/images/{image_id}.{ext}"
+            try:
+                result = put_object(storage_path, contents, content_type)
+                storage_path = result.get("path", storage_path)
+            except Exception as e:
+                logger.warning(f"Object storage upload failed: {e}")
+                storage_path = None
 
         image_doc = {
             "id": image_id,
@@ -2226,17 +2255,22 @@ async def upload_image(
             "created_at": datetime.now(timezone.utc).isoformat(),
         }
 
-        if storage_path:
+        if cloudinary_url:
+            image_doc["cloudinary_url"] = cloudinary_url
+            image_doc["storage_path"] = storage_path  # keep old ref if exists
+        elif storage_path:
             image_doc["storage_path"] = storage_path
         else:
             image_doc["data"] = base64.b64encode(contents).decode('utf-8')
 
         await db.uploads.insert_one(image_doc)
 
+        # Return Cloudinary URL directly if available
+        url = cloudinary_url or f"/api/images/{image_id}"
         return {
             "status": "success",
             "image_id": image_id,
-            "url": f"/api/images/{image_id}"
+            "url": url,
         }
     except Exception as e:
         logger.error(f"Error uploading image: {e}")
@@ -2250,6 +2284,27 @@ async def get_uploaded_image(image_id: str, w: int = None, q: int = None, reques
         static_path = Path("/app/backend/uploads/sauna-cutaway.webp")
         if static_path.exists():
             return FileResponse(static_path, media_type="image/webp", headers=cache_headers)
+
+    image = await db.uploads.find_one({"id": image_id})
+    if not image:
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    # If Cloudinary URL exists, redirect with Cloudinary transformations
+    if image.get("cloudinary_url"):
+        cld_url = image["cloudinary_url"]
+        if w or q:
+            # Insert Cloudinary transformations into URL
+            transforms = []
+            if w:
+                transforms.append(f"w_{w}")
+            if q:
+                transforms.append(f"q_{q}")
+            transforms.extend(["f_auto", "c_limit"])
+            t_str = ",".join(transforms)
+            # Insert before /wm-group/ or /v1/ in URL
+            cld_url = cld_url.replace("/upload/", f"/upload/{t_str}/")
+        from starlette.responses import RedirectResponse
+        return RedirectResponse(url=cld_url, status_code=302, headers={"Cache-Control": "public, max-age=604800"})
 
     cache_key = f"{image_id}_{w or 'orig'}_{q or 'orig'}"
 
@@ -2305,32 +2360,44 @@ async def upload_video(file: UploadFile = File(...), username: str = Depends(ver
         video_id = str(uuid.uuid4())
         contents = await file.read()
         original_size = len(contents)
-        storage_path = f"wm-group/videos/{video_id}.mp4"
 
-        stored_in_cloud = False
-        try:
-            result = put_object(storage_path, contents, "video/mp4")
-            storage_path = result.get("path", storage_path)
-            stored_in_cloud = True
-        except Exception as e:
-            logger.warning(f"Object storage upload failed for video, falling back to filesystem: {e}")
+        cloudinary_url = None
 
-        # Always save to filesystem as fallback/cache
-        out_path = VIDEO_DIR / f"{video_id}.mp4"
-        with open(out_path, "wb") as f:
-            f.write(contents)
+        # Try Cloudinary first
+        if CLOUDINARY_CONFIGURED:
+            try:
+                result = cloudinary.uploader.upload(
+                    contents,
+                    folder="wm-group/videos",
+                    public_id=video_id,
+                    resource_type="video",
+                    overwrite=True,
+                )
+                cloudinary_url = result.get("secure_url", "")
+                logger.info(f"Video {video_id} uploaded to Cloudinary ({original_size // 1024}KB)")
+            except Exception as e:
+                logger.warning(f"Cloudinary video upload failed, falling back: {e}")
+
+        # Fallback: save to filesystem
+        if not cloudinary_url:
+            out_path = VIDEO_DIR / f"{video_id}.mp4"
+            with open(out_path, "wb") as f:
+                f.write(contents)
 
         # Store metadata in DB
-        await db.video_uploads.insert_one({
+        doc = {
             "id": video_id,
             "filename": file.filename,
-            "storage_path": storage_path if stored_in_cloud else None,
             "content_type": "video/mp4",
             "size": original_size,
             "created_at": datetime.now(timezone.utc).isoformat(),
-        })
+        }
+        if cloudinary_url:
+            doc["cloudinary_url"] = cloudinary_url
+        await db.video_uploads.insert_one(doc)
 
-        return {"status": "success", "url": f"/api/videos/{video_id}.mp4", "original_kb": original_size // 1024}
+        url = cloudinary_url or f"/api/videos/{video_id}.mp4"
+        return {"status": "success", "url": url, "original_kb": original_size // 1024}
     except Exception as e:
         logger.error(f"Error uploading video: {e}")
         raise HTTPException(status_code=500, detail="Error uploading video")
@@ -2338,11 +2405,17 @@ async def upload_video(file: UploadFile = File(...), username: str = Depends(ver
 @api_router.get("/videos/{filename}")
 async def get_video(filename: str, request: Request):
     video_id = filename.replace(".mp4", "")
+
+    # Check if video has Cloudinary URL → redirect
+    video_doc = await db.video_uploads.find_one({"id": video_id})
+    if video_doc and video_doc.get("cloudinary_url"):
+        from starlette.responses import RedirectResponse
+        return RedirectResponse(url=video_doc["cloudinary_url"], status_code=302, headers={"Cache-Control": "public, max-age=604800"})
+
     filepath = VIDEO_DIR / filename
 
     # If not cached locally, download from Object Storage and cache
     if not filepath.exists():
-        video_doc = await db.video_uploads.find_one({"id": video_id})
         if video_doc and video_doc.get("storage_path"):
             try:
                 data, ct = get_object(video_doc["storage_path"])
@@ -3253,6 +3326,61 @@ async def get_analytics_summary(days: int = 30, username: str = Depends(verify_a
             "model_inquiry": model_inquiry_count,
         },
     }
+
+
+# ── Cloudinary Migration endpoint ──
+@api_router.post("/admin/migrate-to-cloudinary")
+async def migrate_to_cloudinary(username: str = Depends(verify_admin)):
+    """Admin: migrate all Object Storage media to Cloudinary."""
+    if not CLOUDINARY_CONFIGURED:
+        raise HTTPException(status_code=400, detail="Cloudinary not configured")
+
+    results = {"images": {"migrated": 0, "errors": 0, "skipped": 0}, "videos": {"migrated": 0, "errors": 0, "skipped": 0}}
+
+    # Migrate images
+    async for img in db.uploads.find({"cloudinary_url": {"$exists": False}}):
+        data = None
+        if img.get("storage_path"):
+            try:
+                data, _ = get_object(img["storage_path"])
+            except Exception:
+                pass
+        if data is None and img.get("data"):
+            data = base64.b64decode(img["data"])
+        if data is None:
+            results["images"]["skipped"] += 1
+            continue
+        try:
+            res = cloudinary.uploader.upload(data, folder="wm-group/images", public_id=img["id"], resource_type="image", overwrite=True)
+            await db.uploads.update_one({"_id": img["_id"]}, {"$set": {"cloudinary_url": res["secure_url"], "cloudinary_public_id": res["public_id"]}})
+            results["images"]["migrated"] += 1
+        except Exception as e:
+            logger.warning(f"Cloudinary migration error for image {img['id']}: {e}")
+            results["images"]["errors"] += 1
+
+    # Migrate videos
+    async for vid in db.video_uploads.find({"cloudinary_url": {"$exists": False}}):
+        data = None
+        fs_path = VIDEO_DIR / f"{vid['id']}.mp4"
+        if fs_path.exists():
+            data = fs_path.read_bytes()
+        elif vid.get("storage_path"):
+            try:
+                data, _ = get_object(vid["storage_path"])
+            except Exception:
+                pass
+        if data is None:
+            results["videos"]["skipped"] += 1
+            continue
+        try:
+            res = cloudinary.uploader.upload(data, folder="wm-group/videos", public_id=vid["id"], resource_type="video", overwrite=True, timeout=300)
+            await db.video_uploads.update_one({"_id": vid["_id"]}, {"$set": {"cloudinary_url": res["secure_url"], "cloudinary_public_id": res["public_id"]}})
+            results["videos"]["migrated"] += 1
+        except Exception as e:
+            logger.warning(f"Cloudinary migration error for video {vid['id']}: {e}")
+            results["videos"]["errors"] += 1
+
+    return results
 
 
 import math

@@ -13,10 +13,24 @@ export function resolveMediaUrl(url) {
   return url;
 }
 
-// Optimized image URL: resize on server + convert to WebP
+// Optimized image URL: Cloudinary transformations or server-side resize
 export function optimizedImg(url, { w, q } = {}) {
   const resolved = resolveMediaUrl(url);
-  if (!resolved || !resolved.includes('/api/images/')) return resolved;
+  if (!resolved) return resolved;
+
+  // Cloudinary URL — use native transformations (much faster than our server)
+  if (resolved.includes('res.cloudinary.com')) {
+    if (!w && !q) return resolved;
+    const transforms = [];
+    if (w) transforms.push(`w_${w}`);
+    if (q) transforms.push(`q_${q}`);
+    transforms.push('f_auto', 'c_limit');
+    const tStr = transforms.join(',');
+    return resolved.replace('/upload/', `/upload/${tStr}/`);
+  }
+
+  // Fallback: our API server-side resize
+  if (!resolved.includes('/api/images/')) return resolved;
   const params = [];
   if (w) params.push(`w=${w}`);
   if (q) params.push(`q=${q}`);
