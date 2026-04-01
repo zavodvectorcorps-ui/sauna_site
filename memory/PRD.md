@@ -21,6 +21,7 @@
 - Preload all balie images in BalieContext
 - GZip middleware
 - **Mobile-optimized preloading**: Models.jsx preloads only card-size (w=500) instead of full-size images
+- **Video streaming optimization** (Apr 1 2026): Disk caching + Range requests (HTTP 206) for progressive playback. Mobile lazy-load via IntersectionObserver, preload="metadata"
 
 ### SEO / OG — FIXED (Mar 31 2026)
 - OG-картинка в index.html теперь использует ?w=1200&q=80 (вместо сырого 7MB PNG)
