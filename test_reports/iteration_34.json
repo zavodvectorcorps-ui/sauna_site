@@ -1,0 +1,100 @@
+{
+  "summary": "Iteration 34: Fixed PDF generation with Polish characters. Bug found: Content-Disposition header filename contained Polish chars (Ł, ą, ę, ż) which caused latin-1 encoding error. Fix: Added RFC 5987 encoding for Unicode filenames. All 11 backend tests passed. PDF now correctly renders Polish characters (Łukasz, Ławki, zewnętrznym, załadunkiem, Wyposażenie, przebieralni, żółte, Żółwiński) without black squares. Frontend pages /sauny and /balie load correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration34_pdf_polish.py",
+    "/app/test_reports/pytest/pytest_iteration34.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "BUG FIXED: server.py line 983-987 - Content-Disposition header filename contained Polish characters which caused 'latin-1 codec can't encode character' error",
+    "FIX APPLIED: Added RFC 5987 encoding (filename*=UTF-8'') for Unicode filenames in Content-Disposition header",
+    "pdf_generator.py: Inter font correctly registered and renders Polish characters (ł, Ł, ą, ę, ż, ó, ś, ź, ć, ń)",
+    "PDF contains all required sections: WM-SAUNA header, model+price, options with categories, Podsumowanie, Dane klienta, footer with date"
+  ],
+  "updated_files": [
+    "/app/backend/server.py",
+    "/app/backend/tests/test_iteration34_pdf_polish.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "100% (/sauny and /balie pages load correctly)"
+  },
+  "test_credentials": "Admin: username=admin, password=220066",
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "PDF generation with Polish characters is now working. Bug was in Content-Disposition header encoding (latin-1 can't encode Polish chars). Fix uses RFC 5987 filename*=UTF-8'' encoding. Inter TTF font is properly embedded and renders all Polish characters correctly. Test with payload containing Polish chars: modelName='Sauna Beczka Łukasz', options with 'Ławki', 'Wyposażenie przebieralni', customerName='Łukasz Żółwiński'.",
+  "features_tested": {
+    "pdf_endpoint_returns_200": {
+      "status": "PASS",
+      "details": "POST /api/sauna/generate-pdf returns 200 with Polish characters in payload"
+    },
+    "pdf_content_type": {
+      "status": "PASS",
+      "details": "Response Content-Type is application/pdf"
+    },
+    "pdf_content_disposition": {
+      "status": "PASS",
+      "details": "Response has Content-Disposition: attachment with RFC 5987 encoded filename"
+    },
+    "pdf_size_reasonable": {
+      "status": "PASS",
+      "details": "PDF size is ~66KB (between 10KB and 500KB)"
+    },
+    "pdf_is_valid_pdf": {
+      "status": "PASS",
+      "details": "PDF starts with %PDF- header"
+    },
+    "pdf_contains_polish_characters": {
+      "status": "PASS",
+      "details": "pdfplumber extracted text contains: Łukasz, Ławki, zewnętrznym, załadunkiem, Wyposażenie, przebieralni, żółte, Żółwiński - NO black squares (■)"
+    },
+    "pdf_contains_required_sections": {
+      "status": "PASS",
+      "details": "PDF contains WM-SAUNA header, PLN prices, Podsumowanie section"
+    },
+    "pdf_contains_customer_data": {
+      "status": "PASS",
+      "details": "PDF contains 'Dane klienta' section with name, phone, email"
+    },
+    "pdf_uses_inter_font": {
+      "status": "PASS",
+      "details": "PDF contains Inter font reference (embedded TTF)"
+    },
+    "pdf_minimal_payload": {
+      "status": "PASS",
+      "details": "PDF generates correctly with minimal payload (no options, no customer data)"
+    },
+    "pdf_with_discount": {
+      "status": "PASS",
+      "details": "PDF shows discount percentage and amount correctly"
+    },
+    "frontend_sauny_page": {
+      "status": "PASS",
+      "details": "/sauny page loads without errors"
+    },
+    "frontend_balie_page": {
+      "status": "PASS",
+      "details": "/balie page loads without errors"
+    }
+  },
+  "rca_of_the_issue": {
+    "root_cause": "Content-Disposition HTTP header uses latin-1 encoding by default. When modelName contained Polish characters (Ł = U+0141), the header encoding failed with 'latin-1 codec can't encode character'",
+    "reproduction_steps": [
+      "1. POST /api/sauna/generate-pdf with modelName containing Polish chars (e.g., 'Sauna Beczka Łukasz')",
+      "2. Server tries to create filename: 'WM-Sauna-Sauna-Beczka-Łukasz.pdf'",
+      "3. Content-Disposition header encoding fails on 'Ł' character",
+      "4. Returns 500 error"
+    ],
+    "fix_applied": "Added RFC 5987 encoding for Content-Disposition filename. Now uses both ASCII-safe filename and UTF-8 encoded filename*= parameter for browser compatibility"
+  }
+}

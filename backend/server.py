@@ -980,11 +980,25 @@ async def generate_sauna_pdf(request: Request):
             customer_phone=body.get("customerPhone", ""),
             customer_email=body.get("customerEmail", ""),
         )
-        filename = f"WM-Sauna-{body.get('modelName', 'Config').replace(' ', '-')}.pdf"
+        # Sanitize filename for Content-Disposition header (HTTP headers use latin-1)
+        # Use ASCII-safe filename and RFC 5987 for Unicode filename
+        raw_name = body.get('modelName', 'Config').replace(' ', '-')
+        # Create ASCII-safe version by removing non-ASCII chars
+        ascii_filename = ''.join(c if ord(c) < 128 else '' for c in raw_name)
+        if not ascii_filename:
+            ascii_filename = 'Config'
+        ascii_filename = f"WM-Sauna-{ascii_filename}.pdf"
+        # RFC 5987 encoded filename for browsers that support it
+        from urllib.parse import quote
+        utf8_filename = f"WM-Sauna-{raw_name}.pdf"
+        encoded_filename = quote(utf8_filename, safe='')
+        
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",
-            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+            headers={
+                "Content-Disposition": f"attachment; filename=\"{ascii_filename}\"; filename*=UTF-8''{encoded_filename}"
+            },
         )
     except Exception as e:
         logger.error(f"PDF generation error: {e}")
