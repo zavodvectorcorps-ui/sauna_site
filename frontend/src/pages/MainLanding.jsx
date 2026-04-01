@@ -8,9 +8,9 @@ import { useAutoTranslate } from '../context/AutoTranslateContext';
 const API = process.env.REACT_APP_BACKEND_URL;
 const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : true;
 
-// Default hero images — render immediately, no API wait
-const DEFAULT_SAUNA_IMG = 'https://images.unsplash.com/photo-1759302354886-f2c37dd3dd8c?auto=format&fit=crop&w=800&q=70';
-const DEFAULT_BALIA_IMG = 'https://images.unsplash.com/photo-1668461363398-1fd41bf2ca79?auto=format&fit=crop&w=800&q=70';
+// Default hero images — Cloudinary production URLs, render immediately
+const DEFAULT_SAUNA_IMG = 'https://res.cloudinary.com/dhyj13jgs/image/upload/w_800,q_auto,f_auto/v1775044580/wm-group/images/dd98a6c6-2434-43fb-b335-d3d390742ae4.jpg';
+const DEFAULT_BALIA_IMG = 'https://res.cloudinary.com/dhyj13jgs/image/upload/w_800,q_auto,f_auto/v1775044621/wm-group/images/5ef641ca-d716-430b-b893-23e3a2b1413a.png';
 
 // Below-fold sections: lazy loaded ONLY on scroll
 const BelowFoldSections = lazy(() => import('../components/MainLandingBelowFold'));

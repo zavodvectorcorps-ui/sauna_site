@@ -23,11 +23,13 @@
 ### PageSpeed Critical Path Optimization — DEEP REFACTOR (Apr 1 2026)
 - **App.js**: ALL routes lazy-loaded via React.lazy — ZERO synchronous heavy imports
 - **SaunaHomePage extracted**: Header, Hero, Footer moved to `/pages/SaunaHomePage.jsx` (lazy chunk)
-- **Hero.jsx**: framer-motion REMOVED — pure CSS animations, explicit width/height on bg image, fetchPriority="high"
+- **Hero.jsx**: framer-motion REMOVED — pure CSS, explicit width/height on bg image, fetchPriority="high"
 - **CookieConsentBanner**: framer-motion REMOVED — CSS transitions only
 - **MainLanding BelowFold**: IntersectionObserver scroll-triggered loading — NO skeleton mismatch CLS
 - **Footer inside BelowFold**: Prevents CLS (no element shifts below fold content)
-- **LCP image preload**: Added in index.html for default sauna hero image
+- **LCP image preload**: Cloudinary URL preloaded in index.html
+- **Default images**: Cloudinary production URLs (no Unsplash fallbacks)
+- **Production data imported**: All 37 settings, reviews, blog, stock saunas, uploads from export
 - **SettingsProvider**: Children render IMMEDIATELY with defaults
 - **PostHog deferred**: requestIdleCallback
 - **Google Fonts async**: media="print" onload="this.media='all'" + font-display: optional
@@ -35,8 +37,6 @@
 - **Cookie banner delayed 3.5s**: Prevents it from becoming LCP element
 - **Webpack splitChunks**: react-vendor, ui-vendor (framer-motion, radix, recharts) separate chunks
 - **Preconnect**: res.cloudinary.com, fonts.googleapis.com
-- **ProductCard**: aspect-ratio 4/5 for CLS stability
-- **Semantic HTML**: <main> landmark
 
 ### SEO
 - Dynamic sitemap.xml: GET /api/sitemap.xml (8 static + 14 blog articles)
@@ -52,10 +52,12 @@
 
 ### Bug Fixes
 - Mobile catalog download, PDF Polish chars, Admin upload URL double domain
+- Unsplash fallback images replaced with Cloudinary production URLs
 
 ## Key API Endpoints
 - GET /api/images/{id}?w=&q= — resize + WebP (302 to Cloudinary)
 - GET /api/settings/bulk — all settings in one request
+- GET /api/settings/main-landing — main page images/videos
 - GET /api/sitemap.xml — dynamic sitemap
 - POST /api/admin/settings/stock-cta-config — stock CTA config
 

@@ -90,7 +90,7 @@ export const Hero = () => {
   };
 
   const rawBg = resolveMediaUrl(heroSettings?.background_image) || 
-    'https://images.unsplash.com/photo-1759302353458-3c617bfd428b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtb2Rlcm4lMjB3b29kZW4lMjBzYXVuYSUyMGludGVyaW9yJTIwcGFub3JhbWljJTIwd2luZG93JTIwbmF0dXJlJTIwdmlld3xlbnwwfHx8fDE3NzA4NDMyODh8MA&ixlib=rb-4.1.0&q=85';
+    'https://res.cloudinary.com/dhyj13jgs/image/upload/w_1200,q_auto,f_auto/v1775044823/wm-group/images/6b53223e-0bb2-4a9a-9b3c-150e5494755b.png';
   const backgroundImage = optimizedImg(rawBg, { w: 1200, q: 80 });
 
   const overlayOpacity = heroSettings?.overlay_opacity ?? 80;
